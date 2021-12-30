@@ -9,6 +9,10 @@ const gallary = require("./gallary");
 const question = require("./question");
 const questiontype = require("./questiontype");
 const seo = require("./seo");
+const prescription = require("./prescription");
+const prescriptionPack = require("./prescriptionPack");
+const prescriptionType = require("./prescriptionType");
+const prescriptionUnit = require("./prescriptionUnit");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -31,6 +35,10 @@ db.Gallary = gallary;
 db.Question = question;
 db.QuestionType = questiontype;
 db.Seo = seo;
+db.Prescription = prescription;
+db.PrescriptionPack = prescriptionPack;
+db.PrescriptionType = prescriptionType;
+db.PrescriptionUnit = prescriptionUnit;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Menu, Switch } from "antd";
 import {
   InfoCircleOutlined,
-  AppstoreOutlined,
+  MedicineBoxOutlined,
   SettingOutlined,
   BarChartOutlined,
   UserOutlined,
@@ -171,6 +171,17 @@ const AdminMenu = () => {
         >
           <Menu.Item key="/admin/envv/seo">
             <MenuName>SEO 설정</MenuName>
+          </Menu.Item>
+        </SubMenu>
+        {/* 상품관리 */}
+        <SubMenu
+          key="sub8"
+          icon={<MedicineBoxOutlined />}
+          title="상품 관리"
+          onTitleClick={titleClickHandler("sub8")}
+        >
+          <Menu.Item key="/admin/product/prescription">
+            <MenuName>약속처방 상품 관리</MenuName>
           </Menu.Item>
         </SubMenu>
       </Menu>
