@@ -28,8 +28,14 @@ import {
   GuideUl,
   GuideLi,
 } from "../../../components/commonComponents";
-import { LOAD_MY_INFO_REQUEST, USERLIST_REQUEST } from "../../../reducers/user";
-import { PRODUCT_LIST_REQUEST } from "../../../reducers/prescription";
+import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
+import {
+  PRODUCT_LIST_REQUEST,
+  GUIDE_MODAL_TOGGLE,
+  TYPE_MODAL_TOGGLE,
+  PACK_MODAL_TOGGLE,
+  UNIT_MODAL_TOGGLE,
+} from "../../../reducers/prescription";
 
 const LoadNotification = (msg, content) => {
   notification.open({
@@ -41,7 +47,9 @@ const LoadNotification = (msg, content) => {
 
 const UserDeliAddress = ({}) => {
   const { st_loadMyInfoDone, me } = useSelector((state) => state.user);
-  const { products } = useSelector((state) => state.prescription);
+  const { products, guideModal, typeModal, packModal, unitModal } = useSelector(
+    (state) => state.prescription
+  );
 
   const router = useRouter();
 
@@ -64,6 +72,18 @@ const UserDeliAddress = ({}) => {
   ////// USEEFFECT //////
 
   ////// HANDLER //////
+
+  const guideModalToggle = useCallback(() => {
+    dispatch({
+      type: GUIDE_MODAL_TOGGLE,
+    });
+  }, [guideModal]);
+
+  const typeModalToggle = useCallback(() => {
+    dispatch({
+      type: TYPE_MODAL_TOGGLE,
+    });
+  }, [typeModal]);
 
   const allSearchHandler = useCallback((v) => {
     dispatch({
@@ -109,7 +129,7 @@ const UserDeliAddress = ({}) => {
     {
       title: "선택종류",
       render: () => (
-        <Button size="small" type="primary">
+        <Button size="small" type="primary" onClick={typeModalToggle}>
           종류 설정
         </Button>
       ),
@@ -139,12 +159,28 @@ const UserDeliAddress = ({}) => {
     },
 
     {
+      title: "상세정보",
+      render: () => (
+        <Button type="primary" size="small">
+          상품상세 정보
+        </Button>
+      ),
+    },
+
+    {
       title: "삭제",
       render: () => (
         <Button type="danger" size="small">
           상품삭제
         </Button>
       ),
+    },
+  ];
+
+  const columnsType = [
+    {
+      title: "번호",
+      dataIndex: "id",
     },
   ];
 
@@ -173,7 +209,7 @@ const UserDeliAddress = ({}) => {
           <ModalBtn type="dashed" size="small" onClick={allSearchHandler}>
             전체조회
           </ModalBtn>
-          <ModalBtn type="danger" size="small">
+          <ModalBtn type="danger" size="small" onClick={guideModalToggle}>
             주의사항
           </ModalBtn>
           <ModalBtn type="primary" size="small">
@@ -189,17 +225,43 @@ const UserDeliAddress = ({}) => {
         />
       </AdminContent>
 
+      {/* GUIDE MODAL */}
       <Modal
-        visible={false}
+        visible={guideModal}
         width="900px"
-        onOk={() => {}}
-        onCancel={() => {}}
+        onOk={guideModalToggle}
+        onCancel={guideModalToggle}
         title="주의사항"
+        footer={null}
       >
         <GuideUl>
-          <GuideLi>asdfasdf</GuideLi>
-          <GuideLi isImpo={true}>asdfasdf</GuideLi>
+          <GuideLi isImpo={true}>
+            삭제된 상품은 다시 복구할 수 없습니다. 신중한 작업을 필요로 합니다.
+          </GuideLi>
+          <GuideLi>
+            이미지는 최대 4개 까지 등록이 가능합니다. 이미지 비율은 3:2 비율로
+            등록해야 합니다.
+          </GuideLi>
+          <GuideLi>
+            이미지 비율이 상이할 경우 화면에 이미지가 정상적으로 보이지 않을 수
+            있습니다.
+          </GuideLi>
+          <GuideLi>
+            문의가 필요한 경우 (주)4LEAF SOFTWARE 1600-4198로 연락부탁드립니다.
+          </GuideLi>
         </GuideUl>
+      </Modal>
+
+      {/* TYPE MODAL */}
+      <Modal
+        visible={typeModal}
+        width="600px"
+        onOk={typeModalToggle}
+        onCancel={typeModalToggle}
+        title="상품 종류설정"
+        footer={null}
+      >
+        <Table rowKey="id" columns={columnsType} dataSource={[]} size="small" />
       </Modal>
     </AdminLayout>
   );
