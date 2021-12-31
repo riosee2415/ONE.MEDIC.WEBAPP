@@ -31,6 +31,8 @@ import {
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import {
   PRODUCT_LIST_REQUEST,
+  PRODUCT_TYPE_LIST_REQUEST,
+  PRODUCT_TYPE_ADD_REQUEST,
   GUIDE_MODAL_TOGGLE,
   TYPE_MODAL_TOGGLE,
   PACK_MODAL_TOGGLE,
@@ -47,11 +49,21 @@ const LoadNotification = (msg, content) => {
 
 const UserDeliAddress = ({}) => {
   const { st_loadMyInfoDone, me } = useSelector((state) => state.user);
-  const { products, guideModal, typeModal, packModal, unitModal } = useSelector(
-    (state) => state.prescription
-  );
+  const {
+    products,
+    typeList,
+    guideModal,
+    typeModal,
+    packModal,
+    unitModal,
+    st_productTypeAddDone,
+    st_productTypeAddError,
+  } = useSelector((state) => state.prescription);
 
   const router = useRouter();
+  const [typeCreateForm] = Form.useForm();
+
+  const [currentId, setCurrentId] = useState(null);
 
   const moveLinkHandler = useCallback((link) => {
     router.push(link);
@@ -71,7 +83,33 @@ const UserDeliAddress = ({}) => {
 
   ////// USEEFFECT //////
 
+  useEffect(() => {
+    if (st_productTypeAddDone) {
+      message.success("정상적으로 등록되었습니다.");
+      dispatch({
+        type: PRODUCT_TYPE_LIST_REQUEST,
+        data: { id: currentId },
+      });
+
+      typeCreateForm.resetFields();
+    }
+  }, [st_productTypeAddDone]);
+
   ////// HANDLER //////
+
+  const typeCreateFormHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: PRODUCT_TYPE_ADD_REQUEST,
+        data: {
+          prescriptionId: currentId,
+          name: data.name,
+          addPrice: data.addPrice,
+        },
+      });
+    },
+    [currentId]
+  );
 
   const guideModalToggle = useCallback(() => {
     dispatch({
@@ -79,11 +117,23 @@ const UserDeliAddress = ({}) => {
     });
   }, [guideModal]);
 
-  const typeModalToggle = useCallback(() => {
-    dispatch({
-      type: TYPE_MODAL_TOGGLE,
-    });
-  }, [typeModal]);
+  const typeModalToggle = useCallback(
+    (id = null) => {
+      if (id) {
+        setCurrentId(id);
+        dispatch({
+          type: PRODUCT_TYPE_LIST_REQUEST,
+          data: { id },
+        });
+      }
+
+      typeCreateForm.resetFields();
+      dispatch({
+        type: TYPE_MODAL_TOGGLE,
+      });
+    },
+    [typeModal]
+  );
 
   const allSearchHandler = useCallback((v) => {
     dispatch({
@@ -128,8 +178,12 @@ const UserDeliAddress = ({}) => {
 
     {
       title: "선택종류",
-      render: () => (
-        <Button size="small" type="primary" onClick={typeModalToggle}>
+      render: (data) => (
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => typeModalToggle(data.id)}
+        >
           종류 설정
         </Button>
       ),
@@ -179,8 +233,21 @@ const UserDeliAddress = ({}) => {
 
   const columnsType = [
     {
-      title: "번호",
-      dataIndex: "id",
+      title: "이름",
+      dataIndex: "name",
+    },
+    {
+      title: "추가금액",
+      dataIndex: "viewAddPrice",
+    },
+
+    {
+      title: "삭제",
+      render: (data) => (
+        <Button type="danger" size="small">
+          삭제
+        </Button>
+      ),
     },
   ];
 
@@ -256,12 +323,63 @@ const UserDeliAddress = ({}) => {
       <Modal
         visible={typeModal}
         width="600px"
-        onOk={typeModalToggle}
-        onCancel={typeModalToggle}
+        onOk={() => typeModalToggle(null)}
+        onCancel={() => typeModalToggle(null)}
         title="상품 종류설정"
         footer={null}
       >
-        <Table rowKey="id" columns={columnsType} dataSource={[]} size="small" />
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            결제금액의 소급적용을 방지하기 위해 데이터 수정은 불가능 합니다.
+          </GuideLi>
+          <GuideLi>
+            이름을 기준으로 정렬됩니다. 구매자 화면에도 같은 순서로 보여지게
+            됩니다.
+          </GuideLi>
+        </GuideUl>
+
+        <Form
+          form={typeCreateForm}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 6 }}
+          layout="inline"
+          onFinish={typeCreateFormHandler}
+        >
+          <Form.Item
+            label="종류명"
+            rules={[{ required: true, message: "필수 입력사항 입니다." }]}
+            name="name"
+          >
+            <Input size="small" style={{ width: "140px" }} />
+          </Form.Item>
+
+          <Form.Item
+            label="금액"
+            rules={[{ required: true, message: "필수 입력사항 입니다." }]}
+            name="addPrice"
+          >
+            <Input
+              type="number"
+              size="small"
+              style={{ width: "140px" }}
+              rules={[{ required: true }]}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button size="small" type="primary" htmlType="submit">
+              등록
+            </Button>
+          </Form.Item>
+        </Form>
+        <br />
+        {/*  */}
+        <Table
+          rowKey="id"
+          columns={columnsType}
+          dataSource={typeList}
+          size="small"
+        />
       </Modal>
     </AdminLayout>
   );
