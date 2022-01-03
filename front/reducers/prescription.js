@@ -3,6 +3,7 @@ import produce from "../util/produce";
 export const initailState = {
   products: [],
   typeList: [],
+  packList: [],
   //
   st_productLoading: false,
   st_productDone: false,
@@ -16,6 +17,21 @@ export const initailState = {
   st_productTypeAddDone: false,
   st_productTypeAddError: null,
   //
+  st_productTypeDeleteLoading: false,
+  st_productTypeDeleteDone: false,
+  st_productTypeDeleteError: null,
+  //
+  st_productPackListLoading: false,
+  st_productPackListDone: false,
+  st_productPackListError: null,
+  //
+  st_productPackAddLoading: false,
+  st_productPackAddDone: false,
+  st_productPackAddError: null,
+  //
+  st_productPackDeleteLoading: false,
+  st_productPackDeleteDone: false,
+  st_productPackDeleteError: null,
 
   guideModal: false,
   typeModal: false,
@@ -34,6 +50,22 @@ export const PRODUCT_TYPE_LIST_FAILURE = "PRODUCT_TYPE_LIST_FAILURE";
 export const PRODUCT_TYPE_ADD_REQUEST = "PRODUCT_TYPE_ADD_REQUEST";
 export const PRODUCT_TYPE_ADD_SUCCESS = "PRODUCT_TYPE_ADD_SUCCESS";
 export const PRODUCT_TYPE_ADD_FAILURE = "PRODUCT_TYPE_ADD_FAILURE";
+
+export const PRODUCT_TYPE_DELETE_REQUEST = "PRODUCT_TYPE_DELETE_REQUEST";
+export const PRODUCT_TYPE_DELETE_SUCCESS = "PRODUCT_TYPE_DELETE_SUCCESS";
+export const PRODUCT_TYPE_DELETE_FAILURE = "PRODUCT_TYPE_DELETE_FAILURE";
+
+export const PRODUCT_PACK_LIST_REQUEST = "PRODUCT_PACK_LIST_REQUEST";
+export const PRODUCT_PACK_LIST_SUCCESS = "PRODUCT_PACK_LIST_SUCCESS";
+export const PRODUCT_PACK_LIST_FAILURE = "PRODUCT_PACK_LIST_FAILURE";
+
+export const PRODUCT_PACK_ADD_REQUEST = "PRODUCT_PACK_ADD_REQUEST";
+export const PRODUCT_PACK_ADD_SUCCESS = "PRODUCT_PACK_ADD_SUCCESS";
+export const PRODUCT_PACK_ADD_FAILURE = "PRODUCT_PACK_ADD_FAILURE";
+
+export const PRODUCT_PACK_DELETE_REQUEST = "PRODUCT_PACK_DELETE_REQUEST";
+export const PRODUCT_PACK_DELETE_SUCCESS = "PRODUCT_PACK_DELETE_SUCCESS";
+export const PRODUCT_PACK_DELETE_FAILURE = "PRODUCT_PACK_DELETE_FAILURE";
 
 export const GUIDE_MODAL_TOGGLE = "GUIDE_MODAL_TOGGLE";
 export const TYPE_MODAL_TOGGLE = "TYPE_MODAL_TOGGLE";
@@ -99,6 +131,83 @@ const reducer = (state = initailState, action) =>
         draft.st_productTypeAddLoading = false;
         draft.st_productTypeAddDone = false;
         draft.st_productTypeAddError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_TYPE_DELETE_REQUEST:
+        draft.st_productTypeDeleteLoading = true;
+        draft.st_productTypeDeleteDone = false;
+        draft.st_productTypeDeleteError = null;
+        break;
+
+      case PRODUCT_TYPE_DELETE_SUCCESS:
+        draft.st_productTypeDeleteLoading = false;
+        draft.st_productTypeDeleteDone = true;
+        draft.st_productTypeDeleteError = null;
+        break;
+
+      case PRODUCT_TYPE_DELETE_FAILURE:
+        draft.st_productTypeDeleteLoading = false;
+        draft.st_productTypeDeleteDone = false;
+        draft.st_productTypeDeleteError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_PACK_LIST_REQUEST:
+        draft.st_productPackListLoading = true;
+        draft.st_productPackListDone = false;
+        draft.st_productPackListError = null;
+        break;
+
+      case PRODUCT_PACK_LIST_SUCCESS:
+        draft.st_productPackListLoading = false;
+        draft.st_productPackListDone = true;
+        draft.st_productPackListError = null;
+        draft.packList = action.data;
+        break;
+
+      case PRODUCT_PACK_LIST_FAILURE:
+        draft.st_productPackListLoading = false;
+        draft.st_productPackListDone = false;
+        draft.st_productPackListError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_PACK_ADD_REQUEST:
+        draft.st_productPackAddLoading = true;
+        draft.st_productPackAddDone = false;
+        draft.st_productPackAddError = null;
+        break;
+
+      case PRODUCT_PACK_ADD_SUCCESS:
+        draft.st_productPackAddLoading = false;
+        draft.st_productPackAddDone = true;
+        draft.st_productPackAddError = null;
+        break;
+
+      case PRODUCT_PACK_ADD_FAILURE:
+        draft.st_productPackAddLoading = false;
+        draft.st_productPackAddDone = false;
+        draft.st_productPackAddError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_PACK_DELETE_REQUEST:
+        draft.st_productPackDeleteLoading = true;
+        draft.st_productPackDeleteDone = false;
+        draft.st_productPackDeleteError = null;
+        break;
+
+      case PRODUCT_PACK_DELETE_SUCCESS:
+        draft.st_productPackDeleteLoading = false;
+        draft.st_productPackDeleteDone = true;
+        draft.st_productPackDeleteError = null;
+        break;
+
+      case PRODUCT_PACK_DELETE_FAILURE:
+        draft.st_productPackDeleteLoading = false;
+        draft.st_productPackDeleteDone = false;
+        draft.st_productPackDeleteError = action.data;
         break;
       ////////////////////
 

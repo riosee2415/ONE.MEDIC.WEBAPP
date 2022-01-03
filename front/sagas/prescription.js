@@ -12,6 +12,22 @@ import {
   PRODUCT_TYPE_ADD_REQUEST,
   PRODUCT_TYPE_ADD_SUCCESS,
   PRODUCT_TYPE_ADD_FAILURE,
+  //
+  PRODUCT_TYPE_DELETE_REQUEST,
+  PRODUCT_TYPE_DELETE_SUCCESS,
+  PRODUCT_TYPE_DELETE_FAILURE,
+  //
+  PRODUCT_PACK_ADD_REQUEST,
+  PRODUCT_PACK_ADD_SUCCESS,
+  PRODUCT_PACK_ADD_FAILURE,
+  //
+  PRODUCT_PACK_LIST_REQUEST,
+  PRODUCT_PACK_LIST_SUCCESS,
+  PRODUCT_PACK_LIST_FAILURE,
+  //
+  PRODUCT_PACK_DELETE_REQUEST,
+  PRODUCT_PACK_DELETE_SUCCESS,
+  PRODUCT_PACK_DELETE_FAILURE,
 } from "../reducers/prescription";
 
 // SAGA AREA ********************************************************************************************************
@@ -87,6 +103,98 @@ function* productAddList(action) {
   }
 }
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productDeleteListListAPI(data) {
+  return axios.patch(`/api/prescription/type/delete`, data);
+}
+
+function* productDeleteList(action) {
+  try {
+    const result = yield call(productDeleteListListAPI, action.data);
+
+    yield put({
+      type: PRODUCT_TYPE_DELETE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_TYPE_DELETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productPackListAPI(data) {
+  return axios.get(`/api/prescription/pack/list/${data.id}`, data);
+}
+
+function* productPackList(action) {
+  try {
+    const result = yield call(productPackListAPI, action.data);
+
+    yield put({
+      type: PRODUCT_PACK_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_PACK_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productPackAddAPI(data) {
+  return axios.post(`/api/prescription/pack/add`, data);
+}
+
+function* productPackAdd(action) {
+  try {
+    const result = yield call(productPackAddAPI, action.data);
+
+    yield put({
+      type: PRODUCT_PACK_ADD_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_PACK_ADD_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productPackDeleteAPI(data) {
+  return axios.patch(`/api/prescription/pack/delete`, data);
+}
+
+function* productPackDelete(action) {
+  try {
+    const result = yield call(productPackDeleteAPI, action.data);
+
+    yield put({
+      type: PRODUCT_PACK_DELETE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_PACK_DELETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 //////////////////////////////////////////////////////////////
 function* watchProductList() {
   yield takeLatest(PRODUCT_LIST_REQUEST, productList);
@@ -100,12 +208,32 @@ function* watchProductAddList() {
   yield takeLatest(PRODUCT_TYPE_ADD_REQUEST, productAddList);
 }
 
+function* watchProductDeleteList() {
+  yield takeLatest(PRODUCT_TYPE_DELETE_REQUEST, productDeleteList);
+}
+
+function* watchProductPackList() {
+  yield takeLatest(PRODUCT_PACK_LIST_REQUEST, productPackList);
+}
+
+function* watchProductPackAdd() {
+  yield takeLatest(PRODUCT_PACK_ADD_REQUEST, productPackAdd);
+}
+
+function* watchProductPackDelete() {
+  yield takeLatest(PRODUCT_PACK_DELETE_REQUEST, productPackDelete);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* prescriptionSaga() {
   yield all([
     fork(watchProductList),
     fork(watchProductTypeList),
     fork(watchProductAddList),
+    fork(watchProductDeleteList),
+    fork(watchProductPackList),
+    fork(watchProductPackAdd),
+    fork(watchProductPackDelete),
     //
   ]);
 }

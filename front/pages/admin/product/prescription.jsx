@@ -13,6 +13,7 @@ import {
   Form,
   Input,
   Image,
+  Popconfirm,
 } from "antd";
 
 import { useRouter, withRouter } from "next/router";
@@ -37,6 +38,10 @@ import {
   TYPE_MODAL_TOGGLE,
   PACK_MODAL_TOGGLE,
   UNIT_MODAL_TOGGLE,
+  PRODUCT_TYPE_DELETE_REQUEST,
+  PRODUCT_PACK_LIST_REQUEST,
+  PRODUCT_PACK_ADD_REQUEST,
+  PRODUCT_PACK_DELETE_REQUEST,
 } from "../../../reducers/prescription";
 
 const LoadNotification = (msg, content) => {
@@ -52,16 +57,20 @@ const UserDeliAddress = ({}) => {
   const {
     products,
     typeList,
+    packList,
     guideModal,
     typeModal,
     packModal,
     unitModal,
     st_productTypeAddDone,
-    st_productTypeAddError,
+    st_productTypeDeleteDone,
+    st_productPackAddDone,
+    st_productPackDeleteDone,
   } = useSelector((state) => state.prescription);
 
   const router = useRouter();
   const [typeCreateForm] = Form.useForm();
+  const [packCreateForm] = Form.useForm();
 
   const [currentId, setCurrentId] = useState(null);
 
@@ -95,12 +104,76 @@ const UserDeliAddress = ({}) => {
     }
   }, [st_productTypeAddDone]);
 
+  useEffect(() => {
+    if (st_productTypeDeleteDone) {
+      message.success("종류가 삭제 되었습니다.");
+      dispatch({
+        type: PRODUCT_TYPE_LIST_REQUEST,
+        data: { id: currentId },
+      });
+
+      typeCreateForm.resetFields();
+    }
+  }, [st_productTypeDeleteDone]);
+
+  useEffect(() => {
+    if (st_productPackAddDone) {
+      message.success("포장 데이터가 추가 되었습니다.");
+      dispatch({
+        type: PRODUCT_PACK_LIST_REQUEST,
+        data: { id: currentId },
+      });
+
+      typeCreateForm.resetFields();
+    }
+  }, [st_productPackAddDone]);
+
+  useEffect(() => {
+    if (st_productPackDeleteDone) {
+      message.success("포장 데이터가 삭제 되었습니다.");
+      dispatch({
+        type: PRODUCT_PACK_LIST_REQUEST,
+        data: { id: currentId },
+      });
+
+      typeCreateForm.resetFields();
+    }
+  }, [st_productPackDeleteDone]);
+
   ////// HANDLER //////
+
+  const typeDeleteClickHandler = useCallback((id) => {
+    dispatch({
+      type: PRODUCT_TYPE_DELETE_REQUEST,
+      data: { typeId: id },
+    });
+  }, []);
+
+  const packDeleteClickHandler = useCallback((id) => {
+    dispatch({
+      type: PRODUCT_PACK_DELETE_REQUEST,
+      data: { typeId: id },
+    });
+  }, []);
 
   const typeCreateFormHandler = useCallback(
     (data) => {
       dispatch({
         type: PRODUCT_TYPE_ADD_REQUEST,
+        data: {
+          prescriptionId: currentId,
+          name: data.name,
+          addPrice: data.addPrice,
+        },
+      });
+    },
+    [currentId]
+  );
+
+  const packCreateFormHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: PRODUCT_PACK_ADD_REQUEST,
         data: {
           prescriptionId: currentId,
           name: data.name,
@@ -133,6 +206,25 @@ const UserDeliAddress = ({}) => {
       });
     },
     [typeModal]
+  );
+
+  const packModalToggle = useCallback(
+    (id = null) => {
+      if (id) {
+        setCurrentId(id);
+      }
+
+      dispatch({
+        type: PRODUCT_PACK_LIST_REQUEST,
+        data: { id: id },
+      });
+
+      packCreateForm.resetFields();
+      dispatch({
+        type: PACK_MODAL_TOGGLE,
+      });
+    },
+    [packModal]
   );
 
   const allSearchHandler = useCallback((v) => {
@@ -191,8 +283,12 @@ const UserDeliAddress = ({}) => {
 
     {
       title: "선택포장",
-      render: () => (
-        <Button size="small" type="primary">
+      render: (data) => (
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => packModalToggle(data.id)}
+        >
           포장 설정
         </Button>
       ),
@@ -224,9 +320,17 @@ const UserDeliAddress = ({}) => {
     {
       title: "삭제",
       render: () => (
-        <Button type="danger" size="small">
-          상품삭제
-        </Button>
+        <Popconfirm
+          placement="top"
+          title={"정말 삭제하시겠습니까?"}
+          onConfirm={() => {}}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button type="danger" size="small">
+            상품삭제
+          </Button>
+        </Popconfirm>
       ),
     },
   ];
@@ -244,9 +348,45 @@ const UserDeliAddress = ({}) => {
     {
       title: "삭제",
       render: (data) => (
-        <Button type="danger" size="small">
-          삭제
-        </Button>
+        <Popconfirm
+          placement="top"
+          title={"정말 삭제하시겠습니까?"}
+          onConfirm={() => typeDeleteClickHandler(data.id)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button type="danger" size="small">
+            삭제
+          </Button>
+        </Popconfirm>
+      ),
+    },
+  ];
+
+  const columnsPack = [
+    {
+      title: "이름",
+      dataIndex: "name",
+    },
+    {
+      title: "추가금액",
+      dataIndex: "viewAddPrice",
+    },
+
+    {
+      title: "삭제",
+      render: (data) => (
+        <Popconfirm
+          placement="top"
+          title={"정말 삭제하시겠습니까?"}
+          onConfirm={() => packDeleteClickHandler(data.id)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button type="danger" size="small">
+            삭제
+          </Button>
+        </Popconfirm>
       ),
     },
   ];
@@ -378,6 +518,69 @@ const UserDeliAddress = ({}) => {
           rowKey="id"
           columns={columnsType}
           dataSource={typeList}
+          size="small"
+        />
+      </Modal>
+
+      {/* PACK MODAL */}
+      <Modal
+        visible={packModal}
+        width="600px"
+        onOk={() => packModalToggle(null)}
+        onCancel={() => packModalToggle(null)}
+        title="상품 포장설정"
+        footer={null}
+      >
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            결제금액의 소급적용을 방지하기 위해 데이터 수정은 불가능 합니다.
+          </GuideLi>
+          <GuideLi>
+            이름을 기준으로 정렬됩니다. 구매자 화면에도 같은 순서로 보여지게
+            됩니다.
+          </GuideLi>
+        </GuideUl>
+
+        <Form
+          form={packCreateForm}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 6 }}
+          layout="inline"
+          onFinish={packCreateFormHandler}
+        >
+          <Form.Item
+            label="포장명"
+            rules={[{ required: true, message: "필수 입력사항 입니다." }]}
+            name="name"
+          >
+            <Input size="small" style={{ width: "140px" }} />
+          </Form.Item>
+
+          <Form.Item
+            label="금액"
+            rules={[{ required: true, message: "필수 입력사항 입니다." }]}
+            name="addPrice"
+          >
+            <Input
+              type="number"
+              size="small"
+              style={{ width: "140px" }}
+              rules={[{ required: true }]}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button size="small" type="primary" htmlType="submit">
+              등록
+            </Button>
+          </Form.Item>
+        </Form>
+        <br />
+        {/*  */}
+        <Table
+          rowKey="id"
+          columns={columnsPack}
+          dataSource={packList}
           size="small"
         />
       </Modal>
