@@ -131,7 +131,7 @@ const UserDeliAddress = ({}) => {
         data: { id: currentId },
       });
 
-      typeCreateForm.resetFields();
+      packCreateForm.resetFields();
     }
   }, [st_productPackAddDone]);
 
@@ -143,7 +143,7 @@ const UserDeliAddress = ({}) => {
         data: { id: currentId },
       });
 
-      typeCreateForm.resetFields();
+      unitCreateForm.resetFields();
     }
   }, [st_productUnitAddDone]);
 
