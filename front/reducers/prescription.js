@@ -4,6 +4,7 @@ export const initailState = {
   products: [],
   typeList: [],
   packList: [],
+  unitList: [],
   //
   st_productLoading: false,
   st_productDone: false,
@@ -32,6 +33,18 @@ export const initailState = {
   st_productPackDeleteLoading: false,
   st_productPackDeleteDone: false,
   st_productPackDeleteError: null,
+  //
+  st_productUnitListLoading: false,
+  st_productUnitListDone: false,
+  st_productUnitListError: null,
+  //
+  st_productUnitAddLoading: false,
+  st_productUnitAddDone: false,
+  st_productUnitAddError: null,
+  //
+  st_productUnitDeleteLoading: false,
+  st_productUnitDeleteDone: false,
+  st_productUnitDeleteError: null,
 
   guideModal: false,
   typeModal: false,
@@ -66,6 +79,18 @@ export const PRODUCT_PACK_ADD_FAILURE = "PRODUCT_PACK_ADD_FAILURE";
 export const PRODUCT_PACK_DELETE_REQUEST = "PRODUCT_PACK_DELETE_REQUEST";
 export const PRODUCT_PACK_DELETE_SUCCESS = "PRODUCT_PACK_DELETE_SUCCESS";
 export const PRODUCT_PACK_DELETE_FAILURE = "PRODUCT_PACK_DELETE_FAILURE";
+
+export const PRODUCT_UNIT_LIST_REQUEST = "PRODUCT_UNIT_LIST_REQUEST";
+export const PRODUCT_UNIT_LIST_SUCCESS = "PRODUCT_UNIT_LIST_SUCCESS";
+export const PRODUCT_UNIT_LIST_FAILURE = "PRODUCT_UNIT_LIST_FAILURE";
+
+export const PRODUCT_UNIT_ADD_REQUEST = "PRODUCT_UNIT_ADD_REQUEST";
+export const PRODUCT_UNIT_ADD_SUCCESS = "PRODUCT_UNIT_ADD_SUCCESS";
+export const PRODUCT_UNIT_ADD_FAILURE = "PRODUCT_UNIT_ADD_FAILURE";
+
+export const PRODUCT_UNIT_DELETE_REQUEST = "PRODUCT_UNIT_DELETE_REQUEST";
+export const PRODUCT_UNIT_DELETE_SUCCESS = "PRODUCT_UNIT_DELETE_SUCCESS";
+export const PRODUCT_UNIT_DELETE_FAILURE = "PRODUCT_UNIT_DELETE_FAILURE";
 
 export const GUIDE_MODAL_TOGGLE = "GUIDE_MODAL_TOGGLE";
 export const TYPE_MODAL_TOGGLE = "TYPE_MODAL_TOGGLE";
@@ -208,6 +233,64 @@ const reducer = (state = initailState, action) =>
         draft.st_productPackDeleteLoading = false;
         draft.st_productPackDeleteDone = false;
         draft.st_productPackDeleteError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_UNIT_LIST_REQUEST:
+        draft.st_productUnitListLoading = true;
+        draft.st_productUnitListDone = false;
+        draft.st_productUnitListError = null;
+        break;
+
+      case PRODUCT_UNIT_LIST_SUCCESS:
+        draft.st_productUnitListLoading = false;
+        draft.st_productUnitListDone = true;
+        draft.st_productUnitListError = null;
+        draft.unitList = action.data;
+        break;
+
+      case PRODUCT_UNIT_LIST_FAILURE:
+        draft.st_productUnitListLoading = false;
+        draft.st_productUnitListDone = false;
+        draft.st_productUnitListError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_UNIT_ADD_REQUEST:
+        draft.st_productUnitAddLoading = true;
+        draft.st_productUnitAddDone = false;
+        draft.st_productUnitAddError = null;
+        break;
+
+      case PRODUCT_UNIT_ADD_SUCCESS:
+        draft.st_productUnitAddLoading = false;
+        draft.st_productUnitAddDone = true;
+        draft.st_productUnitAddError = null;
+        break;
+
+      case PRODUCT_UNIT_ADD_FAILURE:
+        draft.st_productUnitAddLoading = false;
+        draft.st_productUnitAddDone = false;
+        draft.st_productUnitAddError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_UNIT_DELETE_REQUEST:
+        draft.st_productUnitDeleteLoading = true;
+        draft.st_productUnitDeleteDone = false;
+        draft.st_productUnitDeleteError = null;
+        break;
+
+      case PRODUCT_UNIT_DELETE_SUCCESS:
+        draft.st_productUnitDeleteLoading = false;
+        draft.st_productUnitDeleteDone = true;
+        draft.st_productUnitDeleteError = null;
+        break;
+
+      case PRODUCT_UNIT_DELETE_FAILURE:
+        draft.st_productUnitDeleteLoading = false;
+        draft.st_productUnitDeleteDone = false;
+        draft.st_productUnitDeleteError = action.data;
         break;
       ////////////////////
 

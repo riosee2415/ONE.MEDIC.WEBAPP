@@ -28,6 +28,18 @@ import {
   PRODUCT_PACK_DELETE_REQUEST,
   PRODUCT_PACK_DELETE_SUCCESS,
   PRODUCT_PACK_DELETE_FAILURE,
+  //
+  PRODUCT_UNIT_LIST_REQUEST,
+  PRODUCT_UNIT_LIST_SUCCESS,
+  PRODUCT_UNIT_LIST_FAILURE,
+  //
+  PRODUCT_UNIT_ADD_REQUEST,
+  PRODUCT_UNIT_ADD_SUCCESS,
+  PRODUCT_UNIT_ADD_FAILURE,
+  //
+  PRODUCT_UNIT_DELETE_REQUEST,
+  PRODUCT_UNIT_DELETE_SUCCESS,
+  PRODUCT_UNIT_DELETE_FAILURE,
 } from "../reducers/prescription";
 
 // SAGA AREA ********************************************************************************************************
@@ -195,6 +207,75 @@ function* productPackDelete(action) {
   }
 }
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productUnitListAPI(data) {
+  return axios.get(`/api/prescription/unit/list/${data.id}`, data);
+}
+
+function* productUnitList(action) {
+  try {
+    const result = yield call(productUnitListAPI, action.data);
+
+    yield put({
+      type: PRODUCT_UNIT_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_UNIT_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productUnitAddAPI(data) {
+  return axios.post(`/api/prescription/unit/add`, data);
+}
+
+function* productUnitAdd(action) {
+  try {
+    const result = yield call(productUnitAddAPI, action.data);
+
+    yield put({
+      type: PRODUCT_UNIT_ADD_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_UNIT_ADD_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function productUnitDeleteAPI(data) {
+  return axios.patch(`/api/prescription/unit/delete`, data);
+}
+
+function* productUnitDelete(action) {
+  try {
+    const result = yield call(productUnitDeleteAPI, action.data);
+
+    yield put({
+      type: PRODUCT_UNIT_DELETE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRODUCT_UNIT_DELETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 //////////////////////////////////////////////////////////////
 function* watchProductList() {
   yield takeLatest(PRODUCT_LIST_REQUEST, productList);
@@ -224,6 +305,18 @@ function* watchProductPackDelete() {
   yield takeLatest(PRODUCT_PACK_DELETE_REQUEST, productPackDelete);
 }
 
+function* watchProductUnitList() {
+  yield takeLatest(PRODUCT_UNIT_LIST_REQUEST, productUnitList);
+}
+
+function* watchProductUnitAdd() {
+  yield takeLatest(PRODUCT_UNIT_ADD_REQUEST, productUnitAdd);
+}
+
+function* watchProductUnitDelete() {
+  yield takeLatest(PRODUCT_UNIT_DELETE_REQUEST, productUnitDelete);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* prescriptionSaga() {
   yield all([
@@ -234,6 +327,9 @@ export default function* prescriptionSaga() {
     fork(watchProductPackList),
     fork(watchProductPackAdd),
     fork(watchProductPackDelete),
+    fork(watchProductUnitList),
+    fork(watchProductUnitAdd),
+    fork(watchProductUnitDelete),
     //
   ]);
 }
