@@ -210,14 +210,14 @@ const UserList = ({}) => {
       ),
     },
     {
-      title: "수정",
+      title: "상세보기",
       render: (data) => (
         <Button
           type="primary"
           onClick={() => updateModalOpen(data)}
           size="small"
         >
-          수정
+          상세보기
         </Button>
       ),
     },
