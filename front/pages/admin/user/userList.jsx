@@ -173,35 +173,51 @@ const UserList = ({}) => {
 
   const columns = [
     {
-      title: "No",
+      title: "번호",
       dataIndex: "id",
     },
 
     {
-      title: "Username",
+      title: "이름",
       render: (data) => <div>{data.username}</div>,
     },
     {
-      title: "Nickname",
+      title: "닉네임",
       render: (data) => <div>{data.nickname}</div>,
     },
     {
-      title: "Email",
+      title: "이메일",
       render: (data) => <div>{data.email}</div>,
     },
     {
-      title: "Mobile",
+      title: "모바일",
       render: (data) => <div>{data.mobile}</div>,
     },
     {
-      title: "Level",
-      render: (data) => <div>{data.level}</div>,
+      title: "권한",
+      render: (data) => (
+        <div>
+          {data.level === 1
+            ? "일반회원"
+            : data.level === 2
+            ? `비어있음`
+            : data.level === 3
+            ? `운영자`
+            : data.level === 4
+            ? `최고관리자`
+            : `개발사`}
+        </div>
+      ),
     },
     {
-      title: "Update",
+      title: "수정",
       render: (data) => (
-        <Button type="primary" onClick={() => updateModalOpen(data)}>
-          UPDATE
+        <Button
+          type="primary"
+          onClick={() => updateModalOpen(data)}
+          size="small"
+        >
+          수정
         </Button>
       ),
     },
@@ -278,13 +294,23 @@ const UserList = ({}) => {
           <Select
             defaultValue="1"
             style={{ width: "100%" }}
-            value={inputLevel.value}
+            value={
+              inputLevel.value === 1
+                ? "일반회원"
+                : inputLevel.value === 2
+                ? `비어있음`
+                : inputLevel.value === 3
+                ? `운영자`
+                : inputLevel.value === 4
+                ? `최고관리자`
+                : `개발사`
+            }
             onChange={(data) => inputLevel.setValue(data)}
           >
-            <Select.Option value="1">1</Select.Option>
-            <Select.Option value="2">2</Select.Option>
-            <Select.Option value="3">3</Select.Option>
-            <Select.Option value="4">4</Select.Option>
+            <Select.Option value="1">일반회원</Select.Option>
+            <Select.Option value="2">비어있음</Select.Option>
+            <Select.Option value="3">운영자</Select.Option>
+            <Select.Option value="4">최고관리자</Select.Option>
           </Select>
         </Wrapper>
       </Modal>

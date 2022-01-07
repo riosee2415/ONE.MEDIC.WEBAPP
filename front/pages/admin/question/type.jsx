@@ -217,26 +217,30 @@ const Type = () => {
   // Table
   const columns = [
     {
-      title: "No",
+      title: "번호",
       dataIndex: "id",
     },
     {
-      title: "VALUE",
+      title: "유형",
       render: (data) => <div>{data.value}</div>,
     },
     {
-      title: "UPDATE",
+      title: "수정",
       render: (data) => (
-        <Button type="primary" onClick={() => updateModalOpen(data)}>
-          UPDATE
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => updateModalOpen(data)}
+        >
+          수정
         </Button>
       ),
     },
     {
-      title: "DELETE",
+      title: "삭제",
       render: (data) => (
-        <Button type="danger" onClick={deletePopToggle(data.id)}>
-          DEL
+        <Button type="danger" size="small" onClick={deletePopToggle(data.id)}>
+          삭제
         </Button>
       ),
     },
