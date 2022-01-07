@@ -65,7 +65,7 @@ module.exports = class User extends Model {
         },
         // 사업첨부파일
         companyFile: {
-          type: DataTypes.STRING(500),
+          type: DataTypes.STRING(600),
           allowNull: true,
         },
         // 운영레벨
@@ -73,6 +73,17 @@ module.exports = class User extends Model {
           type: DataTypes.INTEGER,
           allowNull: false,
           defaultValue: 1,
+        },
+        // 거절여부
+        isRefusal: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+        // 거절사유
+        resusalReason: {
+          type: DataTypes.STRING(500),
+          allowNull: true,
         },
       },
       {
