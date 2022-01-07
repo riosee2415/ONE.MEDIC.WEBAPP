@@ -38,6 +38,7 @@ import {
   TYPE_MODAL_TOGGLE,
   PACK_MODAL_TOGGLE,
   UNIT_MODAL_TOGGLE,
+  CREATE_MODAL_TOGGLE,
   PRODUCT_TYPE_DELETE_REQUEST,
   PRODUCT_PACK_LIST_REQUEST,
   PRODUCT_PACK_ADD_REQUEST,
@@ -66,6 +67,7 @@ const UserDeliAddress = ({}) => {
     typeModal,
     packModal,
     unitModal,
+    createModal,
     st_productTypeAddDone,
     st_productTypeDeleteDone,
     st_productPackAddDone,
@@ -298,6 +300,12 @@ const UserDeliAddress = ({}) => {
     [unitModal]
   );
 
+  const createModalToggle = useCallback(() => {
+    dispatch({
+      type: CREATE_MODAL_TOGGLE,
+    });
+  }, [createModal]);
+
   const allSearchHandler = useCallback((v) => {
     dispatch({
       type: PRODUCT_LIST_REQUEST,
@@ -522,7 +530,7 @@ const UserDeliAddress = ({}) => {
           <ModalBtn type="danger" size="small" onClick={guideModalToggle}>
             주의사항
           </ModalBtn>
-          <ModalBtn type="primary" size="small">
+          <ModalBtn type="primary" size="small" onClick={createModalToggle}>
             + 추가
           </ModalBtn>
         </Wrapper>
@@ -749,6 +757,17 @@ const UserDeliAddress = ({}) => {
           dataSource={unitList}
           size="small"
         />
+      </Modal>
+
+      {/* CREATE MODAL */}
+      <Modal
+        visible={createModal}
+        onCancel={createModalToggle}
+        footer={null}
+        width="860px"
+        title="새로운 약속처방 등록하기"
+      >
+        <h1>hhlhl</h1>
       </Modal>
     </AdminLayout>
   );

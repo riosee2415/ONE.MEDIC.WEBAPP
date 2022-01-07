@@ -38,6 +38,15 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
+router.post(
+  "/image",
+  isAdminCheck,
+  upload.single("image"),
+  async (req, res, next) => {
+    return res.json({ path: req.file.location });
+  }
+);
+
 // const upload = multer({
 //   storage: multer.diskStorage({
 //     destination(req, file, done) {

@@ -6,6 +6,11 @@ export const initailState = {
   packList: [],
   unitList: [],
   //
+  previewImage1: "",
+  previewImage2: "",
+  previewImage3: "",
+  previewImage4: "",
+  //
   st_productLoading: false,
   st_productDone: false,
   st_productError: null,
@@ -45,11 +50,28 @@ export const initailState = {
   st_productUnitDeleteLoading: false,
   st_productUnitDeleteDone: false,
   st_productUnitDeleteError: null,
+  //
+  st_previewImage1Loading: false,
+  st_previewImage1Done: false,
+  st_previewImage1Error: null,
+  //
+  st_previewImage2Loading: false,
+  st_previewImage2Done: false,
+  st_previewImage2Error: null,
+  //
+  st_previewImage3Loading: false,
+  st_previewImage3Done: false,
+  st_previewImage3Error: null,
+  //
+  st_previewImage4Loading: false,
+  st_previewImage4Done: false,
+  st_previewImage4Error: null,
 
   guideModal: false,
   typeModal: false,
   packModal: false,
   unitModal: false,
+  createModal: false,
 };
 
 export const PRODUCT_LIST_REQUEST = "PRODUCT_LIST_REQUEST";
@@ -96,6 +118,23 @@ export const GUIDE_MODAL_TOGGLE = "GUIDE_MODAL_TOGGLE";
 export const TYPE_MODAL_TOGGLE = "TYPE_MODAL_TOGGLE";
 export const PACK_MODAL_TOGGLE = "PACK_MODAL_TOGGLE";
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
+export const CREATE_MODAL_TOGGLE = "CREATE_MODAL_TOGGLE";
+
+export const PREVIEW_IMAGE_UPLOAD_REQUEST1 = "PREVIEW_IMAGE_UPLOAD_REQUEST1";
+export const PREVIEW_IMAGE_UPLOAD_SUCCESS1 = "PREVIEW_IMAGE_UPLOAD_SUCCESS1";
+export const PREVIEW_IMAGE_UPLOAD_FAILURE1 = "PREVIEW_IMAGE_UPLOAD_FAILURE1";
+
+export const PREVIEW_IMAGE_UPLOAD_REQUEST2 = "PREVIEW_IMAGE_UPLOAD_REQUEST2";
+export const PREVIEW_IMAGE_UPLOAD_SUCCESS2 = "PREVIEW_IMAGE_UPLOAD_SUCCESS2";
+export const PREVIEW_IMAGE_UPLOAD_FAILURE2 = "PREVIEW_IMAGE_UPLOAD_FAILURE2";
+
+export const PREVIEW_IMAGE_UPLOAD_REQUEST3 = "PREVIEW_IMAGE_UPLOAD_REQUEST3";
+export const PREVIEW_IMAGE_UPLOAD_SUCCESS3 = "PREVIEW_IMAGE_UPLOAD_SUCCESS3";
+export const PREVIEW_IMAGE_UPLOAD_FAILURE3 = "PREVIEW_IMAGE_UPLOAD_FAILURE3";
+
+export const PREVIEW_IMAGE_UPLOAD_REQUEST4 = "PREVIEW_IMAGE_UPLOAD_REQUEST4";
+export const PREVIEW_IMAGE_UPLOAD_SUCCESS4 = "PREVIEW_IMAGE_UPLOAD_SUCCESS4";
+export const PREVIEW_IMAGE_UPLOAD_FAILURE4 = "PREVIEW_IMAGE_UPLOAD_FAILURE4";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -294,6 +333,86 @@ const reducer = (state = initailState, action) =>
         break;
       ////////////////////
 
+      case PREVIEW_IMAGE_UPLOAD_REQUEST1:
+        draft.st_previewImage1Loading = true;
+        draft.st_previewImage1Done = false;
+        draft.st_previewImage1Error = null;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_SUCCESS1:
+        draft.st_previewImage1Loading = false;
+        draft.st_previewImage1Done = true;
+        draft.st_previewImage1Error = null;
+        draft.previewImage1 = action.data.path;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_FAILURE1:
+        draft.st_previewImage1Loading = false;
+        draft.st_previewImage1Done = false;
+        draft.st_previewImage1Error = action.data;
+        break;
+      ////////////////////
+
+      case PREVIEW_IMAGE_UPLOAD_REQUEST2:
+        draft.st_previewImage2Loading = true;
+        draft.st_previewImage2Done = false;
+        draft.st_previewImage2Error = null;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_SUCCESS2:
+        draft.st_previewImage2Loading = false;
+        draft.st_previewImage2Done = true;
+        draft.st_previewImage2Error = null;
+        draft.previewImage2 = action.data.path;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_FAILURE2:
+        draft.st_previewImage2Loading = false;
+        draft.st_previewImage2Done = false;
+        draft.st_previewImage2Error = action.data;
+        break;
+      ////////////////////
+
+      case PREVIEW_IMAGE_UPLOAD_REQUEST3:
+        draft.st_previewImage3Loading = true;
+        draft.st_previewImage3Done = false;
+        draft.st_previewImage3Error = null;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_SUCCESS3:
+        draft.st_previewImage3Loading = false;
+        draft.st_previewImage3Done = true;
+        draft.st_previewImage3Error = null;
+        draft.previewImage3 = action.data.path;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_FAILURE3:
+        draft.st_previewImage3Loading = false;
+        draft.st_previewImage3Done = false;
+        draft.st_previewImage3Error = action.data;
+        break;
+      ////////////////////
+
+      case PREVIEW_IMAGE_UPLOAD_REQUEST4:
+        draft.st_previewImage4Loading = true;
+        draft.st_previewImage4Done = false;
+        draft.st_previewImage4Error = null;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_SUCCESS4:
+        draft.st_previewImage4Loading = false;
+        draft.st_previewImage4Done = true;
+        draft.st_previewImage4Error = null;
+        draft.previewImage4 = action.data.path;
+        break;
+
+      case PREVIEW_IMAGE_UPLOAD_FAILURE4:
+        draft.st_previewImage4Loading = false;
+        draft.st_previewImage4Done = false;
+        draft.st_previewImage4Error = action.data;
+        break;
+      ////////////////////
+
       case GUIDE_MODAL_TOGGLE:
         draft.guideModal = !draft.guideModal;
         break;
@@ -308,6 +427,10 @@ const reducer = (state = initailState, action) =>
 
       case UNIT_MODAL_TOGGLE:
         draft.unitModal = !draft.unitModal;
+        break;
+
+      case CREATE_MODAL_TOGGLE:
+        draft.createModal = !draft.createModal;
         break;
 
       default:

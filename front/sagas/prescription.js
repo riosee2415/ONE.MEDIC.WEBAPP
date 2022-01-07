@@ -40,6 +40,23 @@ import {
   PRODUCT_UNIT_DELETE_REQUEST,
   PRODUCT_UNIT_DELETE_SUCCESS,
   PRODUCT_UNIT_DELETE_FAILURE,
+  //
+  PREVIEW_IMAGE_UPLOAD_REQUEST1,
+  PREVIEW_IMAGE_UPLOAD_SUCCESS1,
+  PREVIEW_IMAGE_UPLOAD_FAILURE1,
+  //
+  PREVIEW_IMAGE_UPLOAD_REQUEST2,
+  PREVIEW_IMAGE_UPLOAD_SUCCESS2,
+  PREVIEW_IMAGE_UPLOAD_FAILURE2,
+  //
+  PREVIEW_IMAGE_UPLOAD_REQUEST3,
+  PREVIEW_IMAGE_UPLOAD_SUCCESS3,
+  PREVIEW_IMAGE_UPLOAD_FAILURE3,
+  //
+  PREVIEW_IMAGE_UPLOAD_REQUEST4,
+  PREVIEW_IMAGE_UPLOAD_SUCCESS4,
+  PREVIEW_IMAGE_UPLOAD_FAILURE4,
+  //
 } from "../reducers/prescription";
 
 // SAGA AREA ********************************************************************************************************
@@ -276,6 +293,98 @@ function* productUnitDelete(action) {
   }
 }
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function previewImageUpload1API(data) {
+  return axios.post(`/api/prescription/image`, data);
+}
+
+function* previewImageUpload1(action) {
+  try {
+    const result = yield call(previewImageUpload1API, action.data);
+
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_SUCCESS1,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_FAILURE1,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function previewImageUpload2API(data) {
+  return axios.post(`/api/prescription/image`, data);
+}
+
+function* previewImageUpload2(action) {
+  try {
+    const result = yield call(previewImageUpload2API, action.data);
+
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_SUCCESS2,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_FAILURE2,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function previewImageUpload3API(data) {
+  return axios.post(`/api/prescription/image`, data);
+}
+
+function* previewImageUpload3(action) {
+  try {
+    const result = yield call(previewImageUpload3API, action.data);
+
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_SUCCESS3,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_FAILURE3,
+      error: err.response.data,
+    });
+  }
+}
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function previewImageUpload4API(data) {
+  return axios.post(`/api/prescription/image`, data);
+}
+
+function* previewImageUpload4(action) {
+  try {
+    const result = yield call(previewImageUpload4API, action.data);
+
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_SUCCESS4,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PREVIEW_IMAGE_UPLOAD_FAILURE4,
+      error: err.response.data,
+    });
+  }
+}
+
 //////////////////////////////////////////////////////////////
 function* watchProductList() {
   yield takeLatest(PRODUCT_LIST_REQUEST, productList);
@@ -317,6 +426,19 @@ function* watchProductUnitDelete() {
   yield takeLatest(PRODUCT_UNIT_DELETE_REQUEST, productUnitDelete);
 }
 
+function* watchPreviewImageUpload1() {
+  yield takeLatest(PREVIEW_IMAGE_UPLOAD_REQUEST1, previewImageUpload1);
+}
+function* watchPreviewImageUpload2() {
+  yield takeLatest(PREVIEW_IMAGE_UPLOAD_REQUEST2, previewImageUpload2);
+}
+function* watchPreviewImageUpload3() {
+  yield takeLatest(PREVIEW_IMAGE_UPLOAD_REQUEST3, previewImageUpload3);
+}
+function* watchPreviewImageUpload4() {
+  yield takeLatest(PREVIEW_IMAGE_UPLOAD_REQUEST4, previewImageUpload4);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* prescriptionSaga() {
   yield all([
@@ -330,6 +452,10 @@ export default function* prescriptionSaga() {
     fork(watchProductUnitList),
     fork(watchProductUnitAdd),
     fork(watchProductUnitDelete),
+    fork(watchPreviewImageUpload1),
+    fork(watchPreviewImageUpload2),
+    fork(watchPreviewImageUpload3),
+    fork(watchPreviewImageUpload4),
     //
   ]);
 }
