@@ -55,6 +55,7 @@ module.exports = class User extends Model {
         // 사업자번호
         companyNo: {
           type: DataTypes.STRING(30),
+          allowNull: false,
         },
         // 사업자인증
         isCompany: {
