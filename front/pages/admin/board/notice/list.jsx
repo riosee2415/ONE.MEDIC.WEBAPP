@@ -539,7 +539,7 @@ const NoticeList = ({ router }) => {
                 <Filename>
                   {filename.value ? filename.value : `파일을 선택해주세요.`}
                 </Filename>
-                <Button type="primary" onClick={fileUploadClick}>
+                <Button type="primary" onClick={fileUploadClick} size="small">
                   FILE UPLOAD
                 </Button>
               </FileBox>

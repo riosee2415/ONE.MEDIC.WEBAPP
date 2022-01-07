@@ -395,6 +395,7 @@ const Popup = () => {
             />
             <Button
               type="primary"
+              size="small"
               onClick={clickImageUpload}
               loading={st_popupImageUploadLoading}
             >

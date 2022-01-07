@@ -556,6 +556,7 @@ const List = ({ router }) => {
               />
               <Button
                 type="primary"
+                size="small"
                 onClick={clickImageUpload}
                 loading={st_galleryUploadLoading}
               >
