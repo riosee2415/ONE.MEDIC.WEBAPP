@@ -6,10 +6,10 @@ export const initailState = {
   packList: [],
   unitList: [],
   //
-  previewImage1: "",
-  previewImage2: "",
-  previewImage3: "",
-  previewImage4: "",
+  previewImage1: null,
+  previewImage2: null,
+  previewImage3: null,
+  previewImage4: null,
   //
   st_productLoading: false,
   st_productDone: false,

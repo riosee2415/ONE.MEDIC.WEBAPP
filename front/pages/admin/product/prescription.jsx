@@ -46,7 +46,21 @@ import {
   PRODUCT_UNIT_LIST_REQUEST,
   PRODUCT_UNIT_ADD_REQUEST,
   PRODUCT_UNIT_DELETE_REQUEST,
+  PREVIEW_IMAGE_UPLOAD_REQUEST1,
+  PREVIEW_IMAGE_UPLOAD_REQUEST2,
+  PREVIEW_IMAGE_UPLOAD_REQUEST3,
+  PREVIEW_IMAGE_UPLOAD_REQUEST4,
 } from "../../../reducers/prescription";
+
+const PreviewImageBox = styled(Image)`
+  margin-bottom: 10px;
+  object-fit: cover;
+`;
+
+const PreviewImageUploadButton = styled(Button)`
+  width: 400px;
+  margin-top: 5px;
+`;
 
 const LoadNotification = (msg, content) => {
   notification.open({
@@ -68,18 +82,35 @@ const UserDeliAddress = ({}) => {
     packModal,
     unitModal,
     createModal,
+    previewImage1,
+    previewImage2,
+    previewImage3,
+    previewImage4,
     st_productTypeAddDone,
     st_productTypeDeleteDone,
     st_productPackAddDone,
     st_productPackDeleteDone,
     st_productUnitAddDone,
     st_productUnitDeleteDone,
+    st_previewImage1Loading,
+    st_previewImage1Done,
+    st_previewImage2Loading,
+    st_previewImage2Done,
+    st_previewImage3Loading,
+    st_previewImage3Done,
+    st_previewImage4Loading,
+    st_previewImage4Done,
   } = useSelector((state) => state.prescription);
 
   const router = useRouter();
   const [typeCreateForm] = Form.useForm();
   const [packCreateForm] = Form.useForm();
   const [unitCreateForm] = Form.useForm();
+
+  const previewImageRef1 = useRef();
+  const previewImageRef2 = useRef();
+  const previewImageRef3 = useRef();
+  const previewImageRef4 = useRef();
 
   const [currentId, setCurrentId] = useState(null);
 
@@ -319,6 +350,76 @@ const UserDeliAddress = ({}) => {
       data: { title: v.searchTitle },
     });
   }, []);
+
+  ///////////////////////////////////// IMAGE HANDLE ////////////////////////////////////////
+
+  const clickImageUpload1 = useCallback(() => {
+    previewImageRef1.current.click();
+  }, [previewImageRef1.current]);
+
+  const onChangeImages1 = useCallback((e) => {
+    const formData = new FormData();
+
+    [].forEach.call(e.target.files, (file) => {
+      formData.append("image", file);
+    });
+
+    dispatch({
+      type: PREVIEW_IMAGE_UPLOAD_REQUEST1,
+      data: formData,
+    });
+  });
+
+  const clickImageUpload2 = useCallback(() => {
+    previewImageRef2.current.click();
+  }, [previewImageRef2.current]);
+
+  const onChangeImages2 = useCallback((e) => {
+    const formData = new FormData();
+
+    [].forEach.call(e.target.files, (file) => {
+      formData.append("image", file);
+    });
+
+    dispatch({
+      type: PREVIEW_IMAGE_UPLOAD_REQUEST2,
+      data: formData,
+    });
+  });
+
+  const clickImageUpload3 = useCallback(() => {
+    previewImageRef3.current.click();
+  }, [previewImageRef3.current]);
+
+  const onChangeImages3 = useCallback((e) => {
+    const formData = new FormData();
+
+    [].forEach.call(e.target.files, (file) => {
+      formData.append("image", file);
+    });
+
+    dispatch({
+      type: PREVIEW_IMAGE_UPLOAD_REQUEST3,
+      data: formData,
+    });
+  });
+
+  const clickImageUpload4 = useCallback(() => {
+    previewImageRef4.current.click();
+  }, [previewImageRef4.current]);
+
+  const onChangeImages4 = useCallback((e) => {
+    const formData = new FormData();
+
+    [].forEach.call(e.target.files, (file) => {
+      formData.append("image", file);
+    });
+
+    dispatch({
+      type: PREVIEW_IMAGE_UPLOAD_REQUEST4,
+      data: formData,
+    });
+  });
 
   ////// DATAVIEW //////
 
@@ -764,10 +865,126 @@ const UserDeliAddress = ({}) => {
         visible={createModal}
         onCancel={createModalToggle}
         footer={null}
-        width="860px"
+        width="1080px"
         title="새로운 약속처방 등록하기"
       >
-        <h1>hhlhl</h1>
+        <Wrapper dr="row" margin="0px 0px 15px 0px" ju="space-around">
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage1
+                  ? previewImage1
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef1}
+              onChange={onChangeImages1}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload1}
+              loading={st_previewImage1Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage2
+                  ? previewImage2
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef2}
+              onChange={onChangeImages2}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload2}
+              loading={st_previewImage2Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+        </Wrapper>
+
+        <Wrapper dr="row" margin="0px 0px 15px 0px" ju="space-around">
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage3
+                  ? previewImage3
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef3}
+              onChange={onChangeImages3}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload3}
+              loading={st_previewImage3Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage4
+                  ? previewImage4
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef4}
+              onChange={onChangeImages4}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload4}
+              loading={st_previewImage4Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+        </Wrapper>
       </Modal>
     </AdminLayout>
   );
