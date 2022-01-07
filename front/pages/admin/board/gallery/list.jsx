@@ -420,7 +420,7 @@ const List = ({ router }) => {
   // Table
   const columns = [
     {
-      title: "No",
+      title: "번호",
       dataIndex: "id",
     },
     {
@@ -428,31 +428,35 @@ const List = ({ router }) => {
       render: (data) => <Image width={100} src={`${data.thumbnail}`} />,
     },
     {
-      title: "Title",
+      title: "제목",
       dataIndex: "title",
     },
 
     {
-      title: "Hit",
+      title: "조회수",
       dataIndex: "hit",
     },
     {
-      title: "CreatedAt",
+      title: "생성일",
       render: (data) => <div>{data.createdAt.slice(0, 10)}</div>,
     },
     {
-      title: "UPDATE",
+      title: "수정",
       render: (data) => (
-        <Button type="primary" onClick={() => updateModalOpen(data)}>
-          UPDATE
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => updateModalOpen(data)}
+        >
+          수정
         </Button>
       ),
     },
     {
-      title: "DELETE",
+      title: "삭제",
       render: (data) => (
-        <Button type="danger" onClick={deletePopToggle(data.id)}>
-          DEL
+        <Button type="danger" size="small" onClick={deletePopToggle(data.id)}>
+          삭제
         </Button>
       ),
     },

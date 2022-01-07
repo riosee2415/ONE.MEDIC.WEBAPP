@@ -330,34 +330,35 @@ const Mainbanner = () => {
   ////// DATAVIEW //////
   const columns = [
     {
-      title: "No",
+      title: "번호",
       dataIndex: "id",
     },
     {
-      title: "TITLE",
+      title: "제목",
       dataIndex: "title",
     },
     {
-      title: "CONTENT",
+      title: "글",
       dataIndex: "content",
     },
     {
-      title: "VIEW",
+      title: "자세히보기",
       render: (data) => (
-        <Button onClick={viewClick(data)} type="primary">
-          VIEW
+        <Button onClick={viewClick(data)} type="primary" size="small">
+          자세히보기
         </Button>
       ),
     },
     {
-      title: "DELETE",
+      title: "삭제",
       render: (data) => (
         <Button
           onClick={deletePopToggle(data.id)}
           type="danger"
+          size="small"
           loading={st_bannerDeleteLoading}
         >
-          DEL
+          삭제
         </Button>
       ),
     },

@@ -247,30 +247,30 @@ const BusinessInformation = () => {
   ////// DATAVIEW //////
   const columns = [
     {
-      title: "No",
+      title: "번호",
       dataIndex: "id",
     },
     {
-      title: "NAME",
+      title: "이름",
       render: (data) => <div>{data.name}</div>,
     },
     {
-      title: "VALUE",
+      title: "정보",
       render: (data) => <div>{data.value}</div>,
     },
     {
-      title: "UPDATE",
+      title: "수정",
       render: (data) => (
-        <Button type="primary" onClick={updatePopToggle(data)}>
-          UPDATE
+        <Button type="primary" size="small" onClick={updatePopToggle(data)}>
+          수정
         </Button>
       ),
     },
     {
-      title: "DELETE",
+      title: "삭제",
       render: (data) => (
-        <Button type="danger" onClick={deletePopToggle(data.id)}>
-          DEL
+        <Button type="danger" size="small" onClick={deletePopToggle(data.id)}>
+          삭제
         </Button>
       ),
     },

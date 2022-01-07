@@ -307,7 +307,7 @@ const Popup = () => {
   ////// DATAVIEW //////
   const columns = [
     {
-      title: "No",
+      title: "번호",
       dataIndex: "id",
     },
     {
@@ -315,7 +315,7 @@ const Popup = () => {
       render: (data) => <Image width={100} src={`${data.imagePath}`} />,
     },
     {
-      title: "USE",
+      title: "사용여부",
       render: (data) => (
         <Switch
           defaultChecked={data.useYn}
@@ -326,18 +326,18 @@ const Popup = () => {
       ),
     },
     {
-      title: "UPDATE",
+      title: "수정",
       render: (data) => (
-        <Button type="primary" onClick={updatePopToggle(data.id)}>
-          UPDATE
+        <Button type="primary" size="small" onClick={updatePopToggle(data.id)}>
+          수정
         </Button>
       ),
     },
     {
-      title: "DELETE",
+      title: "삭제",
       render: (data) => (
-        <Button type="danger" onClick={deletePopToggle(data.id)}>
-          DEL
+        <Button type="danger" size="small" onClick={deletePopToggle(data.id)}>
+          삭제
         </Button>
       ),
     },
