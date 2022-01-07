@@ -50,12 +50,12 @@ module.exports = class User extends Model {
         // 업체명
         companyName: {
           type: DataTypes.STRING(150),
-          allowNull: false,
+          allowNull: true,
         },
         // 사업자번호
         companyNo: {
           type: DataTypes.STRING(30),
-          allowNull: false,
+          allowNull: true,
         },
         // 사업자인증
         isCompany: {
