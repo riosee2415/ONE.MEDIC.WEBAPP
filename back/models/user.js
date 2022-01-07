@@ -1,13 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
-// 업체명 : string          companyName
-// 사업자번호 : string      companyNo
-// 사업자인증 : boolean     isCompany
-// 사업자첨부파일 : string   companyFile
-// 운영레벨 : int           operatorLevel
-
-// nickname 빼고
+// nickname 빼고 (유지)
 
 module.exports = class User extends Model {
   static init(sequelize) {
@@ -52,6 +46,32 @@ module.exports = class User extends Model {
           // 이용약관동의
           type: DataTypes.BOOLEAN,
           allowNull: false,
+        },
+        // 업체명
+        companyName: {
+          type: DataTypes.STRING(150),
+          allowNull: false,
+        },
+        // 사업자번호
+        companyNo: {
+          type: DataTypes.STRING(30),
+        },
+        // 사업자인증
+        isCompany: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+        // 사업첨부파일
+        companyFile: {
+          type: DataTypes.STRING(500),
+          allowNull: true,
+        },
+        // 운영레벨
+        operatorLevel: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 1,
         },
       },
       {
