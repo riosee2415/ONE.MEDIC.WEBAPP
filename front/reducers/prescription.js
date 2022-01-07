@@ -136,6 +136,8 @@ export const PREVIEW_IMAGE_UPLOAD_REQUEST4 = "PREVIEW_IMAGE_UPLOAD_REQUEST4";
 export const PREVIEW_IMAGE_UPLOAD_SUCCESS4 = "PREVIEW_IMAGE_UPLOAD_SUCCESS4";
 export const PREVIEW_IMAGE_UPLOAD_FAILURE4 = "PREVIEW_IMAGE_UPLOAD_FAILURE4";
 
+export const CLEAR_PREVIEW_IMAGE = "CLEAR_PREVIEW_IMAGE";
+
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -412,6 +414,13 @@ const reducer = (state = initailState, action) =>
         draft.st_previewImage4Error = action.data;
         break;
       ////////////////////
+
+      case CLEAR_PREVIEW_IMAGE:
+        draft.previewImage1 = null;
+        draft.previewImage2 = null;
+        draft.previewImage3 = null;
+        draft.previewImage4 = null;
+        break;
 
       case GUIDE_MODAL_TOGGLE:
         draft.guideModal = !draft.guideModal;

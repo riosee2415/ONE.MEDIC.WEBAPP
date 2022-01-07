@@ -1,6 +1,14 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 업체명 : string          companyName
+// 사업자번호 : string      companyNo
+// 사업자인증 : boolean     isCompany
+// 사업자첨부파일 : string   companyFile
+// 운영레벨 : int           operatorLevel
+
+// nickname 빼고
+
 module.exports = class User extends Model {
   static init(sequelize) {
     return super.init(
@@ -12,6 +20,7 @@ module.exports = class User extends Model {
           unique: true, // 고유한 값
         },
         username: {
+          // 대표자명
           type: DataTypes.STRING(30), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
           allowNull: false, // 필수
         },

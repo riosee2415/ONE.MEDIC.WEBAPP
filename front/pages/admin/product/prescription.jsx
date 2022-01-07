@@ -50,6 +50,7 @@ import {
   PREVIEW_IMAGE_UPLOAD_REQUEST2,
   PREVIEW_IMAGE_UPLOAD_REQUEST3,
   PREVIEW_IMAGE_UPLOAD_REQUEST4,
+  CLEAR_PREVIEW_IMAGE,
 } from "../../../reducers/prescription";
 
 const PreviewImageBox = styled(Image)`
