@@ -16,6 +16,7 @@ import {
   COMPANY_REFUSAL_REQUEST,
   COMPANY_APPROVAL_REQUEST,
   COMPANY_DETAIL_TOGGLE,
+  COMPANY_REFUSAL_TOGGLE,
 } from "../../../reducers/user";
 import Theme from "../../../components/Theme";
 
@@ -37,12 +38,24 @@ const AdminText = styled.span`
   color: ${Theme.grey_C};
 `;
 
+const AdminModalFooter = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const AdminBtn = styled(Button)`
+  margin: 0 0 0 5px;
+`;
+
 const companyList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const {
     me,
     companyUserLists,
+    //
     companyDetailModal,
+    companyRefusalModal,
     //
     st_loadMyInfoDone,
     //
@@ -77,7 +90,11 @@ const companyList = () => {
 
   const [detailFile, setDetailFile] = useState(null);
 
+  const [refusalId, setRefusalId] = useState(null);
+
   const [dForm] = Form.useForm();
+  const [rForm] = Form.useForm();
+
   const dFormRef = useRef();
 
   ////// USEEFFECT //////
@@ -101,6 +118,12 @@ const companyList = () => {
 
   useEffect(() => {
     if (st_companyRefusalDone) {
+      setRefusalId(null);
+
+      dispatch({
+        type: COMPANY_REFUSAL_TOGGLE,
+      });
+
       dispatch({
         type: COMPANY_LIST_REQUEST,
         data: {
@@ -114,6 +137,8 @@ const companyList = () => {
 
   useEffect(() => {
     if (st_companyApprovalDone) {
+      setDetailData(null);
+      setDetailFile(null);
       dispatch({
         type: COMPANY_LIST_REQUEST,
         data: {
@@ -139,14 +164,35 @@ const companyList = () => {
 
   ////// TOGGLE //////
 
-  const detailToggle = useCallback(
+  const detailModalToggle = useCallback(
     (data) => {
-      setDetailData(data);
+      if (data) {
+        setDetailData(data);
+      } else {
+        setDetailData(null);
+        setDetailFile(null);
+        dForm.resetFields();
+      }
       dispatch({
         type: COMPANY_DETAIL_TOGGLE,
       });
     },
     [companyDetailModal, detailData]
+  );
+
+  const refusalModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setRefusalId(data);
+      } else {
+        setRefusalId(null);
+        rForm.resetFields();
+      }
+      dispatch({
+        type: COMPANY_REFUSAL_TOGGLE,
+      });
+    },
+    [companyRefusalModal, refusalId]
   );
 
   ////// HANDLER //////
@@ -166,6 +212,7 @@ const companyList = () => {
         email: data.email,
         companyName: data.companyName,
         companyNo: data.companyNo,
+        resusalReason: data.resusalReason,
       });
 
       setDetailFile(data.companyFile);
@@ -182,14 +229,18 @@ const companyList = () => {
     });
   }, []);
 
-  const refusalHandler = useCallback((id) => {
-    dispatch({
-      type: COMPANY_REFUSAL_REQUEST,
-      data: {
-        id,
-      },
-    });
-  }, []);
+  const refusalHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: COMPANY_REFUSAL_REQUEST,
+        data: {
+          id: refusalId,
+          resusalReason: data.reason,
+        },
+      });
+    },
+    [refusalId]
+  );
 
   const fileDownloadHandler = useCallback(async (filePath) => {
     let blob = await fetch(filePath).then((r) => r.blob());
@@ -228,7 +279,11 @@ const companyList = () => {
     {
       title: "상세보기",
       render: (data) => (
-        <Button type="primary" size="small" onClick={() => detailToggle(data)}>
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => detailModalToggle(data)}
+        >
           상세보기
         </Button>
       ),
@@ -251,7 +306,7 @@ const companyList = () => {
         <Button
           type="danger"
           size="small"
-          onClick={() => refusalHandler(data.id)}
+          onClick={() => refusalModalToggle(data.id)}
         >
           거절
         </Button>
@@ -279,7 +334,11 @@ const companyList = () => {
     {
       title: "상세보기",
       render: (data) => (
-        <Button type="primary" size="small" onClick={() => detailToggle(data)}>
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => detailModalToggle(data)}
+        >
           상세보기
         </Button>
       ),
@@ -324,10 +383,12 @@ const companyList = () => {
         />
       </AdminContent>
 
+      {/* ////// DETAIL MODAL ////// */}
+
       <Modal
         title="상세보기"
         visible={companyDetailModal}
-        onCancel={() => detailToggle(null)}
+        onCancel={() => detailModalToggle(null)}
         footer={null}
       >
         <Form
@@ -351,6 +412,11 @@ const companyList = () => {
           <Form.Item label="사업자번호" name="companyNo">
             <Input readOnly />
           </Form.Item>
+          {companyTab === 3 && (
+            <Form.Item label="거절사유" name="resusalReason">
+              <Input.TextArea readOnly />
+            </Form.Item>
+          )}
           {/* <Form.Item label="운영레벨">
             <Input readOnly />
           </Form.Item> */}
@@ -367,6 +433,38 @@ const companyList = () => {
               </AdminText>
             </>
           )}
+        </Form>
+      </Modal>
+
+      {/* ////// REFUSAL MODAL ////// */}
+
+      <Modal
+        title="거절하기"
+        visible={companyRefusalModal}
+        onCancel={() => refusalModalToggle(null)}
+        footer={null}
+      >
+        <Form
+          form={rForm}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
+          onFinish={refusalHandler}
+        >
+          <Form.Item
+            label="거절사유"
+            name="reason"
+            rule={[{ required: true, message: "거절사유를 입력해주세요." }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+          <AdminModalFooter>
+            <AdminBtn size="small" onClick={() => refusalModalToggle(null)}>
+              Cancel
+            </AdminBtn>
+            <AdminBtn size="small" type="primary" htmlType="submit">
+              Submit
+            </AdminBtn>
+          </AdminModalFooter>
         </Form>
       </Modal>
     </AdminLayout>

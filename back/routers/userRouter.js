@@ -435,7 +435,8 @@ router.get(
                       companyName,
                       companyFile,
                       companyNo,
-                      operatorLevel
+                      operatorLevel,
+                      resusalReason
                 FROM  users
                ${
                  type === "1"
@@ -447,6 +448,7 @@ router.get(
                    : ""
                } 
                  ${type === "1" ? "AND  NOT companyNo is NULL" : ""}
+                 ${type === "1" ? "AND  isRefusal = false" : ""}
               `;
       const result = await models.sequelize.query(selectQuery);
 

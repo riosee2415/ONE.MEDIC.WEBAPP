@@ -10,6 +10,7 @@ export const initailState = {
   updateModal: false,
 
   companyDetailModal: false,
+  companyRefusalModal: false,
 
   //
   st_loginLoading: false,
@@ -99,6 +100,8 @@ export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
 export const CURRENT_ADMINMENU_STATUS = "CURRENT_ADMINMENU_STATUS";
 
 export const COMPANY_DETAIL_TOGGLE = "COMPANY_DETAIL_TOGGLE";
+
+export const COMPANY_REFUSAL_TOGGLE = "COMPANY_REFUSAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -331,6 +334,10 @@ const reducer = (state = initailState, action) =>
 
       case COMPANY_DETAIL_TOGGLE:
         draft.companyDetailModal = !draft.companyDetailModal;
+        break;
+
+      case COMPANY_REFUSAL_TOGGLE:
+        draft.companyRefusalModal = !draft.companyRefusalModal;
         break;
 
       default:
