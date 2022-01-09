@@ -5,7 +5,11 @@ export const initailState = {
   currentAdminMenu: [],
   users: null,
 
+  companyUserLists: null,
+
   updateModal: false,
+
+  companyDetailModal: false,
 
   //
   st_loginLoading: false,
@@ -35,6 +39,18 @@ export const initailState = {
   st_kakaoLoginLoading: false,
   st_kakaoLoginDone: false,
   st_kakaoLoginError: null,
+  //
+  st_companyListLoading: false,
+  st_companyListDone: false,
+  st_companyListError: null,
+  //
+  st_companyRefusalLoading: false, // 회사 거절
+  st_companyRefusalDone: false,
+  st_companyRefusalError: null,
+  //
+  st_companyApprovalLoading: false, // 회사 승인
+  st_companyApprovalDone: false,
+  st_companyApprovalError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -65,10 +81,24 @@ export const KAKAO_LOGIN_REQUEST = "KAKAO_LOGIN_REQUEST";
 export const KAKAO_LOGIN_SUCCESS = "KAKAO_LOGIN_SUCCESS";
 export const KAKAO_LOGIN_FAILURE = "KAKAO_LOGIN_FAILURE";
 
+export const COMPANY_LIST_REQUEST = "COMPANY_LIST_REQUEST";
+export const COMPANY_LIST_SUCCESS = "COMPANY_LIST_SUCCESS";
+export const COMPANY_LIST_FAILURE = "COMPANY_LIST_FAILURE";
+
+export const COMPANY_REFUSAL_REQUEST = "COMPANY_REFUSAL_REQUEST";
+export const COMPANY_REFUSAL_SUCCESS = "COMPANY_REFUSAL_SUCCESS";
+export const COMPANY_REFUSAL_FAILURE = "COMPANY_REFUSAL_FAILURE";
+
+export const COMPANY_APPROVAL_REQUEST = "COMPANY_APPROVAL_REQUEST";
+export const COMPANY_APPROVAL_SUCCESS = "COMPANY_APPROVAL_SUCCESS";
+export const COMPANY_APPROVAL_FAILURE = "COMPANY_APPROVAL_FAILURE";
+
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
 
 export const CURRENT_ADMINMENU_STATUS = "CURRENT_ADMINMENU_STATUS";
+
+export const COMPANY_DETAIL_TOGGLE = "COMPANY_DETAIL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -212,6 +242,67 @@ const reducer = (state = initailState, action) =>
       }
       //////////////////////////////////////////////
 
+      case COMPANY_LIST_REQUEST: {
+        draft.st_companyListLoading = true;
+        draft.st_companyListDone = null;
+        draft.st_companyListError = false;
+        break;
+      }
+      case COMPANY_LIST_SUCCESS: {
+        draft.st_companyListLoading = false;
+        draft.st_companyListDone = true;
+        draft.st_companyListError = null;
+        draft.companyUserLists = action.data;
+        break;
+      }
+      case COMPANY_LIST_FAILURE: {
+        draft.st_companyListLoading = false;
+        draft.st_companyListDone = false;
+        draft.st_companyListError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case COMPANY_REFUSAL_REQUEST: {
+        draft.st_companyRefusalLoading = true;
+        draft.st_companyRefusalDone = null;
+        draft.st_companyRefusalError = false;
+        break;
+      }
+      case COMPANY_REFUSAL_SUCCESS: {
+        draft.st_companyRefusalLoading = false;
+        draft.st_companyRefusalDone = true;
+        draft.st_companyRefusalError = null;
+        break;
+      }
+      case COMPANY_REFUSAL_FAILURE: {
+        draft.st_companyRefusalLoading = false;
+        draft.st_companyRefusalDone = false;
+        draft.st_companyRefusalError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case COMPANY_APPROVAL_REQUEST: {
+        draft.st_companyApprovalLoading = true;
+        draft.st_companyApprovalDone = null;
+        draft.st_companyApprovalError = false;
+        break;
+      }
+      case COMPANY_APPROVAL_SUCCESS: {
+        draft.st_companyApprovalLoading = false;
+        draft.st_companyApprovalDone = true;
+        draft.st_companyApprovalError = null;
+        break;
+      }
+      case COMPANY_APPROVAL_FAILURE: {
+        draft.st_companyApprovalLoading = false;
+        draft.st_companyApprovalDone = false;
+        draft.st_companyApprovalError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
       case CURRENT_ADMINMENU_STATUS: {
         const exist = draft.currentAdminMenu.filter(
           (data) => data === action.data.key
@@ -236,6 +327,10 @@ const reducer = (state = initailState, action) =>
 
       case UPDATE_MODAL_CLOSE_REQUEST:
         draft.updateModal = false;
+        break;
+
+      case COMPANY_DETAIL_TOGGLE:
+        draft.companyDetailModal = !draft.companyDetailModal;
         break;
 
       default:

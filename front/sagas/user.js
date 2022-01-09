@@ -28,6 +28,19 @@ import {
   KAKAO_LOGIN_REQUEST,
   KAKAO_LOGIN_SUCCESS,
   KAKAO_LOGIN_FAILURE,
+  /////////////////////////////
+  COMPANY_LIST_REQUEST,
+  COMPANY_LIST_SUCCESS,
+  COMPANY_LIST_FAILURE,
+  /////////////////////////////
+  COMPANY_REFUSAL_REQUEST,
+  COMPANY_REFUSAL_SUCCESS,
+  COMPANY_REFUSAL_FAILURE,
+  /////////////////////////////
+  COMPANY_APPROVAL_REQUEST,
+  COMPANY_APPROVAL_SUCCESS,
+  COMPANY_APPROVAL_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -215,6 +228,87 @@ function* kakaoLogin() {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function companyListAPI(data) {
+  return axios.get(`/api/user/company/list/${data.type}`);
+}
+
+function* companyList(action) {
+  try {
+    const result = yield call(companyListAPI, action.data);
+
+    yield put({
+      type: COMPANY_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: COMPANY_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function companyRefusalAPI(data) {
+  return axios.patch(`/api/user/company/refusal`, data);
+}
+
+function* companyRefusal(action) {
+  try {
+    const result = yield call(companyRefusalAPI, action.data);
+
+    yield put({
+      type: COMPANY_REFUSAL_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: COMPANY_REFUSAL_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function companyApprovalAPI(data) {
+  return axios.patch(`/api/user/company/approval`, data);
+}
+
+function* companyApproval(action) {
+  try {
+    const result = yield call(companyApprovalAPI, action.data);
+
+    yield put({
+      type: COMPANY_APPROVAL_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: COMPANY_APPROVAL_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -245,6 +339,18 @@ function* watchKakaoLogin() {
   yield takeLatest(KAKAO_LOGIN_REQUEST, kakaoLogin);
 }
 
+function* watchCompanyList() {
+  yield takeLatest(COMPANY_LIST_REQUEST, companyList);
+}
+
+function* watchCompanyRefusal() {
+  yield takeLatest(COMPANY_REFUSAL_REQUEST, companyRefusal);
+}
+
+function* watchCompanyApproval() {
+  yield takeLatest(COMPANY_APPROVAL_REQUEST, companyApproval);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -255,6 +361,9 @@ export default function* userSaga() {
     fork(watchUserList),
     fork(watchUserListUpdate),
     fork(watchKakaoLogin),
+    fork(watchCompanyList),
+    fork(watchCompanyRefusal),
+    fork(watchCompanyApproval),
     //
   ]);
 }

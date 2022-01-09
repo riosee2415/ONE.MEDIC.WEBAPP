@@ -7,6 +7,7 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const { Op } = require("sequelize");
 const generateUUID = require("../utils/generateUUID");
 const sendSecretMail = require("../utils/mailSender");
+const models = require("../models");
 
 const router = express.Router();
 
@@ -419,7 +420,149 @@ router.get(
   }),
   (res, req) => {
     return res.redirect("/");
-  }
+  },
+
+  router.get("/company/list/:type", isAdminCheck, async (req, res, next) => {
+    const { type } = req.params;
+
+    try {
+      const selectQuery = `
+              SELECT  id,
+                      username,
+                      nickname,
+                      email,
+                      mobile,
+                      companyName,
+                      companyFile,
+                      companyNo,
+                      operatorLevel
+                FROM  users
+               ${
+                 type === "1"
+                   ? "WHERE  isCompany = false"
+                   : type === "2"
+                   ? "WHERE  isCompany = true"
+                   : type === "3"
+                   ? "WHERE  isRefusal = true"
+                   : ""
+               } 
+                 ${type === "1" ? "AND  NOT companyNo is NULL" : ""}
+              `;
+      const result = await models.sequelize.query(selectQuery);
+
+      return res.status(200).json(result[0]);
+    } catch (e) {
+      console.error(e);
+      return res.status(401).send("잘못된 요청 입니다.");
+    }
+  }),
+
+  router.patch("/company/create", async (req, res, next) => {
+    const { id, companyName, companyNo, companyFile } = req.body;
+
+    try {
+      if (id) {
+        const exUser = await User.findOne({
+          where: {
+            id: parseInt(id),
+          },
+        });
+
+        if (!exUser) {
+          return res.status(401).send("존재하지 않는 회원입니다.");
+        }
+      }
+
+      if (companyNo) {
+        const exCompany = await User.findOne({
+          where: {
+            companyNo,
+          },
+        });
+
+        if (exCompany) {
+          return res.status(401).send("신청을 한 회원입니다.");
+        }
+      }
+
+      const result = await User.update(
+        {
+          companyName,
+          companyNo,
+          companyFile,
+        },
+        {
+          where: {
+            id: parseInt(id),
+          },
+        }
+      );
+
+      return res.status(200).json({ result: true });
+    } catch (e) {
+      console.log(e);
+      return res.status(401).send("잘못된 요청 입니다.");
+    }
+  }),
+
+  router.patch("/company/refusal", isAdminCheck, async (req, res, next) => {
+    const { id, resusalReason } = req.body;
+
+    try {
+      if (id) {
+        const exUser = await User.findOne({ id });
+
+        if (!exUser) {
+          return res.status(401).send("존재하지 않는 회원입니다.");
+        }
+      }
+
+      const result = await User.update(
+        {
+          isRefusal: true,
+          resusalReason,
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+
+      return res.status(200).json({ result: true });
+    } catch (e) {
+      return res.status(401).send("잘못된 요청 입니다.");
+    }
+  }),
+
+  router.patch("/company/approval", isAdminCheck, async (req, res, next) => {
+    const { id } = req.body;
+
+    try {
+      if (id) {
+        const exUser = await User.findOne({ id });
+
+        if (!exUser) {
+          return res.status(401).send("존재하지 않는 회원입니다.");
+        }
+      }
+
+      const result = await User.update(
+        {
+          isCompany: true,
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+
+      return res.status(200).json({ result: true });
+    } catch (e) {
+      return res.status(401).send("잘못된 요청 입니다.");
+    }
+  })
 );
 
 module.exports = router;

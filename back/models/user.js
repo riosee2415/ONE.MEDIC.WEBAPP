@@ -68,7 +68,7 @@ module.exports = class User extends Model {
           type: DataTypes.STRING(600),
           allowNull: true,
         },
-        // 운영레벨
+        // 운영레벨 [1 : 기본값]
         operatorLevel: {
           type: DataTypes.INTEGER,
           allowNull: false,
