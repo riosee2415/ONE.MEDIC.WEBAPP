@@ -23,6 +23,12 @@ const Fourleaf = ({ Component }) => {
         <meta property="og:image:height" content="400" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="canonical" href="https://www.sample.com" />
+
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css"
+        ></link>
       </Head>
       <Component />
     </ThemeProvider>
