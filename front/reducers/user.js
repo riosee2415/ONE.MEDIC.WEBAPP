@@ -8,6 +8,8 @@ export const initailState = {
   companyUserLists: null,
 
   updateModal: false,
+  unitModal: false,
+  detailModal: false,
 
   companyDetailModal: false,
   companyRefusalModal: false,
@@ -102,6 +104,10 @@ export const CURRENT_ADMINMENU_STATUS = "CURRENT_ADMINMENU_STATUS";
 export const COMPANY_DETAIL_TOGGLE = "COMPANY_DETAIL_TOGGLE";
 
 export const COMPANY_REFUSAL_TOGGLE = "COMPANY_REFUSAL_TOGGLE";
+
+export const DETAIL_MODAL_TOGGLE = "DETAIL_MODAL_TOGGLE";
+
+export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -338,6 +344,14 @@ const reducer = (state = initailState, action) =>
 
       case COMPANY_REFUSAL_TOGGLE:
         draft.companyRefusalModal = !draft.companyRefusalModal;
+        break;
+
+      case DETAIL_MODAL_TOGGLE:
+        draft.detailModal = !draft.detailModal;
+        break;
+
+      case UNIT_MODAL_TOGGLE:
+        draft.unitModal = !draft.unitModal;
         break;
 
       default:

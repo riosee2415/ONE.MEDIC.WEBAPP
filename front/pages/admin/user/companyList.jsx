@@ -33,6 +33,12 @@ const AdminFileBtn = styled(Button)`
   height: 30px;
 `;
 
+const AdminTop = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
 const AdminText = styled.span`
   margin: 0 0 0 10px;
   color: ${Theme.grey_C};
@@ -45,7 +51,7 @@ const AdminModalFooter = styled.div`
 `;
 
 const AdminBtn = styled(Button)`
-  margin: 0 0 0 5px;
+  margin: 0 5px;
 `;
 
 const companyList = () => {
@@ -347,35 +353,53 @@ const companyList = () => {
   return (
     <AdminLayout>
       <PageHeader
-        breadcrumbs={["회원 관리", "회사 신청 리스트"]}
+        breadcrumbs={["회원 관리", "회사 신청 관리"]}
         title={`회원 신청 관리`}
         subTitle={`홈페이지에서 신청한 회사 신청 목록을 관리할 수 있습니다.`}
       />
 
       <AdminContent>
-        <AdminTab>
-          <Button
-            size="small"
-            type={companyTab === 1 && "primary"}
-            onClick={() => tabChangeHandler(1)}
-          >
-            미승인
-          </Button>
-          <Button
-            size="small"
-            type={companyTab === 2 && "primary"}
-            onClick={() => tabChangeHandler(2)}
-          >
-            승인
-          </Button>
-          <Button
-            size="small"
-            type={companyTab === 3 && "primary"}
-            onClick={() => tabChangeHandler(3)}
-          >
-            거절
-          </Button>
-        </AdminTab>
+        <AdminTop>
+          <AdminTab>
+            <AdminBtn
+              size="small"
+              type={companyTab === 1 && "primary"}
+              onClick={() => tabChangeHandler(1)}
+            >
+              미승인
+            </AdminBtn>
+            <AdminBtn
+              size="small"
+              type={companyTab === 2 && "primary"}
+              onClick={() => tabChangeHandler(2)}
+            >
+              승인
+            </AdminBtn>
+            <AdminBtn
+              size="small"
+              type={companyTab === 3 && "primary"}
+              onClick={() => tabChangeHandler(3)}
+            >
+              거절
+            </AdminBtn>
+          </AdminTab>
+          <AdminTab>
+            <AdminBtn
+              size="small"
+              type={companyTab === 4 ? "primary" : "dashed"}
+              onClick={() => tabChangeHandler(4)}
+            >
+              전체조회
+            </AdminBtn>
+            {/* <AdminBtn size="small" type="danger">
+              주의사항
+            </AdminBtn>
+            <AdminBtn size="small" type="primary">
+              + 추가
+            </AdminBtn> */}
+          </AdminTab>
+        </AdminTop>
+
         <Table
           size="small"
           columns={companyTab === 1 ? columns : typeColumns}
@@ -423,6 +447,7 @@ const companyList = () => {
           {detailFile && (
             <>
               <AdminFileBtn
+                size="small"
                 type="dashed"
                 onClick={() => fileDownloadHandler(detailFile)}
               >

@@ -10,6 +10,8 @@ import {
   UPDATE_MODAL_OPEN_REQUEST,
   USERLIST_REQUEST,
   USERLIST_UPDATE_REQUEST,
+  DETAIL_MODAL_TOGGLE,
+  UNIT_MODAL_TOGGLE,
 } from "../../../reducers/user";
 import {
   Table,
@@ -28,10 +30,21 @@ import { useRouter, withRouter } from "next/router";
 import wrapper from "../../../store/configureStore";
 import { END } from "redux-saga";
 import axios from "axios";
-import { Wrapper } from "../../../components/commonComponents";
+import {
+  Wrapper,
+  GuideUl,
+  GuideLi,
+} from "../../../components/commonComponents";
+import { saveAs } from "file-saver";
+import Theme from "../../../components/Theme";
 
 const AdminContent = styled.div`
   padding: 20px;
+`;
+
+const AdminText = styled.span`
+  margin: 0 0 0 10px;
+  color: ${Theme.grey_C};
 `;
 
 const LoadNotification = (msg, content) => {
@@ -67,18 +80,27 @@ const UserList = ({}) => {
   const {
     users,
     updateModal,
-    st_userListError,
+    detailModal,
+    unitModal,
+    //
     st_userListUpdateDone,
+    st_userListError,
     st_userListUpdateError,
   } = useSelector((state) => state.user);
 
   const [updateData, setUpdateData] = useState(null);
+  const [detailData, setDetailData] = useState(null);
+  const [companyFile, setCompanyFile] = useState(null);
+  const [isCompany, setIsCompany] = useState(false);
 
   const inputName = useInput("");
   const inputEmail = useInput("");
 
   const inputSort = useInput("1");
   const inputLevel = useInput("");
+
+  const [dForm] = Form.useForm();
+  const dFormRef = useRef();
 
   ////// USEEFFECT //////
   useEffect(() => {
@@ -93,6 +115,14 @@ const UserList = ({}) => {
       },
     });
   }, [router.query]);
+
+  useEffect(() => {
+    if (detailData) {
+      setTimeout(() => {
+        onFill(detailData);
+      }, 500);
+    }
+  }, [detailData]);
 
   useEffect(() => {
     if (st_userListUpdateDone) {
@@ -150,7 +180,77 @@ const UserList = ({}) => {
     });
   }, [updateModal]);
 
+  const detailModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setDetailData(data);
+      } else {
+        setCompanyFile(null);
+        setDetailData(null);
+        setIsCompany(false);
+        dForm.resetFields();
+      }
+      dispatch({
+        type: DETAIL_MODAL_TOGGLE,
+      });
+    },
+    [detailData, companyFile, isCompany]
+  );
+
+  const unitModalToggle = useCallback(() => {
+    dispatch({
+      type: UNIT_MODAL_TOGGLE,
+    });
+  }, [unitModal]);
+
   ////// HANDLER //////
+
+  const fileDownloadHandler = useCallback(async (filePath) => {
+    let blob = await fetch(filePath).then((r) => r.blob());
+
+    const file = new Blob([blob]);
+
+    const ext = filePath.substring(
+      0,
+      filePath.lastIndexOf(".") + 1,
+      filePath.length
+    );
+
+    const originName = `첨부파일.${ext}`;
+    saveAs(file, originName);
+  });
+
+  const onFill = useCallback(
+    (data) => {
+      dFormRef.current.setFieldsValue({
+        username: data.username,
+        nickname: data.nickname,
+        email: data.email,
+        mobile: data.mobile,
+        level:
+          data.level === 1
+            ? "일반회원"
+            : data.level === 2
+            ? `비어있음`
+            : data.level === 3
+            ? `운영자`
+            : data.level === 4
+            ? `최고관리자`
+            : `개발사`,
+        createdAt: data.createdAt.split("T")[0],
+        updatedAt: data.updatedAt.split("T")[0],
+        companyName: data.companyName,
+        companyNo: data.companyNo,
+      });
+      setIsCompany(data.isCompany);
+      setCompanyFile(data.companyFile);
+    },
+    [dFormRef, companyFile]
+  );
+
+  const userAllViewHandler = useCallback(() => {
+    router.push(`/admin/user/userList?name=&email=&sort=1`);
+  }, []);
 
   const onSubmitUpdate = useCallback(() => {
     if (updateData.level === inputLevel.value) {
@@ -210,14 +310,26 @@ const UserList = ({}) => {
       ),
     },
     {
-      title: "상세보기",
+      title: "권한수정",
       render: (data) => (
         <Button
           type="primary"
           onClick={() => updateModalOpen(data)}
           size="small"
         >
-          상세보기
+          권한수정
+        </Button>
+      ),
+    },
+    {
+      title: "상세정보",
+      render: (data) => (
+        <Button
+          type="primary"
+          onClick={() => detailModalToggle(data)}
+          size="small"
+        >
+          상세정보
         </Button>
       ),
     },
@@ -242,37 +354,52 @@ const UserList = ({}) => {
       {/* <AdminTop createButton={true} createButtonAction={() => {})} /> */}
 
       <AdminContent>
-        <Input.Group compact style={{ margin: ` 0 0 10px 0` }}>
-          <Select
-            defaultValue="1"
-            style={{ width: "10%" }}
-            value={inputSort.value}
-            onChange={(data) => inputSort.setValue(data)}
-          >
-            <Select.Option value="1">최근 가입일</Select.Option>
-            <Select.Option value="2">이름순</Select.Option>
-          </Select>
-          <Input
-            style={{ width: "20%" }}
-            placeholder="사용자명"
-            {...inputName}
-          />
-          <Input
-            style={{ width: "20%" }}
-            placeholder="이메일"
-            {...inputEmail}
-          />
-          <Button
-            onClick={() =>
-              moveLinkHandler(
-                `/admin/user/userList?name=${inputName.value}&email=${inputEmail.value}`
-              )
-            }
-          >
-            <SearchOutlined />
-            검색
-          </Button>
-        </Input.Group>
+        <Wrapper dr={`row`} ju={`space-between`}>
+          <Input.Group compact style={{ width: `90%`, margin: ` 0 0 10px 0` }}>
+            <Select
+              defaultValue="1"
+              style={{ width: "10%" }}
+              value={inputSort.value}
+              onChange={(data) => inputSort.setValue(data)}
+            >
+              <Select.Option value="1">최근 가입일</Select.Option>
+              <Select.Option value="2">이름순</Select.Option>
+            </Select>
+            <Input
+              style={{ width: "20%" }}
+              placeholder="사용자명"
+              {...inputName}
+            />
+            <Input
+              style={{ width: "20%" }}
+              placeholder="이메일"
+              {...inputEmail}
+            />
+            <Button
+              onClick={() =>
+                moveLinkHandler(
+                  `/admin/user/userList?name=${inputName.value}&email=${inputEmail.value}`
+                )
+              }
+            >
+              <SearchOutlined />
+              검색
+            </Button>
+          </Input.Group>
+          <Wrapper width={`auto`} dr={`row`}>
+            <Button type="dashed" size="small" onClick={userAllViewHandler}>
+              전체조회
+            </Button>
+            <Button
+              size="small"
+              type="danger"
+              style={{ margin: `0 0 0 5px` }}
+              onClick={unitModalToggle}
+            >
+              주의사항
+            </Button>
+          </Wrapper>
+        </Wrapper>
 
         <Table
           rowKey="id"
@@ -281,6 +408,8 @@ const UserList = ({}) => {
           size="small"
         />
       </AdminContent>
+
+      {/* UPDATE MODAL */}
 
       <Modal
         visible={updateModal}
@@ -313,6 +442,89 @@ const UserList = ({}) => {
             <Select.Option value="4">최고관리자</Select.Option>
           </Select>
         </Wrapper>
+      </Modal>
+
+      {/* UNIT MODAL */}
+
+      <Modal
+        title="주의사항"
+        width="600px"
+        visible={unitModal}
+        footer={null}
+        onCancel={unitModalToggle}
+      >
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            사용자의 정보의 경우 개인정보로 인해 관리자가 직접 수정이
+            불가능합니다.
+          </GuideLi>
+          <GuideLi>현재 가입된 사용자의 정보를 확인할 수 있습니다.</GuideLi>
+          <GuideLi>
+            기능사용 문의 및 추가기능개발은 (주)4LEAF SOFTWARE 1600-4198로
+            연락바랍니다.
+          </GuideLi>
+        </GuideUl>
+      </Modal>
+
+      {/* DETAIL MODAL */}
+
+      <Modal
+        title="상세정보"
+        visible={detailModal}
+        onCancel={() => detailModalToggle(null)}
+        footer={null}
+      >
+        <Form
+          form={dForm}
+          ref={dFormRef}
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
+        >
+          <Form.Item name="username" label="이름">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="nickname" label="닉네임">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="email" label="이메일">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="mobile" label="전화번호">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="level" label="권한">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="createdAt" label="생성일">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="updatedAt" label="수정일">
+            <Input readOnly />
+          </Form.Item>
+
+          {isCompany && (
+            <>
+              <Form.Item name="companyName" label="회사이름">
+                <Input readOnly />
+              </Form.Item>
+              <Form.Item name="companyNo" label="사업자번호">
+                <Input readOnly />
+              </Form.Item>
+              <Form.Item name="companyFile" label="사업첨부파일">
+                <Button
+                  size="small"
+                  type="dashed"
+                  onClick={() => fileDownloadHandler(companyFile)}
+                >
+                  첨부파일
+                </Button>
+                <AdminText>
+                  * 첨부파일 클릭시 첨부파일이 다운로드 됩니다.
+                </AdminText>
+              </Form.Item>
+            </>
+          )}
+        </Form>
       </Modal>
 
       <Modal
