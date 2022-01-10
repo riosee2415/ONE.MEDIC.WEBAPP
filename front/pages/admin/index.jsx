@@ -81,8 +81,8 @@ const AdminHome = () => {
           <Wrapper height={`100%`} padding={`30px`}>
             <Image
               alt="logo"
-              src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/SOUL/assets/images/logo/logo_long_black_W.jpg`}
-              width={`300px`}
+              src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/logo/logo.png`}
+              width={`200px`}
             />
             <Wrapper width={`80%`}>
               <Wrapper margin={`20px 0`}>

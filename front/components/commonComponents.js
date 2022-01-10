@@ -145,7 +145,7 @@ export const Wrapper = styled.div`
 `;
 
 export const RsWrapper = styled.article`
-  width: 1350px;
+  width: 500px;
   height: ${(props) => props.height || `100%`};
   ${(props) => props.minHeight}
   color: ${(props) => props.color};
@@ -158,7 +158,7 @@ export const RsWrapper = styled.article`
   flex-wrap: ${(props) => props.wrap || `wrap`};
   backdrop-filter: ${(props) => props.filter};
   margin: ${(props) => props.margin};
-  padding: ${(props) => props.padding};
+  padding: ${(props) => props.padding || `0 38px`};
   overflow: ${(props) => props.overflow};
   border-bottom: ${(props) => props.borderBottom};
   border: ${(props) => props.border};
@@ -196,10 +196,11 @@ export const CommonButton = styled(Button)`
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
   font-size: ${(props) => props.fontSize || `1rem`};
-  color: ${(props) => props.color || props.theme.subTheme2_C};
-  border-radius: ${(props) => props.radius || `7px`};
+  color: ${(props) => props.color || props.theme.white_C};
+  border-radius: ${(props) => props.radius || `10px`};
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.16);
 
-  ${(props) => !props.kindOf && `background : ${props.theme.white_C};`}
+  ${(props) => !props.kindOf && `background : ${props.theme.basicTheme_C};`}
   ${(props) =>
     props.kindOf === `white` && `background : ${props.theme.basicTheme_C};`}
   ${(props) => props.kindOf === `white` && `color : ${props.theme.subTheme_C};`}
@@ -425,7 +426,7 @@ export const SpanText = styled.span`
 export const TextInput = styled.input`
   width: ${(props) => props.width};
   height: ${(props) => props.height || `40px`};
-  border: ${(props) => props.border};
+  border: ${(props) => props.border || `none`};
   border-bottom: ${(props) => props.borderBottom};
   padding: ${(props) => props.padding || `10px`};
   transition: ${(props) => props.transition || props.theme.transition};
@@ -434,7 +435,9 @@ export const TextInput = styled.input`
   border-radius: ${(props) => props.radius};
   font-size: ${(props) => props.fontSize};
   cursor: ${(props) => props.cursor};
-  border-radius: ${(props) => props.radius};
+  border-radius: ${(props) => props.radius || `10px`};
+  box-shadow: 5px 5px 15px rgba(77, 92, 123, 0.2),
+    inset -5px -5px 15px rgba(77, 92, 123, 0.05);
   transition: 0.3s;
 
   &:focus {
@@ -454,6 +457,7 @@ export const TextInput = styled.input`
   &::placeholder {
     font-size: 14px;
     line-height: 1.6;
+    color: ${(props) => props.theme.grey2_C};
   }
 `;
 
