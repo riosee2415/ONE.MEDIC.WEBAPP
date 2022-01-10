@@ -414,30 +414,29 @@ const UserList = ({}) => {
       <Modal
         visible={updateModal}
         width={`400px`}
-        title={`사용자 레벨 수정`}
+        title={`사용자 권한 수정`}
         onCancel={updateModalClose}
         onOk={onSubmitUpdate}
       >
         <Wrapper padding={`10px`} al={`flex-start`}>
-          <div>사용자 레벨</div>
+          <div>사용자 권한</div>
           <Select
             defaultValue="1"
             style={{ width: "100%" }}
             value={
-              inputLevel.value === 1
+              inputLevel.value === "1"
                 ? "일반회원"
-                : inputLevel.value === 2
+                : inputLevel.value === "2"
                 ? `비어있음`
-                : inputLevel.value === 3
+                : inputLevel.value === "3"
                 ? `운영자`
-                : inputLevel.value === 4
+                : inputLevel.value === "4"
                 ? `최고관리자`
                 : `개발사`
             }
             onChange={(data) => inputLevel.setValue(data)}
           >
             <Select.Option value="1">일반회원</Select.Option>
-            <Select.Option value="2">비어있음</Select.Option>
             <Select.Option value="3">운영자</Select.Option>
             <Select.Option value="4">최고관리자</Select.Option>
           </Select>
@@ -469,6 +468,7 @@ const UserList = ({}) => {
       {/* DETAIL MODAL */}
 
       <Modal
+        width="1000px"
         title="상세정보"
         visible={detailModal}
         onCancel={() => detailModalToggle(null)}
@@ -477,9 +477,12 @@ const UserList = ({}) => {
         <Form
           form={dForm}
           ref={dFormRef}
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 19 }}
+          labelCol={{ span: 2 }}
+          wrapperCol={{ span: 22 }}
         >
+          <GuideUl>
+            <GuideLi isImpo={true}>회원의 정보를 수정할 수 없습니다.</GuideLi>
+          </GuideUl>
           <Form.Item name="username" label="이름">
             <Input readOnly />
           </Form.Item>

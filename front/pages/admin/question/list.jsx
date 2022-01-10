@@ -305,6 +305,7 @@ const List = ({ location }) => {
         <RowWrapper margin={`0 0 10px 0`} gutter={5}>
           <Col>
             <Button
+              size="small"
               onClick={() => moveLinkHandler(`/admin/question/list?type=3`)}
             >
               전체
@@ -312,6 +313,7 @@ const List = ({ location }) => {
           </Col>
           <Col>
             <Button
+              size="small"
               onClick={() => moveLinkHandler(`/admin/question/list?type=2`)}
             >
               처리완료
@@ -319,6 +321,7 @@ const List = ({ location }) => {
           </Col>
           <Col>
             <Button
+              size="small"
               onClick={() => moveLinkHandler(`/admin/question/list?type=1`)}
             >
               미처리

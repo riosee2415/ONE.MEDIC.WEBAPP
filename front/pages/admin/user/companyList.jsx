@@ -3,7 +3,7 @@ import { Button, Table, message, Modal, Form, Input } from "antd";
 import styled from "styled-components";
 import { END } from "redux-saga";
 import axios from "axios";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { saveAs } from "file-saver";
 
@@ -17,8 +17,10 @@ import {
   COMPANY_APPROVAL_REQUEST,
   COMPANY_DETAIL_TOGGLE,
   COMPANY_REFUSAL_TOGGLE,
+  COMPANY_UNIT_MODAL_TOGGLE,
 } from "../../../reducers/user";
 import Theme from "../../../components/Theme";
+import { GuideUl, GuideLi } from "../../../components/commonComponents";
 
 const AdminContent = styled.div`
   padding: 20px;
@@ -51,7 +53,7 @@ const AdminModalFooter = styled.div`
 `;
 
 const AdminBtn = styled(Button)`
-  margin: 0 5px;
+  margin: 0 3px;
 `;
 
 const companyList = () => {
@@ -62,6 +64,7 @@ const companyList = () => {
     //
     companyDetailModal,
     companyRefusalModal,
+    companyUnitModal,
     //
     st_loadMyInfoDone,
     //
@@ -200,6 +203,12 @@ const companyList = () => {
     },
     [companyRefusalModal, refusalId]
   );
+
+  const unitModalToggle = useCallback(() => {
+    dispatch({
+      type: COMPANY_UNIT_MODAL_TOGGLE,
+    });
+  }, [companyUnitModal]);
 
   ////// HANDLER //////
 
@@ -391,10 +400,10 @@ const companyList = () => {
             >
               전체조회
             </AdminBtn>
-            {/* <AdminBtn size="small" type="danger">
+            <AdminBtn size="small" type="danger" onClick={unitModalToggle}>
               주의사항
             </AdminBtn>
-            <AdminBtn size="small" type="primary">
+            {/* <AdminBtn size="small" type="primary">
               + 추가
             </AdminBtn> */}
           </AdminTab>
@@ -407,9 +416,10 @@ const companyList = () => {
         />
       </AdminContent>
 
-      {/* ////// DETAIL MODAL ////// */}
+      {/* DETAIL MODAL */}
 
       <Modal
+        width="1000px"
         title="상세보기"
         visible={companyDetailModal}
         onCancel={() => detailModalToggle(null)}
@@ -418,8 +428,8 @@ const companyList = () => {
         <Form
           form={dForm}
           ref={dFormRef}
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 20 }}
+          labelCol={{ span: 2 }}
+          wrapperCol={{ span: 22 }}
         >
           <Form.Item label="회원이름" name="username">
             <Input readOnly />
@@ -438,7 +448,7 @@ const companyList = () => {
           </Form.Item>
           {companyTab === 3 && (
             <Form.Item label="거절사유" name="resusalReason">
-              <Input.TextArea readOnly />
+              <Input.TextArea autoSize={{ minRows: 4, maxRows: 8 }} readOnly />
             </Form.Item>
           )}
           {/* <Form.Item label="운영레벨">
@@ -461,26 +471,50 @@ const companyList = () => {
         </Form>
       </Modal>
 
-      {/* ////// REFUSAL MODAL ////// */}
+      {/* UNIT MODAL */}
+
+      <Modal
+        width="600px"
+        title="주의사항"
+        visible={companyUnitModal}
+        footer={null}
+        onCancel={unitModalToggle}
+      >
+        <GuideUl>
+          <GuideLi>주의사항이 없습니다.</GuideLi>
+          <GuideLi>
+            기능사용 문의 및 추가기능개발은 (주)4LEAF SOFTWARE 1600-4198로
+            연락바랍니다.
+          </GuideLi>
+        </GuideUl>
+      </Modal>
+
+      {/* REFUSAL MODAL */}
 
       <Modal
         title="거절하기"
+        width="800px"
         visible={companyRefusalModal}
         onCancel={() => refusalModalToggle(null)}
         footer={null}
       >
         <Form
           form={rForm}
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 20 }}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
           onFinish={refusalHandler}
         >
+          <GuideUl>
+            <GuideLi isImpo={true}>
+              거절사유를 입력시 회원이 거절사유를 확인할 수 있습니다.
+            </GuideLi>
+          </GuideUl>
           <Form.Item
             label="거절사유"
             name="reason"
             rule={[{ required: true, message: "거절사유를 입력해주세요." }]}
           >
-            <Input.TextArea />
+            <Input.TextArea autoSize={{ minRows: 4, maxRows: 8 }} />
           </Form.Item>
           <AdminModalFooter>
             <AdminBtn size="small" onClick={() => refusalModalToggle(null)}>
