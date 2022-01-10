@@ -23,6 +23,7 @@ import {
   notification,
   Input,
   Form,
+  Switch,
 } from "antd";
 import useInput from "../../../hooks/useInput";
 import { SearchOutlined } from "@ant-design/icons";
@@ -118,9 +119,7 @@ const UserList = ({}) => {
 
   useEffect(() => {
     if (detailData) {
-      setTimeout(() => {
-        onFill(detailData);
-      }, 500);
+      onFill(detailData);
     }
   }, [detailData]);
 
@@ -310,6 +309,11 @@ const UserList = ({}) => {
       ),
     },
     {
+      title: "회사승인",
+      dataIndex: "isCompany",
+      render: (data) => <Switch checked={data} readOnly />,
+    },
+    {
       title: "권한수정",
       render: (data) => (
         <Button
@@ -481,7 +485,10 @@ const UserList = ({}) => {
           wrapperCol={{ span: 22 }}
         >
           <GuideUl>
-            <GuideLi isImpo={true}>회원의 정보를 수정할 수 없습니다.</GuideLi>
+            <GuideLi isImpo={true}>
+              회원정보는 개인정보보호법에 의거하여 관리자가 임의로 수정할 수
+              없습니다.
+            </GuideLi>
           </GuideUl>
           <Form.Item name="username" label="이름">
             <Input readOnly />
