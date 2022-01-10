@@ -52,6 +52,7 @@ import {
   PREVIEW_IMAGE_UPLOAD_REQUEST4,
   CLEAR_PREVIEW_IMAGE,
   PRESCRIPTION_CREATE_REQUEST,
+  PRESCRIPTION_DELETE_REQUEST,
 } from "../../../reducers/prescription";
 
 const PreviewImageBox = styled(Image)`
@@ -103,6 +104,7 @@ const UserDeliAddress = ({}) => {
     st_previewImage4Loading,
     st_previewImage4Done,
     st_prescriptionCreateDone,
+    st_prescriptionDeleteDone,
   } = useSelector((state) => state.prescription);
 
   const router = useRouter();
@@ -151,6 +153,21 @@ const UserDeliAddress = ({}) => {
       createForm.resetFields();
     }
   }, [st_prescriptionCreateDone]);
+
+  useEffect(() => {
+    if (st_prescriptionDeleteDone) {
+      dispatch({
+        type: PRODUCT_LIST_REQUEST,
+        data: { title: false },
+      });
+
+      message.success("약속처방 상품이 삭제되었습니다.");
+      dispatch({
+        type: PRODUCT_LIST_REQUEST,
+        data: { title: false },
+      });
+    }
+  }, [st_prescriptionDeleteDone]);
 
   useEffect(() => {
     if (st_productTypeAddDone) {
@@ -465,6 +482,13 @@ const UserDeliAddress = ({}) => {
     [previewImage1, previewImage2, previewImage3, previewImage4]
   );
 
+  const prescriptionDeleteHandler = useCallback((id) => {
+    dispatch({
+      type: PRESCRIPTION_DELETE_REQUEST,
+      data: { id },
+    });
+  }, []);
+
   ////// DATAVIEW //////
 
   ////// DATA COLUMNS //////
@@ -547,11 +571,11 @@ const UserDeliAddress = ({}) => {
 
     {
       title: "삭제",
-      render: () => (
+      render: (data) => (
         <Popconfirm
           placement="top"
           title={"정말 삭제하시겠습니까?"}
-          onConfirm={() => {}}
+          onConfirm={() => prescriptionDeleteHandler(data.id)}
           okText="Yes"
           cancelText="No"
         >

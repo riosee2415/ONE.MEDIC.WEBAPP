@@ -60,6 +60,10 @@ import {
   PRESCRIPTION_CREATE_REQUEST,
   PRESCRIPTION_CREATE_SUCCESS,
   PRESCRIPTION_CREATE_FAILURE,
+  //
+  PRESCRIPTION_DELETE_REQUEST,
+  PRESCRIPTION_DELETE_SUCCESS,
+  PRESCRIPTION_DELETE_FAILURE,
 } from "../reducers/prescription";
 
 // SAGA AREA ********************************************************************************************************
@@ -411,6 +415,29 @@ function* prescriptionCreate(action) {
   }
 }
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function prescriptionDeleteAPI(data) {
+  return axios.patch(`/api/prescription/delete`, data);
+}
+
+function* prescriptionDelete(action) {
+  try {
+    const result = yield call(prescriptionDeleteAPI, action.data);
+
+    yield put({
+      type: PRESCRIPTION_DELETE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRESCRIPTION_DELETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 //////////////////////////////////////////////////////////////
 function* watchProductList() {
   yield takeLatest(PRODUCT_LIST_REQUEST, productList);
@@ -470,6 +497,10 @@ function* watchPrescriptionCreate() {
   yield takeLatest(PRESCRIPTION_CREATE_REQUEST, prescriptionCreate);
 }
 
+function* watchPrescriptionDelete() {
+  yield takeLatest(PRESCRIPTION_DELETE_REQUEST, prescriptionDelete);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* prescriptionSaga() {
   yield all([
@@ -488,6 +519,7 @@ export default function* prescriptionSaga() {
     fork(watchPreviewImageUpload3),
     fork(watchPreviewImageUpload4),
     fork(watchPrescriptionCreate),
+    fork(watchPrescriptionDelete),
     //
   ]);
 }

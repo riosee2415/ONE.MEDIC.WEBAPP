@@ -70,6 +70,10 @@ export const initailState = {
   st_prescriptionCreateLoading: false,
   st_prescriptionCreateDone: false,
   st_prescriptionCreateError: null,
+  //
+  st_prescriptionDeleteLoading: false,
+  st_prescriptionDeleteDone: false,
+  st_prescriptionDeleteError: null,
 
   guideModal: false,
   typeModal: false,
@@ -143,6 +147,10 @@ export const PREVIEW_IMAGE_UPLOAD_FAILURE4 = "PREVIEW_IMAGE_UPLOAD_FAILURE4";
 export const PRESCRIPTION_CREATE_REQUEST = "PRESCRIPTION_CREATE_REQUEST";
 export const PRESCRIPTION_CREATE_SUCCESS = "PRESCRIPTION_CREATE_SUCCESS";
 export const PRESCRIPTION_CREATE_FAILURE = "PRESCRIPTION_CREATE_FAILURE";
+
+export const PRESCRIPTION_DELETE_REQUEST = "PRESCRIPTION_DELETE_REQUEST";
+export const PRESCRIPTION_DELETE_SUCCESS = "PRESCRIPTION_DELETE_SUCCESS";
+export const PRESCRIPTION_DELETE_FAILURE = "PRESCRIPTION_DELETE_FAILURE";
 
 export const CLEAR_PREVIEW_IMAGE = "CLEAR_PREVIEW_IMAGE";
 
@@ -440,6 +448,26 @@ const reducer = (state = initailState, action) =>
         draft.st_prescriptionCreateLoading = false;
         draft.st_prescriptionCreateDone = false;
         draft.st_prescriptionCreateError = action.data;
+        break;
+      ////////////////////
+
+      case PRESCRIPTION_DELETE_REQUEST:
+        draft.st_prescriptionDeleteLoading = true;
+        draft.st_prescriptionDeleteDone = false;
+        draft.st_prescriptionDeleteError = null;
+        break;
+
+      case PRESCRIPTION_DELETE_SUCCESS:
+        draft.st_prescriptionDeleteLoading = false;
+        draft.st_prescriptionDeleteDone = true;
+        draft.st_prescriptionDeleteError = null;
+
+        break;
+
+      case PRESCRIPTION_DELETE_FAILURE:
+        draft.st_prescriptionDeleteLoading = false;
+        draft.st_prescriptionDeleteDone = false;
+        draft.st_prescriptionDeleteError = action.data;
         break;
       ////////////////////
 

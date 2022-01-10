@@ -95,6 +95,28 @@ router.post("/create", isAdminCheck, async (req, res, next) => {
   }
 });
 
+router.patch("/delete", isAdminCheck, async (req, res, next) => {
+  const { id } = req.body;
+
+  try {
+    await Prescription.update(
+      {
+        isDelete: true,
+      },
+      {
+        where: { id: parseInt(id) },
+      }
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(400)
+      .send("삭제가 불가능합니다. 잠시 후 다시 시도해주세요.");
+  }
+});
+
 router.get(["/list", "/list/:title"], async (req, res, next) => {
   const { title } = req.params;
 
