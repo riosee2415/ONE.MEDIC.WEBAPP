@@ -107,6 +107,7 @@ const UserDeliAddress = ({}) => {
   const [typeCreateForm] = Form.useForm();
   const [packCreateForm] = Form.useForm();
   const [unitCreateForm] = Form.useForm();
+  const [createForm] = Form.useForm();
 
   const previewImageRef1 = useRef();
   const previewImageRef2 = useRef();
@@ -336,6 +337,12 @@ const UserDeliAddress = ({}) => {
     dispatch({
       type: CREATE_MODAL_TOGGLE,
     });
+
+    if (!createModal) {
+      dispatch({
+        type: CLEAR_PREVIEW_IMAGE,
+      });
+    }
   }, [createModal]);
 
   const allSearchHandler = useCallback((v) => {
@@ -986,6 +993,28 @@ const UserDeliAddress = ({}) => {
             </PreviewImageUploadButton>
           </Wrapper>
         </Wrapper>
+
+        <Form
+          form={createForm}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
+        >
+          <Form.Item
+            label="상품명"
+            name="title"
+            rules={[{ required: true, message: "상품명은 필수 입니다." }]}
+          >
+            <Input size="small" />
+          </Form.Item>
+
+          <Form.Item
+            label="상품가격"
+            name="price"
+            rules={[{ required: true, message: "판매금액은 필수 입니다." }]}
+          >
+            <Input size="small" type="number" />
+          </Form.Item>
+        </Form>
       </Modal>
     </AdminLayout>
   );
