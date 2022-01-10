@@ -11,6 +11,8 @@ export const initailState = {
   unitModal: false,
   detailModal: false,
 
+  companyUnitModal: false,
+
   companyDetailModal: false,
   companyRefusalModal: false,
 
@@ -108,6 +110,8 @@ export const COMPANY_REFUSAL_TOGGLE = "COMPANY_REFUSAL_TOGGLE";
 export const DETAIL_MODAL_TOGGLE = "DETAIL_MODAL_TOGGLE";
 
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
+
+export const COMPANY_UNIT_MODAL_TOGGLE = "COMPANY_UNIT_MODAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -352,6 +356,10 @@ const reducer = (state = initailState, action) =>
 
       case UNIT_MODAL_TOGGLE:
         draft.unitModal = !draft.unitModal;
+        break;
+
+      case COMPANY_UNIT_MODAL_TOGGLE:
+        draft.companyUnitModal = !draft.companyUnitModal;
         break;
 
       default:
