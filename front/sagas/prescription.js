@@ -57,6 +57,9 @@ import {
   PREVIEW_IMAGE_UPLOAD_SUCCESS4,
   PREVIEW_IMAGE_UPLOAD_FAILURE4,
   //
+  PRESCRIPTION_CREATE_REQUEST,
+  PRESCRIPTION_CREATE_SUCCESS,
+  PRESCRIPTION_CREATE_FAILURE,
 } from "../reducers/prescription";
 
 // SAGA AREA ********************************************************************************************************
@@ -385,6 +388,29 @@ function* previewImageUpload4(action) {
   }
 }
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function prescriptionCreateAPI(data) {
+  return axios.post(`/api/prescription/create`, data);
+}
+
+function* prescriptionCreate(action) {
+  try {
+    const result = yield call(prescriptionCreateAPI, action.data);
+
+    yield put({
+      type: PRESCRIPTION_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRESCRIPTION_CREATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 //////////////////////////////////////////////////////////////
 function* watchProductList() {
   yield takeLatest(PRODUCT_LIST_REQUEST, productList);
@@ -435,8 +461,13 @@ function* watchPreviewImageUpload2() {
 function* watchPreviewImageUpload3() {
   yield takeLatest(PREVIEW_IMAGE_UPLOAD_REQUEST3, previewImageUpload3);
 }
+
 function* watchPreviewImageUpload4() {
   yield takeLatest(PREVIEW_IMAGE_UPLOAD_REQUEST4, previewImageUpload4);
+}
+
+function* watchPrescriptionCreate() {
+  yield takeLatest(PRESCRIPTION_CREATE_REQUEST, prescriptionCreate);
 }
 
 //////////////////////////////////////////////////////////////
@@ -456,6 +487,7 @@ export default function* prescriptionSaga() {
     fork(watchPreviewImageUpload2),
     fork(watchPreviewImageUpload3),
     fork(watchPreviewImageUpload4),
+    fork(watchPrescriptionCreate),
     //
   ]);
 }

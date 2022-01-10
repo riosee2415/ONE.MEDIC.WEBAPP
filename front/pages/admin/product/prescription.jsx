@@ -51,6 +51,7 @@ import {
   PREVIEW_IMAGE_UPLOAD_REQUEST3,
   PREVIEW_IMAGE_UPLOAD_REQUEST4,
   CLEAR_PREVIEW_IMAGE,
+  PRESCRIPTION_CREATE_REQUEST,
 } from "../../../reducers/prescription";
 
 const PreviewImageBox = styled(Image)`
@@ -101,6 +102,7 @@ const UserDeliAddress = ({}) => {
     st_previewImage3Done,
     st_previewImage4Loading,
     st_previewImage4Done,
+    st_prescriptionCreateDone,
   } = useSelector((state) => state.prescription);
 
   const router = useRouter();
@@ -133,6 +135,22 @@ const UserDeliAddress = ({}) => {
   const dispatch = useDispatch();
 
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (st_prescriptionCreateDone) {
+      dispatch({
+        type: CREATE_MODAL_TOGGLE,
+      });
+
+      message.success("새로운 약속처방 상품이 등록되었습니다.");
+      dispatch({
+        type: PRODUCT_LIST_REQUEST,
+        data: { title: false },
+      });
+
+      createForm.resetFields();
+    }
+  }, [st_prescriptionCreateDone]);
 
   useEffect(() => {
     if (st_productTypeAddDone) {
@@ -428,6 +446,24 @@ const UserDeliAddress = ({}) => {
       data: formData,
     });
   });
+
+  const createFormHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: PRESCRIPTION_CREATE_REQUEST,
+        data: {
+          title: data.title,
+          price: data.price,
+          imageURL1: previewImage1,
+          imageURL2: previewImage2,
+          imageURL3: previewImage3,
+          imageURL4: previewImage4,
+          description: data.desc,
+        },
+      });
+    },
+    [previewImage1, previewImage2, previewImage3, previewImage4]
+  );
 
   ////// DATAVIEW //////
 
@@ -877,6 +913,13 @@ const UserDeliAddress = ({}) => {
         title="새로운 약속처방 등록하기"
       >
         <Wrapper dr="row" margin="0px 0px 15px 0px" ju="space-around">
+          <GuideUl>
+            <GuideLi isImpo={true}>
+              이미지는 3:2 비율로 등록해주세요. 이미지 사이즈가 상이할 경우
+              화면에 정상적으로 보이지 않을 수 있습니다.
+            </GuideLi>
+          </GuideUl>
+
           <Wrapper width="400px" height="350px">
             <PreviewImageBox
               width="400px"
@@ -994,10 +1037,27 @@ const UserDeliAddress = ({}) => {
           </Wrapper>
         </Wrapper>
 
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            상품의 첫번째 등록이미지가 대표 이미지로 설정됩니다. 이미지는 필수
+            선택사항이 아니기 때문에 비워두셔도 됩니다.
+          </GuideLi>
+
+          <GuideLi isImpo={true}>
+            종류, 포장, 단위 등은 상품등록 후 상품리스트 페이지에서 추가로
+            설정할 수 있습니다.
+          </GuideLi>
+          <GuideLi>
+            상품가격에는 숫자만 입력해주세요. 상품금액이 3만원 일 경우
+            [30,000원]이 아닌 [30000] 으로 입력해주세요.
+          </GuideLi>
+        </GuideUl>
+
         <Form
           form={createForm}
           labelCol={{ span: 3 }}
           wrapperCol={{ span: 21 }}
+          onFinish={createFormHandler}
         >
           <Form.Item
             label="상품명"
@@ -1014,6 +1074,20 @@ const UserDeliAddress = ({}) => {
           >
             <Input size="small" type="number" />
           </Form.Item>
+
+          <Form.Item
+            label="상품설명"
+            name="desc"
+            rules={[{ required: true, message: "상품설명은 필수 입니다." }]}
+          >
+            <Input.TextArea size="small" style={{ height: 80 }} />
+          </Form.Item>
+
+          <Wrapper dr="row" ju="flex-end">
+            <Button type="primary" size="small" htmlType="submit">
+              등록
+            </Button>
+          </Wrapper>
         </Form>
       </Modal>
     </AdminLayout>

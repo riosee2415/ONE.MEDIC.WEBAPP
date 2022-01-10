@@ -66,6 +66,35 @@ router.post(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+router.post("/create", isAdminCheck, async (req, res, next) => {
+  const {
+    title,
+    price,
+    imageURL1,
+    imageURL2,
+    imageURL3,
+    imageURL4,
+    description,
+  } = req.body;
+
+  try {
+    await Prescription.create({
+      title,
+      price: parseInt(price),
+      imageURL1,
+      imageURL2,
+      imageURL3,
+      imageURL4,
+      description,
+    });
+
+    res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send("상품 추가에 실패했습니다. 다시 시도해주세요.");
+  }
+});
+
 router.get(["/list", "/list/:title"], async (req, res, next) => {
   const { title } = req.params;
 

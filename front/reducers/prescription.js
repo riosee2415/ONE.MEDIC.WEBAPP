@@ -66,6 +66,10 @@ export const initailState = {
   st_previewImage4Loading: false,
   st_previewImage4Done: false,
   st_previewImage4Error: null,
+  //
+  st_prescriptionCreateLoading: false,
+  st_prescriptionCreateDone: false,
+  st_prescriptionCreateError: null,
 
   guideModal: false,
   typeModal: false,
@@ -135,6 +139,10 @@ export const PREVIEW_IMAGE_UPLOAD_FAILURE3 = "PREVIEW_IMAGE_UPLOAD_FAILURE3";
 export const PREVIEW_IMAGE_UPLOAD_REQUEST4 = "PREVIEW_IMAGE_UPLOAD_REQUEST4";
 export const PREVIEW_IMAGE_UPLOAD_SUCCESS4 = "PREVIEW_IMAGE_UPLOAD_SUCCESS4";
 export const PREVIEW_IMAGE_UPLOAD_FAILURE4 = "PREVIEW_IMAGE_UPLOAD_FAILURE4";
+
+export const PRESCRIPTION_CREATE_REQUEST = "PRESCRIPTION_CREATE_REQUEST";
+export const PRESCRIPTION_CREATE_SUCCESS = "PRESCRIPTION_CREATE_SUCCESS";
+export const PRESCRIPTION_CREATE_FAILURE = "PRESCRIPTION_CREATE_FAILURE";
 
 export const CLEAR_PREVIEW_IMAGE = "CLEAR_PREVIEW_IMAGE";
 
@@ -412,6 +420,26 @@ const reducer = (state = initailState, action) =>
         draft.st_previewImage4Loading = false;
         draft.st_previewImage4Done = false;
         draft.st_previewImage4Error = action.data;
+        break;
+      ////////////////////
+
+      case PRESCRIPTION_CREATE_REQUEST:
+        draft.st_prescriptionCreateLoading = true;
+        draft.st_prescriptionCreateDone = false;
+        draft.st_prescriptionCreateError = null;
+        break;
+
+      case PRESCRIPTION_CREATE_SUCCESS:
+        draft.st_prescriptionCreateLoading = false;
+        draft.st_prescriptionCreateDone = true;
+        draft.st_prescriptionCreateError = null;
+
+        break;
+
+      case PRESCRIPTION_CREATE_FAILURE:
+        draft.st_prescriptionCreateLoading = false;
+        draft.st_prescriptionCreateDone = false;
+        draft.st_prescriptionCreateError = action.data;
         break;
       ////////////////////
 
