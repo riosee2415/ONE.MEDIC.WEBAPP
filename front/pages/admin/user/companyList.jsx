@@ -53,7 +53,7 @@ const AdminModalFooter = styled.div`
 `;
 
 const AdminBtn = styled(Button)`
-  margin: 0 5px;
+  margin: 0 3px;
 `;
 
 const companyList = () => {
@@ -419,7 +419,7 @@ const companyList = () => {
       {/* DETAIL MODAL */}
 
       <Modal
-        width="900px"
+        width="1000px"
         title="상세보기"
         visible={companyDetailModal}
         onCancel={() => detailModalToggle(null)}
@@ -448,7 +448,7 @@ const companyList = () => {
           </Form.Item>
           {companyTab === 3 && (
             <Form.Item label="거절사유" name="resusalReason">
-              <Input.TextArea readOnly />
+              <Input.TextArea autoSize={{ minRows: 4, maxRows: 8 }} readOnly />
             </Form.Item>
           )}
           {/* <Form.Item label="운영레벨">

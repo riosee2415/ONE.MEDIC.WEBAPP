@@ -414,12 +414,12 @@ const UserList = ({}) => {
       <Modal
         visible={updateModal}
         width={`400px`}
-        title={`사용자 레벨 수정`}
+        title={`사용자 권한 수정`}
         onCancel={updateModalClose}
         onOk={onSubmitUpdate}
       >
         <Wrapper padding={`10px`} al={`flex-start`}>
-          <div>사용자 레벨</div>
+          <div>사용자 권한</div>
           <Select
             defaultValue="1"
             style={{ width: "100%" }}
@@ -468,7 +468,7 @@ const UserList = ({}) => {
       {/* DETAIL MODAL */}
 
       <Modal
-        width="900px"
+        width="1000px"
         title="상세정보"
         visible={detailModal}
         onCancel={() => detailModalToggle(null)}
