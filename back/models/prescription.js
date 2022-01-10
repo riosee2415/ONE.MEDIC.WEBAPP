@@ -30,6 +30,10 @@ module.exports = class Prescription extends Model {
           type: DataTypes.STRING(500), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
           allowNull: true, // 필수
         },
+        description: {
+          type: DataTypes.STRING(500),
+          allowNull: false,
+        },
         isDelete: {
           type: DataTypes.BOOLEAN,
           allowNull: false,

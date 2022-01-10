@@ -445,7 +445,7 @@ router.get(
                    ? "WHERE  isCompany = true"
                    : type === "3"
                    ? "WHERE  isRefusal = true"
-                   : ""
+                   : "WHERE  NOT companyNo is NULL"
                } 
                  ${type === "1" ? "AND  NOT companyNo is NULL" : ""}
                  ${type === "1" ? "AND  isRefusal = false" : ""}
