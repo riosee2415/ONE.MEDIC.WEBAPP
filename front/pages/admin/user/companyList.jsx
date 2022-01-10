@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import { Button, Table, message, Modal, Form, Input } from "antd";
+import { Button, Table, message, Modal, Form, Input, Popconfirm } from "antd";
 import styled from "styled-components";
 import { END } from "redux-saga";
 import axios from "axios";
@@ -119,9 +119,9 @@ const companyList = () => {
 
   useEffect(() => {
     if (detailData) {
-      setTimeout(() => {
-        onFill(detailData);
-      }, 500);
+      // setTimeout(() => {
+      onFill(detailData);
+      // }, 500);
     }
   }, [detailData]);
 
@@ -284,6 +284,14 @@ const companyList = () => {
       dataIndex: "username",
     },
     {
+      title: "이메일",
+      dataIndex: "email",
+    },
+    {
+      title: "전화번호",
+      dataIndex: "mobile",
+    },
+    {
       title: "회사이름",
       dataIndex: "companyName",
     },
@@ -306,13 +314,16 @@ const companyList = () => {
     {
       title: "승인",
       render: (data) => (
-        <Button
-          type="primary"
-          size="small"
-          onClick={() => approvalHandler(data.id)}
+        <Popconfirm
+          title={"승인하시겠습니까?"}
+          onConfirm={() => approvalHandler(data.id)}
+          okText="승인"
+          cancelText="취소"
         >
-          승인
-        </Button>
+          <Button type="primary" size="small">
+            승인
+          </Button>
+        </Popconfirm>
       ),
     },
     {
@@ -339,6 +350,14 @@ const companyList = () => {
       dataIndex: "username",
     },
     {
+      title: "이메일",
+      dataIndex: "email",
+    },
+    {
+      title: "전화번호",
+      dataIndex: "mobile",
+    },
+    {
       title: "회사이름",
       dataIndex: "companyName",
     },
@@ -363,7 +382,7 @@ const companyList = () => {
     <AdminLayout>
       <PageHeader
         breadcrumbs={["회원 관리", "회사 신청 관리"]}
-        title={`회원 신청 관리`}
+        title={`회사 신청 관리`}
         subTitle={`홈페이지에서 신청한 회사 신청 목록을 관리할 수 있습니다.`}
       />
 
@@ -481,9 +500,12 @@ const companyList = () => {
         onCancel={unitModalToggle}
       >
         <GuideUl>
-          <GuideLi>주의사항이 없습니다.</GuideLi>
+          <GuideLi isImpo={true}>
+            회사인증을 승인하게되면 다시 일반회원으로 되돌릴 수 없으니 정확한
+            확인 후 승인처리 해주시기 바랍니다.
+          </GuideLi>
           <GuideLi>
-            기능사용 문의 및 추가기능개발은 (주)4LEAF SOFTWARE 1600-4198로
+            조작의 실수 및 기능문의는 (주)4LEAF SOFTWARE 1600-4198로
             연락바랍니다.
           </GuideLi>
         </GuideUl>
@@ -500,8 +522,8 @@ const companyList = () => {
       >
         <Form
           form={rForm}
-          labelCol={{ span: 3 }}
-          wrapperCol={{ span: 21 }}
+          labelCol={{ span: 2 }}
+          wrapperCol={{ span: 22 }}
           onFinish={refusalHandler}
         >
           <GuideUl>
