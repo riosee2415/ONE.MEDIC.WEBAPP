@@ -56,7 +56,7 @@ const AdminBtn = styled(Button)`
   margin: 0 3px;
 `;
 
-const companyList = () => {
+const CompanyList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const {
     me,
@@ -581,4 +581,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default companyList;
+export default CompanyList;
