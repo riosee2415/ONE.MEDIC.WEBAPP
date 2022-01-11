@@ -79,7 +79,7 @@ const AppHeader = ({ children, width }) => {
             <Dot />
           </DotWrapper>
         </Wrapper>
-        {!drawar && (
+        {drawar && (
           <Drawer
             placement="right"
             closable={true}
