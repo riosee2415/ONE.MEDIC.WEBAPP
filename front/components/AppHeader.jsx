@@ -97,7 +97,7 @@ const AppHeader = ({ children, width }) => {
               <Wrapper
                 bgColor={Theme.basicTheme_C}
                 color={Theme.white_C}
-                padding={width < 800 ? `25px 20px` : `25px 38px`}
+                padding={width < 800 ? `25px 20px 40px` : `25px 38px 40px`}
               >
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Wrapper
@@ -131,32 +131,13 @@ const AppHeader = ({ children, width }) => {
                     <Text>로그아웃</Text>
                   </Wrapper>
                 </Wrapper>
-                <Wrapper
-                  radius={`20px`}
-                  bgColor={Theme.white_C}
-                  color={Theme.black_C}
-                  padding={`15px 0`}
-                  margin={`25px 0`}
-                  dr={`row`}
-                  fontSize={width < 800 ? `16px` : `18px`}
-                  fontWeight={`bold`}
-                >
-                  <Wrapper
-                    width={`50%`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                  >
-                    쿠폰관리
-                  </Wrapper>
-                  <Wrapper width={`50%`}>배송지관리</Wrapper>
-                </Wrapper>
               </Wrapper>
               <Wrapper padding={width < 800 ? `0 20px` : `0 38px`}>
                 <Wrapper
                   radius={`15px`}
                   bgColor={Theme.white_C}
                   color={Theme.black_C}
-                  shadow={`5px 5px 15px rgba(77, 92, 123, 0.2),
-                  inset -5px -5px 15px rgba(77, 92, 123, 0.05)`}
+                  shadow={Theme.shadow_C}
                   margin={`-20px 0 0`}
                   padding={width < 800 ? `30px` : `50px`}
                 >
@@ -261,8 +242,7 @@ const AppHeader = ({ children, width }) => {
                   radius={`15px`}
                   bgColor={Theme.white_C}
                   color={Theme.black_C}
-                  shadow={`5px 5px 15px rgba(77, 92, 123, 0.2),
-                  inset -5px -5px 15px rgba(77, 92, 123, 0.05)`}
+                  shadow={Theme.shadow_C}
                   margin={`15px 0 0`}
                   padding={`30px`}
                   dr={`row`}

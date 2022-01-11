@@ -22,4 +22,7 @@ export default {
   lightGrey2_C: "#F5F5F5",
   lightGrey3_C: "#f9f9f9",
   darkGrey_C: "#2d3436",
+
+  shadow_C:
+    "5px 5px 15px rgba(77, 92, 123, 0.2), inset -5px -5px 15px rgba(77, 92, 123, 0.05)",
 };

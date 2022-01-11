@@ -166,28 +166,9 @@ export const RsWrapper = styled.article`
   position: ${(props) => props.position};
   box-shadow: 0 -4px 10px ${(props) => props.theme.lightGrey_C};
 
-  @media (max-width: 1500px) {
-    width: 1350px;
-  }
-  @media (max-width: 1350px) {
-    width: 1280px;
-  }
-  @media (max-width: 1280px) {
-    width: 1100px;
-  }
-  @media (max-width: 1100px) {
-    width: 900px;
-  }
-  @media (max-width: 900px) {
-    width: 800px;
-  }
   @media (max-width: 800px) {
-    width: 700px;
-  }
-  @media (max-width: 700px) {
     width: 100%;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: ${(props) => props.padding || `0 10px`};
   }
 `;
 
@@ -196,17 +177,19 @@ export const CommonButton = styled(Button)`
   height: ${(props) => props.height};
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
-  font-size: ${(props) => props.fontSize || `1rem`};
+  font-size: ${(props) => props.fontSize};
   color: ${(props) => props.color || props.theme.white_C};
   border-radius: ${(props) => props.radius || `10px`};
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.16);
 
   ${(props) => !props.kindOf && `background : ${props.theme.basicTheme_C};`}
   ${(props) =>
-    props.kindOf === `white` && `background : ${props.theme.basicTheme_C};`}
-  ${(props) => props.kindOf === `white` && `color : ${props.theme.subTheme_C};`}
+    props.kindOf === `white` && `background : ${props.theme.lightGrey_C};`}
   ${(props) =>
-    props.kindOf === `white` && `border : 1px solid ${props.theme.subTheme_C};`}
+    props.kindOf === `white` && `color : ${props.theme.subTheme2_C};`}
+  ${(props) =>
+    props.kindOf === `white` &&
+    `border : 1px solid ${props.theme.basicTheme_C};`}
   ${(props) =>
     props.kindOf === `black` && `background : ${props.theme.black_C};`}
   ${(props) => props.kindOf === `black` && `color : ${props.theme.white_C};`}
@@ -436,9 +419,9 @@ export const TextInput = styled.input`
   border-radius: ${(props) => props.radius};
   font-size: ${(props) => props.fontSize};
   cursor: ${(props) => props.cursor};
+  z-index: ${(props) => props.zIndex};
   border-radius: ${(props) => props.radius || `10px`};
-  box-shadow: 5px 5px 15px rgba(77, 92, 123, 0.2),
-    inset -5px -5px 15px rgba(77, 92, 123, 0.05);
+  box-shadow: ${(props) => props.theme.shadow_C};
   transition: 0.3s;
 
   &:focus {
@@ -458,6 +441,7 @@ export const TextInput = styled.input`
   &::placeholder {
     font-size: 14px;
     line-height: 1.6;
+    font-weight: 300;
     color: ${(props) => props.theme.grey2_C};
   }
 `;

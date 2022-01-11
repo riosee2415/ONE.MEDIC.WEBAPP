@@ -20,6 +20,7 @@ const GlobalStyles = createGlobalStyle`
 
   body {
     font-family: 'NanumSquare', sans-serif;
+    font-size: 16px;
   }
 
   a {
@@ -49,12 +50,12 @@ const GlobalStyles = createGlobalStyle`
     padding:0;
   }
 
-  .anticon svg{
+  .ant-drawer-header-no-title .ant-drawer-close svg{
     color: ${(props) => props.theme.white_C};
   }
   
   @media (max-width : 576px) {
-    html { 
+    body { 
       font-size : 14px;
     }
   }
