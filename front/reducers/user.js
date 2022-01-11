@@ -11,6 +11,9 @@ export const initailState = {
   unitModal: false,
   detailModal: false,
 
+  operatorModal: false,
+  operatorUnitModal: false,
+
   companyUnitModal: false,
 
   companyDetailModal: false,
@@ -56,6 +59,10 @@ export const initailState = {
   st_companyApprovalLoading: false, // 회사 승인
   st_companyApprovalDone: false,
   st_companyApprovalError: null,
+  //
+  st_companyOperatorLoading: false, // 회사 운영레벨 변경
+  st_companyOperatorDone: false,
+  st_companyOperatorError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -98,6 +105,10 @@ export const COMPANY_APPROVAL_REQUEST = "COMPANY_APPROVAL_REQUEST";
 export const COMPANY_APPROVAL_SUCCESS = "COMPANY_APPROVAL_SUCCESS";
 export const COMPANY_APPROVAL_FAILURE = "COMPANY_APPROVAL_FAILURE";
 
+export const COMPANY_OPERATOR_REQUEST = "COMPANY_OPERATOR_REQUEST";
+export const COMPANY_OPERATOR_SUCCESS = "COMPANY_OPERATOR_SUCCESS";
+export const COMPANY_OPERATOR_FAILURE = "COMPANY_OPERATOR_FAILURE";
+
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
 
@@ -112,6 +123,10 @@ export const DETAIL_MODAL_TOGGLE = "DETAIL_MODAL_TOGGLE";
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 
 export const COMPANY_UNIT_MODAL_TOGGLE = "COMPANY_UNIT_MODAL_TOGGLE";
+
+export const OPERATOR_MODAL_TOGGLE = "OPERATOR_MODAL_TOGGLE";
+
+export const OPERATOR_UNIT_MODAL_TOGGLE = "OPERATOR_UNIT_MODAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -316,6 +331,26 @@ const reducer = (state = initailState, action) =>
       }
       //////////////////////////////////////////////
 
+      case COMPANY_OPERATOR_REQUEST: {
+        draft.st_companyOperatorLoading = true;
+        draft.st_companyOperatorDone = null;
+        draft.st_companyOperatorError = false;
+        break;
+      }
+      case COMPANY_OPERATOR_SUCCESS: {
+        draft.st_companyOperatorLoading = false;
+        draft.st_companyOperatorDone = true;
+        draft.st_companyOperatorError = null;
+        break;
+      }
+      case COMPANY_OPERATOR_FAILURE: {
+        draft.st_companyOperatorLoading = false;
+        draft.st_companyOperatorDone = false;
+        draft.st_companyOperatorError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
       case CURRENT_ADMINMENU_STATUS: {
         const exist = draft.currentAdminMenu.filter(
           (data) => data === action.data.key
@@ -360,6 +395,14 @@ const reducer = (state = initailState, action) =>
 
       case COMPANY_UNIT_MODAL_TOGGLE:
         draft.companyUnitModal = !draft.companyUnitModal;
+        break;
+
+      case OPERATOR_MODAL_TOGGLE:
+        draft.operatorModal = !draft.operatorModal;
+        break;
+
+      case OPERATOR_UNIT_MODAL_TOGGLE:
+        draft.operatorUnitModal = !draft.operatorUnitModal;
         break;
 
       default:

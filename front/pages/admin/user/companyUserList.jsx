@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from "react";
-import { Button, Table } from "antd";
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import { Button, Form, Select, Table, Modal, message } from "antd";
 import styled from "styled-components";
 import { END } from "redux-saga";
 import axios from "axios";
@@ -10,10 +10,17 @@ import wrapper from "../../../store/configureStore";
 import {
   LOAD_MY_INFO_REQUEST,
   COMPANY_LIST_REQUEST,
+  COMPANY_OPERATOR_REQUEST,
+  OPERATOR_MODAL_TOGGLE,
+  OPERATOR_UNIT_MODAL_TOGGLE,
 } from "../../../reducers/user";
 import PageHeader from "../../../components/admin/PageHeader";
 import AdminLayout from "../../../components/AdminLayout";
-import { Wrapper } from "../../../components/commonComponents";
+import {
+  GuideLi,
+  GuideUl,
+  Wrapper,
+} from "../../../components/commonComponents";
 
 const AdminContent = styled.div`
   padding: 20px;
@@ -21,9 +28,16 @@ const AdminContent = styled.div`
 
 const CompanyUserList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
-  const { me, st_loadMyInfoDone, companyUserLists } = useSelector(
-    (state) => state.user
-  );
+  const {
+    me,
+    st_loadMyInfoDone,
+    companyUserLists,
+    operatorModal,
+    operatorUnitModal,
+    //
+    st_companyOperatorDone,
+    st_companyOperatorError,
+  } = useSelector((state) => state.user);
 
   const router = useRouter();
 
@@ -39,6 +53,91 @@ const CompanyUserList = () => {
     }
   }, [st_loadMyInfoDone]);
   /////////////////////////////////////////////////////////////////////////
+
+  ////// HOOKS //////
+
+  const dispatch = useDispatch();
+
+  const [updateData, setUpdateData] = useState(null);
+
+  const [form] = Form.useForm();
+  const formRef = useRef();
+
+  ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (updateData) {
+      onFill(updateData);
+    }
+  }, [updateData]);
+
+  useEffect(() => {
+    if (st_companyOperatorDone) {
+      dispatch({
+        type: COMPANY_LIST_REQUEST,
+        data: {
+          type: 2,
+        },
+      });
+
+      form.resetFields();
+
+      dispatch({
+        type: OPERATOR_MODAL_TOGGLE,
+      });
+
+      message.success("운영레벨이 변경되었습니다.");
+    }
+  }, [st_companyOperatorDone]);
+
+  useEffect(() => {
+    if (st_companyOperatorError) {
+      return message.error(st_companyOperatorError);
+    }
+  }, [st_companyOperatorError]);
+
+  ////// TOGGLE //////
+
+  const operatorMdoalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setUpdateData(data);
+      } else {
+        setUpdateData(null);
+      }
+      dispatch({
+        type: OPERATOR_MODAL_TOGGLE,
+      });
+    },
+    [operatorModal, updateData]
+  );
+
+  const unitModalToggle = useCallback(() => {
+    dispatch({
+      type: OPERATOR_UNIT_MODAL_TOGGLE,
+    });
+  }, [operatorUnitModal]);
+
+  ////// HANDLER //////
+
+  const onFill = useCallback(() => {
+    formRef.current.setFieldsValue({
+      operatorLevel: updateData.operatorLevel,
+    });
+  }, [updateData]);
+
+  const onSubmit = useCallback(
+    (data) => {
+      dispatch({
+        type: COMPANY_OPERATOR_REQUEST,
+        data: {
+          id: updateData.id,
+          operatorLevel: parseInt(data.operatorLevel),
+        },
+      });
+    },
+    [updateData]
+  );
 
   ////// DATAVIEW //////
 
@@ -74,7 +173,11 @@ const CompanyUserList = () => {
     {
       title: "운영레벨변경",
       render: (data) => (
-        <Button size="small" type="primary">
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => operatorMdoalToggle(data)}
+        >
           운영레벨변경
         </Button>
       ),
@@ -91,7 +194,7 @@ const CompanyUserList = () => {
 
       <AdminContent>
         <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
-          <Button size="small" type="danger">
+          <Button size="small" type="danger" onClick={unitModalToggle}>
             주의사항
           </Button>
         </Wrapper>
@@ -103,6 +206,55 @@ const CompanyUserList = () => {
           dataSource={companyUserLists ? companyUserLists : []}
         />
       </AdminContent>
+
+      <Modal
+        visible={operatorModal}
+        title="운영레벨 변경"
+        footer={null}
+        onCancel={() => operatorMdoalToggle(null)}
+      >
+        <Form
+          form={form}
+          ref={formRef}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
+          onFinish={onSubmit}
+        >
+          <Form.Item
+            label="운영레벨"
+            name="operatorLevel"
+            rules={[{ required: true, message: "운영레벨을 선택해주세요." }]}
+          >
+            <Select>
+              <Select.Option value="1">1</Select.Option>
+              <Select.Option value="2">2</Select.Option>
+              <Select.Option value="3">3</Select.Option>
+              <Select.Option value="4">4</Select.Option>
+              <Select.Option value="5">5</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Wrapper dr={`row`} ju={`flex-end`}>
+            <Button size="small" style={{ margin: `0 5px 0 0` }}>
+              취소
+            </Button>
+            <Button size="small" type="primary" htmlType="submit">
+              변경
+            </Button>
+          </Wrapper>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="주의사항"
+        footer={null}
+        onCancel={unitModalToggle}
+        visible={operatorUnitModal}
+      >
+        <GuideUl>
+          <GuideLi></GuideLi>
+        </GuideUl>
+      </Modal>
     </AdminLayout>
   );
 };

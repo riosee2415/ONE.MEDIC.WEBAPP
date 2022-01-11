@@ -41,6 +41,10 @@ import {
   COMPANY_APPROVAL_SUCCESS,
   COMPANY_APPROVAL_FAILURE,
   /////////////////////////////
+  COMPANY_OPERATOR_REQUEST,
+  COMPANY_OPERATOR_SUCCESS,
+  COMPANY_OPERATOR_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -309,6 +313,33 @@ function* companyApproval(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function companyOperatorAPI(data) {
+  return axios.patch(`/api/user/company/operator`, data);
+}
+
+function* companyOperator(action) {
+  try {
+    const result = yield call(companyOperatorAPI, action.data);
+
+    yield put({
+      type: COMPANY_OPERATOR_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: COMPANY_OPERATOR_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -351,6 +382,10 @@ function* watchCompanyApproval() {
   yield takeLatest(COMPANY_APPROVAL_REQUEST, companyApproval);
 }
 
+function* watchCompanyOperator() {
+  yield takeLatest(COMPANY_OPERATOR_REQUEST, companyOperator);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -364,6 +399,7 @@ export default function* userSaga() {
     fork(watchCompanyList),
     fork(watchCompanyRefusal),
     fork(watchCompanyApproval),
+    fork(watchCompanyOperator),
     //
   ]);
 }
