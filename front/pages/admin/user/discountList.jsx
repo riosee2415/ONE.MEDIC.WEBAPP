@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { Button, Table, Form, Modal, Input } from "antd";
+import { Button, Table, Form, Modal, Input, message } from "antd";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { END } from "redux-saga";
 import axios from "axios";
@@ -19,6 +19,8 @@ import {
   DISCOUNT_LIST_REQUEST,
   UNIT_MODAL_TOGGLE,
   CU_MODAL_TOGGLE,
+  DISCOUNT_CREATE_REQUEST,
+  DISCOUNT_UPDATE_REQUEST,
 } from "../../../reducers/discount";
 
 const AdminContent = styled.div`
@@ -46,16 +48,75 @@ const DiscountList = () => {
 
   ////// GLOBAL STATE //////
 
-  const { discounts, cuModal, unitModal } = useSelector(
-    (state) => state.discount
-  );
+  const {
+    discounts,
+    cuModal,
+    unitModal,
+    //
+    st_discountCreateDone,
+    st_discountCreateError,
+    //
+    st_discountUpdateDone,
+    st_discountUpdateError,
+  } = useSelector((state) => state.discount);
 
   ////// HOOKS //////
 
   const dispatch = useDispatch();
 
-  const form = Form.useForm();
+  const [form] = Form.useForm();
   const formRef = useRef();
+
+  const [updateData, setUpdateData] = useState(null);
+
+  ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (st_discountCreateDone) {
+      dispatch({
+        type: DISCOUNT_LIST_REQUEST,
+      });
+
+      dispatch({
+        type: CU_MODAL_TOGGLE,
+      });
+      form.resetFields();
+      return message.success("혜택이 추가되었습니다.");
+    }
+  }, [st_discountCreateDone]);
+
+  useEffect(() => {
+    if (st_discountCreateError) {
+      return message.error(st_discountCreateError);
+    }
+  }, [st_discountCreateError]);
+
+  useEffect(() => {
+    if (st_discountUpdateDone) {
+      dispatch({
+        type: DISCOUNT_LIST_REQUEST,
+      });
+
+      dispatch({
+        type: CU_MODAL_TOGGLE,
+      });
+      form.resetFields();
+      setUpdateData(null);
+      return message.success("혜택이 수정되었습니다.");
+    }
+  }, [st_discountUpdateDone]);
+
+  useEffect(() => {
+    if (st_discountUpdateError) {
+      return message.error(st_discountUpdateError);
+    }
+  }, [st_discountUpdateError]);
+
+  useEffect(() => {
+    if (updateData) {
+      onFill(updateData);
+    }
+  }, [updateData]);
 
   ////// TOGGLE //////
 
@@ -73,11 +134,47 @@ const DiscountList = () => {
 
   const updateModalToggle = useCallback(
     (data) => {
+      if (data) {
+        setUpdateData(data);
+      } else {
+        form.resetFields();
+        setUpdateData(null);
+      }
       dispatch({
         type: CU_MODAL_TOGGLE,
       });
     },
-    [cuModal]
+    [cuModal, updateData]
+  );
+
+  ////// HANDLER //////
+
+  const onFill = useCallback((data) => {
+    formRef.current.setFieldsValue({
+      value: data.value,
+    });
+  }, []);
+
+  const onSubmit = useCallback((data) => {
+    dispatch({
+      type: DISCOUNT_CREATE_REQUEST,
+      data: {
+        value: data.value,
+      },
+    });
+  }, []);
+
+  const onUpdateSubmit = useCallback(
+    (data) => {
+      dispatch({
+        type: DISCOUNT_UPDATE_REQUEST,
+        data: {
+          id: updateData.id,
+          value: data.value,
+        },
+      });
+    },
+    [updateData]
   );
 
   ////// DATAVIEW //////
@@ -94,7 +191,11 @@ const DiscountList = () => {
     {
       title: "수정",
       render: (data) => (
-        <Button size="small" type="primary">
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => updateModalToggle(data)}
+        >
           수정
         </Button>
       ),
@@ -140,8 +241,9 @@ const DiscountList = () => {
       >
         <GuideUl>
           <GuideLi isImpo={true}>
-            회원의 운영레벨에 따라 각각의 타입의 할인율이 적용됩니다..
+            회원의 운영레벨에 따라 각각의 타입의 할인율이 적용됩니다.
           </GuideLi>
+          <GuideLi>사업자 승인된 회원에게만 적용됩니다.</GuideLi>
           <GuideLi>
             조작의 실수 및 기능문의는 (주)4LEAF SOFTWARE 1600-4198로
             연락바랍니다.
@@ -150,35 +252,45 @@ const DiscountList = () => {
       </Modal>
 
       <Modal
-        title="회원 혜택 추가"
+        title={updateData ? `회원 혜택 수정` : `회원 혜택 추가`}
         visible={cuModal}
-        onCancel={createModalToggle}
+        onCancel={
+          updateData ? () => updateModalToggle(null) : createModalToggle
+        }
         footer={null}
       >
         <Form
-          labelCol={{ span: 3 }}
-          wrapperCol={{ span: 21 }}
           form={form}
           ref={formRef}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
+          onFinish={updateData ? onUpdateSubmit : onSubmit}
         >
+          <GuideUl>
+            <GuideLi isImpo={true}>
+              할인율을 입력할 시 %는 제외하고 입력하셔야 합니다.
+            </GuideLi>
+          </GuideUl>
           <Form.Item
             label="할인율"
             name="value"
             rules={[{ required: true, message: "할인율을 입력해주세요." }]}
           >
-            <Input />
+            <Input type="number" />
           </Form.Item>
 
           <Wrapper dr={`row`} ju={`flex-end`}>
             <Button
               size="small"
               style={{ margin: `0 5px 0 0` }}
-              onClick={createModalToggle}
+              onClick={
+                updateData ? () => updateModalToggle(null) : createModalToggle
+              }
             >
               취소
             </Button>
             <Button size="small" type="primary" htmlType="submit">
-              추가
+              {updateData ? "수정" : "추가"}
             </Button>
           </Wrapper>
         </Form>
