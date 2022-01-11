@@ -78,7 +78,7 @@ export const WholeWrapper = styled.section`
   height: ${(props) => props.height};
   color: ${(props) => props.color};
   display: ${(props) => props.display || `flex`};
-  background: ${(props) => props.bgColor};
+  background: ${(props) => props.bgColor || props.theme.lightGrey3_C};
   flex-direction: ${(props) => props.dr || `column`};
   align-items: ${(props) => props.al || `center`};
   justify-content: ${(props) => props.ju || `center`};
@@ -147,10 +147,10 @@ export const Wrapper = styled.div`
 export const RsWrapper = styled.article`
   width: 500px;
   height: ${(props) => props.height || `100%`};
-  ${(props) => props.minHeight}
+  min-height: ${(props) => props.minHeight};
   color: ${(props) => props.color};
   display: ${(props) => props.display || `flex`};
-  background: ${(props) => props.bgColor};
+  background: ${(props) => props.bgColor || props.theme.white_C};
   color: ${(props) => props.color};
   flex-direction: ${(props) => props.dr || `column`};
   align-items: ${(props) => props.al || `center`};
@@ -164,6 +164,7 @@ export const RsWrapper = styled.article`
   border: ${(props) => props.border};
   font-size: ${(props) => props.fontSize};
   position: ${(props) => props.position};
+  box-shadow: 0 -4px 10px ${(props) => props.theme.lightGrey_C};
 
   @media (max-width: 1500px) {
     width: 1350px;

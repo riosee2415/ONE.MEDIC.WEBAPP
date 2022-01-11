@@ -6,6 +6,7 @@ import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import axios from "axios";
 import { END } from "redux-saga";
 import { useSelector } from "react-redux";
+import wrapper from "../../store/configureStore";
 import {
   RsWrapper,
   Wrapper,
@@ -74,7 +75,7 @@ const Login = () => {
 
       <ClientLayout>
         <WholeWrapper>
-          <RsWrapper>
+          <RsWrapper minHeight={`calc(100vh - 170px)`}>
             <Wrapper padding={`180px 0 120px`}>
               <Image
                 alt="logo"
