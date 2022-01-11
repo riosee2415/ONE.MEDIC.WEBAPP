@@ -66,6 +66,41 @@ router.post(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+router.patch("/update", isAdminCheck, async (req, res, next) => {
+  const {
+    id,
+    title,
+    price,
+    imageURL1,
+    imageURL2,
+    imageURL3,
+    imageURL4,
+    description,
+  } = req.body;
+
+  try {
+    await Prescription.update(
+      {
+        title,
+        price: parseInt(price),
+        imageURL1,
+        imageURL2,
+        imageURL3,
+        imageURL4,
+        description,
+      },
+      {
+        where: { id: parseInt(id) },
+      }
+    );
+
+    res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send("상품 수정에 실패했습니다. 다시 시도해주세요.");
+  }
+});
+
 router.post("/create", isAdminCheck, async (req, res, next) => {
   const {
     title,
@@ -133,7 +168,8 @@ router.get(["/list", "/list/:title"], async (req, res, next) => {
             A.imageURL3, 
             A.imageURL4,
             DATE_FORMAT(A.createdAt, "%Y년 %m월 %d일") 	AS createdAt,
-            DATE_FORMAT(A.updatedAt, "%Y년 %m월 %d일") 	AS updatedAt
+            DATE_FORMAT(A.updatedAt, "%Y년 %m월 %d일") 	AS updatedAt,
+            description
      FROM	prescriptions	A
     WHERE	isDelete = false
       AND   A.title LIKE '%${_title}%'

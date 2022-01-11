@@ -64,6 +64,10 @@ import {
   PRESCRIPTION_DELETE_REQUEST,
   PRESCRIPTION_DELETE_SUCCESS,
   PRESCRIPTION_DELETE_FAILURE,
+  //
+  PRESCRIPTION_UPDATE_REQUEST,
+  PRESCRIPTION_UPDATE_SUCCESS,
+  PRESCRIPTION_UPDATE_FAILURE,
 } from "../reducers/prescription";
 
 // SAGA AREA ********************************************************************************************************
@@ -438,6 +442,29 @@ function* prescriptionDelete(action) {
   }
 }
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function prescriptionUpdateAPI(data) {
+  return axios.patch(`/api/prescription/update`, data);
+}
+
+function* prescriptionUpdate(action) {
+  try {
+    const result = yield call(prescriptionUpdateAPI, action.data);
+
+    yield put({
+      type: PRESCRIPTION_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PRESCRIPTION_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 //////////////////////////////////////////////////////////////
 function* watchProductList() {
   yield takeLatest(PRODUCT_LIST_REQUEST, productList);
@@ -501,6 +528,10 @@ function* watchPrescriptionDelete() {
   yield takeLatest(PRESCRIPTION_DELETE_REQUEST, prescriptionDelete);
 }
 
+function* watchPrescriptionUpdate() {
+  yield takeLatest(PRESCRIPTION_UPDATE_REQUEST, prescriptionUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* prescriptionSaga() {
   yield all([
@@ -520,6 +551,7 @@ export default function* prescriptionSaga() {
     fork(watchPreviewImageUpload4),
     fork(watchPrescriptionCreate),
     fork(watchPrescriptionDelete),
+    fork(watchPrescriptionUpdate),
     //
   ]);
 }

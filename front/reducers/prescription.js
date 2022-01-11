@@ -74,12 +74,17 @@ export const initailState = {
   st_prescriptionDeleteLoading: false,
   st_prescriptionDeleteDone: false,
   st_prescriptionDeleteError: null,
+  //
+  st_prescriptionUpdateLoading: false,
+  st_prescriptionUpdateDone: false,
+  st_prescriptionUpdateError: null,
 
   guideModal: false,
   typeModal: false,
   packModal: false,
   unitModal: false,
   createModal: false,
+  updateModal: false,
 };
 
 export const PRODUCT_LIST_REQUEST = "PRODUCT_LIST_REQUEST";
@@ -127,6 +132,7 @@ export const TYPE_MODAL_TOGGLE = "TYPE_MODAL_TOGGLE";
 export const PACK_MODAL_TOGGLE = "PACK_MODAL_TOGGLE";
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 export const CREATE_MODAL_TOGGLE = "CREATE_MODAL_TOGGLE";
+export const UPDATE_MODAL_TOGGLE = "UPDATE_MODAL_TOGGLE";
 
 export const PREVIEW_IMAGE_UPLOAD_REQUEST1 = "PREVIEW_IMAGE_UPLOAD_REQUEST1";
 export const PREVIEW_IMAGE_UPLOAD_SUCCESS1 = "PREVIEW_IMAGE_UPLOAD_SUCCESS1";
@@ -152,7 +158,12 @@ export const PRESCRIPTION_DELETE_REQUEST = "PRESCRIPTION_DELETE_REQUEST";
 export const PRESCRIPTION_DELETE_SUCCESS = "PRESCRIPTION_DELETE_SUCCESS";
 export const PRESCRIPTION_DELETE_FAILURE = "PRESCRIPTION_DELETE_FAILURE";
 
+export const PRESCRIPTION_UPDATE_REQUEST = "PRESCRIPTION_UPDATE_REQUEST";
+export const PRESCRIPTION_UPDATE_SUCCESS = "PRESCRIPTION_UPDATE_SUCCESS";
+export const PRESCRIPTION_UPDATE_FAILURE = "PRESCRIPTION_UPDATE_FAILURE";
+
 export const CLEAR_PREVIEW_IMAGE = "CLEAR_PREVIEW_IMAGE";
+export const SET_PREVIEW_IMAGE = "SET_PREVIEW_IMAGE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -471,11 +482,38 @@ const reducer = (state = initailState, action) =>
         break;
       ////////////////////
 
+      case PRESCRIPTION_UPDATE_REQUEST:
+        draft.st_prescriptionUpdateLoading = true;
+        draft.st_prescriptionUpdateDone = false;
+        draft.st_prescriptionUpdateError = null;
+        break;
+
+      case PRESCRIPTION_UPDATE_SUCCESS:
+        draft.st_prescriptionUpdateLoading = false;
+        draft.st_prescriptionUpdateDone = true;
+        draft.st_prescriptionUpdateError = null;
+
+        break;
+
+      case PRESCRIPTION_UPDATE_FAILURE:
+        draft.st_prescriptionUpdateLoading = false;
+        draft.st_prescriptionUpdateDone = false;
+        draft.st_prescriptionUpdateError = action.data;
+        break;
+      ////////////////////
+
       case CLEAR_PREVIEW_IMAGE:
         draft.previewImage1 = null;
         draft.previewImage2 = null;
         draft.previewImage3 = null;
         draft.previewImage4 = null;
+        break;
+
+      case SET_PREVIEW_IMAGE:
+        draft.previewImage1 = action.data.img1;
+        draft.previewImage2 = action.data.img2;
+        draft.previewImage3 = action.data.img3;
+        draft.previewImage4 = action.data.img4;
         break;
 
       case GUIDE_MODAL_TOGGLE:
@@ -496,6 +534,10 @@ const reducer = (state = initailState, action) =>
 
       case CREATE_MODAL_TOGGLE:
         draft.createModal = !draft.createModal;
+        break;
+
+      case UPDATE_MODAL_TOGGLE:
+        draft.updateModal = !draft.updateModal;
         break;
 
       default:

@@ -53,6 +53,9 @@ import {
   CLEAR_PREVIEW_IMAGE,
   PRESCRIPTION_CREATE_REQUEST,
   PRESCRIPTION_DELETE_REQUEST,
+  UPDATE_MODAL_TOGGLE,
+  SET_PREVIEW_IMAGE,
+  PRESCRIPTION_UPDATE_REQUEST,
 } from "../../../reducers/prescription";
 
 const PreviewImageBox = styled(Image)`
@@ -85,6 +88,7 @@ const UserDeliAddress = ({}) => {
     packModal,
     unitModal,
     createModal,
+    updateModal,
     previewImage1,
     previewImage2,
     previewImage3,
@@ -105,6 +109,7 @@ const UserDeliAddress = ({}) => {
     st_previewImage4Done,
     st_prescriptionCreateDone,
     st_prescriptionDeleteDone,
+    st_prescriptionUpdateDone,
   } = useSelector((state) => state.prescription);
 
   const router = useRouter();
@@ -112,6 +117,7 @@ const UserDeliAddress = ({}) => {
   const [packCreateForm] = Form.useForm();
   const [unitCreateForm] = Form.useForm();
   const [createForm] = Form.useForm();
+  const [updateForm] = Form.useForm();
 
   const previewImageRef1 = useRef();
   const previewImageRef2 = useRef();
@@ -153,6 +159,20 @@ const UserDeliAddress = ({}) => {
       createForm.resetFields();
     }
   }, [st_prescriptionCreateDone]);
+
+  useEffect(() => {
+    if (st_prescriptionUpdateDone) {
+      dispatch({
+        type: UPDATE_MODAL_TOGGLE,
+      });
+
+      message.success("약속처방 상품이 수정되었습니다.");
+      dispatch({
+        type: PRODUCT_LIST_REQUEST,
+        data: { title: false },
+      });
+    }
+  }, [st_prescriptionUpdateDone]);
 
   useEffect(() => {
     if (st_prescriptionDeleteDone) {
@@ -380,6 +400,42 @@ const UserDeliAddress = ({}) => {
     }
   }, [createModal]);
 
+  const updateModalToggle = useCallback(
+    (data) => {
+      setCurrentId(data.id);
+
+      if (updateModal) {
+        dispatch({
+          type: CLEAR_PREVIEW_IMAGE,
+        });
+      } else {
+        onFill(data);
+        dispatch({
+          type: SET_PREVIEW_IMAGE,
+          data: {
+            img1: data.imageURL1,
+            img2: data.imageURL2,
+            img3: data.imageURL3,
+            img4: data.imageURL4,
+          },
+        });
+      }
+
+      dispatch({
+        type: UPDATE_MODAL_TOGGLE,
+      });
+    },
+    [updateModal, currentId]
+  );
+
+  const onFill = useCallback((data) => {
+    updateForm.setFieldsValue({
+      title: data.title,
+      price: data.originPrice,
+      desc: data.description,
+    });
+  }, []);
+
   const allSearchHandler = useCallback((v) => {
     dispatch({
       type: PRODUCT_LIST_REQUEST,
@@ -489,6 +545,25 @@ const UserDeliAddress = ({}) => {
     });
   }, []);
 
+  const prescriptionUpdateHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: PRESCRIPTION_UPDATE_REQUEST,
+        data: {
+          id: currentId,
+          title: data.title,
+          price: data.price,
+          imageURL1: previewImage1,
+          imageURL2: previewImage2,
+          imageURL3: previewImage3,
+          imageURL4: previewImage4,
+          description: data.desc,
+        },
+      });
+    },
+    [previewImage1, previewImage2, previewImage3, previewImage4, currentId]
+  );
+
   ////// DATAVIEW //////
 
   ////// DATA COLUMNS //////
@@ -562,8 +637,12 @@ const UserDeliAddress = ({}) => {
 
     {
       title: "상세정보",
-      render: () => (
-        <Button type="primary" size="small">
+      render: (data) => (
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => updateModalToggle(data)}
+        >
           상품상세 정보
         </Button>
       ),
@@ -675,7 +754,7 @@ const UserDeliAddress = ({}) => {
     <AdminLayout>
       <PageHeader
         breadcrumbs={["상품 관리", "약속처방 상품 관리"]}
-        title={`약속처방 상품관리`}
+        title={`약속처방 상품 관리`}
         subTitle={`약속처방에서 판매되는 상품을 관리하는 전산시스템 입니다.`}
       />
 
@@ -1110,6 +1189,193 @@ const UserDeliAddress = ({}) => {
           <Wrapper dr="row" ju="flex-end">
             <Button type="primary" size="small" htmlType="submit">
               등록
+            </Button>
+          </Wrapper>
+        </Form>
+      </Modal>
+
+      {/* UPDATE MODAL */}
+      <Modal
+        visible={updateModal}
+        onCancel={updateModalToggle}
+        footer={null}
+        width="1080px"
+        title="새로운 약속처방 상세정보/정보수정"
+      >
+        <Wrapper dr="row" margin="0px 0px 15px 0px" ju="space-around">
+          <GuideUl>
+            <GuideLi isImpo={true}>
+              이미지는 3:2 비율로 등록해주세요. 이미지 사이즈가 상이할 경우
+              화면에 정상적으로 보이지 않을 수 있습니다.
+            </GuideLi>
+          </GuideUl>
+
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage1
+                  ? previewImage1
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef1}
+              onChange={onChangeImages1}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload1}
+              loading={st_previewImage1Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage2
+                  ? previewImage2
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef2}
+              onChange={onChangeImages2}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload2}
+              loading={st_previewImage2Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+        </Wrapper>
+
+        <Wrapper dr="row" margin="0px 0px 15px 0px" ju="space-around">
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage3
+                  ? previewImage3
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef3}
+              onChange={onChangeImages3}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload3}
+              loading={st_previewImage3Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+          <Wrapper width="400px" height="350px">
+            <PreviewImageBox
+              width="400px"
+              height="300px"
+              src={
+                previewImage4
+                  ? previewImage4
+                  : "https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/4LEAFSOFTWARE/assets/images/KakaoTalk_Photo_2022-01-07-12-29-22.png"
+              }
+            />
+            <input
+              type="file"
+              name="image"
+              accept=".png, .jpg"
+              // multiple
+              hidden
+              ref={previewImageRef4}
+              onChange={onChangeImages4}
+            />
+            <PreviewImageUploadButton
+              type="primary"
+              onClick={clickImageUpload4}
+              loading={st_previewImage4Loading}
+              size="small"
+            >
+              상품 이미지 선택
+            </PreviewImageUploadButton>
+          </Wrapper>
+        </Wrapper>
+
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            상품의 첫번째 등록이미지가 대표 이미지로 설정됩니다. 이미지는 필수
+            선택사항이 아니기 때문에 비워두셔도 됩니다.
+          </GuideLi>
+
+          <GuideLi isImpo={true}>
+            종류, 포장, 단위 등은 상품등록 후 상품리스트 페이지에서 추가로
+            설정할 수 있습니다.
+          </GuideLi>
+          <GuideLi>
+            상품가격에는 숫자만 입력해주세요. 상품금액이 3만원 일 경우
+            [30,000원]이 아닌 [30000] 으로 입력해주세요.
+          </GuideLi>
+        </GuideUl>
+
+        <Form
+          form={updateForm}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
+          onFinish={prescriptionUpdateHandler}
+        >
+          <Form.Item
+            label="상품명"
+            name="title"
+            rules={[{ required: true, message: "상품명은 필수 입니다." }]}
+          >
+            <Input size="small" />
+          </Form.Item>
+
+          <Form.Item
+            label="상품가격"
+            name="price"
+            rules={[{ required: true, message: "판매금액은 필수 입니다." }]}
+          >
+            <Input size="small" type="number" />
+          </Form.Item>
+
+          <Form.Item
+            label="상품설명"
+            name="desc"
+            rules={[{ required: true, message: "상품설명은 필수 입니다." }]}
+          >
+            <Input.TextArea size="small" style={{ height: 80 }} />
+          </Form.Item>
+
+          <Wrapper dr="row" ju="flex-end">
+            <Button type="primary" size="small" htmlType="submit">
+              정보수정
             </Button>
           </Wrapper>
         </Form>
