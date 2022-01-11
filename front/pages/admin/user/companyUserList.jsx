@@ -246,13 +246,20 @@ const CompanyUserList = () => {
       </Modal>
 
       <Modal
+        width={`550px`}
         title="주의사항"
         footer={null}
         onCancel={unitModalToggle}
         visible={operatorUnitModal}
       >
         <GuideUl>
-          <GuideLi></GuideLi>
+          <GuideLi isImpo={true}>
+            회사 승인된 회원의 운영레벨을 제어할 수 있습니다.
+          </GuideLi>
+          <GuideLi>
+            조작의 실수 및 기능문의는 (주)4LEAF SOFTWARE 1600-4198로
+            연락바랍니다.
+          </GuideLi>
         </GuideUl>
       </Modal>
     </AdminLayout>
