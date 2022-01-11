@@ -564,6 +564,34 @@ router.get(
     } catch (e) {
       return res.status(401).send("잘못된 요청 입니다.");
     }
+  }),
+
+  router.patch("/company/operator", isAdminCheck, async (req, res, next) => {
+    const { id, operatorLevel } = req.body;
+
+    try {
+      if (id) {
+        const exUser = await User.findOne({ id });
+
+        if (!exUser) {
+          return res.status(401).send("존재하지 않는 회원입니다.");
+        }
+      }
+
+      const result = await User.update(
+        {
+          operatorLevel,
+        },
+        {
+          where: { id: parseInt(id) },
+        }
+      );
+
+      return res.status(200).json({ result: true });
+    } catch (e) {
+      console.error(e);
+      return res.status(401).send("잘못된 요청 입니다.");
+    }
   })
 );
 

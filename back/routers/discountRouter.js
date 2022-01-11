@@ -1,9 +1,10 @@
 const express = require("express");
+const isAdminCheck = require("../middlewares/isAdminCheck");
 const { Discount } = require("../models");
 
 const router = express.Router();
 
-router.get("/list", async (req, res, next) => {
+router.get("/list", isAdminCheck, async (req, res, next) => {
   try {
     const result = await Discount.findAll({
       where: {
@@ -22,7 +23,7 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", isAdminCheck, async (req, res, next) => {
   const { value } = req.body;
 
   try {
@@ -43,7 +44,7 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
-router.patch("/update", async (req, res, next) => {
+router.patch("/update", isAdminCheck, async (req, res, next) => {
   const { id, value } = req.body;
 
   try {
@@ -73,7 +74,7 @@ router.patch("/update", async (req, res, next) => {
   }
 });
 
-router.delete("/delete/:discountId", async (req, res, next) => {
+router.delete("/delete/:discountId", isAdminCheck, async (req, res, next) => {
   const { discountId } = req.params;
   try {
     if (discountId) {
