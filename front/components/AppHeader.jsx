@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  RowWrapper,
+  Wrapper,
   ColWrapper,
-  CommonButton,
+  Text,
   Image,
   ATag,
+  WholeWrapper,
+  RsWrapper,
 } from "./commonComponents";
 import { withResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
@@ -13,100 +15,26 @@ import { AlignRightOutlined } from "@ant-design/icons";
 import { Drawer } from "antd";
 import Link from "next/link";
 
-const WebRow = styled(RowWrapper)`
-  background: transparent;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10000;
-  transition: 0.5s;
-
-  &.background {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-  }
-
-  @media (max-width: 700px) {
-    display: none;
-  }
+const Dot = styled(Wrapper)`
+  width: 4.5px;
+  height: 4.5px;
+  background: ${(props) => props.theme.white_C};
+  border-radius: 100%;
 `;
 
-const MobileRow = styled(RowWrapper)`
-  display: none;
-
-  background: transparent;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10000;
-  transition: 0.5s;
-  padding: 10px 0;
-
-  &.background {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-  }
-
-  @media (max-width: 700px) {
-    display: flex;
-  }
-`;
-
-const MenuCol = styled(ColWrapper)`
-  color: ${Theme.white_C};
-  width: 170px;
-  height: 60px;
-  background: transparent;
+const DotWrapper = styled(Wrapper)`
+  position: relative;
   cursor: pointer;
-  transition: 0.5s;
-  font-weight: 700;
-  position: relative;
-
-  & .submenu {
-    display: none;
-  }
-
-  &:hover {
-    background: ${Theme.white_C};
-    color: ${Theme.black_C};
-    & .submenu {
-      display: flex;
-    }
-  }
-`;
-
-const SubMenuCol = styled(ColWrapper)`
-  position: absolute;
-  width: 100%;
-  height: auto;
-  background: ${Theme.black_C};
-  padding: 10px 30px;
-  text-align: center;
-  top: 60px;
-`;
-
-const SubMenuTextCol = styled(ColWrapper)`
-  color: ${Theme.white_C};
-  font-weight: 300;
-  position: relative;
-  padding: 10px 0 3px;
 
   &:before {
     content: "";
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: ${Theme.white_C};
-    transition: 0.5s;
-  }
-
-  &:hover {
-    font-weight: 700;
-    &:before {
-      width: 100%;
-    }
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 5px;
+    background: ${(props) => props.theme.red_C};
+    border-radius: 100%;
   }
 `;
 
@@ -139,83 +67,19 @@ const AppHeader = ({ children, width }) => {
     return () => document.removeEventListener("scroll", handleScroll);
   }, [pageY]);
   return (
-    <>
-      <WebRow
-        justify={`center`}
-        position={`fixed`}
-        top={`0`}
-        left={`0`}
-        index={`10000`}
-        className={headerScroll && "background"}
-      >
-        <ColWrapper span={20}>
-          {/* web */}
-          <ColWrapper>
-            <ColWrapper width={`100%`} padding={`10px 0`}>
-              <ATag href="/">
-                <Image
-                  width={`100px`}
-                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/SOUL/assets/images/logo/soul_logo.png`}
-                />
-              </ATag>
-            </ColWrapper>
-
-            <RowWrapper justify={`center`}>
-              <MenuCol>
-                한의원 소개
-                <ATag href="about">
-                  <SubMenuCol className="submenu">
-                    <SubMenuTextCol>의료진 소개 및 진료 시간표</SubMenuTextCol>
-                  </SubMenuCol>
-                </ATag>
-              </MenuCol>
-              <MenuCol>
-                <Link href="/diagnosis?type=0">진료 과목</Link>
-                <SubMenuCol className="submenu">
-                  <SubMenuTextCol>
-                    <Link href="/diagnosis?type=1">체질 의학</Link>
-                  </SubMenuTextCol>
-                  <SubMenuTextCol>
-                    <Link href="/diagnosis?type=2">소울 다이어트</Link>
-                  </SubMenuTextCol>
-                  <SubMenuTextCol>
-                    <Link href="/diagnosis?type=3">만성 난치 클리닉</Link>
-                  </SubMenuTextCol>
-                  <SubMenuTextCol>
-                    <Link href="/diagnosis?type=4">통증 클리닉</Link>
-                  </SubMenuTextCol>
-                </SubMenuCol>
-              </MenuCol>
-              <ATag width={`auto`} href="/notice">
-                <MenuCol>공지사항</MenuCol>
-              </ATag>
-              <ATag width={`auto`} href="location">
-                <MenuCol>오시는 길</MenuCol>
-              </ATag>
-            </RowWrapper>
-          </ColWrapper>
-        </ColWrapper>
-      </WebRow>
-      {/* mobile */}
-      <MobileRow justify={`center`} className={headerScroll && "background"}>
-        <ColWrapper span={11} al={`flex-start`}>
-          <ATag width={`auto`} href="/">
-            <Image
-              width={`110px`}
-              src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/SOUL/assets/images/logo/logo_long_white.png`}
-            />
-          </ATag>
-        </ColWrapper>
-        <ColWrapper
-          span={11}
-          al={`flex-end`}
-          fontSize={`2rem`}
-          color={Theme.white_C}
-        >
-          <AlignRightOutlined onClick={drawarToggle} />
-        </ColWrapper>
-
-        {drawar && (
+    <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>
+      <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
+        <Wrapper dr={`row`} ju={`space-between`}>
+          <Text fontSize={width < 800 ? `20px` : `26px`} fontWeight={`bold`}>
+            주문목록
+          </Text>
+          <DotWrapper width={`26px`} onClick={drawarToggle}>
+            <Dot />
+            <Dot margin={`4px 0`} />
+            <Dot />
+          </DotWrapper>
+        </Wrapper>
+        {!drawar && (
           <Drawer
             placement="right"
             closable={true}
@@ -223,74 +87,218 @@ const AppHeader = ({ children, width }) => {
             visible={drawarToggle}
             getContainer={false}
           >
-            <ColWrapper al={`flex-start`}>
-              <ColWrapper
-                fontSize={`1.2rem`}
-                onClick={() => {
-                  setSubMenu(0);
-                }}
+            <Wrapper>
+              <Wrapper
+                bgColor={Theme.basicTheme_C}
+                color={Theme.white_C}
+                height={`64px`}
+                borderBottom={`1px solid ${Theme.subTheme_C}`}
+              ></Wrapper>
+              <Wrapper
+                bgColor={Theme.basicTheme_C}
+                color={Theme.white_C}
+                padding={width < 800 ? `25px 20px` : `25px 38px`}
               >
-                한의원 소개
-              </ColWrapper>
-              {subMenu === 0 && (
-                <>
-                  <ATag href="about" width={`auto`} color={`initial`}>
-                    <ColWrapper margin={`5px 10px 20px`}>
-                      의료진 소개 및 진료 시간표
-                    </ColWrapper>
-                  </ATag>
-                </>
-              )}
-              <ColWrapper
-                fontSize={`1.2rem`}
-                onClick={() => {
-                  setSubMenu(1);
-                }}
-              >
-                진료 과목
-              </ColWrapper>
-              {subMenu === 1 && (
-                <>
-                  <ColWrapper margin={`5px 10px 0`}>
-                    <Link href="/diagnosis?type=1">체질 의학</Link>
-                  </ColWrapper>
-
-                  <ColWrapper margin={`5px 10px 0`}>
-                    <Link href="/diagnosis?type=2">소울 다이어트</Link>
-                  </ColWrapper>
-                  <ColWrapper margin={`5px 10px 0`}>
-                    <Link href="/diagnosis?type=3">만성 난치 클리닉</Link>
-                  </ColWrapper>
-                  <ColWrapper margin={`5px 10px 20px`}>
-                    <Link href="/diagnosis?type=4">통증 클리닉</Link>
-                  </ColWrapper>
-                </>
-              )}
-              <ATag width={`auto`} href="notice" color={`initial`}>
-                <ColWrapper
-                  fontSize={`1.2rem`}
-                  onClick={() => {
-                    setSubMenu(2);
-                  }}
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Wrapper
+                    width={`auto`}
+                    dr={`row`}
+                    fontSize={width < 800 ? `16px` : `18px`}
+                  >
+                    <Image
+                      alt="profile"
+                      width={`50px`}
+                      height={`50px`}
+                      radius={`100%`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/thumbnail/detail_thumb.png`}
+                    />
+                    <Text
+                      fontSize={`20px`}
+                      fontWeight={`bold`}
+                      margin={`0 2px 0 10px`}
+                    >
+                      홍길동
+                    </Text>
+                    님
+                  </Wrapper>
+                  <Wrapper
+                    width={`auto`}
+                    dr={`row`}
+                    fontSize={`14px`}
+                    color={Theme.grey2_C}
+                  >
+                    <Text margin={`0 10px 0 0`}>계정관리</Text>
+                    <Text>로그아웃</Text>
+                  </Wrapper>
+                </Wrapper>
+                <Wrapper
+                  radius={`20px`}
+                  bgColor={Theme.white_C}
+                  color={Theme.black_C}
+                  padding={`15px 0`}
+                  margin={`25px 0`}
+                  dr={`row`}
+                  fontSize={width < 800 ? `16px` : `18px`}
+                  fontWeight={`bold`}
                 >
-                  공지사항
-                </ColWrapper>
-              </ATag>
-              <ATag href="location" width={`auto`} color={`initial`}>
-                <ColWrapper
-                  fontSize={`1.2rem`}
-                  onClick={() => {
-                    setSubMenu(3);
-                  }}
+                  <Wrapper
+                    width={`50%`}
+                    borderRight={`1px solid ${Theme.grey2_C}`}
+                  >
+                    쿠폰관리
+                  </Wrapper>
+                  <Wrapper width={`50%`}>배송지관리</Wrapper>
+                </Wrapper>
+              </Wrapper>
+              <Wrapper padding={width < 800 ? `0 20px` : `0 38px`}>
+                <Wrapper
+                  radius={`15px`}
+                  bgColor={Theme.white_C}
+                  color={Theme.black_C}
+                  shadow={`5px 5px 15px rgba(77, 92, 123, 0.2),
+                  inset -5px -5px 15px rgba(77, 92, 123, 0.05)`}
+                  margin={`-20px 0 0`}
+                  padding={width < 800 ? `30px` : `50px`}
                 >
-                  오시는 길
-                </ColWrapper>
-              </ATag>
-            </ColWrapper>
+                  <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
+                    <Image
+                      alt="icon"
+                      width={`26px`}
+                      height={`26px`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/1.jar.png`}
+                    />
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      margin={`0 0 0 30px`}
+                    >
+                      약속처방
+                    </Text>
+                  </Wrapper>
+                  <Wrapper
+                    dr={`row`}
+                    ju={`flex-start`}
+                    padding={`0 0 20px`}
+                    margin={`0 0 20px`}
+                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                  >
+                    <Image
+                      alt="icon"
+                      width={`26px`}
+                      height={`26px`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/2.prescript.png`}
+                    />
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      margin={`0 0 0 30px`}
+                    >
+                      처방하기
+                    </Text>
+                  </Wrapper>
+                  <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
+                    <Image
+                      alt="icon"
+                      width={`26px`}
+                      height={`26px`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/3.list.png`}
+                    />
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      margin={`0 0 0 30px`}
+                    >
+                      주문조회
+                    </Text>
+                  </Wrapper>
+                  <Wrapper
+                    dr={`row`}
+                    ju={`flex-start`}
+                    padding={`0 0 20px`}
+                    margin={`0 0 20px`}
+                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                  >
+                    <Image
+                      alt="icon"
+                      width={`26px`}
+                      height={`26px`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/4.cart.png`}
+                    />
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      margin={`0 0 0 30px`}
+                    >
+                      장바구니
+                    </Text>
+                  </Wrapper>
+                  <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
+                    <Image
+                      alt="icon"
+                      width={`26px`}
+                      height={`26px`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/5.megaphone.png`}
+                    />
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      margin={`0 0 0 30px`}
+                    >
+                      공지사항
+                    </Text>
+                  </Wrapper>
+                  <Wrapper dr={`row`} ju={`flex-start`}>
+                    <Image
+                      alt="icon"
+                      width={`26px`}
+                      height={`26px`}
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/6.consult.png`}
+                    />
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      margin={`0 0 0 30px`}
+                    >
+                      문의하기
+                    </Text>
+                  </Wrapper>
+                </Wrapper>
+                <Wrapper
+                  radius={`15px`}
+                  bgColor={Theme.white_C}
+                  color={Theme.black_C}
+                  shadow={`5px 5px 15px rgba(77, 92, 123, 0.2),
+                  inset -5px -5px 15px rgba(77, 92, 123, 0.05)`}
+                  margin={`15px 0 0`}
+                  padding={`30px`}
+                  dr={`row`}
+                >
+                  <Image
+                    alt="icon"
+                    width={`55px`}
+                    height={`55px`}
+                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/public-number.png`}
+                  />
+                  <Wrapper
+                    width={`calc(100% - 55px)`}
+                    al={`flex-start`}
+                    padding={`0 0 0 30px`}
+                  >
+                    <Text
+                      fontSize={width < 800 ? `16px` : `18px`}
+                      fontWeight={`bold`}
+                    >
+                      대표번호
+                    </Text>
+                    <Text
+                      fontSize={width < 800 ? `20px` : `24px`}
+                      fontWeight={`bold`}
+                      color={Theme.basicTheme_C}
+                    >
+                      02-466-1575
+                    </Text>
+                  </Wrapper>
+                </Wrapper>
+              </Wrapper>
+            </Wrapper>
           </Drawer>
         )}
-      </MobileRow>
-    </>
+      </RsWrapper>
+    </WholeWrapper>
   );
 };
 

@@ -75,8 +75,8 @@ const Login = () => {
 
       <ClientLayout>
         <WholeWrapper>
-          <RsWrapper minHeight={`calc(100vh - 170px)`}>
-            <Wrapper padding={`180px 0 120px`}>
+          <RsWrapper minHeight={`calc(100vh - 170px - 64px)`}>
+            <Wrapper padding={`100px 0`}>
               <Image
                 alt="logo"
                 src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/logo/logo.png`}

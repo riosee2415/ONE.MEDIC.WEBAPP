@@ -40,10 +40,27 @@ const GlobalStyles = createGlobalStyle`
   a:hover {
     color : inherit;
   }
+
+  .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper{
+    width:500px !important;
+  }
+
+  .ant-drawer-body{
+    padding:0;
+  }
+
+  .anticon svg{
+    color: ${(props) => props.theme.white_C};
+  }
   
   @media (max-width : 576px) {
     html { 
       font-size : 14px;
+    }
+  }
+  @media (max-width : 800px) {
+    .ant-drawer-right.ant-drawer-open .ant-drawer-content-wrapper{
+    width:100% !important;
     }
   }
 `;
