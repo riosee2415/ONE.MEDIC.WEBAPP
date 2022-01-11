@@ -493,7 +493,7 @@ const companyList = () => {
       {/* UNIT MODAL */}
 
       <Modal
-        width="600px"
+        width="700px"
         title="주의사항"
         visible={companyUnitModal}
         footer={null}

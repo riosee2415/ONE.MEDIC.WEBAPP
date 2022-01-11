@@ -11,7 +11,7 @@ router.get("/list", async (req, res, next) => {
       },
     });
 
-    if (result > 0) {
+    if (result.length > 0) {
       return res.status(200).json(result);
     } else {
       return res.status(201).send("혜택이 존재하지 않습니다.");
@@ -26,16 +26,6 @@ router.post("/create", async (req, res, next) => {
   const { value } = req.body;
 
   try {
-    if (id) {
-      const exId = await Discount.findOne({
-        where: { id: parseInt(id) },
-      });
-
-      if (exId) {
-        return res.status(401).send("이미 있는 타입입니다.");
-      }
-    }
-
     const discountList = await Discount.findAll();
 
     if (discountList.length === 5) {
@@ -43,7 +33,7 @@ router.post("/create", async (req, res, next) => {
     }
 
     const result = await Discount.create({
-      value: parseInt(value),
+      value: parseFloat(value),
     });
 
     return res.status(200).json({ result: true });
@@ -69,7 +59,7 @@ router.patch("/update", async (req, res, next) => {
 
     const reuslt = await Discount.update(
       {
-        value,
+        value: parseFloat(value),
       },
       {
         where: { id: parseInt(id) },
