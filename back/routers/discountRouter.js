@@ -23,15 +23,15 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/create", async (req, res, next) => {
-  const { value, type } = req.body;
+  const { value } = req.body;
 
   try {
-    if (type) {
-      const exType = await Discount.findOne({
-        where: { type: parseInt(type) },
+    if (id) {
+      const exId = await Discount.findOne({
+        where: { id: parseInt(id) },
       });
 
-      if (exType) {
+      if (exId) {
         return res.status(401).send("이미 있는 타입입니다.");
       }
     }
@@ -42,12 +42,8 @@ router.post("/create", async (req, res, next) => {
       return res.status(401).send("혜택이 5개 이상 있습니다.");
     }
 
-    console.log(value);
-    console.log(type);
-
     const result = await Discount.create({
       value: parseInt(value),
-      type: parseInt(type),
     });
 
     return res.status(200).json({ result: true });
@@ -58,7 +54,7 @@ router.post("/create", async (req, res, next) => {
 });
 
 router.patch("/update", async (req, res, next) => {
-  const { id, value, type } = req.body;
+  const { id, value } = req.body;
 
   try {
     if (id) {
@@ -74,7 +70,6 @@ router.patch("/update", async (req, res, next) => {
     const reuslt = await Discount.update(
       {
         value,
-        type,
       },
       {
         where: { id: parseInt(id) },

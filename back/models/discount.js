@@ -6,11 +6,7 @@ module.exports = class Discount extends Model {
     return super.init(
       {
         value: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        type: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.FLOAT,
           allowNull: false,
         },
         isDelete: {
