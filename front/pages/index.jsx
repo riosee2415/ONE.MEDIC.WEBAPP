@@ -28,6 +28,27 @@ import { useRef } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { DatePicker, Space } from "antd";
 
+const TagBtn = styled(Wrapper)`
+  width: 75px;
+  height: 35px;
+  font-size: 15px;
+  border-radius: ${(props) => props.radius || `10px`};
+  ${(props) =>
+    props.kindOf === `white` && `background : ${props.theme.lightGrey_C};`}
+  ${(props) =>
+    props.kindOf === `white` && `color : ${props.theme.subTheme2_C};`}
+  ${(props) =>
+    props.kindOf === `white` &&
+    `border : 1px solid ${props.theme.basicTheme_C};`}
+
+${(props) =>
+    props.kindOf === `grey` && `background : ${props.theme.lightGrey2_C};`}
+  ${(props) => props.kindOf === `grey` && `color : ${props.theme.grey_C};`}
+  ${(props) =>
+    props.kindOf === `grey` &&
+    `border : 1px solid ${props.theme.lightGrey2_C};`}
+`;
+
 const Home = ({}) => {
   const width = useWidth();
   const { RangePicker } = DatePicker;
@@ -174,7 +195,7 @@ const Home = ({}) => {
                     <Text color={Theme.grey_C}>고객명</Text>
                     <Text>환자명</Text>
                   </Wrapper>
-                  <CommonButton kindOf={`white`}>월말결제</CommonButton>
+                  <TagBtn kindOf={`white`}>월말결제</TagBtn>
                 </Wrapper>
                 <Wrapper
                   dr={`row`}
@@ -193,6 +214,7 @@ const Home = ({}) => {
                   <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
                 </Wrapper>
               </Wrapper>
+
               <Wrapper
                 radius={`20px`}
                 shadow={Theme.shadow_C}
@@ -211,81 +233,7 @@ const Home = ({}) => {
                     <Text color={Theme.grey_C}>고객명</Text>
                     <Text>환자명</Text>
                   </Wrapper>
-                  <CommonButton kindOf={`white`}>월말결제</CommonButton>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
-                >
-                  <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 3)`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
-                  >
-                    주문내역
-                  </Wrapper>
-                  <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
-                </Wrapper>
-              </Wrapper>
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Text fontSize={`14px`} color={Theme.grey_C}>
-                  2022/01/04
-                </Text>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper width={`auto`} al={`flex-start`}>
-                    <Text fontSize={`18px`} fontWeight={`bold`}>
-                      생강귤피탕
-                    </Text>
-                    <Text color={Theme.grey_C}>고객명</Text>
-                    <Text>환자명</Text>
-                  </Wrapper>
-                  <CommonButton kindOf={`white`}>월말결제</CommonButton>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
-                >
-                  <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 3)`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
-                  >
-                    주문내역
-                  </Wrapper>
-                  <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
-                </Wrapper>
-              </Wrapper>
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Text fontSize={`14px`} color={Theme.grey_C}>
-                  2022/01/04
-                </Text>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper width={`auto`} al={`flex-start`}>
-                    <Text fontSize={`18px`} fontWeight={`bold`}>
-                      생강귤피탕
-                    </Text>
-                    <Text color={Theme.grey_C}>고객명</Text>
-                    <Text>환자명</Text>
-                  </Wrapper>
-                  <CommonButton kindOf={`white`}>월말결제</CommonButton>
+                  <TagBtn kindOf={`grey`}>결제완료</TagBtn>
                 </Wrapper>
                 <Wrapper
                   dr={`row`}
@@ -327,15 +275,14 @@ const Home = ({}) => {
                 <Text fontWeight={`bold`}>총 주문금액 : </Text>
                 <Text fontWeight={`bold`}> 432,000</Text>
               </Wrapper>
-              <Wrapper
+              <CommonButton
                 width={width < 800 ? `130px` : `170px`}
                 height={`100%`}
-                bgColor={Theme.basicTheme_C}
-                color={Theme.white_C}
+                radius={`0`}
                 cursor={`pointer`}
               >
                 주문하기
-              </Wrapper>
+              </CommonButton>
             </Wrapper>
           </RsWrapper>
         </WholeWrapper>

@@ -200,6 +200,12 @@ export const CommonButton = styled(Button)`
   ${(props) =>
     props.kindOf === `subTheme` &&
     `border : 1px solid ${props.theme.subTheme_C};`}
+  ${(props) =>
+    props.kindOf === `grey` && `background : ${props.theme.lightGrey2_C};`}
+  ${(props) => props.kindOf === `grey` && `color : ${props.theme.grey_C};`}
+  ${(props) =>
+    props.kindOf === `grey` &&
+    `border : 1px solid ${props.theme.lightGrey2_C};`}
 
   ${(props) =>
     props.kindOf === `delete` && `background : ${props.theme.red_C};`}
