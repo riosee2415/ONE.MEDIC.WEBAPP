@@ -180,7 +180,7 @@ export const CommonButton = styled(Button)`
   font-size: ${(props) => props.fontSize};
   color: ${(props) => props.color || props.theme.white_C};
   border-radius: ${(props) => props.radius || `10px`};
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.16);
+  box-shadow: ${(props) => props.shadow || `0 0 15px rgba(0, 0, 0, 0.16)`};
 
   ${(props) => !props.kindOf && `background : ${props.theme.basicTheme_C};`}
   ${(props) =>

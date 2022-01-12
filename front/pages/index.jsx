@@ -33,20 +33,9 @@ const TagBtn = styled(Wrapper)`
   height: 35px;
   font-size: 15px;
   border-radius: ${(props) => props.radius || `10px`};
-  ${(props) =>
-    props.kindOf === `white` && `background : ${props.theme.lightGrey_C};`}
-  ${(props) =>
-    props.kindOf === `white` && `color : ${props.theme.subTheme2_C};`}
-  ${(props) =>
-    props.kindOf === `white` &&
-    `border : 1px solid ${props.theme.basicTheme_C};`}
-
-${(props) =>
-    props.kindOf === `grey` && `background : ${props.theme.lightGrey2_C};`}
-  ${(props) => props.kindOf === `grey` && `color : ${props.theme.grey_C};`}
-  ${(props) =>
-    props.kindOf === `grey` &&
-    `border : 1px solid ${props.theme.lightGrey2_C};`}
+  background: ${(props) => props.theme.lightGrey2_C};
+  color: ${(props) => props.theme.grey_C};
+  border: 1px solid ${(props) => props.theme.lightGrey2_C};
 `;
 
 const Home = ({}) => {
@@ -195,7 +184,7 @@ const Home = ({}) => {
                     <Text color={Theme.grey_C}>고객명</Text>
                     <Text>환자명</Text>
                   </Wrapper>
-                  <TagBtn kindOf={`white`}>월말결제</TagBtn>
+                  <TagBtn>결제완료</TagBtn>
                 </Wrapper>
                 <Wrapper
                   dr={`row`}
@@ -233,7 +222,7 @@ const Home = ({}) => {
                     <Text color={Theme.grey_C}>고객명</Text>
                     <Text>환자명</Text>
                   </Wrapper>
-                  <TagBtn kindOf={`grey`}>결제완료</TagBtn>
+                  <TagBtn>결제완료</TagBtn>
                 </Wrapper>
                 <Wrapper
                   dr={`row`}

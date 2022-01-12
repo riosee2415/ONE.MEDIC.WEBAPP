@@ -77,7 +77,7 @@ const AppHeader = ({ children, width }) => {
             dr={`row`}
             ju={`flex-start`}
           >
-            <Link href={`/`}>
+            <Link href={`/login`}>
               <a>
                 <Wrapper
                   width={`auto`}
@@ -189,20 +189,28 @@ const AppHeader = ({ children, width }) => {
                     margin={`-20px 0 0`}
                     padding={width < 800 ? `30px` : `50px`}
                   >
-                    <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
-                      <Image
-                        alt="icon"
-                        width={`26px`}
-                        height={`26px`}
-                        src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/1.jar.png`}
-                      />
-                      <Text
-                        fontSize={width < 800 ? `16px` : `18px`}
-                        margin={`0 0 0 30px`}
-                      >
-                        약속처방
-                      </Text>
-                    </Wrapper>
+                    <Link href={`/promise`}>
+                      <ATag al={`flex-start`}>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`flex-start`}
+                          margin={`0 0 20px`}
+                        >
+                          <Image
+                            alt="icon"
+                            width={`26px`}
+                            height={`26px`}
+                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/1.jar.png`}
+                          />
+                          <Text
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            margin={`0 0 0 30px`}
+                          >
+                            약속처방
+                          </Text>
+                        </Wrapper>
+                      </ATag>
+                    </Link>
                     <Wrapper
                       dr={`row`}
                       ju={`flex-start`}
