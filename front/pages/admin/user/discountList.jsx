@@ -208,7 +208,7 @@ const DiscountList = () => {
 
   const onFill = useCallback((data) => {
     formRef.current.setFieldsValue({
-      value: data.value,
+      value: data.discount,
     });
   }, []);
 
