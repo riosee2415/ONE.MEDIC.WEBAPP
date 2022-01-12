@@ -84,6 +84,8 @@ const CompanyUserList = () => {
         type: COMPANY_LIST_REQUEST,
         data: {
           type: 2,
+          name: inputName.value,
+          email: inputEmail.value,
         },
       });
 
