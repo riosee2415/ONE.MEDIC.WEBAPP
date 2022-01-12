@@ -109,12 +109,23 @@ const CompanyList = () => {
   ////// USEEFFECT //////
 
   useEffect(() => {
-    dispatch({
-      type: COMPANY_LIST_REQUEST,
-      data: {
-        type: companyTab,
-      },
-    });
+    if (companyTab === 2) {
+      dispatch({
+        type: COMPANY_LIST_REQUEST,
+        data: {
+          type: companyTab,
+          name: "",
+          email: "",
+        },
+      });
+    } else {
+      dispatch({
+        type: COMPANY_LIST_REQUEST,
+        data: {
+          type: companyTab,
+        },
+      });
+    }
   }, [companyTab]);
 
   useEffect(() => {

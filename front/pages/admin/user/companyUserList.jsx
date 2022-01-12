@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { Button, Form, Select, Table, Modal, message } from "antd";
+import { Button, Form, Select, Table, Modal, message, Input } from "antd";
 import styled from "styled-components";
 import { END } from "redux-saga";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
+import { SearchOutlined } from "@ant-design/icons";
 
 import wrapper from "../../../store/configureStore";
 import {
@@ -21,6 +22,9 @@ import {
   GuideUl,
   Wrapper,
 } from "../../../components/commonComponents";
+import { Text } from "../../../components/commonComponents";
+import Theme from "../../../components/Theme";
+import useInput from "../../../hooks/useInput";
 
 const AdminContent = styled.div`
   padding: 20px;
@@ -62,6 +66,9 @@ const CompanyUserList = () => {
 
   const [form] = Form.useForm();
   const formRef = useRef();
+
+  const inputName = useInput("");
+  const inputEmail = useInput("");
 
   ////// USEEFFECT //////
 
@@ -120,6 +127,28 @@ const CompanyUserList = () => {
 
   ////// HANDLER //////
 
+  const serchHandler = useCallback(() => {
+    dispatch({
+      type: COMPANY_LIST_REQUEST,
+      data: {
+        type: 2,
+        name: inputName.value,
+        email: inputEmail.value,
+      },
+    });
+  }, [inputName.value, inputEmail.value]);
+
+  const getAllListHandler = useCallback(() => {
+    dispatch({
+      type: COMPANY_LIST_REQUEST,
+      data: {
+        type: 2,
+        name: "",
+        email: "",
+      },
+    });
+  }, []);
+
   const onFill = useCallback(() => {
     formRef.current.setFieldsValue({
       operatorLevel: updateData.operatorLevel,
@@ -169,6 +198,11 @@ const CompanyUserList = () => {
     {
       title: "운영레벨",
       dataIndex: "operatorLevel",
+      render: (data) => (
+        <Text color={Theme.subTheme2_C} fontWeight={`bold`}>
+          {data}
+        </Text>
+      ),
     },
     {
       title: "운영레벨변경",
@@ -193,10 +227,36 @@ const CompanyUserList = () => {
       />
 
       <AdminContent>
-        <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
-          <Button size="small" type="danger" onClick={unitModalToggle}>
-            주의사항
-          </Button>
+        <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 10px`}>
+          <Input.Group compact style={{ width: `90%`, margin: ` 0 0 10px 0` }}>
+            <Input
+              style={{ width: "20%" }}
+              placeholder="사용자명"
+              {...inputName}
+            />
+            <Input
+              style={{ width: "20%" }}
+              placeholder="이메일"
+              {...inputEmail}
+            />
+            <Button onClick={serchHandler}>
+              <SearchOutlined />
+              검색
+            </Button>
+          </Input.Group>
+          <Wrapper width={`10%`} dr={`row`} ju={`flex-end`}>
+            <Button
+              size="small"
+              type="dashed"
+              style={{ margin: `0 5px 0 0` }}
+              onClick={getAllListHandler}
+            >
+              전체조회
+            </Button>
+            <Button size="small" type="danger" onClick={unitModalToggle}>
+              주의사항
+            </Button>
+          </Wrapper>
         </Wrapper>
 
         <Table
@@ -235,7 +295,11 @@ const CompanyUserList = () => {
           </Form.Item>
 
           <Wrapper dr={`row`} ju={`flex-end`}>
-            <Button size="small" style={{ margin: `0 5px 0 0` }}>
+            <Button
+              size="small"
+              style={{ margin: `0 5px 0 0` }}
+              onClick={() => operatorMdoalToggle(null)}
+            >
               취소
             </Button>
             <Button size="small" type="primary" htmlType="submit">
@@ -285,6 +349,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
       type: COMPANY_LIST_REQUEST,
       data: {
         type: 2,
+        name: "",
+        email: "",
       },
     });
 

@@ -22,6 +22,8 @@ import {
   DISCOUNT_CREATE_REQUEST,
   DISCOUNT_UPDATE_REQUEST,
 } from "../../../reducers/discount";
+import { Text } from "../../../components/commonComponents";
+import Theme from "../../../components/Theme";
 
 const AdminContent = styled.div`
   padding: 20px;
@@ -127,6 +129,9 @@ const DiscountList = () => {
   }, [unitModal]);
 
   const createModalToggle = useCallback(() => {
+    if (discounts.length >= 5) {
+      return message.info("혜택은 5개까지만 추가할 수 있습니다.");
+    }
     dispatch({
       type: CU_MODAL_TOGGLE,
     });
@@ -182,6 +187,11 @@ const DiscountList = () => {
     {
       title: "타입",
       dataIndex: "id",
+      render: (data) => (
+        <Text color={Theme.subTheme2_C} fontWeight={`bold`}>
+          {data}
+        </Text>
+      ),
     },
     {
       title: "할인율",
@@ -199,6 +209,14 @@ const DiscountList = () => {
           수정
         </Button>
       ),
+    },
+    {
+      title: "회원수",
+      render: (data) => <div>0명</div>,
+    },
+    {
+      title: "분포율",
+      render: (data) => <div>0%</div>,
     },
   ];
 

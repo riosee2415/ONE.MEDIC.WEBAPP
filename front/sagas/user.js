@@ -235,7 +235,11 @@ function* kakaoLogin() {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function companyListAPI(data) {
-  return axios.get(`/api/user/company/list/${data.type}`);
+  return axios.get(
+    `/api/user/company/list/${data.type}${
+      data.type === 2 && `?name=${data.name}&email=${data.email}`
+    }`
+  );
 }
 
 function* companyList(action) {
