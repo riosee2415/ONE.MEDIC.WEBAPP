@@ -1,5 +1,6 @@
 import { Button, Table, Form, Modal, Input, message } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import styled from "styled-components";
 import { END } from "redux-saga";
 import axios from "axios";
@@ -24,6 +25,10 @@ import {
 } from "../../../reducers/discount";
 import { Text } from "../../../components/commonComponents";
 import Theme from "../../../components/Theme";
+
+const Chart = dynamic(() => import("react-apexcharts"), {
+  ssr: false,
+});
 
 const AdminContent = styled.div`
   padding: 20px;
@@ -70,6 +75,32 @@ const DiscountList = () => {
   const formRef = useRef();
 
   const [updateData, setUpdateData] = useState(null);
+
+  const [seriesData, setSeriesData] = useState(
+    discounts && discounts.map((data) => parseFloat(data.userPercent))
+  );
+
+  const [chartConfig, setChartConfig] = useState({
+    series: seriesData,
+    dataLabels: {},
+    options: {
+      labels: ["1번", "2번", "3번", "4번", " 5번"],
+
+      dataLabels: {
+        formatter: (val, opts) => {
+          return `${opts.seriesIndex + 1}번 ${val}%`;
+        },
+        enabled: true,
+      },
+      stroke: {
+        curve: "straight",
+      },
+      title: {
+        text: "회원 분포율",
+        align: "left",
+      },
+    },
+  });
 
   ////// USEEFFECT //////
 
@@ -217,7 +248,7 @@ const DiscountList = () => {
     },
     {
       title: "분포율",
-      dataIndex: "usePercent",
+      dataIndex: "userPercent",
       render: (data) => <div>{data}%</div>,
     },
   ];
@@ -250,6 +281,15 @@ const DiscountList = () => {
           columns={columns}
           dataSource={discounts ? discounts : []}
         />
+
+        {discounts && (
+          <Chart
+            options={chartConfig.options}
+            series={chartConfig.series}
+            type="donut"
+            height="450"
+          />
+        )}
       </AdminContent>
 
       <Modal

@@ -17,7 +17,7 @@ router.get("/list", async (req, res, next) => {
               SELECT	Z.id											                      AS type,
 		                  Z.value											                    AS discount,
 		                  Z.userCount,
-		                  ROUND((userCount / Z.allUserCount * 100), 0)   	AS usePercent
+		                  ROUND((userCount / Z.allUserCount * 100), 0)   	AS userPercent
                 FROM	(
 			                  SELECT  d.id,
 					                      d.value,
