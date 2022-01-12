@@ -1,19 +1,41 @@
 const express = require("express");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const { Discount } = require("../models");
+const models = require("../models");
 
 const router = express.Router();
 
-router.get("/list", isAdminCheck, async (req, res, next) => {
+router.get("/list", async (req, res, next) => {
   try {
-    const result = await Discount.findAll({
-      where: {
-        isDelete: false,
-      },
-    });
+    // const result = await Discount.findAll({
+    //   where: {
+    //     isDelete: false,
+    //   },
+    // });
 
-    if (result.length > 0) {
-      return res.status(200).json(result);
+    const selectQuery = `
+              SELECT	Z.id											                      AS type,
+		                  Z.value											                    AS discount,
+		                  Z.userCount,
+		                  ROUND((userCount / Z.allUserCount * 100), 0)   	AS usePercent
+                FROM	(
+			                  SELECT  d.id,
+					                      d.value,
+					                      COUNT(u.id)							              AS userCount,
+					                      (
+						                      SELECT COUNT(id) FROM users
+					                      )	AS 	allUserCount		
+			                    FROM  discounts							                AS d
+			                    LEFT  OUTER  JOIN  users 					          AS u
+				                    ON  u.operatorLevel  =  d.id
+			                   WHERE  isDelete = false
+			                   GROUP  BY  d.id
+		                  )	Z;
+             `;
+    const result = await models.sequelize.query(selectQuery);
+
+    if (result[0].length > 0) {
+      return res.status(200).json(result[0]);
     } else {
       return res.status(201).send("혜택이 존재하지 않습니다.");
     }

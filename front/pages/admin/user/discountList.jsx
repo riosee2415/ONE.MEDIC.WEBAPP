@@ -186,7 +186,7 @@ const DiscountList = () => {
   const columns = [
     {
       title: "타입",
-      dataIndex: "id",
+      dataIndex: "type",
       render: (data) => (
         <Text color={Theme.subTheme2_C} fontWeight={`bold`}>
           {data}
@@ -195,7 +195,7 @@ const DiscountList = () => {
     },
     {
       title: "할인율",
-      dataIndex: "value",
+      dataIndex: "discount",
       render: (data) => <div>{data}%</div>,
     },
     {
@@ -212,11 +212,13 @@ const DiscountList = () => {
     },
     {
       title: "회원수",
-      render: (data) => <div>0명</div>,
+      dataIndex: "userCount",
+      render: (data) => <div>{data}명</div>,
     },
     {
       title: "분포율",
-      render: (data) => <div>0%</div>,
+      dataIndex: "usePercent",
+      render: (data) => <div>{data}%</div>,
     },
   ];
 
