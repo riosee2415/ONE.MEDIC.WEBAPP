@@ -184,12 +184,11 @@ export const CommonButton = styled(Button)`
 
   ${(props) => !props.kindOf && `background : ${props.theme.basicTheme_C};`}
   ${(props) =>
-    props.kindOf === `white` && `background : ${props.theme.lightGrey_C};`}
+    props.kindOf === `white` && `background : ${props.theme.white_C};`}
   ${(props) =>
-    props.kindOf === `white` && `color : ${props.theme.subTheme2_C};`}
+    props.kindOf === `white` && `color : ${props.theme.basicTheme_C};`}
   ${(props) =>
-    props.kindOf === `white` &&
-    `border : 1px solid ${props.theme.basicTheme_C};`}
+    props.kindOf === `white` && `border : 1px solid ${props.theme.grey2_C};`}
   ${(props) =>
     props.kindOf === `black` && `background : ${props.theme.black_C};`}
   ${(props) => props.kindOf === `black` && `color : ${props.theme.white_C};`}

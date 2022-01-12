@@ -16,6 +16,7 @@ import {
   CommonButton,
   Text,
 } from "../../components/commonComponents";
+import Link from "next/link";
 import Theme from "../../components/Theme";
 
 const Login = () => {
@@ -102,8 +103,12 @@ const Login = () => {
                 로그인
               </CommonButton>
               <Wrapper dr={`row`} color={Theme.grey_C}>
-                <Text margin={`0 20px 0 0`}>회원가입</Text>|
-                <Text margin={`0 20px`}>아이디찾기</Text>|
+                <Link href={`/join`}>
+                  <a>
+                    <Text margin={`0 20px 0 0`}>회원가입</Text>
+                  </a>
+                </Link>
+                |<Text margin={`0 20px`}>아이디찾기</Text>|
                 <Text margin={`0 0 0 20px`}>비밀번호찾기</Text>
               </Wrapper>
             </Wrapper>
