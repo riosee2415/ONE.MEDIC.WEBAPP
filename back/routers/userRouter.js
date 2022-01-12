@@ -424,6 +424,10 @@ router.get(
 
   router.get("/company/list/:type", isAdminCheck, async (req, res, next) => {
     const { type } = req.params;
+    const { name, email } = req.query;
+
+    const searchName = name ? name : "";
+    const searchEmail = email ? email : "";
 
     try {
       const selectQuery = `
@@ -447,9 +451,19 @@ router.get(
                    ? "WHERE  isRefusal = true"
                    : "WHERE  NOT companyNo is NULL"
                } 
-                 ${type === "1" ? "AND  NOT companyNo is NULL" : ""}
-                 ${type === "1" ? "AND  isRefusal = false" : ""}
-              `;
+                ${type === "1" ? "AND  NOT companyNo is NULL" : ""}
+                ${type === "1" ? "AND  isRefusal = false" : ""}
+                ${
+                  type === "2" && searchName.length > 0
+                    ? `AND  username LIKE "%${searchName}%"`
+                    : ""
+                }
+                ${
+                  type === "2" && searchEmail.length > 0
+                    ? `AND  email LIKE "%${searchEmail}%"`
+                    : ""
+                }
+               `;
       const result = await models.sequelize.query(selectQuery);
 
       return res.status(200).json(result[0]);
