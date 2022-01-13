@@ -39,6 +39,7 @@ const TitleInput = styled(TextInput)`
 
   &:focus {
     border: none;
+    border-bottom: 1px solid ${Theme.grey_C};
   }
 `;
 
@@ -54,7 +55,7 @@ const ContentArea = styled(TextArea)`
   }
 
   &:focus {
-    border: none;
+    border: 1px solid ${Theme.grey_C};
   }
 `;
 
