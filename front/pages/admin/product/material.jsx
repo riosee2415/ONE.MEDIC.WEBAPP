@@ -128,6 +128,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
       type: LOAD_MY_INFO_REQUEST,
     });
 
+    // context.store.dispatch({
+    //     type:
+    // })
+
     // 구현부 종료
     context.store.dispatch(END);
     console.log("🍀 SERVER SIDE PROPS END");
