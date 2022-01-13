@@ -195,7 +195,18 @@ const AdminMenu = () => {
           <Menu.Item key="/admin/product/material">
             <MenuName>탕전처방 재료 관리</MenuName>
           </Menu.Item>
+          <Menu.Item key="/admin/product/stockHistory">
+            <MenuName>재료 사용현황</MenuName>
+          </Menu.Item>
         </SubMenu>
+
+        {/* 주문관리 */}
+        <SubMenu
+          key="sub9"
+          icon={<MedicineBoxOutlined />}
+          title="주문 관리"
+          onTitleClick={titleClickHandler("sub9")}
+        ></SubMenu>
       </Menu>
     </>
   );
