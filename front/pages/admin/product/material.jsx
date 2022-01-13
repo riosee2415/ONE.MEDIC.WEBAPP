@@ -79,7 +79,7 @@ const Material = () => {
       formRef.current.setFieldsValue({
         name: updateData.name,
         price: updateData.originPrice,
-        stock: updateData.originStock,
+        stock: updateData.stock,
         unit: updateData.unit,
       });
     }
@@ -263,8 +263,8 @@ const Material = () => {
       dataIndex: "viewPrice",
     },
     {
-      title: "개수",
-      dataIndex: "viewStock",
+      title: "재고",
+      dataIndex: "stock",
     },
     {
       title: "단위",
@@ -287,7 +287,7 @@ const Material = () => {
       ),
     },
     {
-      title: "삭제",
+      title: "재료삭제",
       render: (data) => (
         <Popconfirm
           title="정말 삭제하시겠습니까?"
@@ -389,7 +389,9 @@ const Material = () => {
               <GuideLi isImpo={true}>
                 가격과 개수는 숫자만 입력해주세요.
               </GuideLi>
-              <GuideLi isImpo={true}>단위는 단위까지 입력해주세요.</GuideLi>
+              <GuideLi isImpo={true}>
+                단위는 g, kg, ml 등과 유사한 단위를 입력해주세요.
+              </GuideLi>
             </GuideUl>
           </Wrapper>
           <Form.Item
@@ -407,9 +409,9 @@ const Material = () => {
             <Input type="number" />
           </Form.Item>
           <Form.Item
-            label="개수"
+            label="재고"
             name="stock"
-            rules={[{ required: true, message: "개수을 입력해주세요." }]}
+            rules={[{ required: true, message: "재고을 입력해주세요." }]}
           >
             <Input type="number" />
           </Form.Item>

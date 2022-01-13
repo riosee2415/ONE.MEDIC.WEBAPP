@@ -17,8 +17,7 @@ router.get("/list", async (req, res, next) => {
             name,
             CONCAT(FORMAT(price, 0), "원")		         AS viewPrice,
             price		                                AS originPrice,
-            CONCAT(stock, "개")		                     AS viewStock,
-            stock		                                AS originStock,
+            stock,
             unit,
             DATE_FORMAT(createdAt, "%Y년 %m월 %d일")      AS createdAt
       FROM  materials
