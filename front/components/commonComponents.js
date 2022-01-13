@@ -1,4 +1,4 @@
-import { Row, Col, Button, Form, Input, Select } from "antd";
+import { Row, Col, Button, Form, Input, Select, Checkbox } from "antd";
 import styled from "styled-components";
 
 export const RowWrapper = styled(Row)`
@@ -509,4 +509,30 @@ export const GuideLi = styled.li`
   width: 100%;
   margin-bottom: 5px;
   color: ${(props) => (props.isImpo ? props.theme.red_C : "")};
+`;
+
+export const CommonCheckBox = styled(Checkbox)`
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: ${(props) => props.theme.basicTheme_C};
+    border-color: ${(props) => props.theme.basicTheme_C};
+  }
+  .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+  .ant-checkbox:hover .ant-checkbox-inner,
+  .ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color: ${(props) => props.theme.basicTheme_C};
+  }
+
+  .ant-checkbox-inner {
+    border-radius: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .ant-checkbox-inner::after {
+    left: 30%;
+  }
+
+  .ant-checkbox-checked::after {
+    border: none;
+  }
 `;
