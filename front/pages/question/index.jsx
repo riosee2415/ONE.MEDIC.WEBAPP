@@ -16,6 +16,7 @@ import {
   SpanText,
   CommonButton,
   TextArea,
+  CommonCheckBox,
 } from "../../components/commonComponents";
 import Link from "next/link";
 import Theme from "../../components/Theme";
@@ -53,32 +54,6 @@ const ContentArea = styled(TextArea)`
   }
 
   &:focus {
-    border: none;
-  }
-`;
-
-const NewCheckBox = styled(Checkbox)`
-  .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: ${Theme.basicTheme_C};
-    border-color: ${Theme.basicTheme_C};
-  }
-  .ant-checkbox-wrapper:hover .ant-checkbox-inner,
-  .ant-checkbox:hover .ant-checkbox-inner,
-  .ant-checkbox-input:focus + .ant-checkbox-inner {
-    border-color: ${Theme.basicTheme_C};
-  }
-
-  .ant-checkbox-inner {
-    border-radius: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  .ant-checkbox-inner::after {
-    left: 30%;
-  }
-
-  .ant-checkbox-checked::after {
     border: none;
   }
 `;
@@ -125,13 +100,10 @@ const Question = () => {
   ////// HANDLER //////
   useEffect(() => {
     if (st_questionCreateError) {
-      return message.error({
-        content: st_questionCreateError,
-        className: "custom-class",
-        style: {
-          marginTop: "10vh",
-        },
-      });
+      return LoadNotification(
+        "ERROR",
+        "일시적인 장애가 발생되었습니다. 잠시 후 다시 시도해주세요."
+      );
     }
   }, [st_questionCreateError]);
 
@@ -263,7 +235,7 @@ const Question = () => {
                 />
                 <Wrapper width={`auto`} dr={`row`} margin={`0 0 22px`}>
                   <Wrapper width={`auto`} padding={`0 12px 0 0`}>
-                    <NewCheckBox
+                    <CommonCheckBox
                       checked={isTerms}
                       onChange={TermsHandler}
                       id="check"
