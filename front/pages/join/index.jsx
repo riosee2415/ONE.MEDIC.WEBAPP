@@ -14,6 +14,7 @@ import {
   TextInput,
   CommonButton,
   Text,
+  CommonCheckBox,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -183,7 +184,7 @@ const Join = () => {
                   첨부하기
                 </CommonButton>
               </Wrapper>
-              <Checkbox>개인정보제공에 동의합니다.</Checkbox>
+              <CommonCheckBox>개인정보제공에 동의합니다.</CommonCheckBox>
               <CommonButton width={`100%`} height={`45px`} margin={`15px 0 0`}>
                 회원가입
               </CommonButton>

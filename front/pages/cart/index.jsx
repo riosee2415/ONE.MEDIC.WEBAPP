@@ -17,6 +17,7 @@ import {
   Image,
   CommonButton,
   ATag,
+  CommonCheckBox,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -180,7 +181,7 @@ const Cart = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
                   <Wrapper dr={`row`} width={`auto`}>
-                    <Checkbox style={{ alignItems: "center" }}>
+                    <CommonCheckBox style={{ alignItems: "center" }}>
                       <Wrapper
                         width={`auto`}
                         al={`flex-start`}
@@ -193,7 +194,7 @@ const Cart = ({}) => {
                           서울 성동구 성수이로6길 13
                         </Text>
                       </Wrapper>
-                    </Checkbox>
+                    </CommonCheckBox>
                   </Wrapper>
                   <Wrapper
                     dr={`row`}

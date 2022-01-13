@@ -17,6 +17,7 @@ import {
   RsWrapper,
   TextInput,
   CommonButton,
+  CommonCheckBox,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -167,7 +168,7 @@ const Address = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
                   <Wrapper dr={`row`} width={`auto`}>
-                    <Checkbox style={{ alignItems: "center" }}>
+                    <CommonCheckBox style={{ alignItems: "center" }}>
                       <Wrapper
                         width={`auto`}
                         al={`flex-start`}
@@ -181,7 +182,7 @@ const Address = ({}) => {
                         </Text>
                         <Text>010-0000-0000</Text>
                       </Wrapper>
-                    </Checkbox>
+                    </CommonCheckBox>
                   </Wrapper>
                   <TagBtn>기본주소</TagBtn>
                 </Wrapper>
@@ -210,7 +211,7 @@ const Address = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
                   <Wrapper dr={`row`} width={`auto`}>
-                    <Checkbox style={{ alignItems: "center" }}>
+                    <CommonCheckBox style={{ alignItems: "center" }}>
                       <Wrapper
                         width={`auto`}
                         al={`flex-start`}
@@ -224,7 +225,7 @@ const Address = ({}) => {
                         </Text>
                         <Text>010-0000-0000</Text>
                       </Wrapper>
-                    </Checkbox>
+                    </CommonCheckBox>
                   </Wrapper>
                 </Wrapper>
                 <Wrapper
