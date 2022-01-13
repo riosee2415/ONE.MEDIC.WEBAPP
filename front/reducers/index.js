@@ -12,6 +12,7 @@ import seo from "./seo";
 import editor from "./editor";
 import prescription from "./prescription";
 import discount from "./discount";
+import material from "./material";
 
 const rootReducer = (state, action) => {
   switch (action.type) {
@@ -33,6 +34,7 @@ const rootReducer = (state, action) => {
           editor,
           prescription,
           discount,
+          material,
         });
         return combinedReducer(state, action);
       }

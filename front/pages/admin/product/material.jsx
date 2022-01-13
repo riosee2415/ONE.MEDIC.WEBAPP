@@ -1,14 +1,20 @@
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import { Button, Table, Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { useRouter, withRouter } from "next/router";
-import wrapper from "../../../store/configureStore";
 import { END } from "redux-saga";
 import axios from "axios";
-import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 
+import wrapper from "../../../store/configureStore";
+import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import AdminLayout from "../../../components/AdminLayout";
-import { AdminContent } from "../../../components/commonComponents";
+import {
+  AdminContent,
+  Wrapper,
+  SearchForm,
+  SearchFormItem,
+} from "../../../components/commonComponents";
 import PageHeader from "../../../components/admin/PageHeader";
 
 const Material = () => {
@@ -30,6 +36,46 @@ const Material = () => {
   }, [st_loadMyInfoDone]);
   /////////////////////////////////////////////////////////////////////////
 
+  ////// DATAVIEW //////
+
+  const columns = [
+    {
+      title: "번호",
+      dataIndex: "id",
+    },
+    {
+      title: "이름",
+      dataIndex: "name",
+    },
+    {
+      title: "상품",
+      dataIndex: "price",
+    },
+    {
+      title: "개수",
+      dataIndex: "stock",
+    },
+    {
+      title: "단위",
+      dataIndex: "unit",
+    },
+    {
+      title: "수정",
+      render: (data) => (
+        <Button size="small" type="primary">
+          수정
+        </Button>
+      ),
+    },
+    {
+      title: "삭제",
+      render: (data) => (
+        <Button size="small" type="danger">
+          삭제
+        </Button>
+      ),
+    },
+  ];
   return (
     <AdminLayout>
       <PageHeader
@@ -38,7 +84,31 @@ const Material = () => {
         subTitle={`탕전처방에서 판매되는 재료을 관리하는 전산시스템 입니다.`}
       />
 
-      <AdminContent>탕전 처방 관리</AdminContent>
+      <AdminContent>
+        <SearchForm layout="inline">
+          <SearchFormItem label="재료명" name="searchName">
+            <Input type="text" size="small" style={{ width: "220px" }} />
+          </SearchFormItem>
+
+          <SearchFormItem>
+            <Button size="small" type="primary" htmlType="submit">
+              검색
+            </Button>
+          </SearchFormItem>
+        </SearchForm>
+        <Wrapper dr={`row`} ju={`flex-end`}>
+          <Button size="small" type="dashed">
+            전체조회
+          </Button>
+          <Button size="small" style={{ margin: `0 5px` }} type="danger">
+            주의사항
+          </Button>
+          <Button size="small" type="primary">
+            추가
+          </Button>
+        </Wrapper>
+        <Table columns={columns} />
+      </AdminContent>
     </AdminLayout>
   );
 };
