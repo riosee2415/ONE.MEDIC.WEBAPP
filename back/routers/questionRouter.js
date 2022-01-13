@@ -10,7 +10,7 @@ router.get("/type/list/", async (req, res, next) => {
   try {
     const types = await QuestionType.findAll({
       where: { isDelete: false },
-      order: [["value", "ASC"]],
+      order: [["value", "DESC"]],
     });
 
     return res.status(200).json(types);

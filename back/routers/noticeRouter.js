@@ -62,7 +62,7 @@ const upload = multer({
 router.get("/list", async (req, res, next) => {
   const { page, search } = req.query;
 
-  const LIMIT = 10;
+  // const LIMIT = 10;
 
   const _page = page ? page : 1;
   const _search = search ? search : "";
@@ -71,23 +71,23 @@ router.get("/list", async (req, res, next) => {
   const OFFSET = __page * 10;
 
   try {
-    const totalNotices = await Notice.findAll({
-      where: {
-        title: {
-          [Op.like]: `%${_search}%`,
-        },
-        isDelete: false,
-      },
-    });
+    // const totalNotices = await Notice.findAll({
+    //   where: {
+    //     title: {
+    //       [Op.like]: `%${_search}%`,
+    //     },
+    //     isDelete: false,
+    //   },
+    // });
 
-    const noticeLen = totalNotices.length;
+    // const noticeLen = totalNotices.length;
 
-    const lastPage =
-      noticeLen % LIMIT > 0 ? noticeLen / LIMIT + 1 : noticeLen / LIMIT;
+    // const lastPage =
+    //   noticeLen % LIMIT > 0 ? noticeLen / LIMIT + 1 : noticeLen / LIMIT;
 
     const notices = await Notice.findAll({
-      offset: OFFSET,
-      limit: LIMIT,
+      // offset: OFFSET,
+      // limit: LIMIT,
       where: {
         title: {
           [Op.like]: `%${_search}%`,
@@ -97,7 +97,7 @@ router.get("/list", async (req, res, next) => {
       order: [["createdAt", "DESC"]],
     });
 
-    return res.status(200).json({ notices, lastPage: parseInt(lastPage) });
+    return res.status(200).json({ notices });
   } catch (error) {
     console.error(error);
     return res.status(401).send("공지사항 목록을 불러올 수 업습니다.");

@@ -460,13 +460,6 @@ const NoticeList = ({ router }) => {
           columns={columns}
           dataSource={notices ? notices : []}
           size="small"
-          pagination={{
-            defaultCurrent: 1,
-            current: parseInt(currentPage),
-
-            total: maxPage * 10,
-            onChange: (page) => otherPageCall(page),
-          }}
         />
       </AdminContent>
 
