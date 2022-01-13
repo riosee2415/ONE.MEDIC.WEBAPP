@@ -6,6 +6,7 @@ import {
   ATag,
   WholeWrapper,
   RsWrapper,
+  TextInput,
 } from "./commonComponents";
 import { withResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
@@ -13,7 +14,7 @@ import Theme from "./Theme";
 import { Drawer } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { LeftOutlined } from "@ant-design/icons";
+import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
 
 const Dot = styled(Wrapper)`
   width: 4.5px;
@@ -114,6 +115,64 @@ const AppHeader = ({ children, width }) => {
             </Link>
             로그인
           </Wrapper>
+        </RsWrapper>
+      ) : router.pathname === "/prescription" ? (
+        <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
+          <Wrapper dr={`row`} ju={`space-between`}>
+            <Text fontSize={width < 800 ? `20px` : `26px`} fontWeight={`bold`}>
+              처방하기
+            </Text>
+            <SearchOutlined style={{ fontSize: 26 }} onClick={drawarToggle} />
+          </Wrapper>
+
+          {drawar && (
+            <Drawer
+              placement="right"
+              onClose={drawarToggle}
+              visible={drawarToggle}
+              getContainer={false}
+              closable={false}
+            >
+              <Wrapper>
+                <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
+                  <Wrapper height={`64px`} dr={`row`} ju={`space-between`}>
+                    <Wrapper width={`auto`} position={`relative`}>
+                      <Wrapper
+                        position={`absolute`}
+                        top={`50%`}
+                        left={`10px`}
+                        width={`auto`}
+                        color={Theme.basicTheme_C}
+                        zIndex={`10`}
+                        fontSize={`25px`}
+                        margin={`-13px 0 0`}
+                      >
+                        <SearchOutlined />
+                      </Wrapper>
+                      <TextInput
+                        radius={`10px`}
+                        height={`45px`}
+                        width={`300px`}
+                        type={`text`}
+                        placeholder={`주문목록에서 검색`}
+                        padding={`0 0 0 45px`}
+                      />
+                    </Wrapper>
+                    <Wrapper
+                      width={`auto`}
+                      bgColor={Theme.basicTheme_C}
+                      fontSize={`18px`}
+                      zIndex={`10`}
+                      onClick={drawarToggle}
+                      cursor={`pointer`}
+                    >
+                      취소
+                    </Wrapper>
+                  </Wrapper>
+                </RsWrapper>
+              </Wrapper>
+            </Drawer>
+          )}
         </RsWrapper>
       ) : (
         <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
