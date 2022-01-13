@@ -196,7 +196,7 @@ const Address = ({}) => {
                     width={`calc(100% / 2)`}
                     borderLeft={`1px solid ${Theme.grey2_C}`}
                   >
-                    샥제
+                    삭제
                   </Wrapper>
                 </Wrapper>
               </Wrapper>
@@ -238,7 +238,7 @@ const Address = ({}) => {
                     width={`calc(100% / 2)`}
                     borderLeft={`1px solid ${Theme.grey2_C}`}
                   >
-                    샥제
+                    삭제
                   </Wrapper>
                 </Wrapper>
               </Wrapper>
