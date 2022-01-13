@@ -5,23 +5,22 @@ export const initialState = {
 
   unitModal: false,
   cuModal: false,
-  deleteModal: false,
   //
   st_materialListLoading: false,
   st_materialListDone: false,
-  st_materialListError: false,
+  st_materialListError: null,
   //
   st_materialCreateLoading: false,
   st_materialCreateDone: false,
-  st_materialCreateError: false,
+  st_materialCreateError: null,
   //
   st_materialUpdateLoading: false,
   st_materialUpdateDone: false,
-  st_materialUpdateError: false,
+  st_materialUpdateError: null,
   //
   st_materialDeleteLoading: false,
   st_materialDeleteDone: false,
-  st_materialDeleteError: false,
+  st_materialDeleteError: null,
   //
 };
 
@@ -43,7 +42,6 @@ export const MATERIAL_DELETE_FAILURE = "MATERIAL_DELETE_FAILURE";
 
 export const CU_MODAL_TOGGLE = "CU_MODAL_TOGGLE";
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
-export const DELETE_MODAL_TOGGLE = "DELETE_MODAL_TOGGLE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -81,45 +79,41 @@ const reducer = (state = initialState, action) =>
         break;
 
       ////////////////////
-      case MATERIAL_UPDATE_FAILURE:
+      case MATERIAL_UPDATE_REQUEST:
         draft.st_materialUpdateLoading = true;
         draft.st_materialUpdateDone = false;
         draft.st_materialUpdateError = null;
         break;
-      case MATERIAL_UPDATE_FAILURE:
-        draft.st_materialUpdateLoading = true;
-        draft.st_materialUpdateDone = false;
+      case MATERIAL_UPDATE_SUCCESS:
+        draft.st_materialUpdateLoading = false;
+        draft.st_materialUpdateDone = true;
         break;
       case MATERIAL_UPDATE_FAILURE:
-        draft.st_materialUpdateLoading = true;
+        draft.st_materialUpdateLoading = false;
         draft.st_materialUpdateDone = false;
-        draft.st_materialUpdateError = null;
+        draft.st_materialUpdateError = action.error;
         break;
 
       ////////////////////
-      case MATERIAL_DELETE_FAILURE:
+      case MATERIAL_DELETE_REQUEST:
         draft.st_materialDeleteLoading = true;
         draft.st_materialDeleteDone = false;
         draft.st_materialDeleteError = null;
         break;
-      case MATERIAL_DELETE_FAILURE:
-        draft.st_materialDeleteLoading = true;
-        draft.st_materialDeleteDone = false;
+      case MATERIAL_DELETE_SUCCESS:
+        draft.st_materialDeleteLoading = false;
+        draft.st_materialDeleteDone = true;
         break;
       case MATERIAL_DELETE_FAILURE:
-        draft.st_materialDeleteLoading = true;
+        draft.st_materialDeleteLoading = false;
         draft.st_materialDeleteDone = false;
-        draft.st_materialDeleteError = null;
+        draft.st_materialDeleteError = action.error;
         break;
 
       ////////////////////
 
       case CU_MODAL_TOGGLE:
         draft.cuModal = !draft.cuModal;
-        break;
-
-      case DELETE_MODAL_TOGGLE:
-        draft.deleteModal = !draft.deleteModal;
         break;
 
       case UNIT_MODAL_TOGGLE:

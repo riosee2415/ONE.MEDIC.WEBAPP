@@ -3,6 +3,7 @@ const { Materials } = require("../models");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isNanCheck = require("../middlewares/isNanCheck");
 const { Op } = require("sequelize");
+const models = require("../models");
 
 const router = express.Router();
 
@@ -11,16 +12,23 @@ router.get("/list", async (req, res, next) => {
 
   const searchName = name ? name : "";
   try {
-    const result = await Materials.findAll({
-      where: {
-        isDelete: false,
-        name: {
-          [Op.like]: `%${searchName}%`,
-        },
-      },
-    });
+    const selectQuery = `
+    SELECT  id,
+            name,
+            CONCAT(FORMAT(price, 0), "원")		        AS viewPrice,
+            price		                                AS originPrice,
+            stock,
+            unit,
+            DATE_FORMAT(createdAt, "%Y년 %m월 %d일")      AS createdAt,
+            DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")      AS updatedAt
+      FROM  materials
+     WHERE  isDelete = false
+       AND  name LIKE '%${searchName}%';
+    `;
 
-    return res.status(200).json(result);
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0]);
   } catch (e) {
     console.error(e);
     return res.status(401).send("약재 목록을 불러올 수 없습니다.");
