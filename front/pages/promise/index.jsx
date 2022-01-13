@@ -24,6 +24,10 @@ import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import { useRef } from "react";
+import { PRODUCT_LIST_REQUEST } from "../../reducers/prescription";
+import { Empty } from "antd";
+import { useCallback } from "react";
+import { useRouter } from "next/router";
 
 const Promise = ({}) => {
   const width = useWidth();
@@ -33,10 +37,29 @@ const Promise = ({}) => {
   );
 
   ////// HOOKS //////
+  const router = useRouter();
+
+  const dispacth = useDispatch();
+
+  const { products, st_productError } = useSelector(
+    (state) => state.prescription
+  );
+
   ////// REDUX //////
   ////// USEEFFECT //////
+  useEffect(() => {
+    dispacth({
+      type: PRODUCT_LIST_REQUEST,
+      data: { title: false },
+    });
+  }, []);
+
   ////// TOGGLE //////
   ////// HANDLER //////
+
+  const moveLinkHandler = useCallback((link) => {
+    router.push(link);
+  }, []);
   ////// DATAVIEW //////
 
   return (
@@ -91,49 +114,36 @@ const Promise = ({}) => {
             position={`relative`}
             padding={`10px 0`}
           >
-            <Wrapper
-              width={`90%`}
-              height={`calc(100vh / 3 - 40px)`}
-              shadow={Theme.shadow_C}
-              radius={`15px`}
-              cursor={`pointer`}
-            >
-              <Image
-                alt="image"
-                height={`calc(100% - 45px)`}
-                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/logo/logo.png`}
-              />
-              <Text fontSize={`20px`}>공진당</Text>
-            </Wrapper>
-            <Wrapper
-              width={`90%`}
-              height={`calc(100vh / 3 - 40px)`}
-              shadow={Theme.shadow_C}
-              radius={`15px`}
-              cursor={`pointer`}
-              margin={`10px 0`}
-            >
-              <Image
-                alt="image"
-                height={`calc(100% - 45px)`}
-                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/logo/logo.png`}
-              />
-              <Text fontSize={`20px`}>경옥고</Text>
-            </Wrapper>
-            <Wrapper
-              width={`90%`}
-              height={`calc(100vh / 3 - 40px)`}
-              shadow={Theme.shadow_C}
-              radius={`15px`}
-              cursor={`pointer`}
-            >
-              <Image
-                alt="image"
-                height={`calc(100% - 45px)`}
-                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/logo/logo.png`}
-              />
-              <Text fontSize={`20px`}>다이어트처방</Text>
-            </Wrapper>
+            {products && products.length === 0 ? (
+              <Wrapper margin={`80px 0`}>
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                주문목록이 없습니다.
+              </Wrapper>
+            ) : (
+              products &&
+              products.map((data) => {
+                return (
+                  <Wrapper
+                    key={data.id}
+                    width={`90%`}
+                    height={`calc(100vh / 3 - 40px)`}
+                    shadow={Theme.shadow_C}
+                    radius={`15px`}
+                    cursor={`pointer`}
+                    onClick={() =>
+                      moveLinkHandler(`/promise/detail/${data.id}`)
+                    }
+                  >
+                    <Image
+                      alt="image"
+                      height={`calc(100% - 45px)`}
+                      src={data.imageURL1}
+                    />
+                    <Text fontSize={`20px`}>{data.title}</Text>
+                  </Wrapper>
+                );
+              })
+            )}
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
