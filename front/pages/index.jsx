@@ -241,6 +241,43 @@ const Home = ({}) => {
                   <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
                 </Wrapper>
               </Wrapper>
+              <Wrapper
+                radius={`20px`}
+                shadow={Theme.shadow_C}
+                padding={`15px`}
+                al={`flex-start`}
+                margin={`0 0 15px`}
+              >
+                <Text fontSize={`14px`} color={Theme.grey_C}>
+                  2022/01/04
+                </Text>
+                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+                  <Wrapper width={`auto`} al={`flex-start`}>
+                    <Text fontSize={`18px`} fontWeight={`bold`}>
+                      생강귤피탕
+                    </Text>
+                    <Text color={Theme.grey_C}>고객명</Text>
+                    <Text>환자명</Text>
+                  </Wrapper>
+                  <TagBtn>결제완료</TagBtn>
+                </Wrapper>
+                <Wrapper
+                  dr={`row`}
+                  color={Theme.grey_C}
+                  borderTop={`1px solid ${Theme.grey2_C}`}
+                  padding={`10px 0 0`}
+                >
+                  <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
+                  <Wrapper
+                    width={`calc(100% / 3)`}
+                    borderRight={`1px solid ${Theme.grey2_C}`}
+                    borderLeft={`1px solid ${Theme.grey2_C}`}
+                  >
+                    주문내역
+                  </Wrapper>
+                  <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                </Wrapper>
+              </Wrapper>
             </Wrapper>
             <Wrapper
               height={`50px`}
