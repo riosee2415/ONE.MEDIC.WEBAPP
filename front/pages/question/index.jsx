@@ -125,13 +125,10 @@ const Question = () => {
   ////// HANDLER //////
   useEffect(() => {
     if (st_questionCreateError) {
-      return message.error({
-        content: st_questionCreateError,
-        className: "custom-class",
-        style: {
-          marginTop: "10vh",
-        },
-      });
+      return LoadNotification(
+        "ERROR",
+        "일시적인 장애가 발생되었습니다. 잠시 후 다시 시도해주세요."
+      );
     }
   }, [st_questionCreateError]);
 
