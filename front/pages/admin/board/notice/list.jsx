@@ -299,8 +299,8 @@ const NoticeList = ({ router }) => {
       formData.append("title", value.title);
       formData.append("content", value.content);
       formData.append("type", value.type);
-      formData.append("isTop", isTop);
-      formData.append("file", realFile.value);
+      // formData.append("isTop", isTop);
+      // formData.append("file", realFile.value);
 
       dispatch({
         type: NOTICE_CREATE_REQUEST,
@@ -318,8 +318,8 @@ const NoticeList = ({ router }) => {
       formData.append("title", value.title);
       formData.append("content", value.content);
       formData.append("type", value.type);
-      formData.append("isTop", isTop);
-      formData.append("file", realFile.value);
+      // formData.append("isTop", isTop);
+      // formData.append("file", realFile.value);
 
       dispatch({
         type: NOTICE_UPDATE_REQUEST,
@@ -333,19 +333,19 @@ const NoticeList = ({ router }) => {
     formRef.current.submit();
   }, [isTop, realFile.value]);
 
-  const fileChangeHandler = useCallback(
-    (e) => {
-      const currentFile = e.target.files[0];
+  // const fileChangeHandler = useCallback(
+  //   (e) => {
+  //     const currentFile = e.target.files[0];
 
-      realFile.setValue(currentFile);
-      filename.setValue(currentFile.name);
-    },
-    [realFile.value]
-  );
+  //     realFile.setValue(currentFile);
+  //     filename.setValue(currentFile.name);
+  //   },
+  //   [realFile.value]
+  // );
 
-  const fileUploadClick = useCallback(() => {
-    fileRef.current.click();
-  }, [fileRef.current]);
+  // const fileUploadClick = useCallback(() => {
+  //   fileRef.current.click();
+  // }, [fileRef.current]);
 
   const otherPageCall = useCallback(
     (changePage) => {
@@ -392,12 +392,12 @@ const NoticeList = ({ router }) => {
       title: "작성자",
       dataIndex: "author",
     },
+    // {
+    //   title: "조회수",
+    //   dataIndex: "hit",
+    // },
     {
-      title: "조회수",
-      dataIndex: "hit",
-    },
-    {
-      title: "생성일",
+      title: "작성일",
       render: (data) => <div>{data.createdAt.substring(0, 10)}</div>,
     },
     {
@@ -505,7 +505,7 @@ const NoticeList = ({ router }) => {
               </Select>
             </Form.Item>
 
-            <Form.Item name={"isTop"} label="상단">
+            {/* <Form.Item name={"isTop"} label="상단">
               <Switch
                 checkedChildren={<CheckOutlined />}
                 unCheckedChildren={<CloseOutlined />}
@@ -513,7 +513,7 @@ const NoticeList = ({ router }) => {
                 checked={isTop}
                 onChange={isTopChange}
               />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               name={"content"}
@@ -527,7 +527,7 @@ const NoticeList = ({ router }) => {
               />
             </Form.Item>
 
-            <Form.Item>
+            {/* <Form.Item>
               <FileBox>
                 <input
                   type="file"
@@ -543,7 +543,7 @@ const NoticeList = ({ router }) => {
                   FILE UPLOAD
                 </Button>
               </FileBox>
-            </Form.Item>
+            </Form.Item> */}
 
             {/* {updateData && (
             <Form.Item>
