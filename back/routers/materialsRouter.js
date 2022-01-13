@@ -1,6 +1,5 @@
 const express = require("express");
 const { Materials } = require("../models");
-const isLoggedIn = require("../middlewares/isLoggedIn");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isNanCheck = require("../middlewares/isNanCheck");
 
