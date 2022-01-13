@@ -154,7 +154,7 @@ const AppHeader = ({ children, width }) => {
                         height={`45px`}
                         width={`300px`}
                         type={`text`}
-                        placeholder={`주문목록에서 검색`}
+                        placeholder={`약재 또는 처방 검색`}
                         padding={`0 0 0 45px`}
                       />
                     </Wrapper>

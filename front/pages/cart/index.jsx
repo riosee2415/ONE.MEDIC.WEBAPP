@@ -16,17 +16,19 @@ import {
   RsWrapper,
   Image,
   CommonButton,
+  ATag,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
-import { Empty } from "antd";
+import { Checkbox } from "antd";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { RightOutlined } from "@ant-design/icons";
 
-const Prescription = ({}) => {
+const Cart = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
@@ -120,10 +122,10 @@ const Prescription = ({}) => {
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
-                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/2.cart_g.png`}
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/2.cart.png`}
                   width={`22px`}
                 />
-                <Text fontSize={`12px`} margin={`5px 0 0`} color={Theme.grey_C}>
+                <Text fontSize={`12px`} margin={`5px 0 0`}>
                   장바구니
                 </Text>
               </Wrapper>
@@ -159,39 +161,68 @@ const Prescription = ({}) => {
               minHeight={`calc(100vh - 170px)`}
               ju={`flex-start`}
             >
+              <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 15px`}>
+                <Text color={Theme.grey_C} fontWeight={`bold`}>
+                  장바구니
+                </Text>
+                <Image
+                  alt="icon"
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/garbage.png`}
+                  width={`16px`}
+                />
+              </Wrapper>
               <Wrapper
-                padding={`20px`}
-                shadow={Theme.shadow_C}
                 radius={`20px`}
+                shadow={Theme.shadow_C}
+                padding={`15px`}
+                al={`flex-start`}
                 margin={`0 0 15px`}
               >
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text color={Theme.grey_C}>종류</Text>
-                  <Image
-                    alt="icon"
-                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/pencil.png`}
-                    width={`16px`}
-                  />
+                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+                  <Wrapper dr={`row`} width={`auto`}>
+                    <Checkbox style={{ alignItems: "center" }}>
+                      <Wrapper
+                        width={`auto`}
+                        al={`flex-start`}
+                        margin={`0 0 0 15px`}
+                      >
+                        <Text fontSize={`18px`} fontWeight={`bold`}>
+                          고객명
+                        </Text>
+                        <Text color={Theme.basicTheme_C}>
+                          서울 성동구 성수이로6길 13
+                        </Text>
+                      </Wrapper>
+                    </Checkbox>
+                  </Wrapper>
+                  <Wrapper
+                    dr={`row`}
+                    width={`auto`}
+                    fontSize={width < 800 ? `16px` : `18px`}
+                  >
+                    <Text fontWeight={`bold`}>68,960</Text>
+                    <Text margin={`0 0 0 3px`}>원</Text>
+                  </Wrapper>
                 </Wrapper>
-                <Wrapper margin={`10px 0 0`} al={`flex-start`}>
-                  <Text fontSize={width < 800 ? `16px` : `18px`}>
-                    20첩 / 32팩 / 120ml
-                  </Text>
-                </Wrapper>
-              </Wrapper>
-              <Wrapper padding={`20px`} shadow={Theme.shadow_C} radius={`20px`}>
                 <Wrapper
                   dr={`row`}
-                  ju={`space-between`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`0 5px 10px`}
+                  color={Theme.grey_C}
+                  borderTop={`1px solid ${Theme.grey2_C}`}
+                  padding={`10px 0 0`}
                 >
-                  <Text color={Theme.grey_C}>구성약재</Text>
-                  <Image
-                    alt="icon"
-                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/garbage.png`}
-                    width={`16px`}
-                  />
+                  <Wrapper width={`calc(100% / 3)`}>약재구성</Wrapper>
+                  <Wrapper
+                    width={`calc(100% / 3)`}
+                    borderRight={`1px solid ${Theme.grey2_C}`}
+                    borderLeft={`1px solid ${Theme.grey2_C}`}
+                  >
+                    탕전설정
+                  </Wrapper>
+                  <Link href={`/prescription-history`}>
+                    <ATag width={`calc(100% / 3)`}>
+                      <Wrapper>내역확인</Wrapper>
+                    </ATag>
+                  </Link>
                 </Wrapper>
               </Wrapper>
             </Wrapper>
@@ -259,4 +290,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
     await context.store.sagaTask.toPromise();
   }
 );
-export default Prescription;
+export default Cart;
