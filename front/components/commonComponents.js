@@ -485,16 +485,6 @@ export const CommonCheckBox = styled(Checkbox)`
     border-color: ${(props) => props.theme.basicTheme_C};
   }
 
-  .ant-checkbox-inner {
-    border-radius: 0;
-    width: 18px;
-    height: 18px;
-  }
-
-  .ant-checkbox-inner::after {
-    left: 30%;
-  }
-
   .ant-checkbox-checked::after {
     border: none;
   }
