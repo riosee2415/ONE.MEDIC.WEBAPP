@@ -24,6 +24,7 @@ const seoRouter = require("./routers/seoRouter");
 const editRouter = require("./routers/editRouter");
 const prescriptionRouter = require("./routers/prescriptionRouter");
 const discountRouter = require("./routers/discountRouter");
+const materialsRouter = require("./routers/materialsRouter");
 
 // Config Settings
 db.sequelize
@@ -102,6 +103,7 @@ app.use("/api/seo", seoRouter);
 app.use("/api/edit", editRouter);
 app.use("/api/prescription", prescriptionRouter);
 app.use("/api/discount", discountRouter);
+app.use("/api/materials", materialsRouter);
 
 // second minute hour day-of-month month day-of-week
 const task = cron.schedule(

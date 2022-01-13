@@ -14,6 +14,7 @@ const prescriptionPack = require("./prescriptionPack");
 const prescriptionType = require("./prescriptionType");
 const prescriptionUnit = require("./prescriptionUnit");
 const discount = require("./discount");
+const materials = require("./materials");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -41,6 +42,7 @@ db.PrescriptionPack = prescriptionPack;
 db.PrescriptionType = prescriptionType;
 db.PrescriptionUnit = prescriptionUnit;
 db.Discount = discount;
+db.Materials = materials;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);

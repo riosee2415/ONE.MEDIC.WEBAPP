@@ -5,14 +5,8 @@ const models = require("../models");
 
 const router = express.Router();
 
-router.get("/list", async (req, res, next) => {
+router.get("/list", isAdminCheck, async (req, res, next) => {
   try {
-    // const result = await Discount.findAll({
-    //   where: {
-    //     isDelete: false,
-    //   },
-    // });
-
     const selectQuery = `
               SELECT	Z.id											                      AS type,
 		                  Z.value											                    AS discount,
