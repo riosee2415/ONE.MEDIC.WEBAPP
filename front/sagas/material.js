@@ -21,8 +21,8 @@ import {
 
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
-function materialListAPI() {
-  return axios.get(`/api/materials/list`);
+function materialListAPI(data) {
+  return axios.get(`/api/materials/list?name=${data.name}`);
 }
 
 function* materialList(action) {

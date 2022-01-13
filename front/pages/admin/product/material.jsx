@@ -16,10 +16,12 @@ import {
   SearchFormItem,
 } from "../../../components/commonComponents";
 import PageHeader from "../../../components/admin/PageHeader";
+import { MATERIAL_LIST_REQUEST } from "../../../reducers/material";
 
 const Material = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
+  const { materials } = useSelector((state) => state.material);
 
   const router = useRouter();
 
@@ -107,7 +109,11 @@ const Material = () => {
             추가
           </Button>
         </Wrapper>
-        <Table columns={columns} />
+        <Table
+          size="small"
+          columns={columns}
+          dataSource={materials ? materials : []}
+        />
       </AdminContent>
     </AdminLayout>
   );
@@ -128,9 +134,12 @@ export const getServerSideProps = wrapper.getServerSideProps(
       type: LOAD_MY_INFO_REQUEST,
     });
 
-    // context.store.dispatch({
-    //     type:
-    // })
+    context.store.dispatch({
+      type: MATERIAL_LIST_REQUEST,
+      data: {
+        name: "",
+      },
+    });
 
     // 구현부 종료
     context.store.dispatch(END);

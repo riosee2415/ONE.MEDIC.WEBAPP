@@ -2,14 +2,21 @@ const express = require("express");
 const { Materials } = require("../models");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isNanCheck = require("../middlewares/isNanCheck");
+const { Op } = require("sequelize");
 
 const router = express.Router();
 
 router.get("/list", async (req, res, next) => {
+  const { name } = req.query;
+
+  const searchName = name ? name : "";
   try {
     const result = await Materials.findAll({
       where: {
         isDelete: false,
+        name: {
+          [Op.like]: `%${searchName}%`,
+        },
       },
     });
 
