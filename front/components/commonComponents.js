@@ -487,8 +487,8 @@ export const CommonCheckBox = styled(Checkbox)`
 
   .ant-checkbox-inner {
     border-radius: 0;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .ant-checkbox-inner::after {
