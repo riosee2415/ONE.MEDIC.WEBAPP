@@ -23,16 +23,27 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { NOTICE_LIST_REQUEST } from "../../reducers/notice";
 import { useRouter } from "next/router";
+import { notification } from "antd";
 
 const DownArrow = styled(DownOutlined)`
+  color: ${Theme.grey_C};
   display: ${(props) => props.display};
 `;
 
 const UpArrow = styled(UpOutlined)`
+  color: ${Theme.grey_C};
   display: ${(props) => props.display};
 `;
 
-const Login = () => {
+const LoadNotification = (msg, content) => {
+  notification.open({
+    message: msg,
+    description: content,
+    onClick: () => {},
+  });
+};
+
+const Notice = () => {
   const width = useWidth();
 
   const router = useRouter();
@@ -43,7 +54,7 @@ const Login = () => {
     (state) => state.seo
   );
 
-  const { notices } = useSelector((state) => state.notice);
+  const { notices, st_noticeListError } = useSelector((state) => state.notice);
 
   const [datum, setDatum] = useState(null);
 
@@ -72,6 +83,15 @@ const Login = () => {
   ////// HOOKS //////
   ////// REDUX //////
   ////// USEEFFECT //////
+  useEffect(() => {
+    if (st_noticeListError) {
+      return LoadNotification(
+        "ERROR",
+        "일시적인 장애가 발생되었습니다. 잠시 후 다시 시도해주세요."
+      );
+    }
+  }, [st_noticeListError]);
+
   useEffect(() => {
     const qs = getQs();
     dispatch({
@@ -166,7 +186,10 @@ const Login = () => {
                         }
                       >
                         <Wrapper width={`90%`} al={`flex-start`}>
-                          <Text width={`auto`} fontSize={`18px`}>
+                          <Text
+                            width={`auto`}
+                            fontSize={width < 500 ? `16px` : `18px`}
+                          >
                             <Text
                               width={`auto`}
                               fontSize={`14px`}
@@ -253,4 +276,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default Login;
+export default Notice;
