@@ -15,9 +15,10 @@ router.get("/list", async (req, res, next) => {
     const selectQuery = `
     SELECT  id,
             name,
-            CONCAT(FORMAT(price, 0), "원")		        AS viewPrice,
+            CONCAT(FORMAT(price, 0), "원")		         AS viewPrice,
             price		                                AS originPrice,
-            stock,
+            CONCAT(stock, "개")		                     AS viewStock,
+            stock		                                AS originStock,
             unit,
             DATE_FORMAT(createdAt, "%Y년 %m월 %d일")      AS createdAt
       FROM  materials

@@ -79,7 +79,7 @@ const Material = () => {
       formRef.current.setFieldsValue({
         name: updateData.name,
         price: updateData.originPrice,
-        stock: updateData.stock,
+        stock: updateData.originStock,
         unit: updateData.unit,
       });
     }
@@ -264,7 +264,7 @@ const Material = () => {
     },
     {
       title: "개수",
-      dataIndex: "stock",
+      dataIndex: "viewStock",
     },
     {
       title: "단위",
