@@ -421,18 +421,9 @@ const Material = () => {
             <Input />
           </Form.Item>
 
-          <Wrapper dr={`row`} ju={`flex-end`}>
-            <Button
-              size="small"
-              onClick={
-                updateData ? () => udpateModalToggle(null) : createModalToggle
-              }
-              style={{ margin: `0 5px 0 0` }}
-            >
-              취소
-            </Button>
+          <Wrapper al={`flex-end`}>
             <Button size="small" type="primary" htmlType="submit">
-              {updateData ? "수정" : "추가"}
+              {updateData ? "정보수정" : "재료추가"}
             </Button>
           </Wrapper>
         </Form>

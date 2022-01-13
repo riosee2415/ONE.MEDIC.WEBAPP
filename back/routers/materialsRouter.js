@@ -19,8 +19,7 @@ router.get("/list", async (req, res, next) => {
             price		                                AS originPrice,
             stock,
             unit,
-            DATE_FORMAT(createdAt, "%Y년 %m월 %d일")      AS createdAt,
-            DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")      AS updatedAt
+            DATE_FORMAT(createdAt, "%Y년 %m월 %d일")      AS createdAt
       FROM  materials
      WHERE  isDelete = false
        AND  name LIKE '%${searchName}%';
