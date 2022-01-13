@@ -181,13 +181,15 @@ const DiscountList = () => {
   }, [unitModal]);
 
   const createModalToggle = useCallback(() => {
-    if (discounts.length >= 5) {
-      return message.info("혜택은 5개까지만 추가할 수 있습니다.");
+    if (discounts) {
+      if (discounts.length >= 5) {
+        return message.info("혜택은 5개까지만 추가할 수 있습니다.");
+      }
     }
     dispatch({
       type: CU_MODAL_TOGGLE,
     });
-  }, [cuModal]);
+  }, [cuModal, discounts]);
 
   const updateModalToggle = useCallback(
     (data) => {

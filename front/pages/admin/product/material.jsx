@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Table, Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Button, Table, Input, Modal, Form, Popconfirm, message } from "antd";
 import { useRouter, withRouter } from "next/router";
 import { END } from "redux-saga";
 import axios from "axios";
@@ -14,14 +13,40 @@ import {
   Wrapper,
   SearchForm,
   SearchFormItem,
+  GuideUl,
+  GuideLi,
 } from "../../../components/commonComponents";
 import PageHeader from "../../../components/admin/PageHeader";
-import { MATERIAL_LIST_REQUEST } from "../../../reducers/material";
+import {
+  CU_MODAL_TOGGLE,
+  MATERIAL_CREATE_REQUEST,
+  MATERIAL_DELETE_REQUEST,
+  MATERIAL_LIST_REQUEST,
+  MATERIAL_UPDATE_REQUEST,
+  UNIT_MODAL_TOGGLE,
+} from "../../../reducers/material";
 
 const Material = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
-  const { materials } = useSelector((state) => state.material);
+  const {
+    materials,
+    unitModal,
+    cuModal,
+    //
+    st_materialListError,
+    //
+    st_materialCreateDone,
+    st_materialCreateError,
+    //
+    st_materialUpdateDone,
+    st_materialUpdateError,
+    //
+    st_materialDeleteDone,
+    st_materialDeleteError,
+  } = useSelector((state) => state.material);
+
+  console.log(cuModal);
 
   const router = useRouter();
 
@@ -38,6 +63,190 @@ const Material = () => {
   }, [st_loadMyInfoDone]);
   /////////////////////////////////////////////////////////////////////////
 
+  ////// HOOKS //////
+
+  const dispatch = useDispatch();
+
+  const [updateData, setUpdateData] = useState(null);
+
+  const [form] = Form.useForm();
+  const formRef = useRef();
+
+  ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (updateData) {
+      formRef.current.setFieldsValue({
+        name: updateData.name,
+        price: updateData.originPrice,
+        stock: updateData.stock,
+        unit: updateData.unit,
+      });
+    }
+  }, [updateData]);
+
+  useEffect(() => {
+    if (st_materialListError) {
+      return message.error(st_materialListError);
+    }
+  }, [st_materialListError]);
+
+  useEffect(() => {
+    if (st_materialCreateDone) {
+      form.resetFields();
+      dispatch({
+        type: CU_MODAL_TOGGLE,
+      });
+
+      dispatch({
+        type: MATERIAL_LIST_REQUEST,
+        data: {
+          name: "",
+        },
+      });
+      return message.success("재료가 추가되었습니다.");
+    }
+  }, [st_materialCreateDone]);
+
+  useEffect(() => {
+    if (st_materialCreateError) {
+      return message.error(st_materialCreateError);
+    }
+  }, [st_materialCreateError]);
+
+  useEffect(() => {
+    if (st_materialUpdateDone) {
+      form.resetFields();
+      dispatch({
+        type: CU_MODAL_TOGGLE,
+      });
+
+      dispatch({
+        type: MATERIAL_LIST_REQUEST,
+        data: {
+          name: "",
+        },
+      });
+      return message.success("재료가 수정되었습니다.");
+    }
+  }, [st_materialUpdateDone]);
+
+  useEffect(() => {
+    if (st_materialUpdateError) {
+      return message.error(st_materialUpdateError);
+    }
+  }, [st_materialUpdateError]);
+
+  useEffect(() => {
+    if (st_materialDeleteDone) {
+      dispatch({
+        type: MATERIAL_LIST_REQUEST,
+        data: {
+          name: "",
+        },
+      });
+      return message.success("재료가 삭제되었습니다.");
+    }
+  }, [st_materialDeleteDone]);
+
+  useEffect(() => {
+    if (st_materialDeleteError) {
+      return message.error(st_materialDeleteError);
+    }
+  }, [st_materialDeleteError]);
+
+  ////// TOGGLE //////
+
+  const unitModalToggle = useCallback(() => {
+    dispatch({
+      type: UNIT_MODAL_TOGGLE,
+    });
+  }, [unitModal]);
+
+  const createModalToggle = useCallback(
+    (isToggle) => {
+      if (!isToggle) {
+        form.resetFields();
+      }
+      dispatch({
+        type: CU_MODAL_TOGGLE,
+      });
+    },
+    [cuModal]
+  );
+
+  const udpateModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setUpdateData(data);
+      } else {
+        setUpdateData(null);
+        form.resetFields();
+      }
+      dispatch({
+        type: CU_MODAL_TOGGLE,
+      });
+    },
+    [cuModal, updateData, form]
+  );
+
+  ////// HANDLER //////
+
+  const searchMaterialHandler = useCallback((data) => {
+    dispatch({
+      type: MATERIAL_LIST_REQUEST,
+      data: {
+        name: data.name,
+      },
+    });
+  }, []);
+
+  const getAllMaterialHandler = useCallback(() => {
+    dispatch({
+      type: MATERIAL_LIST_REQUEST,
+      data: {
+        name: "",
+      },
+    });
+  }, []);
+
+  const onSubmit = useCallback((data) => {
+    dispatch({
+      type: MATERIAL_CREATE_REQUEST,
+      data: {
+        name: data.name,
+        price: data.price,
+        stock: data.stock,
+        unit: data.unit,
+      },
+    });
+  }, []);
+
+  const onUpdateSubmit = useCallback(
+    (data) => {
+      dispatch({
+        type: MATERIAL_UPDATE_REQUEST,
+        data: {
+          id: updateData.id,
+          name: data.name,
+          price: data.price,
+          stock: data.stock,
+          unit: data.unit,
+        },
+      });
+    },
+    [updateData]
+  );
+
+  const onDeleteHandler = useCallback((materialId) => {
+    dispatch({
+      type: MATERIAL_DELETE_REQUEST,
+      data: {
+        materialId,
+      },
+    });
+  }, []);
+
   ////// DATAVIEW //////
 
   const columns = [
@@ -50,11 +259,11 @@ const Material = () => {
       dataIndex: "name",
     },
     {
-      title: "상품",
-      dataIndex: "price",
+      title: "가격",
+      dataIndex: "viewPrice",
     },
     {
-      title: "개수",
+      title: "재고",
       dataIndex: "stock",
     },
     {
@@ -62,19 +271,34 @@ const Material = () => {
       dataIndex: "unit",
     },
     {
-      title: "수정",
+      title: "생성일",
+      dataIndex: "createdAt",
+    },
+    {
+      title: "재료상세 정보",
       render: (data) => (
-        <Button size="small" type="primary">
-          수정
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => udpateModalToggle(data)}
+        >
+          재료상세 정보
         </Button>
       ),
     },
     {
-      title: "삭제",
+      title: "재료삭제",
       render: (data) => (
-        <Button size="small" type="danger">
-          삭제
-        </Button>
+        <Popconfirm
+          title="정말 삭제하시겠습니까?"
+          okText="삭제"
+          cancelText="취소"
+          onConfirm={() => onDeleteHandler(data.id)}
+        >
+          <Button size="small" type="danger">
+            재료삭제
+          </Button>
+        </Popconfirm>
       ),
     },
   ];
@@ -87,9 +311,14 @@ const Material = () => {
       />
 
       <AdminContent>
-        <SearchForm layout="inline">
-          <SearchFormItem label="재료명" name="searchName">
-            <Input type="text" size="small" style={{ width: "220px" }} />
+        <SearchForm layout="inline" onFinish={searchMaterialHandler}>
+          <SearchFormItem label="재료명" name="name">
+            <Input
+              type="text"
+              size="small"
+              style={{ width: "220px" }}
+              onKeyPress={(e) => e.key === "Enter" && searchMaterialHandler}
+            />
           </SearchFormItem>
 
           <SearchFormItem>
@@ -98,15 +327,20 @@ const Material = () => {
             </Button>
           </SearchFormItem>
         </SearchForm>
-        <Wrapper dr={`row`} ju={`flex-end`}>
-          <Button size="small" type="dashed">
+        <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
+          <Button size="small" type="dashed" onClick={getAllMaterialHandler}>
             전체조회
           </Button>
-          <Button size="small" style={{ margin: `0 5px` }} type="danger">
+          <Button
+            size="small"
+            style={{ margin: `0 5px` }}
+            type="danger"
+            onClick={unitModalToggle}
+          >
             주의사항
           </Button>
-          <Button size="small" type="primary">
-            추가
+          <Button size="small" type="primary" onClick={createModalToggle}>
+            + 추가
           </Button>
         </Wrapper>
         <Table
@@ -115,6 +349,87 @@ const Material = () => {
           dataSource={materials ? materials : []}
         />
       </AdminContent>
+
+      {/* UNIT MODAL */}
+
+      <Modal
+        title="주의사항"
+        visible={unitModal}
+        onCancel={unitModalToggle}
+        footer={null}
+      >
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            삭제된 재료는 다시 복구할 수 없습니다. 신중한 작업을 필요로 합니다.
+          </GuideLi>
+          <GuideLi>
+            문의가 필요한 경우 (주)4LEAF SOFTWARE 1600-4198로 연락부탁드립니다.
+          </GuideLi>
+        </GuideUl>
+      </Modal>
+
+      {/* CREATE . UPDATE MODAL */}
+
+      <Modal
+        title={updateData ? "재료상세 정보" : "재료 추가"}
+        visible={cuModal}
+        footer={null}
+        onCancel={
+          updateData ? () => udpateModalToggle(null) : createModalToggle
+        }
+        width={`600px`}
+      >
+        <Form
+          form={form}
+          ref={formRef}
+          onFinish={updateData ? onUpdateSubmit : onSubmit}
+        >
+          <Wrapper margin={`0 0 0 10px`}>
+            <GuideUl>
+              <GuideLi isImpo={true}>
+                가격과 개수는 숫자만 입력해주세요.
+              </GuideLi>
+              <GuideLi isImpo={true}>
+                단위는 g, kg, ml 등과 유사한 단위를 입력해주세요.
+              </GuideLi>
+            </GuideUl>
+          </Wrapper>
+          <Form.Item
+            label="이름"
+            name="name"
+            rules={[{ required: true, message: "이름을 입력해주세요." }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="가격"
+            name="price"
+            rules={[{ required: true, message: "가격을 입력해주세요." }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="재고"
+            name="stock"
+            rules={[{ required: true, message: "재고을 입력해주세요." }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="단위"
+            name="unit"
+            rules={[{ required: true, message: "단위을 입력해주세요." }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Wrapper al={`flex-end`}>
+            <Button size="small" type="primary" htmlType="submit">
+              {updateData ? "정보수정" : "재료추가"}
+            </Button>
+          </Wrapper>
+        </Form>
+      </Modal>
     </AdminLayout>
   );
 };
