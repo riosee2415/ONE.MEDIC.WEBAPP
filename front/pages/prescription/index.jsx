@@ -336,7 +336,7 @@ const Prescription = ({}) => {
                   </ListWrapper>
 
                   {toggleArr[0] && (
-                    <Wrapper bgColor={Theme.lightGrey_C} padding={`15px 0px`}>
+                    <Wrapper bgColor={Theme.lightGrey_C} padding={`10px 0px`}>
                       <Wrapper
                         dr={`row`}
                         ju={`space-between`}

@@ -109,7 +109,7 @@ const Index = ({}) => {
               <Wrapper
                 shadow={Theme.shadow_C}
                 radius={`20px`}
-                padding={`35px 20px`}>
+                padding={`25px 20px`}>
                 <Title>탕전설정</Title>
                 <Wrapper
                   dr={`row`}
