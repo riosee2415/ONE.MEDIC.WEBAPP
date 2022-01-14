@@ -24,6 +24,7 @@ import styled from "styled-components";
 import { Checkbox, message, notification } from "antd";
 import { QUESTION_CREATE_REQUEST } from "../../reducers/question";
 import useInput from "../../hooks/useInput";
+import Modal from "antd/lib/modal/Modal";
 
 const TitleInput = styled(TextInput)`
   height: 43px;
@@ -71,6 +72,16 @@ const QuestionBtn = styled(CommonButton)`
   margin: 0 0 0 5px;
 `;
 
+const TermsModal = styled(Modal)`
+  .ant-modal-content {
+    border-radius: 20px;
+  }
+
+  .ant-modal-header {
+    border-radius: 20px;
+  }
+`;
+
 const LoadNotification = (msg, content) => {
   notification.open({
     message: msg,
@@ -88,6 +99,8 @@ const Question = () => {
   const { st_questionCreateDone, st_questionCreateError } = useSelector(
     (state) => state.question
   );
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [isTerms, setIsTerms] = useState(false);
 
@@ -137,7 +150,7 @@ const Question = () => {
     }
 
     if (isTerms === false) {
-      return LoadNotification("안내", "개인정보 수집을 선택해주세요.");
+      return LoadNotification("안내", "개인정보 수집을 동의해주세요.");
     }
 
     dispatch({
@@ -156,6 +169,15 @@ const Question = () => {
     contentInput.setValue("");
     setIsTerms(false);
   }, [titleInput.value, contentInput.value]);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   ////// DATAVIEW //////
 
   return (
@@ -234,7 +256,12 @@ const Question = () => {
                   placeholder="문의내용을 적어주세요."
                   {...contentInput}
                 />
-                <Wrapper width={`auto`} dr={`row`} margin={`0 0 22px`}>
+                <Wrapper
+                  width={`auto`}
+                  dr={`row`}
+                  margin={`0 0 22px`}
+                  al={`flex-start`}
+                >
                   <Wrapper width={`auto`} padding={`0 12px 0 0`}>
                     <CommonCheckBox
                       checked={isTerms}
@@ -242,16 +269,38 @@ const Question = () => {
                       id="check"
                     />
                   </Wrapper>
-                  <CustomLabel for="check">
-                    <Wrapper
-                      dr={`row`}
-                      ju={`flex-start`}
-                      width={`auto`}
-                      fontSize={`14px`}
+                  <Wrapper width={`auto`} al={`flex-start`}>
+                    <CustomLabel for="check">
+                      <Wrapper
+                        dr={`row`}
+                        ju={`flex-start`}
+                        width={`auto`}
+                        fontSize={`14px`}
+                        padding={`5px 0`}
+                      >
+                        <Text
+                          borderBottom={`1px solid ${Theme.black_C}`}
+                          lineHeight={`1`}
+                        >
+                          개인정보 제공
+                        </Text>
+                        <Text lineHeight={`1`}>
+                          을 확인하였으며 이에 동의합니다.
+                        </Text>
+                      </Wrapper>
+                    </CustomLabel>
+
+                    <CommonButton
+                      width={`52px`}
+                      height={`25px`}
+                      padding={`2px 0 0`}
+                      fontSize={`12px`}
+                      shadow={`none`}
+                      onClick={showModal}
                     >
-                      개인정보 제공을 확인하였으며 이에 동의합니다.
-                    </Wrapper>
-                  </CustomLabel>
+                      약관보기
+                    </CommonButton>
+                  </Wrapper>
                 </Wrapper>
                 <Wrapper dr={`row`} ju={`flex-end`}>
                   <QuestionBtn onClick={onCancel} kindOf={`white`}>
@@ -261,6 +310,15 @@ const Question = () => {
                 </Wrapper>
               </Wrapper>
             </Wrapper>
+            <TermsModal
+              title="약관"
+              visible={isModalVisible}
+              onCancel={handleCancel}
+              width={`350px`}
+              footer
+            >
+              <Wrapper>test</Wrapper>
+            </TermsModal>
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
