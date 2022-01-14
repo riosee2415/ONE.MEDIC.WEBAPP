@@ -44,11 +44,6 @@ const Detail = ({}) => {
     (state) => state.prescription
   );
 
-  console.log(products);
-  console.log(typeList);
-  console.log(packList);
-  console.log(unitList);
-
   ////// HOOKS //////
 
   const [type, setType] = useState(0);
