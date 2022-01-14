@@ -30,6 +30,7 @@ import {
   PRODUCT_PACK_LIST_REQUEST,
   PRODUCT_TYPE_LIST_REQUEST,
   PRODUCT_UNIT_LIST_REQUEST,
+  PRODUCT_DETAIL_REQUEST,
 } from "../../../reducers/prescription";
 import { useRouter } from "next/router";
 
@@ -40,7 +41,7 @@ const Detail = ({}) => {
     (state) => state.seo
   );
 
-  const { products, typeList, packList, unitList } = useSelector(
+  const { typeList, packList, unitList, product } = useSelector(
     (state) => state.prescription
   );
 
@@ -49,6 +50,8 @@ const Detail = ({}) => {
   const [type, setType] = useState(0);
   const [packType, setPackType] = useState(0);
   const [unit, setUnit] = useState(null);
+
+  const [topSlider, setTopSlider] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -77,6 +80,13 @@ const Detail = ({}) => {
           id: router.query.d,
         },
       });
+
+      dispatch({
+        type: PRODUCT_DETAIL_REQUEST,
+        data: {
+          id: router.query.d,
+        },
+      });
     }
   }, [router.query]);
 
@@ -96,7 +106,16 @@ const Detail = ({}) => {
         setUnit(unitList[0].id);
       }
     }
-  }, [typeList, packList, unitList]);
+
+    if (product) {
+      setTopSlider([
+        product.imageURL1,
+        product.imageURL2,
+        product.imageURL3,
+        product.imageURL4,
+      ]);
+    }
+  }, [typeList, packList, unitList, product]);
   ////// TOGGLE //////
   ////// HANDLER //////
 
@@ -185,9 +204,9 @@ const Detail = ({}) => {
               minHeight={`calc(100vh - 164px)`}
             >
               <Text color={Theme.grey_C} fontWeight={`bold`}>
-                공진단
+                {product && product.title}
               </Text>
-              <ProductSlider />
+              <ProductSlider topSlider={topSlider} />
 
               <Text
                 color={Theme.grey_C}
@@ -197,22 +216,31 @@ const Detail = ({}) => {
                 종류
               </Text>
               <Wrapper dr={`row`} ju={`flex-start`}>
-                {typeList.map((data) => {
-                  return (
-                    <CommonButton
-                      key={data.id}
-                      shadow={`0`}
-                      width={`calc(100% / 2 - 4px)`}
-                      height={`45px`}
-                      radius={`15px`}
-                      margin={`2px`}
-                      kindOf={type !== data.id && `white`}
-                      onClick={() => typeChangeHandler(data.id)}
-                    >
-                      {data.name}
-                    </CommonButton>
-                  );
-                })}
+                {typeList &&
+                  (typeList.length === 0 ? (
+                    <TextInput
+                      placeholder="직접입력"
+                      type={`text`}
+                      width={`100%`}
+                    />
+                  ) : (
+                    typeList.map((data) => {
+                      return (
+                        <CommonButton
+                          key={data.id}
+                          shadow={`0`}
+                          width={`calc(100% / 2 - 4px)`}
+                          height={`45px`}
+                          radius={`15px`}
+                          margin={`2px`}
+                          kindOf={type !== data.id && `white`}
+                          onClick={() => typeChangeHandler(data.id)}
+                        >
+                          {data.name}
+                        </CommonButton>
+                      );
+                    })
+                  ))}
               </Wrapper>
 
               <Text
@@ -223,7 +251,13 @@ const Detail = ({}) => {
                 포장
               </Text>
               <Wrapper dr={`row`} ju={`flex-start`}>
-                {packList &&
+                {packList && packList.length === 0 ? (
+                  <TextInput
+                    placeholder="직접입력"
+                    type={`text`}
+                    width={`100%`}
+                  />
+                ) : (
                   packList.map((data) => {
                     return (
                       <CommonButton
@@ -239,7 +273,8 @@ const Detail = ({}) => {
                         {data.name}
                       </CommonButton>
                     );
-                  })}
+                  })
+                )}
               </Wrapper>
               <Text
                 color={Theme.grey_C}
@@ -251,7 +286,11 @@ const Detail = ({}) => {
               <Wrapper dr={`row`} ju={`flex-start`}>
                 {unitList &&
                   (unitList.length === 0 ? (
-                    <Text>단위가 없습니다.</Text>
+                    <TextInput
+                      placeholder="직접입력"
+                      type={`text`}
+                      width={`100%`}
+                    />
                   ) : (
                     unitList.map((data) => {
                       return (

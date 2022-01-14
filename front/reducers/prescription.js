@@ -5,6 +5,8 @@ export const initailState = {
   typeList: [],
   packList: [],
   unitList: [],
+
+  product: null,
   //
   previewImage1: null,
   previewImage2: null,
@@ -78,6 +80,10 @@ export const initailState = {
   st_prescriptionUpdateLoading: false,
   st_prescriptionUpdateDone: false,
   st_prescriptionUpdateError: null,
+  //
+  st_productDetailLoading: false,
+  st_productDetailDone: false,
+  st_productDetailError: null,
 
   guideModal: false,
   typeModal: false,
@@ -161,6 +167,10 @@ export const PRESCRIPTION_DELETE_FAILURE = "PRESCRIPTION_DELETE_FAILURE";
 export const PRESCRIPTION_UPDATE_REQUEST = "PRESCRIPTION_UPDATE_REQUEST";
 export const PRESCRIPTION_UPDATE_SUCCESS = "PRESCRIPTION_UPDATE_SUCCESS";
 export const PRESCRIPTION_UPDATE_FAILURE = "PRESCRIPTION_UPDATE_FAILURE";
+
+export const PRODUCT_DETAIL_REQUEST = "PRODUCT_DETAIL_REQUEST";
+export const PRODUCT_DETAIL_SUCCESS = "PRODUCT_DETAIL_SUCCESS";
+export const PRODUCT_DETAIL_FAILURE = "PRODUCT_DETAIL_FAILURE";
 
 export const CLEAR_PREVIEW_IMAGE = "CLEAR_PREVIEW_IMAGE";
 export const SET_PREVIEW_IMAGE = "SET_PREVIEW_IMAGE";
@@ -499,6 +509,26 @@ const reducer = (state = initailState, action) =>
         draft.st_prescriptionUpdateLoading = false;
         draft.st_prescriptionUpdateDone = false;
         draft.st_prescriptionUpdateError = action.data;
+        break;
+      ////////////////////
+
+      case PRODUCT_DETAIL_REQUEST:
+        draft.st_productDetailLoading = true;
+        draft.st_productDetailDone = false;
+        draft.st_productDetailError = null;
+        break;
+
+      case PRODUCT_DETAIL_SUCCESS:
+        draft.st_productDetailLoading = false;
+        draft.st_productDetailDone = true;
+        draft.st_productDetailError = null;
+        draft.product = action.data;
+        break;
+
+      case PRODUCT_DETAIL_FAILURE:
+        draft.st_productDetailLoading = false;
+        draft.st_productDetailDone = false;
+        draft.st_productDetailError = action.error;
         break;
       ////////////////////
 

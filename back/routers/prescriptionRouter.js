@@ -184,7 +184,7 @@ router.get(["/list", "/list/:title"], async (req, res, next) => {
   }
 });
 
-router.get("/list/:id", async (req, res, next) => {
+router.get("/detail/:id", async (req, res, next) => {
   const { id } = req.params;
 
   if (isNanCheck(id)) {
