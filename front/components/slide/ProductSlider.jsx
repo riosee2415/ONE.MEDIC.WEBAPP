@@ -6,6 +6,7 @@ import Theme from "../Theme";
 import { Carousel } from "antd";
 import useWidth from "../../hooks/useWidth";
 import { useRouter } from "next/router";
+import { ConsoleSqlOutlined } from "@ant-design/icons";
 
 const MainSliderWrapper = styled(RowWrapper)`
   & .ant-carousel {
@@ -35,7 +36,8 @@ const MainSliderWrapper = styled(RowWrapper)`
   }
 `;
 
-const ProductSlider = () => {
+const ProductSlider = ({ topSlider }) => {
+  console.log(topSlider);
   const width = useWidth();
 
   const dispatch = useDispatch();
@@ -45,24 +47,15 @@ const ProductSlider = () => {
   return (
     <MainSliderWrapper>
       <Carousel autoplay={false} speed={3000}>
-        <Wrapper position={`relative`} display={`flex !important`}>
-          <Image
-            height={`210px`}
-            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/thumbnail/detail_thumb.png`}
-          />
-        </Wrapper>
-        <Wrapper position={`relative`} display={`flex !important`}>
-          <Image
-            height={`210px`}
-            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/thumbnail/detail_thumb.png`}
-          />
-        </Wrapper>
-        <Wrapper position={`relative`} display={`flex !important`}>
-          <Image
-            height={`210px`}
-            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/thumbnail/detail_thumb.png`}
-          />
-        </Wrapper>
+        {topSlider &&
+          topSlider.length > 0 &&
+          topSlider.map((data) => {
+            return (
+              <Wrapper position={`relative`} display={`flex !important`}>
+                <Image height={`210px`} src={data} />
+              </Wrapper>
+            );
+          })}
       </Carousel>
     </MainSliderWrapper>
   );
