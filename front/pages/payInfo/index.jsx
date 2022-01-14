@@ -29,6 +29,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   CloseOutlined,
+  DownOutlined,
   DropboxOutlined,
   RightOutlined,
   UpOutlined,
@@ -89,6 +90,10 @@ const Index = ({}) => {
 
   const [couponModal, setCouponModal] = useState(false);
   const [payOkModal, setPayOkModal] = useState(false);
+  const [payOpenToggle, setPayOpenToggle] = useState(false);
+
+  const [isAgree1, setIsAgree1] = useState(false);
+  const [isAgree2, setIsAgree2] = useState(false);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -414,73 +419,106 @@ const Index = ({}) => {
                 padding={`25px 20px`}
                 margin={`0 0 40px`}
               >
-                <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
+                <Wrapper dr={`row`} ju={`space-between`}>
                   <Text fontSize={`22px`}>결제수단</Text>
-                  <UpOutlined style={{ fontSize: `16px` }} />
+                  {payOpenToggle ? (
+                    <UpOutlined
+                      onClick={() => setPayOpenToggle((prev) => !prev)}
+                      style={{ fontSize: `16px` }}
+                    />
+                  ) : (
+                    <DownOutlined
+                      onClick={() => setPayOpenToggle((prev) => !prev)}
+                      style={{ fontSize: `16px` }}
+                    />
+                  )}
                 </Wrapper>
-                <Wrapper>
-                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
-                    <CommonButton
-                      kindOf={`white`}
-                      width={`calc(50% - 2px)`}
-                      height={`50px`}
-                      radius={`10px`}
-                      padding={`0px`}
+                {payOpenToggle && (
+                  <Wrapper margin={`20px 0 0 0`}>
+                    <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
+                      <CommonButton
+                        kindOf={`white`}
+                        width={`calc(50% - 2px)`}
+                        height={`50px`}
+                        radius={`10px`}
+                        padding={`0px`}
+                      >
+                        <Text fontSize={`16px`}>카드 간편 결제</Text>
+                      </CommonButton>
+                      <CommonButton
+                        kindOf={`white`}
+                        width={`calc(50% - 2px)`}
+                        height={`50px`}
+                        radius={`10px`}
+                        padding={`0px`}
+                      >
+                        <Text fontSize={`16px`}>계좌 간편 결제</Text>
+                      </CommonButton>
+                    </Wrapper>
+                    <Wrapper
+                      dr={`row`}
+                      ju={`space-between`}
+                      margin={`0 0 30px`}
                     >
-                      <Text fontSize={`16px`}>카드 간편 결제</Text>
-                    </CommonButton>
-                    <CommonButton
-                      kindOf={`white`}
-                      width={`calc(50% - 2px)`}
-                      height={`50px`}
-                      radius={`10px`}
-                      padding={`0px`}
-                    >
-                      <Text fontSize={`16px`}>계좌 간편 결제</Text>
-                    </CommonButton>
+                      <CommonButton
+                        kindOf={`white`}
+                        width={`calc(100% / 3 - 2px)`}
+                        height={`50px`}
+                        radius={`10px`}
+                        padding={`0px`}
+                      >
+                        <Text fontSize={`16px`}>신용카드</Text>
+                      </CommonButton>
+                      <CommonButton
+                        kindOf={`white`}
+                        width={`calc(100% / 3 - 2px)`}
+                        height={`50px`}
+                        radius={`10px`}
+                        padding={`0px`}
+                      >
+                        <Text fontSize={`16px`}>휴대폰 결제</Text>
+                      </CommonButton>
+                      <CommonButton
+                        kindOf={`white`}
+                        width={`calc(100% / 3 - 2px)`}
+                        height={`50px`}
+                        radius={`10px`}
+                        padding={`0px`}
+                      >
+                        <Text fontSize={`16px`}>무통장입금</Text>
+                      </CommonButton>
+                    </Wrapper>
+                    <Wrapper dr={`row`} ju={`flex-start`}>
+                      <CommonCheckBox
+                        checked={isAgree1}
+                        onClick={() => setIsAgree1((prev) => !prev)}
+                        style={{ margin: `0 5px 0 0` }}
+                      />
+                      <Text
+                        fontSize={`16px`}
+                        color={Theme.black_C}
+                        cursor={`pointer`}
+                        onClick={() => setIsAgree1((prev) => !prev)}
+                      >
+                        선택한 결제 수단을 다음에도 선택
+                      </Text>
+                    </Wrapper>
                   </Wrapper>
-                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 30px`}>
-                    <CommonButton
-                      kindOf={`white`}
-                      width={`calc(100% / 3 - 2px)`}
-                      height={`50px`}
-                      radius={`10px`}
-                      padding={`0px`}
-                    >
-                      <Text fontSize={`16px`}>신용카드</Text>
-                    </CommonButton>
-                    <CommonButton
-                      kindOf={`white`}
-                      width={`calc(100% / 3 - 2px)`}
-                      height={`50px`}
-                      radius={`10px`}
-                      padding={`0px`}
-                    >
-                      <Text fontSize={`16px`}>휴대폰 결제</Text>
-                    </CommonButton>
-                    <CommonButton
-                      kindOf={`white`}
-                      width={`calc(100% / 3 - 2px)`}
-                      height={`50px`}
-                      radius={`10px`}
-                      padding={`0px`}
-                    >
-                      <Text fontSize={`16px`}>무통장입금</Text>
-                    </CommonButton>
-                  </Wrapper>
-                  <Wrapper dr={`row`} ju={`flex-start`}>
-                    <CommonCheckBox style={{ margin: `0 5px 0 0` }} />
-                    <Text fontSize={`16px`} color={Theme.black_C}>
-                      선택한 결제 수단을 다음에도 선택
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
+                )}
               </Wrapper>
 
               <Wrapper dr={`row`} ju={`flex-start`} al={`flex-start`}>
                 <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
-                  <CommonCheckBox />
-                  <Text margin={`0 0 0 16px`} fontSize={`20px`}>
+                  <CommonCheckBox
+                    checked={isAgree2}
+                    onClick={() => setIsAgree2((prev) => !prev)}
+                  />
+                  <Text
+                    cursor={`pointer`}
+                    onClick={() => setIsAgree2((prev) => !prev)}
+                    margin={`0 0 0 16px`}
+                    fontSize={`20px`}
+                  >
                     결제 진행 필수 동의
                   </Text>
                 </Wrapper>
