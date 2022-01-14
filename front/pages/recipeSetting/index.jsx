@@ -109,7 +109,7 @@ const Index = ({}) => {
               <Wrapper
                 shadow={Theme.shadow_C}
                 radius={`20px`}
-                padding={`20px 20px 35px 20px`}>
+                padding={`35px 20px`}>
                 <Title>탕전설정</Title>
                 <Wrapper
                   dr={`row`}
@@ -120,13 +120,15 @@ const Index = ({}) => {
                     <Text
                       padding={`0 0 0 25px`}
                       fontWeight={`800`}
-                      fontSize={`18px`}>
+                      fontSize={width < 600 ? `16px` : `18px`}>
                       유압
                     </Text>
                   </CommonCheckBox>
 
                   <Wrapper width={`auto`}>
-                    <Text color={Theme.black_C} fontSize={`18px`}>
+                    <Text
+                      color={Theme.black_C}
+                      fontSize={width < 600 ? `16px` : `18px`}>
                       12,000원
                     </Text>
                   </Wrapper>
@@ -140,13 +142,15 @@ const Index = ({}) => {
                     <Text
                       padding={`0 0 0 25px`}
                       fontWeight={`800`}
-                      fontSize={`18px`}>
+                      fontSize={width < 600 ? `16px` : `18px`}>
                       본탕
                     </Text>
                   </CommonCheckBox>
 
                   <Wrapper width={`auto`}>
-                    <Text color={Theme.black_C} fontSize={`18px`}>
+                    <Text
+                      color={Theme.black_C}
+                      fontSize={width < 600 ? `16px` : `18px`}>
                       0원
                     </Text>
                   </Wrapper>
@@ -157,7 +161,7 @@ const Index = ({}) => {
                 shadow={Theme.shadow_C}
                 radius={`20px`}
                 margin={`20px 0 0 0`}
-                padding={`20px 20px 25px 20px`}>
+                padding={`25px  20px`}>
                 <Title>포장</Title>
                 <Wrapper
                   dr={`row`}
@@ -167,109 +171,24 @@ const Index = ({}) => {
                   <CommonCheckBox style={{ alignItems: "center" }}>
                     <Wrapper dr={`row`} padding={`0 0 0 20px`}>
                       <Image
-                        width={`50px`}
-                        height={`50px`}
-                        src={`https://via.placeholder.com/50x50`}
+                        width={`60px`}
+                        height={`60px`}
+                        src={`https://via.placeholder.com/60x60`}
                       />
 
                       <Text
                         padding={`0 0 0 10px`}
                         fontWeight={`800`}
-                        fontSize={`18px`}>
+                        fontSize={width < 600 ? `16px` : `18px`}>
                         일반
                       </Text>
                     </Wrapper>
                   </CommonCheckBox>
 
                   <Wrapper width={`auto`}>
-                    <Text color={Theme.black_C} fontSize={`18px`}>
-                      개당 170원
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
-
-                <Wrapper
-                  dr={`row`}
-                  ju={`space-between`}
-                  padding={`15px`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}>
-                  <CommonCheckBox style={{ alignItems: "center" }}>
-                    <Wrapper dr={`row`} padding={`0 0 0 20px`}>
-                      <Image
-                        width={`50px`}
-                        height={`50px`}
-                        src={`https://via.placeholder.com/50x50`}
-                      />
-
-                      <Text
-                        padding={`0 0 0 10px`}
-                        fontWeight={`800`}
-                        fontSize={`18px`}>
-                        일반
-                      </Text>
-                    </Wrapper>
-                  </CommonCheckBox>
-
-                  <Wrapper width={`auto`}>
-                    <Text color={Theme.black_C} fontSize={`18px`}>
-                      개당 170원
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
-
-                <Wrapper
-                  dr={`row`}
-                  ju={`space-between`}
-                  padding={`15px`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}>
-                  <CommonCheckBox style={{ alignItems: "center" }}>
-                    <Wrapper dr={`row`} padding={`0 0 0 20px`}>
-                      <Image
-                        width={`50px`}
-                        height={`50px`}
-                        src={`https://via.placeholder.com/50x50`}
-                      />
-
-                      <Text
-                        padding={`0 0 0 10px`}
-                        fontWeight={`800`}
-                        fontSize={`18px`}>
-                        일반
-                      </Text>
-                    </Wrapper>
-                  </CommonCheckBox>
-
-                  <Wrapper width={`auto`}>
-                    <Text color={Theme.black_C} fontSize={`18px`}>
-                      개당 170원
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
-
-                <Wrapper
-                  dr={`row`}
-                  ju={`space-between`}
-                  padding={`15px`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}>
-                  <CommonCheckBox style={{ alignItems: "center" }}>
-                    <Wrapper dr={`row`} padding={`0 0 0 20px`}>
-                      <Image
-                        width={`50px`}
-                        height={`50px`}
-                        src={`https://via.placeholder.com/50x50`}
-                      />
-
-                      <Text
-                        padding={`0 0 0 10px`}
-                        fontWeight={`800`}
-                        fontSize={`18px`}>
-                        일반
-                      </Text>
-                    </Wrapper>
-                  </CommonCheckBox>
-
-                  <Wrapper width={`auto`}>
-                    <Text color={Theme.black_C} fontSize={`18px`}>
+                    <Text
+                      color={Theme.black_C}
+                      fontSize={width < 600 ? `16px` : `18px`}>
                       개당 170원
                     </Text>
                   </Wrapper>

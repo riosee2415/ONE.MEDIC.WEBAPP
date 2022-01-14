@@ -28,6 +28,10 @@ import { useRouter } from "next/router";
 import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import react, { useState } from "react";
 
+const CustomCommonButton = styled(CommonButton)`
+  border: 0px;
+`;
+
 const ListWrapper = styled(Wrapper)`
   flex-direction: row;
   justify-content: space-between;
@@ -57,7 +61,7 @@ const SelectModal = styled(Modal)`
 `;
 
 const ComboBox = styled(Select)`
-  width: 200px;
+  width: 100%;
   border: 0px;
 
   &.ant-select:not(.ant-select-customize-input) .ant-select-selector {
@@ -190,14 +194,12 @@ const Prescription = ({}) => {
             minHeight={`calc(100vh - 64px)`}
             ju={`flex-start`}
             position={`relative`}
-            padding={`0`}
-          >
+            padding={`0`}>
             <Wrapper
               height={`64px`}
               bgColor={Theme.lightGrey2_C}
               padding={width < 800 ? `0px 10px` : `0px 38px`}
-              dr={`row`}
-            >
+              dr={`row`}>
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
@@ -251,14 +253,12 @@ const Prescription = ({}) => {
             <Wrapper
               padding={width < 800 ? `15px 10px` : `15px 38px`}
               minHeight={`calc(100vh - 170px)`}
-              ju={`flex-start`}
-            >
+              ju={`flex-start`}>
               <Wrapper
                 padding={`20px`}
                 shadow={Theme.shadow_C}
                 radius={`20px`}
-                margin={`0 0 15px`}
-              >
+                margin={`0 0 15px`}>
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text color={Theme.grey_C}>종류</Text>
                   <Image
@@ -280,8 +280,7 @@ const Prescription = ({}) => {
                   dr={`row`}
                   ju={`space-between`}
                   borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`0 5px 10px`}
-                >
+                  padding={`0 5px 10px`}>
                   <Text color={Theme.grey_C}>구성약재</Text>
                   <Image
                     onClick={() => ModalToggleHandler2()}
@@ -296,56 +295,92 @@ const Prescription = ({}) => {
                     onClick={(e) => listHandler(toggleArr, 0)}
                     borderBottom={
                       toggleArr[0] ? `null` : `1px solid ${Theme.grey2_C}`
-                    }
-                  >
-                    <Wrapper dr={`row`} width={`auto`} fontSize={`18px`}>
+                    }>
+                    <Wrapper
+                      dr={`row`}
+                      width={`auto`}
+                      fontSize={width < 600 ? `16px` : `18px`}
+                      color={`${Theme.black_C}`}>
                       {toggleArr[0] ? (
-                        <UpOutlined style={{ padding: "0 10px 0 0" }} />
+                        <UpOutlined
+                          style={{
+                            padding: "0 12px 0 0",
+                            color: `${Theme.grey3_C}`,
+                          }}
+                        />
                       ) : (
-                        <DownOutlined style={{ padding: "0 10px 0 0" }} />
+                        <DownOutlined
+                          style={{
+                            padding: "0 12px 0 0",
+                            color: `${Theme.grey3_C}`,
+                          }}
+                        />
                       )}
 
                       <Text fontWeight={`800`}>녹용</Text>
                     </Wrapper>
 
-                    <Text fontSize={`18px`}>6&nbsp;g</Text>
+                    <Text
+                      color={`${Theme.black_C}`}
+                      fontSize={width < 600 ? `16px` : `18px`}>
+                      6&nbsp;g
+                    </Text>
 
-                    <Text fontSize={`18px`}>57,880</Text>
+                    <Text
+                      color={`${Theme.black_C}`}
+                      fontSize={width < 600 ? `16px` : `18px`}>
+                      57,880
+                    </Text>
                   </ListWrapper>
 
                   {toggleArr[0] && (
-                    <Wrapper
-                      bgColor={Theme.lightGrey_C}
-                      padding={`15px 10px 15px 30px`}
-                    >
-                      <Wrapper margin={`3px 0`} dr={`row`} ju={`space-between`}>
+                    <Wrapper bgColor={Theme.lightGrey_C} padding={`15px 0px`}>
+                      <Wrapper
+                        dr={`row`}
+                        ju={`space-between`}
+                        margin={`0 0 5px 0`}
+                        padding={`0 10px 0 30px`}>
                         <Wrapper dr={`row`} width={`auto`}>
                           <RadioBox
                             onChange={(e) => radioBoxHandler(e, 0)}
-                            checked={isChecked[0]}
-                          />
-                          <Text>
-                            뉴질랜드 <SpanText>(중대)</SpanText>
-                          </Text>
+                            checked={isChecked[0]}>
+                            <Text color={Theme.black_C} fontSize={`16px`}>
+                              뉴질랜드&nbsp;
+                              <SpanText
+                                fontSize={`14px`}
+                                color={`${Theme.grey_C}`}>
+                                (중대)
+                              </SpanText>
+                            </Text>
+                          </RadioBox>
                         </Wrapper>
 
-                        <Wrapper width={`auto`}>
-                          <Text>19,280</Text>
+                        <Wrapper width={`auto`} color={Theme.black_C}>
+                          <Text fontSize={`16px`}>19,280</Text>
                         </Wrapper>
                       </Wrapper>
-                      <Wrapper margin={`3px 0`} dr={`row`} ju={`space-between`}>
+                      <Wrapper
+                        dr={`row`}
+                        ju={`space-between`}
+                        bgColor={Theme.lightGrey_C}
+                        padding={`0 10px 0 30px`}>
                         <Wrapper dr={`row`} width={`auto`}>
                           <RadioBox
                             onChange={(e) => radioBoxHandler(e, 1)}
-                            checked={isChecked[1]}
-                          />
-                          <Text>
-                            러시아 <SpanText>(중대)</SpanText>
-                          </Text>
+                            checked={isChecked[1]}>
+                            <Text color={Theme.black_C} fontSize={`16px`}>
+                              러시아&nbsp;
+                              <SpanText
+                                fontSize={`14px`}
+                                color={`${Theme.grey_C}`}>
+                                (중대)
+                              </SpanText>
+                            </Text>
+                          </RadioBox>
                         </Wrapper>
 
-                        <Wrapper width={`auto`}>
-                          <Text>19,280</Text>
+                        <Wrapper width={`auto`} color={Theme.black_C}>
+                          <Text fontSize={`16px`}>19,280</Text>
                         </Wrapper>
                       </Wrapper>
                     </Wrapper>
@@ -360,8 +395,7 @@ const Prescription = ({}) => {
               left={`0`}
               dr={`row`}
               zIndex={`10`}
-              bgColor={Theme.white_C}
-            >
+              bgColor={Theme.white_C}>
               <Wrapper
                 height={`100%`}
                 dr={`row`}
@@ -370,8 +404,7 @@ const Prescription = ({}) => {
                 }
                 ju={`flex-start`}
                 padding={width < 800 ? `0 10px` : `0 38px`}
-                fontSize={width < 800 ? `15px` : `20px`}
-              >
+                fontSize={width < 800 ? `15px` : `20px`}>
                 <Text fontWeight={`bold`}>총 주문금액 : </Text>
                 <Text fontWeight={`bold`}> 432,000</Text>
               </Wrapper>
@@ -380,8 +413,7 @@ const Prescription = ({}) => {
                 width={width < 800 ? `130px` : `170px`}
                 height={`100%`}
                 radius={`0`}
-                cursor={`pointer`}
-              >
+                cursor={`pointer`}>
                 주문하기
               </CommonButton>
             </Wrapper>
@@ -394,15 +426,13 @@ const Prescription = ({}) => {
           onOk={() => okModalDeleteHandler()}
           onCancel={() => ModalToggleHandler1()}
           footer={null}
-          width={350}
-        >
-          <Wrapper padding={`10px 15px`}>
-            <Wrapper al={`flex-start`} width={`200px`}>
+          width={350}>
+          <Wrapper padding={`50px 30px`}>
+            <Wrapper al={`flex-start`}>
               <Text
                 color={Theme.grey_C}
                 fontWeight={`800`}
-                padding={`10px 0 10px 0 `}
-              >
+                padding={`10px 0 10px 0 `}>
                 첩수
               </Text>
               <ComboBox defaultValue="lucy">
@@ -414,12 +444,11 @@ const Prescription = ({}) => {
               </ComboBox>
             </Wrapper>
 
-            <Wrapper al={`flex-start`} width={`200px`}>
+            <Wrapper al={`flex-start`}>
               <Text
                 color={Theme.grey_C}
                 fontWeight={`800`}
-                padding={`10px 0 10px 0 `}
-              >
+                padding={`10px 0 10px 0 `}>
                 팩수
               </Text>
               <ComboBox defaultValue="lucy">
@@ -431,12 +460,11 @@ const Prescription = ({}) => {
               </ComboBox>
             </Wrapper>
 
-            <Wrapper al={`flex-start`} width={`200px`}>
+            <Wrapper al={`flex-start`}>
               <Text
                 color={Theme.grey_C}
                 fontWeight={`800`}
-                padding={`10px 0 10px 0 `}
-              >
+                padding={`10px 0 10px 0 `}>
                 팩용량
               </Text>
               <ComboBox defaultValue="lucy">
@@ -448,7 +476,7 @@ const Prescription = ({}) => {
               </ComboBox>
             </Wrapper>
 
-            <Wrapper width={`200px`} margin={`20px 0 0 0`}>
+            <Wrapper margin={`20px 0 0 0`}>
               <Wrapper dr={`row`} ju={`space-between`}>
                 <Text fontWeight={`600`} color={Theme.grey_C}>
                   총 용량
@@ -472,7 +500,7 @@ const Prescription = ({}) => {
                 </Text>
               </Wrapper>
             </Wrapper>
-            <Wrapper width={`200px`} al={`flex-end`} margin={`10px 0 0 0`}>
+            <Wrapper al={`flex-end`} margin={`10px 0 0 0`}>
               <CommonButton width={`90px`} height={`40px`} fontWeight={`800`}>
                 완료
               </CommonButton>
@@ -486,28 +514,27 @@ const Prescription = ({}) => {
           visible={isModalVisible2}
           onOk={() => okModalKindofHandler()}
           onCancel={() => ModalToggleHandler2()}
-          footer={null}
-        >
+          footer={null}>
           <Wrapper>
             <Wrapper ju={`flex-start`} padding={`30px 0 10px 0`}>
               <Text color={Theme.grey_C} fontSize={`18px`}>
                 선택된 약재를 삭제하시겠습니까?
               </Text>
               <Wrapper dr={`row`} padding={`10px 0 0 60px`}>
-                <CommonButton
+                <CustomCommonButton
                   onClick={() => deleteHandler()}
                   kindOf={`white`}
                   width={`90px`}
                   height={`40px`}
                   margin={`0 5px 0 0`}
-                >
+                  border={`1px solid ${Theme.white_C}`}
+                  shadow={`0px`}>
                   아니요
-                </CommonButton>
+                </CustomCommonButton>
                 <CommonButton
                   width={`90px`}
                   height={`40px`}
-                  onClick={() => deleteHandler()}
-                >
+                  onClick={() => deleteHandler()}>
                   네
                 </CommonButton>
               </Wrapper>
