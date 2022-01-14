@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   KAKAO_LOGIN_REQUEST,
@@ -18,6 +18,7 @@ import {
   CommonButton,
   Image,
   SpanText,
+  CommonCheckBox,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -26,7 +27,53 @@ import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { DropboxOutlined, RightOutlined, UpOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  DropboxOutlined,
+  RightOutlined,
+  UpOutlined,
+} from "@ant-design/icons";
+import { Modal, Select } from "antd";
+
+const CustomSelect = styled(Select)`
+  width: 100%;
+  & .ant-select-selection-item {
+    font-size: ${(props) => props.fontSize || `18px`};
+    color: ${(props) => props.color || Theme.black_C};
+    line-height: 45px !important;
+  }
+
+  & .ant-select-selector {
+    height: ${(props) => props.height || `45px`} !important;
+  }
+  & .ant-select-selector:hover {
+    height: ${(props) => props.height || `45px`} !important;
+    border-color: ${Theme.basicTheme_C} !important;
+  }
+
+  & .ant-select-selection-placeholder {
+    line-height: 45px !important;
+  }
+  & .ant-select-selection-search-input {
+    height: 45px !important;
+    font-size: 18px !important;
+  }
+
+  & .ant-select-selector {
+    border: 1px solid ${Theme.grey2_C} !important;
+    border-radius: 10px !important;
+  }
+
+  & .ant-select-selection-placeholder {
+    font-size: 18px !important;
+  }
+`;
+
+const CustomModal = styled(Modal)`
+  & .ant-modal-content {
+    border-radius: 20px;
+  }
+`;
 
 const Index = ({}) => {
   const width = useWidth();
@@ -39,6 +86,9 @@ const Index = ({}) => {
   const router = useRouter();
 
   const dispacth = useDispatch();
+
+  const [couponModal, setCouponModal] = useState(false);
+  const [payOkModal, setPayOkModal] = useState(false);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -235,6 +285,7 @@ const Index = ({}) => {
                     fontSize={`16px`}
                     color={Theme.subTheme2_C}
                     cursor={`pointer`}
+                    onClick={() => setCouponModal(true)}
                   >
                     쿠폰함
                   </Text>
@@ -398,21 +449,34 @@ const Index = ({}) => {
                       height={`50px`}
                       radius={`10px`}
                       border={`1px solid ${Theme.grey2_C}`}
-                    ></Wrapper>
+                    >
+                      <Text fontSize={`16px`} color={Theme.black_C}>
+                        신용카드
+                      </Text>
+                    </Wrapper>
                     <Wrapper
                       width={`calc(100% / 3 - 2px)`}
                       height={`50px`}
                       radius={`10px`}
                       border={`1px solid ${Theme.grey2_C}`}
-                    ></Wrapper>
+                    >
+                      <Text fontSize={`16px`} color={Theme.black_C}>
+                        휴대폰 결제
+                      </Text>
+                    </Wrapper>
                     <Wrapper
                       width={`calc(100% / 3 - 2px)`}
                       height={`50px`}
                       radius={`10px`}
                       border={`1px solid ${Theme.grey2_C}`}
-                    ></Wrapper>
+                    >
+                      <Text fontSize={`16px`} color={Theme.black_C}>
+                        무통장입금
+                      </Text>
+                    </Wrapper>
                   </Wrapper>
-                  <Wrapper dr={`row`}>
+                  <Wrapper dr={`row`} ju={`flex-start`}>
+                    <CommonCheckBox style={{ margin: `0 5px 0 0` }} />
                     <Text fontSize={`16px`} color={Theme.black_C}>
                       선택한 결제 수단을 다음에도 선택
                     </Text>
@@ -420,59 +484,29 @@ const Index = ({}) => {
                 </Wrapper>
               </Wrapper>
 
-              <Wrapper al={`flex-start`} ju={`flex-start`}>
-                <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
-                  al={`flex-start`}
-                  margin={`0 0 15px`}
-                >
-                  <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
-                  >
-                    받는 사람
-                  </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    청구경희한의원
+              <Wrapper dr={`row`} ju={`flex-start`} al={`flex-start`}>
+                <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
+                  <CommonCheckBox />
+                  <Text margin={`0 0 0 16px`} fontSize={`20px`}>
+                    결제 진행 필수 동의
                   </Text>
                 </Wrapper>
                 <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
                   al={`flex-start`}
-                  margin={`0 0 15px`}
+                  width={`calc(100% - 16px)`}
+                  padding={`0 0 0 32px`}
                 >
-                  <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
-                  >
-                    보내는 사람
+                  <Text fontSize={`16px`} margin={`0 0 13px`}>
+                    개인정보 수집 · 이용 및 처리 동의&nbsp;
+                    <SpanText color={Theme.grey_C}>(필수)</SpanText>
                   </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    청구경희한의원
+                  <Text fontSize={`16px`} margin={`0 0 13px`}>
+                    결제대행 서비스 약관 동의&nbsp;
+                    <SpanText color={Theme.grey_C}>(필수)</SpanText>
                   </Text>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
-                  al={`flex-start`}
-                  margin={`0 0 15px`}
-                >
-                  <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
-                  >
-                    운송장번호
-                  </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    4075-8320-25
+                  <Text fontSize={`16px`}>
+                    전자지급 결제대행 서비스 이용약관 동의&nbsp;
+                    <SpanText color={Theme.grey_C}>(필수)</SpanText>
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -492,9 +526,143 @@ const Index = ({}) => {
                 radius={`0`}
                 cursor={`pointer`}
               >
-                확인
+                <Text
+                  fontSize={`20px`}
+                  fontWeight={`700`}
+                  onClick={() => setPayOkModal(true)}
+                >
+                  195,840원 결제하기
+                </Text>
               </CommonButton>
             </Wrapper>
+            <CustomModal
+              visible={couponModal}
+              footer={null}
+              closable={false}
+              width={360}
+            >
+              <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 30px`}>
+                <Text fontSize={`20px`} fontWeight={`700`}>
+                  쿠폰함
+                </Text>
+                <CloseOutlined
+                  onClick={() => setCouponModal(false)}
+                  style={{ fontSize: `18px` }}
+                />
+              </Wrapper>
+              <Wrapper
+                padding={`0 0 30px`}
+                borderBottom={`1px solid ${Theme.grey2_C}`}
+              >
+                <CustomSelect placeholder={`쿠폰선택`}>
+                  <Select.Option></Select.Option>
+                </CustomSelect>
+              </Wrapper>
+              <Wrapper margin={`20px 0 0 0`}>
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Text fontSize={`18px`} color={Theme.black_C}>
+                    처방 금액
+                  </Text>
+                  <Text color={Theme.black_C} fontSize={`18px`}>
+                    36,000
+                  </Text>
+                </Wrapper>
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Text fontSize={`18px`} color={Theme.black_C}>
+                    쿠폰 할인가
+                  </Text>
+                  <Text
+                    color={Theme.black_C}
+                    fontSize={`18px`}
+                    fontWeight={`700`}
+                    color={Theme.subTheme2_C}
+                  >
+                    8,600
+                  </Text>
+                </Wrapper>
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Text
+                    fontSize={`18px`}
+                    fontWeight={`700`}
+                    color={Theme.black_C}
+                  >
+                    최종 처방 금액
+                  </Text>
+                  <Text
+                    color={Theme.black_C}
+                    fontSize={`18px`}
+                    fontWeight={`700`}
+                  >
+                    27,400
+                  </Text>
+                </Wrapper>
+              </Wrapper>
+
+              <Wrapper dr={`row`} ju={`flex-end`} margin={`30px 0 0 0`}>
+                <Wrapper
+                  fontSize={`18px`}
+                  width={`90px`}
+                  height={`40px`}
+                  padding={`0`}
+                  margin={`0 5px 0 0`}
+                  cursor={`pointer`}
+                  onClick={() => setCouponModal(false)}
+                >
+                  취소
+                </Wrapper>
+                <CommonButton
+                  fontSize={`18px`}
+                  fontWeight={`700`}
+                  width={`90px`}
+                  height={`40px`}
+                  padding={`0`}
+                  onClick={() => setCouponModal(false)}
+                >
+                  적용하기
+                </CommonButton>
+              </Wrapper>
+            </CustomModal>
+
+            <CustomModal
+              visible={payOkModal}
+              footer={null}
+              closable={false}
+              width={330}
+              centered
+            >
+              <Wrapper>
+                <Text
+                  color={Theme.grey_C}
+                  fontSize={`18px`}
+                  margin={`0 0 18px`}
+                >
+                  주문된 상품을 결제하시겠습니까?
+                </Text>
+                <Wrapper dr={`row`} ju={`flex-end`} margin={`30px 0 0 0`}>
+                  <Wrapper
+                    fontSize={`18px`}
+                    width={`90px`}
+                    height={`40px`}
+                    padding={`0`}
+                    margin={`0 5px 0 0`}
+                    cursor={`pointer`}
+                    onClick={() => setPayOkModal(false)}
+                  >
+                    아니요
+                  </Wrapper>
+                  <CommonButton
+                    fontSize={`18px`}
+                    fontWeight={`700`}
+                    width={`90px`}
+                    height={`40px`}
+                    padding={`0`}
+                    onClick={() => setPayOkModal(false)}
+                  >
+                    네
+                  </CommonButton>
+                </Wrapper>
+              </Wrapper>
+            </CustomModal>
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
