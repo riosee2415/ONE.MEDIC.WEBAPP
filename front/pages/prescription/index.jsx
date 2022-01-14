@@ -71,6 +71,16 @@ const ComboBox = styled(Select)`
   }
 `;
 
+const RadioBox = styled(Radio)`
+  .ant-radio-inner::after {
+    background-color: ${Theme.subTheme_C};
+  }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: ${Theme.subTheme_C};
+  }
+`;
+
 const Prescription = ({}) => {
   const width = useWidth();
 
@@ -305,7 +315,7 @@ const Prescription = ({}) => {
                         bgColor={Theme.lightGrey_C}
                         padding={`5px 10px 5px 30px`}>
                         <Wrapper dr={`row`} width={`auto`}>
-                          <Radio
+                          <RadioBox
                             onChange={(e) => radioBoxHandler(e, 0)}
                             checked={isChecked[0]}
                           />
@@ -324,7 +334,7 @@ const Prescription = ({}) => {
                         bgColor={Theme.lightGrey_C}
                         padding={`5px 10px 5px 30px`}>
                         <Wrapper dr={`row`} width={`auto`}>
-                          <Radio
+                          <RadioBox
                             onChange={(e) => radioBoxHandler(e, 1)}
                             checked={isChecked[1]}
                           />
