@@ -330,7 +330,34 @@ const Question = () => {
               width={`350px`}
               footer
             >
-              <Wrapper>test</Wrapper>
+              <Wrapper al={`flex-start`} fontSize={`12px`} color={Theme.grey_C}>
+                <Text textAlign={`left`} fontWeight={`bold`}>
+                  1. 개인정보 수집, 이용 목적
+                </Text>
+                <Text textAlign={`left`}>
+                  1) 회원가입을 위한 본인의 식별 및 회원관리
+                </Text>
+                <Text textAlign={`left`}>
+                  2) 이용자의 수요를 파악하고 회사의 제품 및 서비스의 향상
+                </Text>
+                <Text textAlign={`left`} margin={`0 0 10px`}>
+                  3) 특정 물품(경품이벤트 당첨 등) 발송 또는 기타 필요한 경우
+                  회원에 대한 연락의 목적
+                </Text>
+                <Text textAlign={`left`} fontWeight={`bold`}>
+                  2. 수집하는 개인정보의 항목
+                </Text>
+                <Text textAlign={`left`} margin={`0 0 10px`}>
+                  - ID(전자우편주소), 비밀번호, 이름, 생년월일, 전화번호 및
+                  이동전화번호, 면허번호, 진료기관명, 진료기관주소, 우편번호
+                </Text>
+                <Text textAlign={`left`} fontWeight={`bold`}>
+                  3. 개인정보 보유 및 이용기간
+                </Text>
+                <Text textAlign={`left`} margin={`0 0 10px`}>
+                  - 회원탈퇴 시 수집된 개인정보는 즉시 파기합니다.
+                </Text>
+              </Wrapper>
             </TermsModal>
           </RsWrapper>
         </WholeWrapper>
