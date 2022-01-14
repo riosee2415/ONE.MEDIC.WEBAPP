@@ -412,68 +412,61 @@ const Index = ({}) => {
                 radius={`20px`}
                 shadow={Theme.shadow_C}
                 padding={`25px 20px`}
-                margin={`0 0 16px`}
+                margin={`0 0 40px`}
               >
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text fontSize={`22px`} margin={`0 0 20px`}>
-                    결재수단
-                  </Text>
+                <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
+                  <Text fontSize={`22px`}>결제수단</Text>
                   <UpOutlined style={{ fontSize: `16px` }} />
                 </Wrapper>
                 <Wrapper>
                   <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
-                    <Wrapper
+                    <CommonButton
+                      kindOf={`white`}
                       width={`calc(50% - 2px)`}
                       height={`50px`}
                       radius={`10px`}
-                      border={`1px solid ${Theme.grey2_C}`}
+                      padding={`0px`}
                     >
-                      <Text fontSize={`16px`} color={Theme.black_C}>
-                        카드 간편 결제
-                      </Text>
-                    </Wrapper>
-                    <Wrapper
+                      <Text fontSize={`16px`}>카드 간편 결제</Text>
+                    </CommonButton>
+                    <CommonButton
+                      kindOf={`white`}
                       width={`calc(50% - 2px)`}
                       height={`50px`}
                       radius={`10px`}
-                      border={`1px solid ${Theme.grey2_C}`}
+                      padding={`0px`}
                     >
-                      <Text fontSize={`16px`} color={Theme.black_C}>
-                        계좌 간편 결제
-                      </Text>
-                    </Wrapper>
+                      <Text fontSize={`16px`}>계좌 간편 결제</Text>
+                    </CommonButton>
                   </Wrapper>
                   <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 30px`}>
-                    <Wrapper
+                    <CommonButton
+                      kindOf={`white`}
                       width={`calc(100% / 3 - 2px)`}
                       height={`50px`}
                       radius={`10px`}
-                      border={`1px solid ${Theme.grey2_C}`}
+                      padding={`0px`}
                     >
-                      <Text fontSize={`16px`} color={Theme.black_C}>
-                        신용카드
-                      </Text>
-                    </Wrapper>
-                    <Wrapper
+                      <Text fontSize={`16px`}>신용카드</Text>
+                    </CommonButton>
+                    <CommonButton
+                      kindOf={`white`}
                       width={`calc(100% / 3 - 2px)`}
                       height={`50px`}
                       radius={`10px`}
-                      border={`1px solid ${Theme.grey2_C}`}
+                      padding={`0px`}
                     >
-                      <Text fontSize={`16px`} color={Theme.black_C}>
-                        휴대폰 결제
-                      </Text>
-                    </Wrapper>
-                    <Wrapper
+                      <Text fontSize={`16px`}>휴대폰 결제</Text>
+                    </CommonButton>
+                    <CommonButton
+                      kindOf={`white`}
                       width={`calc(100% / 3 - 2px)`}
                       height={`50px`}
                       radius={`10px`}
-                      border={`1px solid ${Theme.grey2_C}`}
+                      padding={`0px`}
                     >
-                      <Text fontSize={`16px`} color={Theme.black_C}>
-                        무통장입금
-                      </Text>
-                    </Wrapper>
+                      <Text fontSize={`16px`}>무통장입금</Text>
+                    </CommonButton>
                   </Wrapper>
                   <Wrapper dr={`row`} ju={`flex-start`}>
                     <CommonCheckBox style={{ margin: `0 5px 0 0` }} />

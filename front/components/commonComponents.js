@@ -223,6 +223,9 @@ export const CommonButton = styled(Button)`
       props.kindOf === `white` && `background ${props.theme.basicTheme_C};`}
     ${(props) => props.kindOf === `white` && `color ${props.theme.white_C};`}
     ${(props) =>
+      props.kindOf === `white` &&
+      `border: 1px solid ${props.theme.basicTheme_C};`}
+    ${(props) =>
       props.kindOf === `black` && `background : ${props.theme.white_C};`}
     ${(props) => props.kindOf === `black` && `color : ${props.theme.black_C};`}
     ${(props) =>
