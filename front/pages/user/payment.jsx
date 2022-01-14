@@ -22,6 +22,7 @@ import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { message, notification } from "antd";
 import useOnlyNumberInput from "../../hooks/useOnlyNumberInput";
+import useWidth from "../../hooks/useWidth";
 import { useRouter } from "next/router";
 import Modal from "antd/lib/modal/Modal";
 
@@ -39,6 +40,12 @@ const PaymentInput = styled(TextInput)`
   &:focus {
     border: none;
     border-bottom: 1px solid ${Theme.grey_C};
+  }
+
+  @media (max-width: 500px) {
+    &::placeholder {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -73,6 +80,7 @@ const TermsModal = styled(Modal)`
 `;
 
 const Question = () => {
+  const width = useWidth();
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -277,7 +285,7 @@ const Question = () => {
                       dr={`row`}
                       ju={`flex-start`}
                       width={`auto`}
-                      fontSize={`14px`}
+                      fontSize={width < 500 ? `12px` : `14px`}
                       padding={`5px 0`}
                     >
                       <Text

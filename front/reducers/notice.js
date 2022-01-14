@@ -5,6 +5,8 @@ export const initailState = {
   maxPage: 1,
   createModal: false,
   detailModal: false,
+
+  guideModal: false,
   //
   st_noticeListLoading: false, // 공지사항 가져오기
   st_noticeListDone: false,
@@ -45,6 +47,8 @@ export const CREATE_MODAL_CLOSE_REQUEST = "CREATE_MODAL_CLOSE_REQUEST";
 
 export const DETAIL_MODAL_OPEN_REQUEST = "DETAIL_MODAL_OPEN_REQUEST";
 export const DETAIL_MODAL_CLOSE_REQUEST = "DETAIL_MODAL_CLOSE_REQUEST";
+
+export const GUIDE_MODAL_TOGGLE = "GUIDE_MODAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -141,6 +145,10 @@ const reducer = (state = initailState, action) =>
 
       case DETAIL_MODAL_CLOSE_REQUEST:
         draft.detailModal = false;
+        break;
+
+      case GUIDE_MODAL_TOGGLE:
+        draft.guideModal = !draft.guideModal;
         break;
       ///////////////////////////////////////////////////////
 
