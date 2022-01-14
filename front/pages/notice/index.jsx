@@ -166,7 +166,7 @@ const Notice = () => {
             al={`flex-start`}
             ju={`flex-start`}
           >
-            <Wrapper padding={`16px 0 0`}>
+            <Wrapper padding={`16px 0`}>
               {notices && notices.length === 0 ? (
                 <Empty description={`조회된 데이터가 없습니다.`} />
               ) : (
