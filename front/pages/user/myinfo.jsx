@@ -167,7 +167,7 @@ const Question = () => {
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
               al={`flex-start`}
-              margin={`16px 0`}
+              margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
                 <Text fontSize={`22px`} padding={`0 0 23px`}>
@@ -214,7 +214,7 @@ const Question = () => {
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
               al={`flex-start`}
-              margin={`16px 0`}
+              margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
                 <Text fontSize={`22px`} padding={`0 0 23px`}>
@@ -231,7 +231,7 @@ const Question = () => {
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
               al={`flex-start`}
-              margin={`16px 0`}
+              margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
                 <Text fontSize={`22px`} padding={`0 0 23px`}>
@@ -246,7 +246,7 @@ const Question = () => {
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
               al={`flex-start`}
-              margin={`16px 0`}
+              margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
                 <Text fontSize={`22px`} padding={`0 0 23px`}>

@@ -25,6 +25,7 @@ import { Checkbox, message, notification } from "antd";
 import { QUESTION_CREATE_REQUEST } from "../../reducers/question";
 import useInput from "../../hooks/useInput";
 import Modal from "antd/lib/modal/Modal";
+import useWidth from "../../hooks/useWidth";
 
 const TitleInput = styled(TextInput)`
   height: 43px;
@@ -91,6 +92,7 @@ const LoadNotification = (msg, content) => {
 };
 
 const Question = () => {
+  const width = useWidth();
   const dispatch = useDispatch();
   ////// GLOBAL STATE //////
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
@@ -275,7 +277,7 @@ const Question = () => {
                         dr={`row`}
                         ju={`flex-start`}
                         width={`auto`}
-                        fontSize={`14px`}
+                        fontSize={width < 500 ? `12px` : `14px`}
                         padding={`5px 0`}
                       >
                         <Text
