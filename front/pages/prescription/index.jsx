@@ -190,12 +190,14 @@ const Prescription = ({}) => {
             minHeight={`calc(100vh - 64px)`}
             ju={`flex-start`}
             position={`relative`}
-            padding={`0`}>
+            padding={`0`}
+          >
             <Wrapper
               height={`64px`}
               bgColor={Theme.lightGrey2_C}
               padding={width < 800 ? `0px 10px` : `0px 38px`}
-              dr={`row`}>
+              dr={`row`}
+            >
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
@@ -249,12 +251,14 @@ const Prescription = ({}) => {
             <Wrapper
               padding={width < 800 ? `15px 10px` : `15px 38px`}
               minHeight={`calc(100vh - 170px)`}
-              ju={`flex-start`}>
+              ju={`flex-start`}
+            >
               <Wrapper
                 padding={`20px`}
                 shadow={Theme.shadow_C}
                 radius={`20px`}
-                margin={`0 0 15px`}>
+                margin={`0 0 15px`}
+              >
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text color={Theme.grey_C}>종류</Text>
                   <Image
@@ -276,7 +280,8 @@ const Prescription = ({}) => {
                   dr={`row`}
                   ju={`space-between`}
                   borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`0 5px 10px`}>
+                  padding={`0 5px 10px`}
+                >
                   <Text color={Theme.grey_C}>구성약재</Text>
                   <Image
                     onClick={() => ModalToggleHandler2()}
@@ -291,7 +296,8 @@ const Prescription = ({}) => {
                     onClick={(e) => listHandler(toggleArr, 0)}
                     borderBottom={
                       toggleArr[0] ? `null` : `1px solid ${Theme.grey2_C}`
-                    }>
+                    }
+                  >
                     <Wrapper dr={`row`} width={`auto`} fontSize={`18px`}>
                       {toggleArr[0] ? (
                         <UpOutlined style={{ padding: "0 10px 0 0" }} />
@@ -308,12 +314,11 @@ const Prescription = ({}) => {
                   </ListWrapper>
 
                   {toggleArr[0] && (
-                    <Wrapper>
-                      <Wrapper
-                        dr={`row`}
-                        ju={`space-between`}
-                        bgColor={Theme.lightGrey_C}
-                        padding={`5px 10px 5px 30px`}>
+                    <Wrapper
+                      bgColor={Theme.lightGrey_C}
+                      padding={`15px 10px 15px 30px`}
+                    >
+                      <Wrapper margin={`3px 0`} dr={`row`} ju={`space-between`}>
                         <Wrapper dr={`row`} width={`auto`}>
                           <RadioBox
                             onChange={(e) => radioBoxHandler(e, 0)}
@@ -328,11 +333,7 @@ const Prescription = ({}) => {
                           <Text>19,280</Text>
                         </Wrapper>
                       </Wrapper>
-                      <Wrapper
-                        dr={`row`}
-                        ju={`space-between`}
-                        bgColor={Theme.lightGrey_C}
-                        padding={`5px 10px 5px 30px`}>
+                      <Wrapper margin={`3px 0`} dr={`row`} ju={`space-between`}>
                         <Wrapper dr={`row`} width={`auto`}>
                           <RadioBox
                             onChange={(e) => radioBoxHandler(e, 1)}
@@ -359,7 +360,8 @@ const Prescription = ({}) => {
               left={`0`}
               dr={`row`}
               zIndex={`10`}
-              bgColor={Theme.white_C}>
+              bgColor={Theme.white_C}
+            >
               <Wrapper
                 height={`100%`}
                 dr={`row`}
@@ -368,7 +370,8 @@ const Prescription = ({}) => {
                 }
                 ju={`flex-start`}
                 padding={width < 800 ? `0 10px` : `0 38px`}
-                fontSize={width < 800 ? `15px` : `20px`}>
+                fontSize={width < 800 ? `15px` : `20px`}
+              >
                 <Text fontWeight={`bold`}>총 주문금액 : </Text>
                 <Text fontWeight={`bold`}> 432,000</Text>
               </Wrapper>
@@ -377,7 +380,8 @@ const Prescription = ({}) => {
                 width={width < 800 ? `130px` : `170px`}
                 height={`100%`}
                 radius={`0`}
-                cursor={`pointer`}>
+                cursor={`pointer`}
+              >
                 주문하기
               </CommonButton>
             </Wrapper>
@@ -390,13 +394,15 @@ const Prescription = ({}) => {
           onOk={() => okModalDeleteHandler()}
           onCancel={() => ModalToggleHandler1()}
           footer={null}
-          width={350}>
+          width={350}
+        >
           <Wrapper padding={`10px 15px`}>
             <Wrapper al={`flex-start`} width={`200px`}>
               <Text
                 color={Theme.grey_C}
                 fontWeight={`800`}
-                padding={`10px 0 10px 0 `}>
+                padding={`10px 0 10px 0 `}
+              >
                 첩수
               </Text>
               <ComboBox defaultValue="lucy">
@@ -412,7 +418,8 @@ const Prescription = ({}) => {
               <Text
                 color={Theme.grey_C}
                 fontWeight={`800`}
-                padding={`10px 0 10px 0 `}>
+                padding={`10px 0 10px 0 `}
+              >
                 팩수
               </Text>
               <ComboBox defaultValue="lucy">
@@ -428,7 +435,8 @@ const Prescription = ({}) => {
               <Text
                 color={Theme.grey_C}
                 fontWeight={`800`}
-                padding={`10px 0 10px 0 `}>
+                padding={`10px 0 10px 0 `}
+              >
                 팩용량
               </Text>
               <ComboBox defaultValue="lucy">
@@ -478,7 +486,8 @@ const Prescription = ({}) => {
           visible={isModalVisible2}
           onOk={() => okModalKindofHandler()}
           onCancel={() => ModalToggleHandler2()}
-          footer={null}>
+          footer={null}
+        >
           <Wrapper>
             <Wrapper ju={`flex-start`} padding={`30px 0 10px 0`}>
               <Text color={Theme.grey_C} fontSize={`18px`}>
@@ -490,13 +499,15 @@ const Prescription = ({}) => {
                   kindOf={`white`}
                   width={`90px`}
                   height={`40px`}
-                  margin={`0 5px 0 0`}>
+                  margin={`0 5px 0 0`}
+                >
                   아니요
                 </CommonButton>
                 <CommonButton
                   width={`90px`}
                   height={`40px`}
-                  onClick={() => deleteHandler()}>
+                  onClick={() => deleteHandler()}
+                >
                   네
                 </CommonButton>
               </Wrapper>
