@@ -17,6 +17,7 @@ import {
   ATag,
   CommonButton,
   Image,
+  TextInput,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -25,7 +26,11 @@ import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { DropboxOutlined } from "@ant-design/icons";
+import {
+  DropboxOutlined,
+  RightOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 const Index = ({}) => {
   const width = useWidth();
@@ -95,172 +100,186 @@ const Index = ({}) => {
         <WholeWrapper>
           <RsWrapper ju={`flex-start`} position={`relative`} padding={`0`}>
             <Wrapper
+              height={`64px`}
+              bgColor={Theme.lightGrey2_C}
+              padding={width < 800 ? `0px 10px` : `0px 38px`}
+              dr={`row`}
+            >
+              <Wrapper width={`auto`}>
+                <Image
+                  alt="icon"
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/1.prescrip.png`}
+                  width={`22px`}
+                />
+                <Text fontSize={`12px`} margin={`5px 0 0`}>
+                  처방정보
+                </Text>
+              </Wrapper>
+              <RightOutlined
+                style={{ color: Theme.grey2_C, margin: "0 20px" }}
+              />
+              <Wrapper width={`auto`}>
+                <Image
+                  alt="icon"
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/2.cart.png`}
+                  width={`22px`}
+                />
+                <Text fontSize={`12px`} margin={`5px 0 0`}>
+                  장바구니
+                </Text>
+              </Wrapper>
+              <RightOutlined
+                style={{ color: Theme.grey2_C, margin: "0 20px" }}
+              />
+              <Wrapper width={`auto`}>
+                <Image
+                  alt="icon"
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/3.delivery.png`}
+                  width={`22px`}
+                />
+                <Text fontSize={`12px`} margin={`5px 0 0`}>
+                  배송정보
+                </Text>
+              </Wrapper>
+              <RightOutlined
+                style={{ color: Theme.grey2_C, margin: "0 20px" }}
+              />
+              <Wrapper width={`auto`}>
+                <Image
+                  alt="icon"
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/4.card_g.png`}
+                  width={`22px`}
+                />
+                <Text fontSize={`12px`} margin={`5px 0 0`} color={Theme.grey_C}>
+                  결제정보
+                </Text>
+              </Wrapper>
+            </Wrapper>
+            <Wrapper
               minHeight={`calc(100vh - 120px)`}
               padding={width < 800 ? `30px 10px` : `30px 38px`}
               al={`flex-start`}
               ju={`flex-start`}
             >
               <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`25px 20px`}
-                margin={`0 0 30px`}
+                dr={`row`}
+                ju={`space-between`}
+                padding={`0 0 15px`}
+                borderBottom={`1px solid ${Theme.grey_C}`}
               >
-                <Wrapper
-                  al={`flex-start`}
-                  ju={`flex-start`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}
+                <Text
+                  fontSize={`18px`}
+                  color={Theme.black_C}
+                  fontWeight={`700`}
                 >
-                  <Text
-                    fontSize={`1rem`}
-                    fontWeight={`700`}
-                    color={Theme.grey_C}
-                    margin={`0 0 20px`}
-                  >
-                    배송조회
-                  </Text>
-                </Wrapper>
-
-                <Wrapper
-                  dr={`row`}
-                  al={`flex-start`}
-                  ju={`flex-start`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`15px 12px`}
+                  받는 사람
+                </Text>
+                <Text
+                  fontSize={`16px`}
+                  color={Theme.subTheme2_C}
+                  cursor={`pointer`}
                 >
-                  <Wrapper
-                    width={`20px`}
-                    margin={`0 40px 0 0`}
-                    al={`flex-start`}
-                  >
-                    <Image
-                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/delivery_icon/box.png`}
-                      alt={`box`}
-                    />
-                  </Wrapper>
-                  <Wrapper
-                    al={`flex-start`}
-                    ju={`flex-start`}
-                    width={`calc(100% - 60px)`}
-                  >
-                    <Text
-                      color={Theme.black_C}
-                      fontSize={`18px`}
-                      fontWeight={`700`}
-                      margin={`0 0 7px`}
-                    >
-                      -12-15:21:00
-                    </Text>
-                    <Text
-                      color={Theme.black_C}
-                      fontSize={`16px`}
-                      margin={`0 0 5px`}
-                    >
-                      310-0002 영업소에서 물품을 접수했습니다.
-                    </Text>
-                    <Text color={Theme.black_C} fontSize={`16px`}>
-                      310팀: 곽봉남 010-5277-6257
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
-
-                <Wrapper
-                  dr={`row`}
-                  al={`flex-start`}
-                  ju={`flex-start`}
-                  borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`15px 12px`}
-                >
-                  <Wrapper
-                    width={`20px`}
-                    margin={`0 40px 0 0`}
-                    al={`flex-start`}
-                  >
-                    <Image
-                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/delivery_icon/truck.png`}
-                      alt={`truck`}
-                    />
-                  </Wrapper>
-                  <Wrapper
-                    al={`flex-start`}
-                    ju={`flex-start`}
-                    width={`calc(100% - 60px)`}
-                  >
-                    <Text
-                      color={Theme.black_C}
-                      fontSize={`18px`}
-                      fontWeight={`700`}
-                      margin={`0 0 7px`}
-                    >
-                      -12-15:21:00
-                    </Text>
-                    <Text
-                      color={Theme.black_C}
-                      fontSize={`16px`}
-                      margin={`0 0 5px`}
-                    >
-                      310-0002 영업소에서 물품을 접수했습니다.
-                    </Text>
-                    <Text color={Theme.black_C} fontSize={`16px`}>
-                      310팀: 곽봉남 010-5277-6257
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
+                  주소록 불러오기
+                </Text>
               </Wrapper>
-              <Wrapper al={`flex-start`} ju={`flex-start`}>
-                <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
-                  al={`flex-start`}
-                  margin={`0 0 15px`}
-                >
+              <Wrapper padding={`20px 20px 0`}>
+                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
                   <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
                     color={Theme.grey_C}
                     fontSize={`16px`}
+                    fontWeight={`700`}
+                    padding={`0 0 0 10px`}
                   >
-                    받는 사람
+                    받는사람
                   </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    청구경희한의원
-                  </Text>
+                  <TextInput
+                    border={`none`}
+                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                    radius={`0`}
+                    shadow={`none`}
+                    width={`100%`}
+                    placeholder={`받는 사람을 입력해주세요`}
+                    phFontSize={`16px`}
+                    focusBorder={`none`}
+                    focusBorderBottom={`1px solid ${Theme.black_C}`}
+                  />
                 </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
-                  al={`flex-start`}
-                  margin={`0 0 15px`}
-                >
+
+                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
                   <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
                     color={Theme.grey_C}
                     fontSize={`16px`}
+                    fontWeight={`700`}
+                    padding={`0 0 0 10px`}
                   >
-                    보내는 사람
+                    연락처
                   </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    청구경희한의원
-                  </Text>
+                  <TextInput
+                    border={`none`}
+                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                    radius={`0`}
+                    shadow={`none`}
+                    width={`100%`}
+                    placeholder={`(필수)연락처를 입력해주세요`}
+                    phFontSize={`16px`}
+                    focusBorder={`none`}
+                    focusBorderBottom={`1px solid ${Theme.black_C}`}
+                  />
                 </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
-                  al={`flex-start`}
-                  margin={`0 0 15px`}
-                >
+
+                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
                   <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
                     color={Theme.grey_C}
                     fontSize={`16px`}
+                    fontWeight={`700`}
+                    padding={`0 0 0 10px`}
                   >
-                    운송장번호
+                    주소
                   </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    4075-8320-25
+                  <Wrapper position={`relative`}>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                      placeholder={`받는 사람을 입력해주세요`}
+                      phFontSize={`16px`}
+                      focusBorder={`none`}
+                      focusBorderBottom={`1px solid ${Theme.black_C}`}
+                    />
+                    <Wrapper
+                      position={`absolute`}
+                      width={`auto`}
+                      right={`0`}
+                      top={`0`}
+                      bottom={`0`}
+                    >
+                      <SearchOutlined style={{ fontSize: `16px` }} />
+                    </Wrapper>
+                  </Wrapper>
+                </Wrapper>
+
+                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                  <Text
+                    color={Theme.grey_C}
+                    fontSize={`16px`}
+                    fontWeight={`700`}
+                    padding={`0 0 0 10px`}
+                  >
+                    상세주소
                   </Text>
+                  <TextInput
+                    border={`none`}
+                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                    radius={`0`}
+                    shadow={`none`}
+                    width={`100%`}
+                    placeholder={`상세주소를 입력해주세요`}
+                    phFontSize={`16px`}
+                    focusBorder={`none`}
+                    focusBorderBottom={`1px solid ${Theme.black_C}`}
+                  />
                 </Wrapper>
               </Wrapper>
             </Wrapper>

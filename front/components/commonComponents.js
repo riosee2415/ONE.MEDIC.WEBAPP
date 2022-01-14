@@ -429,12 +429,16 @@ export const TextInput = styled.input`
   cursor: ${(props) => props.cursor};
   z-index: ${(props) => props.zIndex};
   border-radius: ${(props) => props.radius || `10px`};
-  box-shadow: ${(props) => props.theme.shadow_C};
+  box-shadow: ${(props) => props.shadow || props.theme.shadow_C};
   transition: 0.3s;
 
   &:focus {
     outline: none;
-    border: 1px solid ${(props) => props.theme.subTheme_C};
+    border: ${(props) =>
+      props.focusBorder || `1px solid ${(props) => props.theme.subTheme_C}`};
+    border-bottom: ${(props) =>
+      props.focusBorderBottom ||
+      `1px solid ${(props) => props.theme.subTheme_C}`};
   }
 
   &:read-only {
@@ -447,7 +451,7 @@ export const TextInput = styled.input`
   }
 
   &::placeholder {
-    font-size: 14px;
+    font-size: ${(props) => props.phFontSize || `14px`};
     line-height: 1.6;
     font-weight: 300;
     color: ${(props) => props.theme.grey2_C};
