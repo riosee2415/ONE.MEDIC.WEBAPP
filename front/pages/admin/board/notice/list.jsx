@@ -29,6 +29,7 @@ import {
   NOTICE_UPDATE_REQUEST,
   NOTICE_DELETE_REQUEST,
   NOTICE_LIST_REQUEST,
+  GUIDE_MODAL_TOGGLE,
 } from "../../../../reducers/notice";
 import { withRouter } from "next/router";
 import useInput from "../../../../hooks/useInput";
@@ -38,10 +39,19 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { LOAD_MY_INFO_REQUEST } from "../../../../reducers/user";
 import wrapper from "../../../../store/configureStore";
-import { Wrapper } from "../../../../components/commonComponents";
+import {
+  Wrapper,
+  ModalBtn,
+  GuideLi,
+  GuideUl,
+} from "../../../../components/commonComponents";
 
 const AdminContent = styled.div`
   padding: 20px;
+`;
+
+const DangerModal = styled(ModalBtn)`
+  margin-left: 0;
 `;
 
 const FileBox = styled.div`
@@ -119,6 +129,7 @@ const NoticeList = ({ router }) => {
     maxPage,
     createModal,
     detailModal,
+    guideModal,
     st_noticeCreateDone,
     st_noticeUpdateDone,
     st_noticeDeleteDone,
@@ -378,6 +389,12 @@ const NoticeList = ({ router }) => {
     setDeletePopVisible((prev) => !prev);
   }, [deleteId]);
 
+  const guideModalToggle = useCallback(() => {
+    dispatch({
+      type: GUIDE_MODAL_TOGGLE,
+    });
+  }, [guideModal]);
+
   ////// DATAVIEW //////
   const columns = [
     {
@@ -433,17 +450,24 @@ const NoticeList = ({ router }) => {
       <AdminTop createButton={true} createButtonAction={createModalOpen} />
 
       <AdminContent>
+        <Wrapper al={`flex-start`} padding={`0 0 10px`}>
+          <DangerModal type="danger" size="small" onClick={guideModalToggle}>
+            주의사항
+          </DangerModal>
+        </Wrapper>
         <Row gutter={[10, 10]} style={{ padding: "0 0 10px 0" }}>
           <Col span={`6`}>
             <Input
               style={{ width: "100%" }}
               placeholder="검색어"
+              size="small"
               {...inputSearch}
             />
           </Col>
 
           <Col>
             <Button
+              size="small"
               onClick={() =>
                 moveLinkHandler(
                   `/admin/board/notice/list?page=${currentPage}&search=${inputSearch.value}`
@@ -455,6 +479,7 @@ const NoticeList = ({ router }) => {
             </Button>
           </Col>
         </Row>
+
         <Table
           rowKey="id"
           columns={columns}
@@ -462,6 +487,37 @@ const NoticeList = ({ router }) => {
           size="small"
         />
       </AdminContent>
+
+      {/* GUIDE MODAL */}
+      <Modal
+        visible={guideModal}
+        width="900px"
+        onOk={guideModalToggle}
+        onCancel={guideModalToggle}
+        title="주의사항"
+        footer={null}
+      >
+        <GuideUl>
+          <GuideLi isImpo={true}>
+            삭제된 공지사항은 다시 복구할 수 없습니다. 신중한 작업을 필요로
+            합니다.
+          </GuideLi>
+          <GuideLi>
+            공지사항 게시물은 계속 등록할 수 있으나, 불필요한 공지사항은
+            삭제하시는 것을 추천드립니다.
+          </GuideLi>
+          <GuideLi isImpo={true}>
+            삭제하지 않고 계속 게시할 시 사용자 화면에서 많은 스크롤을 하게
+            됩니다.
+          </GuideLi>
+          <GuideLi isImpo={true}>
+            유형 선택시 제목앞에 작은 타이틀로 사용자에게 보여집니다.
+          </GuideLi>
+          <GuideLi>
+            문의가 필요한 경우 (주)4LEAF SOFTWARE 1600-4198로 연락부탁드립니다.
+          </GuideLi>
+        </GuideUl>
+      </Modal>
 
       {/* CREATE MODAL */}
       <Modal

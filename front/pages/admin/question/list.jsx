@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import AdminLayout from "../../../components/AdminLayout";
 import PageHeader from "../../../components/admin/PageHeader";
-import AdminTop from "../../../components/admin/AdminTop";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -18,40 +17,35 @@ import {
 import {
   UPDATE_MODAL_CLOSE_REQUEST,
   UPDATE_MODAL_OPEN_REQUEST,
-  QUESTION_CREATE_REQUEST,
   QUESTION_UPDATE_REQUEST,
   QUESTION_DELETE_REQUEST,
   QUESTION_GET_REQUEST,
   QUESTION_TYPE_GET_REQUEST,
+  GUIDE_MODAL_TOGGLE,
 } from "../../../reducers/question";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import { useRouter } from "next/router";
-import { render } from "react-dom";
 import useInput from "../../../hooks/useInput";
 import wrapper from "../../../store/configureStore";
 import { END } from "redux-saga";
 import axios from "axios";
-import { ColWrapper, RowWrapper } from "../../../components/commonComponents";
+import {
+  ColWrapper,
+  RowWrapper,
+  GuideLi,
+  GuideUl,
+  ModalBtn,
+  Wrapper,
+} from "../../../components/commonComponents";
 import { saveAs } from "file-saver";
 import Theme from "../../../components/Theme";
-
-const { Sider, Content } = Layout;
 
 const AdminContent = styled.div`
   padding: 20px;
 `;
 
-const FileBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-`;
-
-const Filename = styled.span`
-  margin-right: 15px;
-  color: #555;
-  font-size: 13px;
+const DangerModal = styled(ModalBtn)`
+  margin-left: 0;
 `;
 
 const LoadNotification = (msg, content) => {
@@ -95,6 +89,7 @@ const List = ({ location }) => {
     questions,
     types,
     updateModal,
+    guideModal,
 
     st_questionUpdateDone,
     st_questionDeleteDone,
@@ -171,8 +166,6 @@ const List = ({ location }) => {
         }
       }
 
-      console.log(data);
-
       answer.setValue(data.answer);
       setUpdateData({ ...data, type });
     },
@@ -242,13 +235,20 @@ const List = ({ location }) => {
 
     saveAs(file, originName);
   }, []);
+
+  const guideModalToggle = useCallback(() => {
+    dispatch({
+      type: GUIDE_MODAL_TOGGLE,
+    });
+  }, [guideModal]);
   ////// DATAVIEW //////
 
   // Table
   const columns = [
     {
       title: "번호",
-      dataIndex: "id",
+      render: (data) => <Wrapper>{data.id}</Wrapper>,
+      width: "3%",
     },
 
     {
@@ -256,8 +256,9 @@ const List = ({ location }) => {
       render: (data) => <div>{data.title}</div>,
     },
     {
-      title: "처리",
+      title: "처리여부",
       render: (data) => <div>{data.isCompleted ? `완료` : `미완료`}</div>,
+      width: "5%",
     },
     ,
     {
@@ -265,10 +266,12 @@ const List = ({ location }) => {
       render: (data) => {
         return <div>{data.createdAt.substring(0, 10)}</div>;
       },
+      width: "7%",
     },
     {
-      title: "수정일",
+      title: "처리일",
       render: (data) => <div>{data.updatedAt.substring(0, 10)}</div>,
+      width: "7%",
     },
     {
       title: "수정",
@@ -281,6 +284,7 @@ const List = ({ location }) => {
           수정
         </Button>
       ),
+      width: "5%",
     },
     {
       title: "삭제",
@@ -289,6 +293,7 @@ const List = ({ location }) => {
           삭제
         </Button>
       ),
+      width: "5%",
     },
   ];
 
@@ -327,6 +332,11 @@ const List = ({ location }) => {
               미처리
             </Button>
           </Col>
+          <Col>
+            <DangerModal type="danger" size="small" onClick={guideModalToggle}>
+              주의사항
+            </DangerModal>
+          </Col>
         </RowWrapper>
         <Table
           rowKey="id"
@@ -336,68 +346,83 @@ const List = ({ location }) => {
         />
       </AdminContent>
 
+      {/* GUIDE MODAL */}
+      <Modal
+        visible={guideModal}
+        width="900px"
+        onOk={guideModalToggle}
+        onCancel={guideModalToggle}
+        title="주의사항"
+        footer={null}
+      >
+        <GuideUl>
+          <GuideLi>
+            문의사항은 사용자가 직접 관리자에게 문의하는 문의글 입니다.
+          </GuideLi>
+          <GuideLi isImpo={true}>
+            삭제된 문의는 다시 복구할 수 없습니다. 신중한 작업을 필요로 합니다.
+          </GuideLi>
+          <GuideLi>
+            수정버튼을 클릭 후 내용을 확인할 수 있으며, 처리완료버튼을 클릭시
+            문의는 완료됨으로 처리됩니다.
+          </GuideLi>
+          <GuideLi>
+            처리완료버튼을 누르지 않고 취소를 누를경우, 문의는 미처리 상태로
+            남게 됩니다.
+          </GuideLi>
+          <GuideLi isImpo={true}>
+            메모를 적어도 사용자에게 전달되지 않습니다.
+          </GuideLi>
+          <GuideLi>
+            문의가 필요한 경우 (주)4LEAF SOFTWARE 1600-4198로 연락부탁드립니다.
+          </GuideLi>
+        </GuideUl>
+      </Modal>
+
+      {/* Update Modal */}
       <Modal
         visible={updateModal}
         width={`1000px`}
         title={`문의`}
         onCancel={updateModalClose}
         onOk={onSubmitUpdate}
-        okText="Complete"
-        cancelText="Cancel"
+        okText="처리완료"
+        cancelText="취소"
       >
         <RowWrapper padding={`50px`}>
-          <ColWrapper
-            span={12}
-            al={`flex-start`}
-            ju={`flex-start`}
-            padding={`0 30px 0 0`}
-          >
-            <RowWrapper gutter={5}>
-              <ColWrapper
-                width={`120px`}
-                height={`30px`}
-                bgColor={Theme.basicTheme_C}
-              >
-                이름
-              </ColWrapper>
-              <ColWrapper>{`${updateData && updateData.name}(${
-                updateData && updateData.email
-              })`}</ColWrapper>
-            </RowWrapper>
+          <ColWrapper span={24}>
             {/*  */}
-            <RowWrapper gutter={5} margin={`10px 0`}>
-              <ColWrapper
-                width={`120px`}
-                height={`30px`}
-                bgColor={Theme.basicTheme_C}
-              >
-                문의 유형
-              </ColWrapper>
-              <ColWrapper>{updateData && updateData.type.value}</ColWrapper>
-            </RowWrapper>
-            {/*  */}
-            <RowWrapper gutter={5}>
+            <RowWrapper gutter={5} margin={`0 0 10px`}>
               <ColWrapper
                 width={`120px`}
                 height={`30px`}
                 bgColor={Theme.basicTheme_C}
                 height={`30px`}
+                color={Theme.white_C}
               >
                 문의 제목
               </ColWrapper>
               <ColWrapper>{updateData && updateData.title}</ColWrapper>
             </RowWrapper>
             {/*  */}
-            <RowWrapper gutter={5} margin={`10px 0`}>
-              <ColWrapper span={24} width={`100%`} bgColor={Theme.basicTheme_C}>
+            <RowWrapper gutter={5} margin={`0 0 20px`}>
+              <ColWrapper
+                span={24}
+                bgColor={Theme.basicTheme_C}
+                color={Theme.white_C}
+              >
                 문의 내용
               </ColWrapper>
               <ColWrapper>{updateData && updateData.content}</ColWrapper>
             </RowWrapper>
           </ColWrapper>
-          <ColWrapper span={12}>
-            <ColWrapper bgColor={Theme.basicTheme_C} width={`100%`}>
-              답변
+          <ColWrapper span={24}>
+            <ColWrapper
+              bgColor={Theme.basicTheme_C}
+              width={`100%`}
+              color={Theme.white_C}
+            >
+              메모
             </ColWrapper>
             <Input.TextArea
               allowClear
@@ -406,36 +431,6 @@ const List = ({ location }) => {
               {...answer}
             />
           </ColWrapper>
-        </RowWrapper>
-        <RowWrapper padding={`20px 50px`}>
-          {updateData && updateData.file1 && (
-            <ColWrapper
-              width={`120px`}
-              height={`30px`}
-              bgColor={Theme.grey_C}
-              radius={`5px`}
-              margin={`0 10px 0 0`}
-              cursor={`pointer`}
-              color={Theme.white_C}
-              onClick={() => fileDownloadHandler(updateData.file1)}
-            >
-              첨부파일 1
-            </ColWrapper>
-          )}
-          {updateData && updateData.file2 && (
-            <ColWrapper
-              width={`120px`}
-              height={`30px`}
-              bgColor={Theme.grey_C}
-              radius={`5px`}
-              margin={`0 10px 0 0`}
-              cursor={`pointer`}
-              color={Theme.white_C}
-              onClick={() => fileDownloadHandler(updateData.file2)}
-            >
-              첨부파일 2
-            </ColWrapper>
-          )}
         </RowWrapper>
       </Modal>
 
