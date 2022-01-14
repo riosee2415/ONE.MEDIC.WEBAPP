@@ -272,19 +272,15 @@ const Index = ({}) => {
               dr={`row`}
               zIndex={`10`}
             >
-              <Link href={`/cart`}>
-                <ATag width={`100%`}>
-                  <CommonButton
-                    shadow={`0`}
-                    width={`100%`}
-                    height={`50px`}
-                    radius={`0`}
-                    cursor={`pointer`}
-                  >
-                    확인
-                  </CommonButton>
-                </ATag>
-              </Link>
+              <CommonButton
+                shadow={`0`}
+                width={`100%`}
+                height={`50px`}
+                radius={`0`}
+                cursor={`pointer`}
+              >
+                확인
+              </CommonButton>
             </Wrapper>
           </RsWrapper>
         </WholeWrapper>
