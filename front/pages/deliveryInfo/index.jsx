@@ -31,6 +31,41 @@ import {
   RightOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import { Select } from "antd";
+
+const CustomSelect = styled(Select)`
+  width: 100%;
+  & .ant-select-selection-item {
+    font-size: ${(props) => props.fontSize || `18px`};
+    color: ${(props) => props.color || Theme.black_C};
+    line-height: 45px !important;
+  }
+
+  & .ant-select-selector {
+    height: ${(props) => props.height || `45px`} !important;
+  }
+  & .ant-select-selector:hover {
+    height: ${(props) => props.height || `45px`} !important;
+    border-color: ${Theme.basicTheme_C} !important;
+  }
+
+  & .ant-select-selection-placeholder {
+    line-height: 45px !important;
+  }
+  & .ant-select-selection-search-input {
+    height: 45px !important;
+    font-size: 18px !important;
+  }
+
+  & .ant-select-selector {
+    border: 1px solid ${Theme.black_C} !important;
+    border-radius: 10px !important;
+  }
+
+  & .ant-select-selection-placeholder {
+    font-size: 18px !important;
+  }
+`;
 
 const Index = ({}) => {
   const width = useWidth();
@@ -161,82 +196,38 @@ const Index = ({}) => {
               al={`flex-start`}
               ju={`flex-start`}
             >
-              <Wrapper
-                dr={`row`}
-                ju={`space-between`}
-                padding={`0 0 15px`}
-                borderBottom={`1px solid ${Theme.grey_C}`}
-              >
-                <Text
-                  fontSize={`18px`}
-                  color={Theme.black_C}
-                  fontWeight={`700`}
+              <Wrapper>
+                <Wrapper
+                  dr={`row`}
+                  ju={`space-between`}
+                  padding={`0 0 15px`}
+                  borderBottom={`1px solid ${Theme.grey_C}`}
                 >
-                  받는 사람
-                </Text>
-                <Text
-                  fontSize={`16px`}
-                  color={Theme.subTheme2_C}
-                  cursor={`pointer`}
-                >
-                  주소록 불러오기
-                </Text>
-              </Wrapper>
-              <Wrapper padding={`20px 20px 0`}>
-                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
                   <Text
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
+                    fontSize={`18px`}
+                    color={Theme.black_C}
                     fontWeight={`700`}
-                    padding={`0 0 0 10px`}
                   >
-                    받는사람
+                    받는 사람
                   </Text>
-                  <TextInput
-                    border={`none`}
-                    borderBottom={`1px solid ${Theme.grey2_C}`}
-                    radius={`0`}
-                    shadow={`none`}
-                    width={`100%`}
-                    placeholder={`받는 사람을 입력해주세요`}
-                    phFontSize={`16px`}
-                    focusBorder={`none`}
-                    focusBorderBottom={`1px solid ${Theme.black_C}`}
-                  />
+                  <Text
+                    fontSize={`16px`}
+                    color={Theme.subTheme2_C}
+                    cursor={`pointer`}
+                  >
+                    주소록 불러오기
+                  </Text>
                 </Wrapper>
-
-                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
-                  <Text
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
-                    fontWeight={`700`}
-                    padding={`0 0 0 10px`}
-                  >
-                    연락처
-                  </Text>
-                  <TextInput
-                    border={`none`}
-                    borderBottom={`1px solid ${Theme.grey2_C}`}
-                    radius={`0`}
-                    shadow={`none`}
-                    width={`100%`}
-                    placeholder={`(필수)연락처를 입력해주세요`}
-                    phFontSize={`16px`}
-                    focusBorder={`none`}
-                    focusBorderBottom={`1px solid ${Theme.black_C}`}
-                  />
-                </Wrapper>
-
-                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
-                  <Text
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
-                    fontWeight={`700`}
-                    padding={`0 0 0 10px`}
-                  >
-                    주소
-                  </Text>
-                  <Wrapper position={`relative`}>
+                <Wrapper padding={`20px 20px 0`}>
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      받는사람
+                    </Text>
                     <TextInput
                       border={`none`}
                       borderBottom={`1px solid ${Theme.grey2_C}`}
@@ -244,61 +235,299 @@ const Index = ({}) => {
                       shadow={`none`}
                       width={`100%`}
                       placeholder={`받는 사람을 입력해주세요`}
-                      phFontSize={`16px`}
+                      phFontSize={width < 450 ? `14px` : `16px`}
                       focusBorder={`none`}
                       focusBorderBottom={`1px solid ${Theme.black_C}`}
                     />
-                    <Wrapper
-                      position={`absolute`}
-                      width={`auto`}
-                      right={`0`}
-                      top={`0`}
-                      bottom={`0`}
+                  </Wrapper>
+
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
                     >
-                      <SearchOutlined style={{ fontSize: `16px` }} />
+                      연락처
+                    </Text>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                      placeholder={`(필수)연락처를 입력해주세요`}
+                      phFontSize={width < 450 ? `14px` : `16px`}
+                      focusBorder={`none`}
+                      focusBorderBottom={`1px solid ${Theme.black_C}`}
+                    />
+                  </Wrapper>
+
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      주소
+                    </Text>
+                    <Wrapper position={`relative`}>
+                      <TextInput
+                        border={`none`}
+                        borderBottom={`1px solid ${Theme.grey2_C}`}
+                        radius={`0`}
+                        shadow={`none`}
+                        width={`100%`}
+                        placeholder={`받는 사람을 입력해주세요`}
+                        phFontSize={width < 450 ? `14px` : `16px`}
+                        focusBorder={`none`}
+                        focusBorderBottom={`1px solid ${Theme.black_C}`}
+                      />
+                      <Wrapper
+                        position={`absolute`}
+                        width={`auto`}
+                        right={`0`}
+                        top={`0`}
+                        bottom={`0`}
+                      >
+                        <SearchOutlined style={{ fontSize: `16px` }} />
+                      </Wrapper>
                     </Wrapper>
                   </Wrapper>
+
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      상세주소
+                    </Text>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                      placeholder={`상세주소를 입력해주세요`}
+                      phFontSize={width < 450 ? `14px` : `16px`}
+                      focusBorder={`none`}
+                      focusBorderBottom={`1px solid ${Theme.black_C}`}
+                    />
+                  </Wrapper>
+                </Wrapper>
+              </Wrapper>
+
+              <Wrapper margin={`20px 0 0 0`}>
+                <Wrapper
+                  dr={`row`}
+                  ju={`space-between`}
+                  padding={`0 0 15px`}
+                  borderBottom={`1px solid ${Theme.grey_C}`}
+                >
+                  <Text
+                    fontSize={`18px`}
+                    color={Theme.black_C}
+                    fontWeight={`700`}
+                  >
+                    보내는 사람
+                  </Text>
+                  <Text
+                    fontSize={`16px`}
+                    color={Theme.subTheme2_C}
+                    cursor={`pointer`}
+                  >
+                    기본주소 불러오기
+                  </Text>
                 </Wrapper>
 
-                <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                <Wrapper padding={`20px 20px 0`}>
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      보내는 사람
+                    </Text>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                      placeholder={`받는 사람을 입력해주세요`}
+                      phFontSize={width < 450 ? `14px` : `16px`}
+                      focusBorder={`none`}
+                      focusBorderBottom={`1px solid ${Theme.black_C}`}
+                    />
+                  </Wrapper>
+
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      연락처
+                    </Text>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                      placeholder={`(필수)연락처를 입력해주세요`}
+                      phFontSize={width < 450 ? `14px` : `16px`}
+                      focusBorder={`none`}
+                      focusBorderBottom={`1px solid ${Theme.black_C}`}
+                    />
+                  </Wrapper>
+
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      주소
+                    </Text>
+                    <Wrapper position={`relative`}>
+                      <TextInput
+                        border={`none`}
+                        borderBottom={`1px solid ${Theme.grey2_C}`}
+                        radius={`0`}
+                        shadow={`none`}
+                        width={`100%`}
+                        placeholder={`경기 수원시 팔달구 효원로 269(인계동 ,에스팝타워)`}
+                        phFontSize={width < 450 ? `14px` : `16px`}
+                        focusBorder={`none`}
+                        focusBorderBottom={`1px solid ${Theme.black_C}`}
+                      />
+                      <Wrapper
+                        position={`absolute`}
+                        width={`auto`}
+                        right={`0`}
+                        top={`0`}
+                        bottom={`0`}
+                      >
+                        <SearchOutlined style={{ fontSize: `16px` }} />
+                      </Wrapper>
+                    </Wrapper>
+                  </Wrapper>
+
+                  <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      상세주소
+                    </Text>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                      placeholder={`214호`}
+                      phFontSize={width < 450 ? `14px` : `16px`}
+                      focusBorder={`none`}
+                      focusBorderBottom={`1px solid ${Theme.black_C}`}
+                    />
+                  </Wrapper>
+                </Wrapper>
+              </Wrapper>
+
+              <Wrapper>
+                <Wrapper
+                  al={`flex-start`}
+                  padding={`0 0 15px`}
+                  borderBottom={`1px solid ${Theme.grey_C}`}
+                >
                   <Text
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
+                    fontSize={`18px`}
+                    color={Theme.black_C}
                     fontWeight={`700`}
-                    padding={`0 0 0 10px`}
                   >
-                    상세주소
+                    배송시 요청사항
                   </Text>
-                  <TextInput
-                    border={`none`}
-                    borderBottom={`1px solid ${Theme.grey2_C}`}
-                    radius={`0`}
-                    shadow={`none`}
-                    width={`100%`}
-                    placeholder={`상세주소를 입력해주세요`}
-                    phFontSize={`16px`}
-                    focusBorder={`none`}
-                    focusBorderBottom={`1px solid ${Theme.black_C}`}
-                  />
+                </Wrapper>
+
+                <Wrapper padding={`20px 20px 0`}>
+                  <CustomSelect defaultValue={`default`}>
+                    <Select.Option value={`default`}>
+                      배송 메세지를 선택해주세요.
+                    </Select.Option>
+                    <Select.Option></Select.Option>
+                    <Select.Option></Select.Option>
+                  </CustomSelect>
+
+                  <Wrapper al={`flex-start`} margin={`30px 0 10px`}>
+                    <Text
+                      color={Theme.grey_C}
+                      fontSize={`16px`}
+                      fontWeight={`700`}
+                      padding={`0 0 0 10px`}
+                    >
+                      요청사항
+                    </Text>
+                    <TextInput
+                      border={`none`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      radius={`0`}
+                      shadow={`none`}
+                      width={`100%`}
+                    />
+                  </Wrapper>
                 </Wrapper>
               </Wrapper>
             </Wrapper>
 
             <Wrapper
+              height={`50px`}
               position={`sticky`}
               bottom={`0`}
               left={`0`}
               dr={`row`}
               zIndex={`10`}
+              bgColor={Theme.white_C}
             >
+              <Wrapper
+                height={`100%`}
+                dr={`row`}
+                width={
+                  width < 800 ? `calc(100% - 130px)` : `calc(100% - 170px)`
+                }
+                ju={`space-between`}
+                padding={width < 800 ? `0 10px` : `0 18px 0 38px`}
+                fontSize={width < 800 ? `15px` : `20px`}
+              >
+                <Wrapper dr={`row`} width={`auto`}>
+                  <Text fontWeight={`bold`}>총 주문금액 : </Text>
+                  <Text fontWeight={`bold`}> 432,000</Text>
+                </Wrapper>
+                <Wrapper width={`20px`}>
+                  <Image
+                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/pay_icon/delivery.png`}
+                    alt={`delivery_price`}
+                  />
+                </Wrapper>
+              </Wrapper>
               <CommonButton
                 shadow={`0`}
-                width={`100%`}
-                height={`50px`}
+                width={width < 800 ? `130px` : `170px`}
+                height={`100%`}
                 radius={`0`}
                 cursor={`pointer`}
               >
-                확인
+                주문하기
               </CommonButton>
             </Wrapper>
           </RsWrapper>
