@@ -281,7 +281,9 @@ const Prescription = ({}) => {
                   ju={`space-between`}
                   borderBottom={`1px solid ${Theme.grey2_C}`}
                   padding={`0 5px 10px`}>
-                  <Text color={Theme.grey_C}>구성약재</Text>
+                  <Text color={Theme.grey_C} fontSize={`16px`}>
+                    구성약재
+                  </Text>
                   <Image
                     onClick={() => ModalToggleHandler2()}
                     cursor={`pointer`}
