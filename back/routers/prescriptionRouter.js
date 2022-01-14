@@ -184,6 +184,27 @@ router.get(["/list", "/list/:title"], async (req, res, next) => {
   }
 });
 
+router.get("/list/:id", async (req, res, next) => {
+  const { id } = req.params;
+
+  if (isNanCheck(id)) {
+    return res.status(403).send("올바른 요청이 아닙니다. 다시 시도해주세요.");
+  }
+
+  try {
+    const result = await Prescription.findOne({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    return res.status(200).json(result);
+  } catch (e) {
+    console.log(e);
+    return res.status(400).send("데이터를 조회할 수 없습니다.");
+  }
+});
+
 router.get("/type/list/:typeId", async (req, res, next) => {
   const { typeId } = req.params;
 
