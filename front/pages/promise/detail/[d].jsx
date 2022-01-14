@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   KAKAO_LOGIN_REQUEST,
@@ -26,6 +26,12 @@ import { SEO_LIST_REQUEST } from "../../../reducers/seo";
 import ProductSlider from "../../../components/slide/ProductSlider";
 import Head from "next/head";
 import { useRef } from "react";
+import {
+  PRODUCT_PACK_LIST_REQUEST,
+  PRODUCT_TYPE_LIST_REQUEST,
+  PRODUCT_UNIT_LIST_REQUEST,
+} from "../../../reducers/prescription";
+import { useRouter } from "next/router";
 
 const Detail = ({}) => {
   const width = useWidth();
@@ -34,17 +40,97 @@ const Detail = ({}) => {
     (state) => state.seo
   );
 
+  const { products, typeList, packList, unitList } = useSelector(
+    (state) => state.prescription
+  );
+
+  console.log(products);
+  console.log(typeList);
+  console.log(packList);
+  console.log(unitList);
+
   ////// HOOKS //////
+
+  const [type, setType] = useState(0);
+  const [packType, setPackType] = useState(0);
+  const [unit, setUnit] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const router = useRouter();
+
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (router.query) {
+      dispatch({
+        type: PRODUCT_UNIT_LIST_REQUEST,
+        data: {
+          id: router.query.d,
+        },
+      });
+      dispatch({
+        type: PRODUCT_PACK_LIST_REQUEST,
+        data: {
+          id: router.query.d,
+        },
+      });
+      dispatch({
+        type: PRODUCT_TYPE_LIST_REQUEST,
+        data: {
+          id: router.query.d,
+        },
+      });
+    }
+  }, [router.query]);
+
+  useEffect(() => {
+    if (typeList) {
+      if (typeList.length > 0) {
+        setType(typeList[0].id);
+      }
+    }
+    if (packList) {
+      if (packList.length > 0) {
+        setPackType(packList[0].id);
+      }
+    }
+    if (unitList) {
+      if (unitList.length > 0) {
+        setUnit(unitList[0].id);
+      }
+    }
+  }, [typeList, packList, unitList]);
   ////// TOGGLE //////
   ////// HANDLER //////
+
+  const typeChangeHandler = useCallback(
+    (type) => {
+      setType(type);
+    },
+    [type]
+  );
+
+  const packChangeHandler = useCallback(
+    (pack) => {
+      setPackType(pack);
+    },
+    [packType]
+  );
+
+  const unitChangeHandler = useCallback(
+    (unit) => {
+      setUnit(unit);
+    },
+    [unit]
+  );
+
   ////// DATAVIEW //////
 
   const getEditContent = (contentValue) => {
     console.log(contentValue);
   };
-
   return (
     <>
       <Head>
@@ -116,25 +202,22 @@ const Detail = ({}) => {
                 종류
               </Text>
               <Wrapper dr={`row`} ju={`flex-start`}>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 2 - 4px)`}
-                  height={`45px`}
-                  kindOf={`white`}
-                  radius={`15px`}
-                  margin={`2px`}
-                >
-                  가미방
-                </CommonButton>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 2 - 4px)`}
-                  radius={`15px`}
-                  height={`45px`}
-                  margin={`2px`}
-                >
-                  원방
-                </CommonButton>
+                {typeList.map((data) => {
+                  return (
+                    <CommonButton
+                      key={data.id}
+                      shadow={`0`}
+                      width={`calc(100% / 2 - 4px)`}
+                      height={`45px`}
+                      radius={`15px`}
+                      margin={`2px`}
+                      kindOf={type !== data.id && `white`}
+                      onClick={() => typeChangeHandler(data.id)}
+                    >
+                      {data.name}
+                    </CommonButton>
+                  );
+                })}
               </Wrapper>
 
               <Text
@@ -145,35 +228,23 @@ const Detail = ({}) => {
                 포장
               </Text>
               <Wrapper dr={`row`} ju={`flex-start`}>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 3 - 4px)`}
-                  height={`45px`}
-                  kindOf={`white`}
-                  radius={`15px`}
-                  margin={`2px`}
-                >
-                  일반포장
-                </CommonButton>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 3 - 4px)`}
-                  height={`45px`}
-                  kindOf={`white`}
-                  radius={`15px`}
-                  margin={`2px`}
-                >
-                  지퍼백
-                </CommonButton>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 3 - 4px)`}
-                  radius={`15px`}
-                  height={`45px`}
-                  margin={`2px`}
-                >
-                  고급포장
-                </CommonButton>
+                {packList &&
+                  packList.map((data) => {
+                    return (
+                      <CommonButton
+                        key={data.id}
+                        shadow={`0`}
+                        width={`calc(100% / 3 - 4px)`}
+                        height={`45px`}
+                        radius={`15px`}
+                        margin={`2px`}
+                        kindOf={packType !== data.id && `white`}
+                        onClick={() => packChangeHandler(data.id)}
+                      >
+                        {data.name}
+                      </CommonButton>
+                    );
+                  })}
               </Wrapper>
               <Text
                 color={Theme.grey_C}
@@ -183,45 +254,27 @@ const Detail = ({}) => {
                 단위
               </Text>
               <Wrapper dr={`row`} ju={`flex-start`}>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 4 - 4px)`}
-                  height={`45px`}
-                  kindOf={`white`}
-                  radius={`15px`}
-                  margin={`2px`}
-                >
-                  10구
-                </CommonButton>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 4 - 4px)`}
-                  height={`45px`}
-                  kindOf={`white`}
-                  radius={`15px`}
-                  margin={`2px`}
-                >
-                  20구
-                </CommonButton>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 4 - 4px)`}
-                  height={`45px`}
-                  kindOf={`white`}
-                  radius={`15px`}
-                  margin={`2px`}
-                >
-                  30구
-                </CommonButton>
-                <CommonButton
-                  shadow={`0`}
-                  width={`calc(100% / 4 - 4px)`}
-                  radius={`15px`}
-                  height={`45px`}
-                  margin={`2px`}
-                >
-                  40구
-                </CommonButton>
+                {unitList &&
+                  (unitList.length === 0 ? (
+                    <Text>단위가 없습니다.</Text>
+                  ) : (
+                    unitList.map((data) => {
+                      return (
+                        <CommonButton
+                          key={data.id}
+                          shadow={`0`}
+                          width={`calc(100% / 4 - 4px)`}
+                          height={`45px`}
+                          radius={`15px`}
+                          margin={`2px`}
+                          kindOf={unit !== data.id && `white`}
+                          onClick={() => unitChangeHandler(data.id)}
+                        >
+                          {data.name}
+                        </CommonButton>
+                      );
+                    })
+                  ))}
               </Wrapper>
 
               <Text
