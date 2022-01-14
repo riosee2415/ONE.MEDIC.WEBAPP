@@ -41,6 +41,12 @@ const PaymentInput = styled(TextInput)`
     border: none;
     border-bottom: 1px solid ${Theme.grey_C};
   }
+
+  @media (max-width: 500px) {
+    &::placeholder {
+      font-size: 12px;
+    }
+  }
 `;
 
 const CustomLabel = styled.label`

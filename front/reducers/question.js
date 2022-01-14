@@ -4,6 +4,8 @@ export const initailState = {
   questions: null,
   types: null,
 
+  guideModal: false,
+
   createTypeModal: false, // 문의 유형 create 모달 실행
 
   updateModal: false, // 문의 update 모달 실행
@@ -81,6 +83,8 @@ export const CREATE_TYPE_MODAL_CLOSE_REQUEST =
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
+
+export const GUIDE_MODAL_TOGGLE = "GUIDE_MODAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -242,6 +246,10 @@ const reducer = (state = initailState, action) =>
 
       case UPDATE_MODAL_CLOSE_REQUEST:
         draft.updateModal = false;
+        break;
+
+      case GUIDE_MODAL_TOGGLE:
+        draft.guideModal = !draft.guideModal;
         break;
 
       ///////////////////////////////////////////////////////
