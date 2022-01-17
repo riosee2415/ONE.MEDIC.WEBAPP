@@ -3,6 +3,10 @@ import produce from "../util/produce";
 export const initialState = {
   paymentRequest: null,
 
+  unitModal: false,
+
+  userDetailModal: false,
+
   detailModal: false,
 
   st_paymentRequestListLoading: false,
@@ -14,6 +18,8 @@ export const PAYMENTREQUEST_LIST_REQUEST = "PAYMENTREQUEST_LIST_REQUEST";
 export const PAYMENTREQUEST_LIST_SUCCESS = "PAYMENTREQUEST_LIST_SUCCESS";
 export const PAYMENTREQUEST_LIST_FAILURE = "PAYMENTREQUEST_LIST_FAILURE";
 
+export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
+export const USER_DETAIL_MODAL_TOGGLE = "USER_DETAIL_MODAL_TOGGLE";
 export const DETAIL_MODAL_TOGGLE = "DETAIL_MODAL_TOGGLE";
 
 const reducer = (state = initialState, action) =>
@@ -37,8 +43,16 @@ const reducer = (state = initialState, action) =>
 
       ////////////////////
 
+      case UNIT_MODAL_TOGGLE:
+        draft.unitModal = !draft.unitModal;
+        break;
+
       case DETAIL_MODAL_TOGGLE:
         draft.detailModal = !draft.detailModal;
+        break;
+
+      case USER_DETAIL_MODAL_TOGGLE:
+        draft.userDetailModal = !draft.userDetailModal;
         break;
 
       ////////////////////

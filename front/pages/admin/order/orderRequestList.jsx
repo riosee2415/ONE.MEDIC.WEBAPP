@@ -1,5 +1,5 @@
-import { Button, Modal, Table, Input } from "antd";
-import React, { useCallback, useEffect } from "react";
+import { Button, Modal, Table, Input, Form, Empty } from "antd";
+import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter, withRouter } from "next/router";
@@ -10,7 +10,12 @@ import wrapper from "../../../store/configureStore";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import PageHeader from "../../../components/admin/PageHeader";
 import AdminLayout from "../../../components/AdminLayout";
-import { PAYMENTREQUEST_LIST_REQUEST } from "../../../reducers/paymentRequest";
+import {
+  DETAIL_MODAL_TOGGLE,
+  PAYMENTREQUEST_LIST_REQUEST,
+  UNIT_MODAL_TOGGLE,
+  USER_DETAIL_MODAL_TOGGLE,
+} from "../../../reducers/paymentRequest";
 import {
   AdminContent,
   GuideUl,
@@ -20,6 +25,7 @@ import {
 } from "../../../components/commonComponents";
 import Theme from "../../../components/Theme";
 import { useState } from "react";
+import { MATERIAL_DETAIL_REQUEST } from "../../../reducers/material";
 
 const AdminButton = styled(Button)`
   margin: 0 5px;
@@ -28,9 +34,9 @@ const AdminButton = styled(Button)`
 const OrderRequestList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
-  const { paymentRequest, detailModal } = useSelector(
-    (state) => state.paymentRequest
-  );
+  const { paymentRequest, detailModal, unitModal, userDetailModal } =
+    useSelector((state) => state.paymentRequest);
+  const { material } = useSelector((state) => state.material);
 
   const router = useRouter();
 
@@ -53,6 +59,16 @@ const OrderRequestList = () => {
 
   const [searchTab, setSearchTab] = useState(1);
 
+  const [paymentData, setPaymentData] = useState(null);
+
+  const [userDetailData, setUserDetailData] = useState(null);
+
+  const [payForm] = Form.useForm();
+  const payFormRef = useRef();
+
+  const [userForm] = Form.useForm();
+  const userFormRef = useRef();
+
   ////// USEEFFECT //////
 
   useEffect(() => {
@@ -64,6 +80,60 @@ const OrderRequestList = () => {
     });
   }, [searchTab]);
 
+  useEffect(() => {
+    if (paymentData) {
+      dispatch({
+        type: MATERIAL_DETAIL_REQUEST,
+        data: {
+          materialId: paymentData.MaterialId,
+        },
+      });
+      onFill(paymentData);
+    }
+  }, [paymentData]);
+
+  useEffect(() => {
+    if (userDetailData) {
+      onUserFill(userDetailData);
+    }
+  }, [userDetailData]);
+
+  ////// TOGGLE //////
+
+  const unitModalToggle = useCallback(() => {
+    dispatch({
+      type: UNIT_MODAL_TOGGLE,
+    });
+  }, [unitModal]);
+
+  const detailMdoalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setUserDetailData(data);
+      } else {
+        setUserDetailData(null);
+      }
+      dispatch({
+        type: USER_DETAIL_MODAL_TOGGLE,
+      });
+    },
+    [userDetailModal]
+  );
+
+  const paymentDetailToggle = useCallback(
+    (data) => {
+      if (data) {
+        setPaymentData(data);
+      } else {
+        setPaymentData(null);
+      }
+      dispatch({
+        type: DETAIL_MODAL_TOGGLE,
+      });
+    },
+    [detailModal, paymentData]
+  );
+
   ////// HANDLER //////
 
   const tabChangeHandler = useCallback(
@@ -71,6 +141,34 @@ const OrderRequestList = () => {
       setSearchTab(tab);
     },
     [searchTab]
+  );
+
+  const onFill = useCallback(
+    (data) => {
+      payFormRef.current.setFieldsValue({
+        totalPayment: data.totalPayment,
+        chup: data.chup,
+        pack: data.pack,
+        packVolumn: data.packVolumn,
+        totalVolumn: data.totalVolumn,
+        orderAt: data.orderAt,
+        materialName: data.materialName,
+        materialPrice: data.materialPrice,
+      });
+    },
+    [payFormRef]
+  );
+
+  const onUserFill = useCallback(
+    (data) => {
+      userFormRef.current.setFieldsValue({
+        questUserName: data.questUserName,
+        questUserNickName: data.questUserNickName,
+        questUserEmail: data.questUserEmail,
+        questUserMobile: data.questUserMobile,
+      });
+    },
+    [payFormRef]
   );
 
   ////// DATAVIEW //////
@@ -87,7 +185,11 @@ const OrderRequestList = () => {
     {
       title: "회원 상세보기",
       render: (data) => (
-        <Button type="primary" size="small">
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => detailMdoalToggle(data)}
+        >
           회원 상세보기
         </Button>
       ),
@@ -111,7 +213,11 @@ const OrderRequestList = () => {
     {
       title: "상세보기",
       render: (data) => (
-        <Button type="primary" size="small">
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => paymentDetailToggle(data)}
+        >
           상세보기
         </Button>
       ),
@@ -157,7 +263,7 @@ const OrderRequestList = () => {
             >
               전체보기
             </AdminButton>
-            <AdminButton type="danger" size="small">
+            <AdminButton type="danger" size="small" onClick={unitModalToggle}>
               주의사항
             </AdminButton>
           </Wrapper>
@@ -169,10 +275,128 @@ const OrderRequestList = () => {
         />
       </AdminContent>
 
-      <Modal visible={detailModal}>
+      {/* UNIT MODAL */}
+
+      <Modal
+        title="주의사항"
+        visible={unitModal}
+        onCancel={unitModalToggle}
+        footer={null}
+      >
         <GuideUl>
           <GuideLi></GuideLi>
         </GuideUl>
+      </Modal>
+
+      {/* USER DETAIL MODAL */}
+
+      <Modal
+        title="회원 상세보기"
+        visible={userDetailModal}
+        footer={null}
+        onCancel={() => detailMdoalToggle(null)}
+      >
+        <Form
+          form={userForm}
+          ref={userFormRef}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
+        >
+          <Form.Item label="회원이름" name="questUserName">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item label="닉네임" name="questUserNickName">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item label="이메일" name="questUserEmail">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item label="전화번호" name="questUserMobile">
+            <Input readOnly />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* PAYMENT DETAIL MODAL */}
+
+      <Modal
+        title="상세보기"
+        visible={detailModal}
+        onCancel={() => paymentDetailToggle(null)}
+        footer={null}
+        width={`700px`}
+      >
+        <Form
+          form={payForm}
+          ref={payFormRef}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
+        >
+          <Form.Item name="totalPayment" label="총 가격">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="chup" label="첩 수">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="pack" label="팩 수">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="packVolumn" label="팩 용량">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="totalVolumn" label="총 용량">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="orderAt" label="주문일">
+            <Input readOnly />
+          </Form.Item>
+          {console.log(material)}
+          <Wrapper dr={`row`} ju={`flex-start`}>
+            {material &&
+              (material.length === 0 ? (
+                <Empty>재료가 없습니다.</Empty>
+              ) : (
+                material.map((data) => {
+                  return (
+                    <Wrapper width={`calc(100% / 3 - 20px)`} margin={`10px`}>
+                      <Wrapper dr={`row`} ju={`space-between`}>
+                        <Text>이름</Text>
+                        <Input
+                          style={{ width: `80%` }}
+                          value={data.Material.name}
+                          readOnly
+                        />
+                      </Wrapper>
+                      <Wrapper
+                        dr={`row`}
+                        ju={`space-between`}
+                        margin={`5px 0 0`}
+                      >
+                        <Text>가격</Text>
+                        <Input
+                          style={{ width: `80%` }}
+                          value={data.payment}
+                          readOnly
+                        />
+                      </Wrapper>
+                      <Wrapper
+                        dr={`row`}
+                        ju={`space-between`}
+                        margin={`5px 0 0`}
+                      >
+                        <Text>용량</Text>
+                        <Input
+                          style={{ width: `80%` }}
+                          value={`${data.qnt}${data.unit}`}
+                          readOnly
+                        />
+                      </Wrapper>
+                    </Wrapper>
+                  );
+                })
+              ))}
+          </Wrapper>
+        </Form>
       </Modal>
     </AdminLayout>
   );

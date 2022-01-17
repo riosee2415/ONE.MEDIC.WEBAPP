@@ -5,6 +5,8 @@ export const initialState = {
 
   materialsHistory: null,
 
+  material: null,
+
   unitModal: false,
   cuModal: false,
 
@@ -30,6 +32,10 @@ export const initialState = {
   st_materialHistoryListLoading: false,
   st_materialHistoryListDone: false,
   st_materialHistoryListError: false,
+  //
+  st_materialDetailLoading: false,
+  st_materialDetailDone: false,
+  st_materialDetailError: false,
 };
 
 export const MATERIAL_LIST_REQUEST = "MATERIAL_LIST_REQUEST";
@@ -51,6 +57,10 @@ export const MATERIAL_DELETE_FAILURE = "MATERIAL_DELETE_FAILURE";
 export const MATERIAL_HISTORY_LIST_REQUEST = "MATERIAL_HISTORY_LIST_REQUEST";
 export const MATERIAL_HISTORY_LIST_SUCCESS = "MATERIAL_HISTORY_LIST_SUCCESS";
 export const MATERIAL_HISTORY_LIST_FAILURE = "MATERIAL_HISTORY_LIST_FAILURE";
+
+export const MATERIAL_DETAIL_REQUEST = "MATERIAL_DETAIL_REQUEST";
+export const MATERIAL_DETAIL_SUCCESS = "MATERIAL_DETAIL_SUCCESS";
+export const MATERIAL_DETAIL_FAILURE = "MATERIAL_DETAIL_FAILURE";
 
 export const CU_MODAL_TOGGLE = "CU_MODAL_TOGGLE";
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
@@ -138,6 +148,23 @@ const reducer = (state = initialState, action) =>
         draft.st_materialHistoryListLoading = false;
         draft.st_materialHistoryListDone = false;
         draft.st_materialHistoryListError = action.error;
+        break;
+
+      ////////////////////
+      case MATERIAL_DETAIL_REQUEST:
+        draft.st_materialDetailLoading = true;
+        draft.st_materialDetailDone = false;
+        draft.st_materialDetailError = null;
+        break;
+      case MATERIAL_DETAIL_SUCCESS:
+        draft.st_materialDetailLoading = false;
+        draft.st_materialDetailDone = true;
+        draft.material = action.data;
+        break;
+      case MATERIAL_DETAIL_FAILURE:
+        draft.st_materialDetailLoading = false;
+        draft.st_materialDetailDone = false;
+        draft.st_materialDetailError = action.error;
         break;
 
       ////////////////////
