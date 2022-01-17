@@ -85,7 +85,7 @@ const OrderRequestList = () => {
       dispatch({
         type: MATERIAL_DETAIL_REQUEST,
         data: {
-          materialId: paymentData.MaterialId,
+          materialId: paymentData.id,
         },
       });
       onFill(paymentData);
@@ -350,7 +350,6 @@ const OrderRequestList = () => {
           <Form.Item name="orderAt" label="주문일">
             <Input readOnly />
           </Form.Item>
-          {console.log(material)}
           <Wrapper dr={`row`} ju={`flex-start`}>
             {material &&
               (material.length === 0 ? (

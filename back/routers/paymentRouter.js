@@ -17,9 +17,9 @@ router.get("/list/:type", async (req, res, next) => {
   try {
     const condition =
       type === "1"
-        ? `WHERE  A.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  WEEK ) AND NOW();`
+        ? `AND  A.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  WEEK ) AND NOW();`
         : type === "2"
-        ? `WHERE  A.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  MONTH ) AND NOW();`
+        ? `AND  A.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  MONTH ) AND NOW();`
         : "";
 
     const selectQuery = `
@@ -42,6 +42,7 @@ router.get("/list/:type", async (req, res, next) => {
         ON  B.MaterialId = M.id
       JOIN  users                                                  U 
         ON  A.UserId = U.id
+     WHERE  NOT A.totalPayment IS NULL
      ${condition}
     `;
 
