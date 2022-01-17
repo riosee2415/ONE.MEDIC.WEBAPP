@@ -46,8 +46,6 @@ const Material = () => {
     st_materialDeleteError,
   } = useSelector((state) => state.material);
 
-  console.log(cuModal);
-
   const router = useRouter();
 
   const moveLinkHandler = useCallback((link) => {

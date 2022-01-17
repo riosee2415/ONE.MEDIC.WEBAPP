@@ -19,6 +19,10 @@ import {
   GuideLi,
 } from "../../../components/commonComponents";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
+import {
+  MATERIAL_HISTORY_LIST_REQUEST,
+  HISTORY_UNIT_MODAL_TOGGLE,
+} from "../../../reducers/material";
 
 const LoadNotification = (msg, content) => {
   notification.open({
@@ -30,6 +34,9 @@ const LoadNotification = (msg, content) => {
 
 const UserDeliAddress = ({}) => {
   const { st_loadMyInfoDone, me } = useSelector((state) => state.user);
+  const { materialsHistory, historyUnitModal } = useSelector(
+    (state) => state.material
+  );
 
   const router = useRouter();
 
@@ -51,6 +58,12 @@ const UserDeliAddress = ({}) => {
 
   ////// USEEFFECT //////
 
+  ////// TOGGLA //////
+  const unitModalToggle = useCallback(() => {
+    dispatch({
+      type: HISTORY_UNIT_MODAL_TOGGLE,
+    });
+  }, [historyUnitModal]);
   ////// HANDLER //////
 
   ////// DATAVIEW //////
@@ -62,10 +75,18 @@ const UserDeliAddress = ({}) => {
       title: "번호",
       dataIndex: "id",
     },
-
     {
-      title: "생성일",
+      title: "재료이름",
+      dataIndex: "materialName",
+    },
+    {
+      title: "사용재고",
+      dataIndex: "useQnt",
+    },
+    {
+      title: "사용일",
       dataIndex: "createdAt",
+      render: (data) => <>{data.split("T")[0]}</>,
     },
   ];
 
@@ -82,22 +103,24 @@ const UserDeliAddress = ({}) => {
           <ModalBtn type="dashed" size="small">
             전체조회
           </ModalBtn>
-          <ModalBtn type="danger" size="small">
+          <ModalBtn type="danger" size="small" onClick={unitModalToggle}>
             주의사항
-          </ModalBtn>
-          <ModalBtn type="primary" size="small">
-            + 추가
           </ModalBtn>
         </Wrapper>
 
-        <Table rowKey="id" columns={columns} dataSource={[]} size="small" />
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={materialsHistory ? materialsHistory : []}
+          size="small"
+        />
       </AdminContent>
 
       <Modal
-        visible={false}
+        visible={historyUnitModal}
         width="900px"
-        onOk={() => {}}
-        onCancel={() => {}}
+        footer={null}
+        onCancel={unitModalToggle}
         title="주의사항"
       >
         <GuideUl>
@@ -122,6 +145,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: MATERIAL_HISTORY_LIST_REQUEST,
     });
 
     // 구현부 종료

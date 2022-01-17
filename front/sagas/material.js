@@ -17,6 +17,9 @@ import {
   MATERIAL_DELETE_SUCCESS,
   MATERIAL_DELETE_FAILURE,
   //
+  MATERIAL_HISTORY_LIST_REQUEST,
+  MATERIAL_HISTORY_LIST_SUCCESS,
+  MATERIAL_HISTORY_LIST_FAILURE,
 } from "../reducers/material";
 
 // SAGA AREA ********************************************************************************************************
@@ -127,6 +130,33 @@ function* materialDelete(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function materialHistoryListAPI(data) {
+  return axios.get(`/api/materials/history/list`);
+}
+
+function* materialHistoryList(action) {
+  try {
+    const result = yield call(materialHistoryListAPI, action.data);
+
+    yield put({
+      type: MATERIAL_HISTORY_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: MATERIAL_HISTORY_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 function* watchMaterialList() {
   yield takeLatest(MATERIAL_LIST_REQUEST, materialList);
 }
@@ -143,6 +173,10 @@ function* watchMaterialDelete() {
   yield takeLatest(MATERIAL_DELETE_REQUEST, materialDelete);
 }
 
+function* watchMaterialHistoryList() {
+  yield takeLatest(MATERIAL_HISTORY_LIST_REQUEST, materialHistoryList);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* materialSaga() {
   yield all([
@@ -150,6 +184,7 @@ export default function* materialSaga() {
     fork(watchMaterialCreate),
     fork(watchMaterialUpdate),
     fork(watchMaterialDelete),
+    fork(watchMaterialHistoryList),
     //
   ]);
 }

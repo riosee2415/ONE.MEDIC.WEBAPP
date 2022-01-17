@@ -3,8 +3,13 @@ import produce from "../util/produce";
 export const initialState = {
   materials: null,
 
+  materialsHistory: null,
+
   unitModal: false,
   cuModal: false,
+
+  historyUnitModal: false,
+
   //
   st_materialListLoading: false,
   st_materialListDone: false,
@@ -22,6 +27,9 @@ export const initialState = {
   st_materialDeleteDone: false,
   st_materialDeleteError: null,
   //
+  st_materialHistoryListLoading: false,
+  st_materialHistoryListDone: false,
+  st_materialHistoryListError: false,
 };
 
 export const MATERIAL_LIST_REQUEST = "MATERIAL_LIST_REQUEST";
@@ -40,8 +48,13 @@ export const MATERIAL_DELETE_REQUEST = "MATERIAL_DELETE_REQUEST";
 export const MATERIAL_DELETE_SUCCESS = "MATERIAL_DELETE_SUCCESS";
 export const MATERIAL_DELETE_FAILURE = "MATERIAL_DELETE_FAILURE";
 
+export const MATERIAL_HISTORY_LIST_REQUEST = "MATERIAL_HISTORY_LIST_REQUEST";
+export const MATERIAL_HISTORY_LIST_SUCCESS = "MATERIAL_HISTORY_LIST_SUCCESS";
+export const MATERIAL_HISTORY_LIST_FAILURE = "MATERIAL_HISTORY_LIST_FAILURE";
+
 export const CU_MODAL_TOGGLE = "CU_MODAL_TOGGLE";
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
+export const HISTORY_UNIT_MODAL_TOGGLE = "HISTORY_UNIT_MODAL_TOGGLE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -111,6 +124,23 @@ const reducer = (state = initialState, action) =>
         break;
 
       ////////////////////
+      case MATERIAL_HISTORY_LIST_REQUEST:
+        draft.st_materialHistoryListLoading = true;
+        draft.st_materialHistoryListDone = false;
+        draft.st_materialHistoryListError = null;
+        break;
+      case MATERIAL_HISTORY_LIST_SUCCESS:
+        draft.st_materialHistoryListLoading = false;
+        draft.st_materialHistoryListDone = true;
+        draft.materialsHistory = action.data;
+        break;
+      case MATERIAL_HISTORY_LIST_FAILURE:
+        draft.st_materialHistoryListLoading = false;
+        draft.st_materialHistoryListDone = false;
+        draft.st_materialHistoryListError = action.error;
+        break;
+
+      ////////////////////
 
       case CU_MODAL_TOGGLE:
         draft.cuModal = !draft.cuModal;
@@ -118,6 +148,10 @@ const reducer = (state = initialState, action) =>
 
       case UNIT_MODAL_TOGGLE:
         draft.unitModal = !draft.unitModal;
+        break;
+
+      case HISTORY_UNIT_MODAL_TOGGLE:
+        draft.historyUnitModal = !draft.historyUnitModal;
         break;
 
       default:
