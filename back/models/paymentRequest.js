@@ -29,6 +29,17 @@ module.exports = class PaymentRequest extends Model {
           type: DataTypes.FLOAT,
           allowNull: false,
         },
+
+        isComplete: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          default: false,
+        },
+
+        completedAt: {
+          type: DataTypes.STRING(100),
+          allowNull: false,
+        },
       },
       {
         modelName: "PaymentRequest",

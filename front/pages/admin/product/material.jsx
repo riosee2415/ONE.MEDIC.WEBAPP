@@ -170,7 +170,7 @@ const Material = () => {
         type: CU_MODAL_TOGGLE,
       });
     },
-    [cuModal]
+    [cuModal, form]
   );
 
   const udpateModalToggle = useCallback(
@@ -337,7 +337,11 @@ const Material = () => {
           >
             주의사항
           </Button>
-          <Button size="small" type="primary" onClick={createModalToggle}>
+          <Button
+            size="small"
+            type="primary"
+            onClick={() => createModalToggle(true)}
+          >
             + 추가
           </Button>
         </Wrapper>
@@ -373,7 +377,9 @@ const Material = () => {
         visible={cuModal}
         footer={null}
         onCancel={
-          updateData ? () => udpateModalToggle(null) : createModalToggle
+          updateData
+            ? () => udpateModalToggle(null)
+            : () => createModalToggle(false)
         }
         width={`600px`}
       >
