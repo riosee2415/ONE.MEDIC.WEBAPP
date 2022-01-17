@@ -32,7 +32,7 @@ const reducer = (state = initialState, action) =>
       case PAYMENTREQUEST_LIST_FAILURE:
         draft.st_paymentRequestListLoading = false;
         draft.st_paymentRequestListDone = false;
-        draft.st_paymentRequestListError = data.error;
+        draft.st_paymentRequestListError = action.error;
         break;
 
       ////////////////////

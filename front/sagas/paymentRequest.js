@@ -9,7 +9,7 @@ import {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function paymentRequestListAPI(data) {
-  return axios.get(`/api/payment/list`);
+  return axios.get(`/api/payment/list/${data.type}`);
 }
 
 function* paymentRequestList(action) {

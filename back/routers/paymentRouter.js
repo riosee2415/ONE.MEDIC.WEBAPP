@@ -1,5 +1,6 @@
 const express = require("express");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+const models = require("../models");
 const {
   PaymentRequest,
   User,
@@ -10,17 +11,61 @@ const {
 
 const router = express.Router();
 
-router.get("/list", async (req, res, next) => {
-  try {
-    const result = await PaymentRequest.findAll({
-      include: [
-        {
-          model: PaymentRequestMaterial,
-        },
-      ],
-    });
+router.get("/list/:type", async (req, res, next) => {
+  const { type } = req.params;
 
-    return res.status(200).json(result);
+  try {
+    const condition =
+      parseInt(type) === 1
+        ? `WHERE  C.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  WEEK ) AND NOW()`
+        : parseInt(type) === 2
+        ? `WHERE  C.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  MONTH ) AND NOW()`
+        : "";
+
+    const selectQuery = `
+    SELECT  C.id,
+            C.totalPayment,
+            C.chup,
+            C.pack,
+            C.packVolumn,
+            C.totalVolumn,
+            C.orderAt                                               AS orderAt,
+            C.materialName,
+            C.materialPrice,
+            C.questUserName,
+            C.questUserNickName,
+            C.questUserEmail,
+            C.questUserMobile
+      FROM  (
+             SELECT	 A.id,
+                     FORMAT(A.totalPayment, 0)							                AS totalPayment,
+                     A.chup,
+                     A.pack,
+                     FORMAT(A.packVolumn, 0)								                AS packVolumn,
+                     FORMAT(A.totalVolumn, 0) 							                AS totalVolumn,
+                     DATE_FORMAT(A.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
+                     DATE_FORMAT(A.createdAt, "%Y-%m-%d")   				        AS createdAt,
+                     M.name	                                                AS materialName,
+					           M.price			                                          AS materialPrice,
+					           U.username                                             AS questUserName,
+					           U.nickname                                             AS questUserNickName,
+					           U.email                                                AS questUserEmail,
+					           U.mobile                                               AS questUserMobile
+               FROM  paymentRequest					    A
+               JOIN  paymentRequestMaterial 		B
+                 ON  A.id = B.id
+               JOIN  materials	                M
+                 ON  B.MaterialId = M.id
+               JOIN  users                      U 
+                 ON  A.UserId = U.id
+          )		    C
+          ${condition};
+     
+    `;
+
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0]);
   } catch (e) {
     console.error(e);
     return res.status(400).send("결제 요청이 없습니다.");
