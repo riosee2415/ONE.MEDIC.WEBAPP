@@ -1,5 +1,5 @@
 const express = require("express");
-const { Materials } = require("../models");
+const { Materials, MaterialsHistory } = require("../models");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isNanCheck = require("../middlewares/isNanCheck");
 const { Op } = require("sequelize");
@@ -135,6 +135,17 @@ router.delete("/delete/:materialsId", isAdminCheck, async (req, res, next) => {
     );
 
     return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("잘못된 요청입니다.");
+  }
+});
+
+router.get("/history/list", async (req, res, next) => {
+  try {
+    const result = await MaterialsHistory.findAll();
+
+    return res.status(200).json(result);
   } catch (e) {
     console.error(e);
     return res.status(401).send("잘못된 요청입니다.");

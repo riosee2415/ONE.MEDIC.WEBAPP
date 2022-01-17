@@ -37,5 +37,7 @@ module.exports = class Materials extends Model {
       }
     );
   }
-  static associate(db) {}
+  static associate(db) {
+    db.Materials.hasMany(db.PaymentRequestMaterial);
+  }
 };

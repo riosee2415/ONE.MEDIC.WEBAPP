@@ -41,5 +41,6 @@ module.exports = class PaymentRequest extends Model {
   }
   static associate(db) {
     db.PaymentRequest.belongsTo(db.User);
+    db.PaymentRequest.hasMany(db.PaymentRequestMaterial);
   }
 };

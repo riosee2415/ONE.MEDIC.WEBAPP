@@ -28,7 +28,7 @@ module.exports = class PaymentRequestMaterial extends Model {
     );
   }
   static associate(db) {
-    db.PaymentRequestMaterial.hasMany(db.Materials);
-    db.PaymentRequestMaterial.hasMany(db.PaymentRequest);
+    db.PaymentRequestMaterial.belongsTo(db.PaymentRequest);
+    db.PaymentRequestMaterial.belongsTo(db.Materials);
   }
 };
