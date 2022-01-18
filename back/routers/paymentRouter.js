@@ -13,8 +13,11 @@ const router = express.Router();
 
 router.get("/list/:type", async (req, res, next) => {
   const { type } = req.params;
+  const { isComplete } = req.query;
 
   try {
+    console.log(Boolean(parseInt(isComplete)));
+
     const condition =
       type === "1"
         ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
@@ -43,6 +46,7 @@ router.get("/list/:type", async (req, res, next) => {
       JOIN  users                                                  U 
         ON  A.UserId = U.id
      WHERE  NOT A.totalPayment IS NULL
+       AND  isComplete = ${Boolean(parseInt(isComplete)) ? "TRUE" : "FALSE"}
      ${condition}
     `;
 
@@ -148,6 +152,41 @@ router.patch("/totalPayment/update", async (req, res, next) => {
       {
         where: {
           id: parseInt(paymentRequestId),
+        },
+      }
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청 입니다.");
+  }
+});
+
+router.patch("/complete/:paymentId", async (req, res, next) => {
+  const { paymentId } = req.params;
+
+  try {
+    if (paymentId) {
+      const exPayment = await PaymentRequest.findOne({
+        where: {
+          id: parseInt(paymentId),
+        },
+      });
+
+      if (!exPayment) {
+        return res.status(400).send("주문 요청이 없습니다.");
+      }
+    }
+
+    const result = await PaymentRequest.update(
+      {
+        isComplete: true,
+        completedAt: new Date(),
+      },
+      {
+        where: {
+          id: parseInt(paymentId),
         },
       }
     );

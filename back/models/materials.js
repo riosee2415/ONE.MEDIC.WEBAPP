@@ -15,7 +15,7 @@ module.exports = class Materials extends Model {
         },
         isDelete: {
           type: DataTypes.BOOLEAN,
-          allowNull: true,
+          allowNull: false,
           defaultValue: false,
         },
         stock: {

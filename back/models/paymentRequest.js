@@ -32,12 +32,12 @@ module.exports = class PaymentRequest extends Model {
 
         isComplete: {
           type: DataTypes.BOOLEAN,
-          allowNull: true,
-          default: false,
+          allowNull: false,
+          defaultValue: false,
         },
 
         completedAt: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.DATE,
           allowNull: true,
         },
       },

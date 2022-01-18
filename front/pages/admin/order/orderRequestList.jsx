@@ -1,8 +1,17 @@
-import { Button, Modal, Table, Input, Form, Empty } from "antd";
+import {
+  Button,
+  Modal,
+  Table,
+  Input,
+  Form,
+  Empty,
+  Popconfirm,
+  message,
+} from "antd";
 import React, { useCallback, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { END } from "redux-saga";
 import axios from "axios";
 
@@ -15,6 +24,7 @@ import {
   PAYMENTREQUEST_LIST_REQUEST,
   UNIT_MODAL_TOGGLE,
   USER_DETAIL_MODAL_TOGGLE,
+  PAYMENTREQUEST_COMPLETE_REQUEST,
 } from "../../../reducers/paymentRequest";
 import {
   AdminContent,
@@ -34,8 +44,15 @@ const AdminButton = styled(Button)`
 const OrderRequestList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
-  const { paymentRequest, detailModal, unitModal, userDetailModal } =
-    useSelector((state) => state.paymentRequest);
+  const {
+    paymentRequest,
+    detailModal,
+    unitModal,
+    userDetailModal,
+    //
+    st_paymentRequestCompleteDone,
+    st_paymentRequestCompleteError,
+  } = useSelector((state) => state.paymentRequest);
   const { material } = useSelector((state) => state.material);
 
   const router = useRouter();
@@ -58,6 +75,7 @@ const OrderRequestList = () => {
   const dispatch = useDispatch();
 
   const [searchTab, setSearchTab] = useState(1);
+  const [isComplete, setIsComplete] = useState(false);
 
   const [paymentData, setPaymentData] = useState(null);
 
@@ -76,9 +94,10 @@ const OrderRequestList = () => {
       type: PAYMENTREQUEST_LIST_REQUEST,
       data: {
         type: searchTab,
+        isComplete: isComplete ? 1 : 0,
       },
     });
-  }, [searchTab]);
+  }, [searchTab, isComplete]);
 
   useEffect(() => {
     if (paymentData) {
@@ -98,6 +117,24 @@ const OrderRequestList = () => {
       onUserFill(userDetailData);
     }
   }, [userDetailData]);
+
+  useEffect(() => {
+    if (st_paymentRequestCompleteDone) {
+      dispatch({
+        type: PAYMENTREQUEST_LIST_REQUEST,
+        data: {
+          type: searchTab,
+        },
+      });
+
+      return message.success("처리완료되었습니다.");
+    }
+  }, [st_paymentRequestCompleteDone]);
+  useEffect(() => {
+    if (st_paymentRequestCompleteError) {
+      return message.error(st_paymentRequestCompleteError);
+    }
+  }, [st_paymentRequestCompleteError]);
 
   ////// TOGGLE //////
 
@@ -144,6 +181,13 @@ const OrderRequestList = () => {
     [searchTab]
   );
 
+  const completeChangeHandler = useCallback(
+    (complete) => {
+      setIsComplete(complete);
+    },
+    [isComplete]
+  );
+
   const onFill = useCallback(
     (data) => {
       payFormRef.current.setFieldsValue({
@@ -171,6 +215,15 @@ const OrderRequestList = () => {
     },
     [payFormRef]
   );
+
+  const onComplete = useCallback((data) => {
+    dispatch({
+      type: PAYMENTREQUEST_COMPLETE_REQUEST,
+      data: {
+        paymentId: parseInt(data),
+      },
+    });
+  }, []);
 
   ////// DATAVIEW //////
 
@@ -227,6 +280,21 @@ const OrderRequestList = () => {
       title: "주문일",
       dataIndex: "orderAt",
     },
+    {
+      title: "처리완료",
+      render: (data) => (
+        <Popconfirm
+          title="처리하시겠습니까?"
+          onConfirm={() => onComplete(data.id)}
+          okText="처리완료"
+          cancelText="취소"
+        >
+          <Button type="primary" size="small">
+            처리완료
+          </Button>
+        </Popconfirm>
+      ),
+    },
   ];
   return (
     <AdminLayout>
@@ -240,6 +308,7 @@ const OrderRequestList = () => {
           1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
         </Text>
         <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 10px`}>
+          <Wrapper dr={`row`} ju={`flex-start`}></Wrapper>
           <Wrapper width={`50%`} dr={`row`} ju={`flex-start`}>
             <AdminButton
               size="small"
@@ -254,6 +323,20 @@ const OrderRequestList = () => {
               onClick={() => tabChangeHandler(2)}
             >
               1개월
+            </AdminButton>
+            <AdminButton
+              size="small"
+              type={!isComplete && `primary`}
+              onClick={() => completeChangeHandler(false)}
+            >
+              미처리
+            </AdminButton>
+            <AdminButton
+              size="small"
+              type={isComplete && `primary`}
+              onClick={() => completeChangeHandler(true)}
+            >
+              처리
             </AdminButton>
           </Wrapper>
           <Wrapper width={`50%`} dr={`row`} ju={`flex-end`}>
@@ -420,7 +503,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     context.store.dispatch({
       type: PAYMENTREQUEST_LIST_REQUEST,
       data: {
-        type: 3,
+        type: 1,
       },
     });
 
