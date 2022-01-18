@@ -26,6 +26,11 @@ import {
 } from "../../../reducers/material";
 import Theme from "../../../components/Theme";
 
+// 주의사항
+// 실시간 주문이 발생된 재료의 소진 데이터 입니다.
+// 실제와 다를 수 있으니 참고용 데이터로 확인해주세요.
+// 재료 사용현황 데이터는 직접 제어할 수 없습니다.
+
 const LoadNotification = (msg, content) => {
   notification.open({
     message: msg,

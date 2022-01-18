@@ -14,12 +14,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { END } from "redux-saga";
 import axios from "axios";
-
 import wrapper from "../../../store/configureStore";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import PageHeader from "../../../components/admin/PageHeader";
 import AdminLayout from "../../../components/AdminLayout";
-import { PAYMENTREQUEST_LIST_REQUEST } from "../../../reducers/paymentRequest";
 import { numberWithCommas } from "../../../components/commonUtils";
 import {
   DETAIL_MODAL_TOGGLE,
@@ -42,6 +40,15 @@ import { MATERIAL_DETAIL_REQUEST } from "../../../reducers/material";
 const AdminButton = styled(Button)`
   margin: 0 5px;
 `;
+
+// 전) 1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
+// 후) 1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 - 4198)
+
+// 주의사항
+// 1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 - 4198)
+// 속도개선을 위해 최근 발생한 데이터를 기준으로 조회됩니다.
+// 제품의 제작 및 배송이 완료된 경우 처리완료 버튼을 클릭해주세요.
+// 주문요청 건 별 [주문서 다운로드] 버튼을 통해 엑셀파일을 다운받을 수 있습니다.
 
 const OrderRequestList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
