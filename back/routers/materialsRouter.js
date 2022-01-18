@@ -1,5 +1,9 @@
 const express = require("express");
-const { Materials, MaterialsHistory } = require("../models");
+const {
+  Materials,
+  MaterialsHistory,
+  PaymentRequestMaterial,
+} = require("../models");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isNanCheck = require("../middlewares/isNanCheck");
 const { Op } = require("sequelize");
@@ -31,6 +35,31 @@ router.get("/list", async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("약재 목록을 불러올 수 없습니다.");
+  }
+});
+
+router.get("/list/detail/:PaymentRequestId", async (req, res, next) => {
+  const { PaymentRequestId } = req.params;
+
+  try {
+    const result = await PaymentRequestMaterial.findAll({
+      where: {
+        PaymentRequestId: parseInt(PaymentRequestId),
+      },
+      include: [
+        {
+          model: Materials,
+        },
+      ],
+    });
+    if (result.length === 0) {
+      return res.status(201).send("해당 결제목록의 재료가 존재하지 않습니다.");
+    } else {
+      return res.status(200).json(result);
+    }
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
   }
 });
 
@@ -141,11 +170,29 @@ router.delete("/delete/:materialsId", isAdminCheck, async (req, res, next) => {
   }
 });
 
-router.get("/history/list", async (req, res, next) => {
-  try {
-    const result = await MaterialsHistory.findAll();
+router.get("/history/list/:type", async (req, res, next) => {
+  const { type } = req.params;
 
-    return res.status(200).json(result);
+  try {
+    const condition =
+      type === "1"
+        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
+        : type === "2"
+        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH );`
+        : "";
+
+    const selectQuery = `
+    SELECT  mh.id,
+            mh.useQnt,
+            mh.materialName,
+            DATE_FORMAT(mh.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS useAt
+      FROM  materialsHistory mh
+     ${condition}
+    `;
+
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0]);
   } catch (e) {
     console.error(e);
     return res.status(401).send("잘못된 요청입니다.");

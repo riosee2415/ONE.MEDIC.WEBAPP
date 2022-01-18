@@ -206,7 +206,11 @@ const AdminMenu = () => {
           icon={<MedicineBoxOutlined />}
           title="주문 관리"
           onTitleClick={titleClickHandler("sub9")}
-        ></SubMenu>
+        >
+          <Menu.Item key="/admin/order/orderRequestList">
+            <MenuName>주문 요청 관리</MenuName>
+          </Menu.Item>
+        </SubMenu>
       </Menu>
     </>
   );

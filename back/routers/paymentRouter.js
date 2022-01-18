@@ -1,5 +1,6 @@
 const express = require("express");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+const models = require("../models");
 const {
   PaymentRequest,
   User,
@@ -10,17 +11,48 @@ const {
 
 const router = express.Router();
 
-router.get("/list", async (req, res, next) => {
-  try {
-    const result = await PaymentRequest.findAll({
-      include: [
-        {
-          model: PaymentRequestMaterial,
-        },
-      ],
-    });
+router.get("/list/:type", async (req, res, next) => {
+  const { type } = req.params;
+  const { isComplete } = req.query;
 
-    return res.status(200).json(result);
+  try {
+    console.log(Boolean(parseInt(isComplete)));
+
+    const condition =
+      type === "1"
+        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
+        : type === "2"
+        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH );`
+        : "";
+
+    const selectQuery = `
+    SELECT	 A.id,
+            FORMAT(A.totalPayment, 0)							                AS totalPayment,
+            A.chup,
+            A.pack,
+            FORMAT(A.packVolumn, 0)								                AS packVolumn,
+            FORMAT(A.totalVolumn, 0) 							                AS totalVolumn,
+            DATE_FORMAT(A.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
+		        U.username                                             AS questUserName,
+		        U.nickname                                             AS questUserNickName,
+		        U.email                                                AS questUserEmail,
+		        U.mobile                                               AS questUserMobile,
+            B.MaterialId
+      FROM  paymentRequest					                                A
+      JOIN  paymentRequestMaterial 		                            B
+        ON  A.id = B.id
+      JOIN  materials	                                            M
+        ON  B.MaterialId = M.id
+      JOIN  users                                                  U 
+        ON  A.UserId = U.id
+     WHERE  NOT A.totalPayment IS NULL
+       AND  isComplete = ${Boolean(parseInt(isComplete)) ? "TRUE" : "FALSE"}
+     ${condition}
+    `;
+
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0]);
   } catch (e) {
     console.error(e);
     return res.status(400).send("결제 요청이 없습니다.");
@@ -120,6 +152,41 @@ router.patch("/totalPayment/update", async (req, res, next) => {
       {
         where: {
           id: parseInt(paymentRequestId),
+        },
+      }
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청 입니다.");
+  }
+});
+
+router.patch("/complete/:paymentId", async (req, res, next) => {
+  const { paymentId } = req.params;
+
+  try {
+    if (paymentId) {
+      const exPayment = await PaymentRequest.findOne({
+        where: {
+          id: parseInt(paymentId),
+        },
+      });
+
+      if (!exPayment) {
+        return res.status(400).send("주문 요청이 없습니다.");
+      }
+    }
+
+    const result = await PaymentRequest.update(
+      {
+        isComplete: true,
+        completedAt: new Date(),
+      },
+      {
+        where: {
+          id: parseInt(paymentId),
         },
       }
     );

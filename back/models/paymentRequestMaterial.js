@@ -7,15 +7,15 @@ module.exports = class PaymentRequestMaterial extends Model {
       {
         qnt: {
           type: DataTypes.STRING(10),
-          allowNull: false,
+          allowNull: false, // 필수
         },
         unit: {
           type: DataTypes.STRING(10),
-          allowNull: false,
+          allowNull: false, // 필수
         },
         payment: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: false, // 필수
         },
       },
       {
