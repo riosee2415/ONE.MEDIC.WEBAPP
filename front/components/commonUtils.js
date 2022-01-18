@@ -1,6 +1,6 @@
-import storageFn from "./fsStorage";
-import firebase from "firebase/app";
-import "firebase/storage";
+// import storageFn from "./fsStorage";
+// import firebase from "firebase/app";
+// import "firebase/storage";
 
 export const numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

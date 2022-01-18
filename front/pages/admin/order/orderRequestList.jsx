@@ -12,6 +12,7 @@ import PageHeader from "../../../components/admin/PageHeader";
 import AdminLayout from "../../../components/AdminLayout";
 import { PAYMENTREQUEST_LIST_REQUEST } from "../../../reducers/paymentRequest";
 import { AdminContent } from "../../../components/commonComponents";
+import { numberWithCommas } from "../../../components/commonUtils";
 
 const OrderRequestList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
@@ -52,7 +53,7 @@ const OrderRequestList = () => {
     },
     {
       title: "팩 용량",
-      dataIndex: "packVolumn",
+      render: (data) => numberWithCommas(data.packVolumn),
     },
     {
       title: "전체 용량",
