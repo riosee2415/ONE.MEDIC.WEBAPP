@@ -210,6 +210,9 @@ const AdminMenu = () => {
           <Menu.Item key="/admin/order/orderRequestList">
             <MenuName>주문 요청 관리</MenuName>
           </Menu.Item>
+          <Menu.Item key="/admin/order/orderRequestList">
+            <MenuName>탕전처방 주문 관리</MenuName>
+          </Menu.Item>
         </SubMenu>
       </Menu>
     </>
