@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import AdminLayout from "../../../components/AdminLayout";
-import PageHeader from "../../../components/admin/PageHeader";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Modal, Select, notification, message } from "antd";
-
 import { useRouter, withRouter } from "next/router";
-import wrapper from "../../../store/configureStore";
 import { END } from "redux-saga";
 import axios from "axios";
+
+import wrapper from "../../../store/configureStore";
+import AdminLayout from "../../../components/AdminLayout";
+import PageHeader from "../../../components/admin/PageHeader";
 import {
   Wrapper,
   AdminContent,
@@ -17,12 +17,14 @@ import {
   ModalBtn,
   GuideUl,
   GuideLi,
+  Text,
 } from "../../../components/commonComponents";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import {
   MATERIAL_HISTORY_LIST_REQUEST,
   HISTORY_UNIT_MODAL_TOGGLE,
 } from "../../../reducers/material";
+import Theme from "../../../components/Theme";
 
 const LoadNotification = (msg, content) => {
   notification.open({
@@ -56,15 +58,34 @@ const UserDeliAddress = ({}) => {
   ////// HOOKS //////
   const dispatch = useDispatch();
 
+  const [type, setType] = useState(1);
+
   ////// USEEFFECT //////
 
+  useEffect(() => {
+    dispatch({
+      type: MATERIAL_HISTORY_LIST_REQUEST,
+      data: {
+        type,
+      },
+    });
+  }, [type]);
+
   ////// TOGGLA //////
+
   const unitModalToggle = useCallback(() => {
     dispatch({
       type: HISTORY_UNIT_MODAL_TOGGLE,
     });
   }, [historyUnitModal]);
   ////// HANDLER //////
+
+  const typeChangeHandler = useCallback(
+    (value) => {
+      setType(value);
+    },
+    [type]
+  );
 
   ////// DATAVIEW //////
 
@@ -80,13 +101,13 @@ const UserDeliAddress = ({}) => {
       dataIndex: "materialName",
     },
     {
-      title: "사용재고",
+      title: "사용수량",
       dataIndex: "useQnt",
+      render: (data) => `${data}`,
     },
     {
       title: "사용일",
-      dataIndex: "createdAt",
-      render: (data) => <>{data.split("T")[0]}</>,
+      dataIndex: "useAt",
     },
   ];
 
@@ -99,13 +120,39 @@ const UserDeliAddress = ({}) => {
       />
 
       <AdminContent>
-        <Wrapper margin="0px 0px 20px 0px" dr="row" ju="flex-end">
-          <ModalBtn type="dashed" size="small">
-            전체조회
-          </ModalBtn>
-          <ModalBtn type="danger" size="small" onClick={unitModalToggle}>
-            주의사항
-          </ModalBtn>
+        <Text fontSize={`14px`} color={Theme.red_C} isImpo={true}>
+          1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
+        </Text>
+        <Wrapper margin="0px 0px 20px 0px" dr="row" ju={`space-between`}>
+          <Wrapper width={`50%`} dr={`row`} ju={`flex-start`}>
+            <ModalBtn
+              type={type === 1 && "primary"}
+              size="small"
+              onClick={() => typeChangeHandler(1)}
+            >
+              1주일
+            </ModalBtn>
+            <ModalBtn
+              type={type === 2 && "primary"}
+              size="small"
+              onClick={() => typeChangeHandler(2)}
+            >
+              1개월
+            </ModalBtn>
+          </Wrapper>
+
+          <Wrapper width={`50%`} dr={`row`} ju={`flex-end`}>
+            <ModalBtn
+              type={type === 3 ? `primary` : "dashed"}
+              size="small"
+              onClick={() => typeChangeHandler(3)}
+            >
+              전체조회
+            </ModalBtn>
+            <ModalBtn type="danger" size="small" onClick={unitModalToggle}>
+              주의사항
+            </ModalBtn>
+          </Wrapper>
         </Wrapper>
 
         <Table
@@ -124,8 +171,8 @@ const UserDeliAddress = ({}) => {
         title="주의사항"
       >
         <GuideUl>
-          <GuideLi>asdfasdf</GuideLi>
-          <GuideLi isImpo={true}>asdfasdf</GuideLi>
+          <GuideLi></GuideLi>
+          <GuideLi isImpo={true}></GuideLi>
         </GuideUl>
       </Modal>
     </AdminLayout>
@@ -149,6 +196,9 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: MATERIAL_HISTORY_LIST_REQUEST,
+      data: {
+        type: 1,
+      },
     });
 
     // 구현부 종료

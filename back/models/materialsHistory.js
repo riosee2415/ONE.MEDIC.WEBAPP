@@ -7,11 +7,11 @@ module.exports = class MaterialsHistory extends Model {
       {
         useQnt: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: false, // 필수
         },
         materialName: {
           type: DataTypes.STRING(100),
-          allowNull: false,
+          allowNull: false, // 필수
         },
       },
       {

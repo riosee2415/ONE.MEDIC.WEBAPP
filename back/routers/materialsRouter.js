@@ -38,13 +38,13 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
-router.get("/list/detail/:materialId", async (req, res, next) => {
-  const { materialId } = req.params;
+router.get("/list/detail/:PaymentRequestId", async (req, res, next) => {
+  const { PaymentRequestId } = req.params;
 
   try {
     const result = await PaymentRequestMaterial.findAll({
       where: {
-        MaterialId: parseInt(materialId),
+        PaymentRequestId: parseInt(PaymentRequestId),
       },
       include: [
         {
@@ -170,11 +170,29 @@ router.delete("/delete/:materialsId", isAdminCheck, async (req, res, next) => {
   }
 });
 
-router.get("/history/list", async (req, res, next) => {
-  try {
-    const result = await MaterialsHistory.findAll();
+router.get("/history/list/:type", async (req, res, next) => {
+  const { type } = req.params;
 
-    return res.status(200).json(result);
+  try {
+    const condition =
+      type === "1"
+        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
+        : type === "2"
+        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH );`
+        : "";
+
+    const selectQuery = `
+    SELECT  mh.id,
+            mh.useQnt,
+            mh.materialName,
+            DATE_FORMAT(mh.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS useAt
+      FROM  materialsHistory mh
+     ${condition}
+    `;
+
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0]);
   } catch (e) {
     console.error(e);
     return res.status(401).send("잘못된 요청입니다.");

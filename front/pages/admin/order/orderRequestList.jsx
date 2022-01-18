@@ -82,10 +82,11 @@ const OrderRequestList = () => {
 
   useEffect(() => {
     if (paymentData) {
+      console.log(paymentData);
       dispatch({
         type: MATERIAL_DETAIL_REQUEST,
         data: {
-          materialId: paymentData.id,
+          paymentRequestId: paymentData.id,
         },
       });
       onFill(paymentData);
@@ -419,7 +420,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     context.store.dispatch({
       type: PAYMENTREQUEST_LIST_REQUEST,
       data: {
-        type: 1,
+        type: 3,
       },
     });
 

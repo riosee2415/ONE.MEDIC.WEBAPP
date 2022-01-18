@@ -17,9 +17,9 @@ router.get("/list/:type", async (req, res, next) => {
   try {
     const condition =
       type === "1"
-        ? `AND  A.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  WEEK ) AND NOW();`
+        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
         : type === "2"
-        ? `AND  A.createdAt BETWEEN DATE_ADD(NOW(),INTERVAL -1  MONTH ) AND NOW();`
+        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH );`
         : "";
 
     const selectQuery = `

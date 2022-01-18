@@ -137,7 +137,7 @@ function* materialDelete(action) {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function materialHistoryListAPI(data) {
-  return axios.get(`/api/materials/history/list`);
+  return axios.get(`/api/materials/history/list/${data.type}`);
 }
 
 function* materialHistoryList(action) {
@@ -164,7 +164,7 @@ function* materialHistoryList(action) {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function materialDetailAPI(data) {
-  return axios.get(`/api/materials/list/detail/${data.materialId}`);
+  return axios.get(`/api/materials/list/detail/${data.paymentRequestId}`);
 }
 
 function* materialDetail(action) {

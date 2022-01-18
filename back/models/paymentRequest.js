@@ -12,33 +12,33 @@ module.exports = class PaymentRequest extends Model {
 
         chup: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: false, // 필수
         },
 
         pack: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: false, // 필수
         },
 
         packVolumn: {
           type: DataTypes.FLOAT,
-          allowNull: false,
+          allowNull: false, // 필수
         },
 
         totalVolumn: {
           type: DataTypes.FLOAT,
-          allowNull: false,
+          allowNull: false, // 필수
         },
 
         isComplete: {
           type: DataTypes.BOOLEAN,
-          allowNull: false,
+          allowNull: true,
           default: false,
         },
 
         completedAt: {
           type: DataTypes.STRING(100),
-          allowNull: false,
+          allowNull: true,
         },
       },
       {

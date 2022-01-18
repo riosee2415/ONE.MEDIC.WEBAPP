@@ -7,25 +7,24 @@ module.exports = class Materials extends Model {
       {
         name: {
           type: DataTypes.STRING(100),
-          allowNull: false,
+          allowNull: false, // 필수
         },
         price: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: false, // 필수
         },
         isDelete: {
           type: DataTypes.BOOLEAN,
-          allowNull: false,
+          allowNull: true,
           defaultValue: false,
         },
         stock: {
           type: DataTypes.INTEGER,
-          allowNull: false,
-          defaultValue: false,
+          allowNull: false, // 필수
         },
         unit: {
           type: DataTypes.STRING(20),
-          allowNull: false,
+          allowNull: false, // 필수
         },
       },
       {
