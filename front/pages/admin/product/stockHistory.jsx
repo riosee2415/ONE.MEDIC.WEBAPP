@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import dynamic from "next/dynamic";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Modal, Select, notification, message } from "antd";
 import { useRouter, withRouter } from "next/router";
@@ -23,6 +24,10 @@ import {
   HISTORY_UNIT_MODAL_TOGGLE,
 } from "../../../reducers/material";
 import Theme from "../../../components/Theme";
+
+const Chart = dynamic(() => import("react-apexcharts"), {
+  ssr: false,
+});
 
 const LoadNotification = (msg, content) => {
   notification.open({
@@ -58,6 +63,11 @@ const UserDeliAddress = ({}) => {
 
   const [type, setType] = useState(1);
 
+  const [seriesData, setSeriesData] = useState(null);
+  const [labelsData, setLabelsData] = useState(null);
+
+  const [chartConfig, setChartConfig] = useState(null);
+
   ////// USEEFFECT //////
 
   useEffect(() => {
@@ -68,6 +78,45 @@ const UserDeliAddress = ({}) => {
       },
     });
   }, [type]);
+
+  useEffect(() => {
+    if (materialsHistory) {
+      if (materialsHistory.graph) {
+        setSeriesData(
+          materialsHistory.graph.map((data) => parseFloat(data.historyCount))
+        );
+
+        setLabelsData(materialsHistory.graph.map((data) => data.materialName));
+      }
+    }
+  }, [materialsHistory]);
+
+  console.log(seriesData);
+
+  useEffect(() => {
+    if (seriesData && labelsData) {
+      setChartConfig({
+        series: [{ data: seriesData }],
+        options: {
+          labels: labelsData,
+
+          dataLabels: {
+            formatter: (val, opts) => {
+              return `${val}번`;
+            },
+            enabled: true,
+          },
+          stroke: {
+            curve: "straight",
+          },
+          title: {
+            text: "재료 사용현황",
+            align: "left",
+          },
+        },
+      });
+    }
+  }, [seriesData, labelsData]);
 
   ////// TOGGLA //////
 
@@ -156,9 +205,21 @@ const UserDeliAddress = ({}) => {
         <Table
           rowKey="id"
           columns={columns}
-          dataSource={materialsHistory ? materialsHistory : []}
+          dataSource={materialsHistory ? materialsHistory.result : []}
           size="small"
         />
+
+        {chartConfig &&
+          (chartConfig.series ? (
+            <Chart
+              options={chartConfig.options}
+              series={chartConfig.series}
+              type="bar"
+              height="450"
+            />
+          ) : (
+            <Spin indicator={<LoadingOutlined />} />
+          ))}
       </AdminContent>
 
       <Modal
