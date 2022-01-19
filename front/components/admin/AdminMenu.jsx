@@ -208,7 +208,7 @@ const AdminMenu = () => {
           onTitleClick={titleClickHandler("sub9")}
         >
           <Menu.Item key="/admin/order/orderRequestList">
-            <MenuName>주문 요청 관리</MenuName>
+            <MenuName>약속처방 주문 관리</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/order/combiOrderRequest">
             <MenuName>탕전처방 주문 관리</MenuName>

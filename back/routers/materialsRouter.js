@@ -184,6 +184,7 @@ router.get("/history/list/:type", async (req, res, next) => {
     const selectQuery = `
     SELECT  mh.id,
             mh.useQnt,
+            mh.useUnit,
             mh.materialName,
             DATE_FORMAT(mh.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS useAt
       FROM  materialsHistory mh

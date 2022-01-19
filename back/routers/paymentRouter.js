@@ -122,6 +122,7 @@ router.post("/prm/create", async (req, res, next) => {
         const materialHistoryReault = await MaterialsHistory.create({
           materialName: exMaterial.name,
           useQnt: qnt,
+          useUnit: unit,
         });
       }
     }

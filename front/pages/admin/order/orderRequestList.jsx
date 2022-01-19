@@ -41,15 +41,6 @@ const AdminButton = styled(Button)`
   margin: 0 5px;
 `;
 
-// 전) 1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
-// 후) 1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 - 4198)
-
-// 주의사항
-// 1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 - 4198)
-// 속도개선을 위해 최근 발생한 데이터를 기준으로 조회됩니다.
-// 제품의 제작 및 배송이 완료된 경우 처리완료 버튼을 클릭해주세요.
-// 주문요청 건 별 [주문서 다운로드] 버튼을 통해 엑셀파일을 다운받을 수 있습니다.
-
 const OrderRequestList = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
@@ -308,13 +299,14 @@ const OrderRequestList = () => {
   return (
     <AdminLayout>
       <PageHeader
-        breadcrumbs={["주문 관리", "주문 요청 관리"]}
-        title={`주문 요청 관리`}
-        subTitle={`탕전처방에서 판매된 주문을 관리하는 시스템 입니다.`}
+        breadcrumbs={["주문 관리", "약속처방 주문 관리"]}
+        title={`약속처방 주문 관리`}
+        subTitle={`약속처방에서 판매된 상품의 주문을 관리하는 시스템 입니다.`}
       />
       <AdminContent>
         <Text fontSize={`14px`} color={Theme.red_C} isImpo={true}>
-          1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
+          1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 -
+          4198)
         </Text>
         <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 10px`}>
           <Wrapper dr={`row`} ju={`flex-start`}></Wrapper>
@@ -359,6 +351,7 @@ const OrderRequestList = () => {
             <AdminButton type="danger" size="small" onClick={unitModalToggle}>
               주의사항
             </AdminButton>
+            <AdminButton size="small">주문서 다운로드</AdminButton>
           </Wrapper>
         </Wrapper>
         <Table
@@ -377,7 +370,20 @@ const OrderRequestList = () => {
         footer={null}
       >
         <GuideUl>
-          <GuideLi></GuideLi>
+          <GuideLi isImpo={true}>
+            1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 -
+            4198)
+          </GuideLi>
+          <GuideLi>
+            속도개선을 위해 최근 발생한 데이터를 기준으로 조회됩니다.
+          </GuideLi>
+          <GuideLi>
+            제품의 제작 및 배송이 완료된 경우 처리완료 버튼을 클릭해주세요.
+          </GuideLi>
+          <GuideLi>
+            주문요청 건 별 [주문서 다운로드] 버튼을 통해 엑셀파일을 다운받을 수
+            있습니다.
+          </GuideLi>
         </GuideUl>
       </Modal>
 
