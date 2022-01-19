@@ -176,9 +176,9 @@ router.get("/history/list/:type", async (req, res, next) => {
   try {
     const condition =
       type === "1"
-        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
+        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
         : type === "2"
-        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH );`
+        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
         : "";
 
     const selectQuery = `
@@ -188,12 +188,31 @@ router.get("/history/list/:type", async (req, res, next) => {
             mh.materialName,
             DATE_FORMAT(mh.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS useAt
       FROM  materialsHistory mh
-     ${condition}
+     ${condition};
+    `;
+
+    const selectGraphQuery = `
+    SELECT  z.historyCount,
+		        z.materialName,
+		        ROUND((z.historyCount / z.allHistoryCount * 100), 0)  AS historyPercent
+    FROM  (
+  			    SELECT  mh.materialName,
+  					        COUNT(mh.id)					                        AS historyCount,
+  					        (
+						          SELECT  COUNT(mh2.id) 
+						            FROM  materialsHistory  	                mh2
+                      ${condition.replace("mh", "mh2")}
+					          )							                              	AS 	allHistoryCount	
+  			  FROM  materialsHistory 				                          mh
+         ${condition}
+  			 GROUP  BY  mh.materialName
+  		)	z;
     `;
 
     const result = await models.sequelize.query(selectQuery);
+    const graph = await models.sequelize.query(selectGraphQuery);
 
-    return res.status(200).json(result[0]);
+    return res.status(200).json({ result: result[0], graph: graph[0] });
   } catch (e) {
     console.error(e);
     return res.status(401).send("잘못된 요청입니다.");
