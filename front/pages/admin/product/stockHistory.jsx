@@ -12,8 +12,6 @@ import PageHeader from "../../../components/admin/PageHeader";
 import {
   Wrapper,
   AdminContent,
-  SearchForm,
-  SearchFormItem,
   ModalBtn,
   GuideUl,
   GuideLi,
@@ -25,11 +23,6 @@ import {
   HISTORY_UNIT_MODAL_TOGGLE,
 } from "../../../reducers/material";
 import Theme from "../../../components/Theme";
-
-// 주의사항
-// 실시간 주문이 발생된 재료의 소진 데이터 입니다.
-// 실제와 다를 수 있으니 참고용 데이터로 확인해주세요.
-// 재료 사용현황 데이터는 직접 제어할 수 없습니다.
 
 const LoadNotification = (msg, content) => {
   notification.open({
@@ -107,8 +100,7 @@ const UserDeliAddress = ({}) => {
     },
     {
       title: "사용수량",
-      dataIndex: "useQnt",
-      render: (data) => `${data}`,
+      render: (data) => `${data.useQnt}${data.useUnit}`,
     },
     {
       title: "사용일",
@@ -126,7 +118,8 @@ const UserDeliAddress = ({}) => {
 
       <AdminContent>
         <Text fontSize={`14px`} color={Theme.red_C} isImpo={true}>
-          1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
+          1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 -
+          4198)
         </Text>
         <Wrapper margin="0px 0px 20px 0px" dr="row" ju={`space-between`}>
           <Wrapper width={`50%`} dr={`row`} ju={`flex-start`}>
@@ -170,14 +163,17 @@ const UserDeliAddress = ({}) => {
 
       <Modal
         visible={historyUnitModal}
-        width="900px"
+        width="500px"
         footer={null}
         onCancel={unitModalToggle}
         title="주의사항"
       >
         <GuideUl>
-          <GuideLi></GuideLi>
-          <GuideLi isImpo={true}></GuideLi>
+          <GuideLi isImpo={true}>
+            실시간 주문이 발생된 재료의 소진 데이터 입니다.
+          </GuideLi>
+          <GuideLi>실제와 다를 수 있으니 참고용 데이터로 확인해주세요.</GuideLi>
+          <GuideLi> 재료 사용현황 데이터는 직접 제어할 수 없습니다.</GuideLi>
         </GuideUl>
       </Modal>
     </AdminLayout>
