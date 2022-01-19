@@ -308,13 +308,14 @@ const OrderRequestList = () => {
   return (
     <AdminLayout>
       <PageHeader
-        breadcrumbs={["주문 관리", "주문 요청 관리"]}
-        title={`주문 요청 관리`}
-        subTitle={`탕전처방에서 판매된 주문을 관리하는 시스템 입니다.`}
+        breadcrumbs={["주문 관리", "약속처방 주문 관리"]}
+        title={`약속처방 주문 관리`}
+        subTitle={`약속처방에서 판매된 상품의 주문을 관리하는 시스템 입니다.`}
       />
       <AdminContent>
         <Text fontSize={`14px`} color={Theme.red_C} isImpo={true}>
-          1개월 이후의 데이터를 보고싶으시면 개발사에 문의해주세요.
+          1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 -
+          4198)
         </Text>
         <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 10px`}>
           <Wrapper dr={`row`} ju={`flex-start`}></Wrapper>
