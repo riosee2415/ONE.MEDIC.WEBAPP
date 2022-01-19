@@ -83,7 +83,7 @@ const UserDeliAddress = ({}) => {
     if (materialsHistory) {
       if (materialsHistory.graph) {
         setSeriesData(
-          materialsHistory.graph.map((data) => parseFloat(data.historyCount))
+          materialsHistory.graph.map((data) => parseFloat(data.sumQnt))
         );
 
         setLabelsData(materialsHistory.graph.map((data) => data.materialName));
@@ -102,7 +102,7 @@ const UserDeliAddress = ({}) => {
 
           dataLabels: {
             formatter: (val, opts) => {
-              return `${val}번`;
+              return `${val}`;
             },
             enabled: true,
           },
@@ -170,7 +170,7 @@ const UserDeliAddress = ({}) => {
           1개월 전 발생된 데이터가 필요한 경우 개발사로 요청해주세요. (1600 -
           4198)
         </Text>
-        <Wrapper margin="0px 0px 20px 0px" dr="row" ju={`space-between`}>
+        <Wrapper margin="20px 0 10px 0px" dr="row" ju={`space-between`}>
           <Wrapper width={`50%`} dr={`row`} ju={`flex-start`}>
             <ModalBtn
               type={type === 1 && "primary"}

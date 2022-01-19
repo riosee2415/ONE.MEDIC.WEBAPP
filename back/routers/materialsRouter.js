@@ -192,21 +192,11 @@ router.get("/history/list/:type", async (req, res, next) => {
     `;
 
     const selectGraphQuery = `
-    SELECT  z.historyCount,
-		        z.materialName,
-		        ROUND((z.historyCount / z.allHistoryCount * 100), 0)  AS historyPercent
-    FROM  (
-  			    SELECT  mh.materialName,
-  					        COUNT(mh.id)					                        AS historyCount,
-  					        (
-						          SELECT  COUNT(mh2.id) 
-						            FROM  materialsHistory  	                mh2
-                      ${condition.replace("mh", "mh2")}
-					          )							                              	AS 	allHistoryCount	
-  			  FROM  materialsHistory 				                          mh
-         ${condition}
-  			 GROUP  BY  mh.materialName
-  		)	z;
+  	SELECT  SUM(mh.useQnt)                                   AS sumQnt,
+            mh.materialName
+  	  FROM  materialsHistory 				                          mh
+     ${condition}
+  	 GROUP  BY  mh.materialName;
     `;
 
     const result = await models.sequelize.query(selectQuery);
