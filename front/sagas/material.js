@@ -164,7 +164,8 @@ function* materialHistoryList(action) {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function materialDetailAPI(data) {
-  return axios.get(`/api/materials/list/detail/${data.paymentRequestId}`);
+  console.log(data);
+  return axios.get(`/api/materials/list/detail/${data.pprId}`);
 }
 
 function* materialDetail(action) {

@@ -1,5 +1,6 @@
 const express = require("express");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+const isNanCheck = require("../middlewares/isNanCheck");
 const models = require("../models");
 const { PrescriptionPaymentRequest, UseMaterial, User } = require("../models");
 
@@ -30,13 +31,18 @@ router.get("/list", async (req, res, next) => {
     const selectQuery = `
         SELECT  ppr.id,
                 ppr.isCompleted,
-		        ppr.completedAt,
+		        DATE_FORMAT(ppr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
 		        ppr.isRefuse,
 		        ppr.refuseContent,
 		        ppr.deliveryCompany,
 		        ppr.deliveryNo,
 		        DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
-                u.username
+                u.username,
+                u.email,
+                u.nickname,
+                u.mobile,
+                u.companyName,
+                u.companyNo
           FROM  prescriptionPaymentRequest ppr
           JOIN  users u
             ON  u.id = ppr.UserId
@@ -120,6 +126,10 @@ router.patch("/isCompleted/:pprId", async (req, res, next) => {
 
       if (!exPayment) {
         return res.status(400).send("주문이 없습니다.");
+      } else {
+        if (!exPayment.deliveryNo) {
+          return res.status(400).send("배송정보를 등록해주세요.");
+        }
       }
     }
 
@@ -145,6 +155,8 @@ router.patch("/isCompleted/:pprId", async (req, res, next) => {
 router.patch("/isRefuse/:pprId", async (req, res, next) => {
   const { pprId } = req.params;
   const { refuseContent } = req.body;
+
+  console.log(pprId);
 
   if (isNanCheck(pprId)) {
     return res
@@ -186,7 +198,7 @@ router.patch("/isRefuse/:pprId", async (req, res, next) => {
 
 router.patch("/delivery/:pprId", async (req, res, next) => {
   const { pprId } = req.params;
-  const { deliveryNo, dliveryCompany } = req.body;
+  const { deliveryNo, deliveryCompany } = req.body;
 
   if (isNanCheck(pprId)) {
     return res
@@ -207,10 +219,10 @@ router.patch("/delivery/:pprId", async (req, res, next) => {
       }
     }
 
-    const result = await PrescriptionPaymentRequest.patch(
+    const result = await PrescriptionPaymentRequest.update(
       {
         deliveryNo,
-        dliveryCompany,
+        deliveryCompany,
       },
       {
         where: {

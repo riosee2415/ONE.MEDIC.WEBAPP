@@ -52,7 +52,6 @@ const OrderRequestList = () => {
     st_paymentRequestCompleteDone,
     st_paymentRequestCompleteError,
   } = useSelector((state) => state.paymentRequest);
-  const { material } = useSelector((state) => state.material);
 
   const router = useRouter();
 
@@ -235,6 +234,10 @@ const OrderRequestList = () => {
       dataIndex: "id",
     },
     {
+      title: "주문일",
+      dataIndex: "orderAt",
+    },
+    {
       title: "주문자",
       dataIndex: "username",
     },
@@ -275,10 +278,6 @@ const OrderRequestList = () => {
       ),
     },
     {
-      title: "주문일",
-      dataIndex: "orderAt",
-    },
-    {
       title: "처리완료",
       render: (data) => (
         <Popconfirm
@@ -291,6 +290,14 @@ const OrderRequestList = () => {
             처리완료
           </Button>
         </Popconfirm>
+      ),
+    },
+    {
+      title: "배송회사등록",
+      render: (data) => (
+        <Button type="primary" size="small">
+          배송회사등록
+        </Button>
       ),
     },
     {
@@ -404,10 +411,10 @@ const OrderRequestList = () => {
       {/* USER DETAIL MODAL */}
 
       <Modal
-        title="회원상세"
+        title="주문자상세"
         visible={userDetailModal}
         footer={null}
-        width={`600px`}
+        width={`650px`}
         onCancel={() => detailMdoalToggle(null)}
       >
         <Form
@@ -416,7 +423,7 @@ const OrderRequestList = () => {
           labelCol={{ span: 3 }}
           wrapperCol={{ span: 21 }}
         >
-          <Form.Item label="회원이름" name="userName">
+          <Form.Item label="주문자이름" name="userName">
             <Input readOnly />
           </Form.Item>
           <Form.Item label="닉네임" name="userNickName">
@@ -431,7 +438,7 @@ const OrderRequestList = () => {
           <Form.Item label="회사이름" name="userCompanyName">
             <Input readOnly />
           </Form.Item>
-          <Form.Item label="회사번호" name="userCompanyNo">
+          <Form.Item label="사업자번호" name="userCompanyNo">
             <Input readOnly />
           </Form.Item>
         </Form>
@@ -444,7 +451,7 @@ const OrderRequestList = () => {
         visible={detailModal}
         onCancel={() => paymentDetailToggle(null)}
         footer={null}
-        width={`600px`}
+        width={`650px`}
       >
         <Form
           form={payForm}
@@ -467,51 +474,6 @@ const OrderRequestList = () => {
           <Form.Item name="otherVolumn" label="요구사항">
             <Input readOnly />
           </Form.Item>
-          <Wrapper dr={`row`} ju={`flex-start`}>
-            {material &&
-              (material.length === 0 ? (
-                <Empty>재료가 없습니다.</Empty>
-              ) : (
-                material.map((data) => {
-                  return (
-                    <Wrapper width={`calc(100% / 3 - 20px)`} margin={`10px`}>
-                      <Wrapper dr={`row`} ju={`space-between`}>
-                        <Text>이름</Text>
-                        <Input
-                          style={{ width: `80%` }}
-                          value={data.Material.name}
-                          readOnly
-                        />
-                      </Wrapper>
-                      <Wrapper
-                        dr={`row`}
-                        ju={`space-between`}
-                        margin={`5px 0 0`}
-                      >
-                        <Text>가격</Text>
-                        <Input
-                          style={{ width: `80%` }}
-                          value={data.payment}
-                          readOnly
-                        />
-                      </Wrapper>
-                      <Wrapper
-                        dr={`row`}
-                        ju={`space-between`}
-                        margin={`5px 0 0`}
-                      >
-                        <Text>용량</Text>
-                        <Input
-                          style={{ width: `80%` }}
-                          value={`${data.qnt}${data.unit}`}
-                          readOnly
-                        />
-                      </Wrapper>
-                    </Wrapper>
-                  );
-                })
-              ))}
-          </Wrapper>
         </Form>
       </Modal>
     </AdminLayout>

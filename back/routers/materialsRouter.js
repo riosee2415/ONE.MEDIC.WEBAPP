@@ -3,6 +3,7 @@ const {
   Materials,
   MaterialsHistory,
   PaymentRequestMaterial,
+  UseMaterial,
 } = require("../models");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isNanCheck = require("../middlewares/isNanCheck");
@@ -38,13 +39,13 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
-router.get("/list/detail/:PaymentRequestId", async (req, res, next) => {
-  const { PaymentRequestId } = req.params;
+router.get("/list/detail/:pprId", async (req, res, next) => {
+  const { pprId } = req.params;
 
   try {
-    const result = await PaymentRequestMaterial.findAll({
+    const result = await UseMaterial.findAll({
       where: {
-        PaymentRequestId: parseInt(PaymentRequestId),
+        PrescriptionPaymentRequestId: parseInt(pprId),
       },
       include: [
         {
@@ -52,11 +53,8 @@ router.get("/list/detail/:PaymentRequestId", async (req, res, next) => {
         },
       ],
     });
-    if (result.length === 0) {
-      return res.status(201).send("해당 결제목록의 재료가 존재하지 않습니다.");
-    } else {
-      return res.status(200).json(result);
-    }
+
+    return res.status(200).json(result);
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
