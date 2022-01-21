@@ -124,6 +124,7 @@ const OrderRequestList = () => {
         type: PAYMENTREQUEST_LIST_REQUEST,
         data: {
           type: searchTab,
+          isComplete: isComplete,
         },
       });
 
@@ -239,14 +240,14 @@ const OrderRequestList = () => {
       dataIndex: "username",
     },
     {
-      title: "회원 상세보기",
+      title: "회원상세",
       render: (data) => (
         <Button
           type="primary"
           size="small"
           onClick={() => detailMdoalToggle(data)}
         >
-          회원 상세보기
+          회원상세
         </Button>
       ),
     },
@@ -263,14 +264,14 @@ const OrderRequestList = () => {
       dataIndex: "unitVolumn",
     },
     {
-      title: "상세보기",
+      title: "주문상세",
       render: (data) => (
         <Button
           type="primary"
           size="small"
           onClick={() => paymentDetailToggle(data)}
         >
-          상세보기
+          주문상세
         </Button>
       ),
     },
@@ -320,6 +321,7 @@ const OrderRequestList = () => {
           <Wrapper width={`50%`} dr={`row`} ju={`flex-start`}>
             <Wrapper dr={`row`} ju={`flex-start`}>
               <AdminButton
+                style={{ width: `60px` }}
                 size="small"
                 type={searchTab === 1 && `primary`}
                 onClick={() => tabChangeHandler(1)}
@@ -327,6 +329,7 @@ const OrderRequestList = () => {
                 1주일
               </AdminButton>
               <AdminButton
+                style={{ width: `60px` }}
                 size="small"
                 type={searchTab === 2 && `primary`}
                 onClick={() => tabChangeHandler(2)}
@@ -336,6 +339,7 @@ const OrderRequestList = () => {
             </Wrapper>
             <Wrapper dr={`row`} ju={`flex-start`} margin={`5px 0 0`}>
               <AdminButton
+                style={{ width: `60px` }}
                 size="small"
                 type={isComplete === 1 && `primary`}
                 onClick={() => completeChangeHandler(1)}
@@ -343,6 +347,7 @@ const OrderRequestList = () => {
                 미처리
               </AdminButton>
               <AdminButton
+                style={{ width: `60px` }}
                 size="small"
                 type={isComplete === 2 && `primary`}
                 onClick={() => completeChangeHandler(2)}
@@ -401,7 +406,7 @@ const OrderRequestList = () => {
       {/* USER DETAIL MODAL */}
 
       <Modal
-        title="회원 상세보기"
+        title="회원상세"
         visible={userDetailModal}
         footer={null}
         width={`600px`}
@@ -437,11 +442,11 @@ const OrderRequestList = () => {
       {/* PAYMENT DETAIL MODAL */}
 
       <Modal
-        title="상세보기"
+        title="주문상세"
         visible={detailModal}
         onCancel={() => paymentDetailToggle(null)}
         footer={null}
-        width={`700px`}
+        width={`600px`}
       >
         <Form
           form={payForm}

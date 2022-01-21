@@ -91,8 +91,6 @@ const UserDeliAddress = ({}) => {
     }
   }, [materialsHistory]);
 
-  console.log(seriesData);
-
   useEffect(() => {
     if (seriesData && labelsData) {
       setChartConfig({

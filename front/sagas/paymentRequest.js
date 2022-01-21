@@ -42,7 +42,7 @@ function* paymentRequestList(action) {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function paymentRequestCompleteAPI(data) {
-  return axios.patch(`/api/payment/complete/${data.paymentId}`);
+  return axios.patch(`/api/payment/isCompleted/${data.paymentId}`);
 }
 
 function* paymentRequestComplete(action) {
