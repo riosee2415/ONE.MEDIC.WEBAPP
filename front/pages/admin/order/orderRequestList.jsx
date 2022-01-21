@@ -8,17 +8,17 @@ import {
   Popconfirm,
   message,
 } from "antd";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { END } from "redux-saga";
 import axios from "axios";
+
 import wrapper from "../../../store/configureStore";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import PageHeader from "../../../components/admin/PageHeader";
 import AdminLayout from "../../../components/AdminLayout";
-import { numberWithCommas } from "../../../components/commonUtils";
 import {
   DETAIL_MODAL_TOGGLE,
   PAYMENTREQUEST_LIST_REQUEST,
@@ -34,7 +34,6 @@ import {
   Wrapper,
 } from "../../../components/commonComponents";
 import Theme from "../../../components/Theme";
-import { useState } from "react";
 import { MATERIAL_DETAIL_REQUEST } from "../../../reducers/material";
 
 const AdminButton = styled(Button)`
@@ -317,7 +316,6 @@ const OrderRequestList = () => {
           al={`flex-start`}
           margin={`20px 0 10px`}
         >
-          <Wrapper dr={`row`} ju={`flex-start`}></Wrapper>
           <Wrapper width={`50%`} dr={`row`} ju={`flex-start`}>
             <Wrapper dr={`row`} ju={`flex-start`}>
               <AdminButton
