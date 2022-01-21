@@ -8,9 +8,6 @@ const router = express.Router();
 router.get("/list", async (req, res, next) => {
   const { isComplete, type } = req.query;
 
-  console.log(isComplete);
-  console.log(type);
-
   try {
     const condition =
       type === "1"
@@ -21,9 +18,9 @@ router.get("/list", async (req, res, next) => {
 
     const completedCondition =
       isComplete === "1"
-        ? `AND  pr.isCompleted = TRUE`
+        ? `AND  pr.isCompleted = false`
         : isComplete === "2"
-        ? `AND  pr.isCompleted = FALSE`
+        ? `AND  pr.isCompleted = true`
         : "";
 
     const selectQuery = `
@@ -36,9 +33,17 @@ router.get("/list", async (req, res, next) => {
 		        pr.isCompleted,
 		        pr.completedAt,
             pr.deliveryNo,
-            pr.deliveryCompany
-		        DATE_FORMAT(pr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt
+            pr.deliveryCompany,
+		        DATE_FORMAT(pr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
+            u.username,
+		        u.email,
+		        u.mobile,
+		        u.nickname,
+		        companyName,
+		        companyNo
       FROM  paymentRequest pr
+      JOIN  users u
+        ON  u.id = pr.UserId
      ${condition}
      ${completedCondition};
     `;
