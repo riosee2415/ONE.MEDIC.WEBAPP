@@ -75,7 +75,7 @@ const OrderRequestList = () => {
   const dispatch = useDispatch();
 
   const [searchTab, setSearchTab] = useState(1);
-  const [isComplete, setIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(1);
 
   const [paymentData, setPaymentData] = useState(null);
 
@@ -94,7 +94,7 @@ const OrderRequestList = () => {
       type: PAYMENTREQUEST_LIST_REQUEST,
       data: {
         type: searchTab,
-        isComplete: isComplete ? 1 : 0,
+        isComplete: isComplete,
       },
     });
   }, [searchTab, isComplete]);
@@ -177,8 +177,11 @@ const OrderRequestList = () => {
   const tabChangeHandler = useCallback(
     (tab) => {
       setSearchTab(tab);
+      if (tab === 3) {
+        setIsComplete(tab);
+      }
     },
-    [searchTab]
+    [searchTab, isComplete]
   );
 
   const completeChangeHandler = useCallback(
@@ -191,14 +194,11 @@ const OrderRequestList = () => {
   const onFill = useCallback(
     (data) => {
       payFormRef.current.setFieldsValue({
-        totalPayment: data.totalPayment,
-        chup: data.chup,
-        pack: data.pack,
+        payment: data.payment,
         packVolumn: data.packVolumn,
-        totalVolumn: data.totalVolumn,
-        orderAt: data.orderAt,
-        materialName: data.materialName,
-        materialPrice: data.materialPrice,
+        typeVolumn: data.typeVolumn,
+        unitVolumn: data.unitVolumn,
+        otherVolumn: data.otherVolumn,
       });
     },
     [payFormRef]
@@ -207,10 +207,12 @@ const OrderRequestList = () => {
   const onUserFill = useCallback(
     (data) => {
       userFormRef.current.setFieldsValue({
-        questUserName: data.questUserName,
-        questUserNickName: data.questUserNickName,
-        questUserEmail: data.questUserEmail,
-        questUserMobile: data.questUserMobile,
+        userName: data.username,
+        userNickName: data.nickname,
+        userEmail: data.email,
+        userMobile: data.mobile,
+        userCompanyName: data.companyName,
+        userCompanyNo: data.companyNo,
       });
     },
     [payFormRef]
@@ -234,7 +236,7 @@ const OrderRequestList = () => {
     },
     {
       title: "회원",
-      dataIndex: "questUserName",
+      dataIndex: "username",
     },
     {
       title: "회원 상세보기",
@@ -249,20 +251,16 @@ const OrderRequestList = () => {
       ),
     },
     {
-      title: "첩",
-      dataIndex: "chup",
+      title: "종류",
+      dataIndex: "typeVolumn",
     },
     {
-      title: "팩",
-      dataIndex: "pack",
+      title: "포장",
+      dataIndex: "packVolumn",
     },
     {
-      title: "팩 용량",
-      render: (data) => numberWithCommas(data.packVolumn),
-    },
-    {
-      title: "전체 용량",
-      dataIndex: `totalVolumn`,
+      title: "단위",
+      dataIndex: "unitVolumn",
     },
     {
       title: "상세보기",
@@ -339,15 +337,15 @@ const OrderRequestList = () => {
             <Wrapper dr={`row`} ju={`flex-start`} margin={`5px 0 0`}>
               <AdminButton
                 size="small"
-                type={!isComplete && `primary`}
-                onClick={() => completeChangeHandler(false)}
+                type={isComplete === 1 && `primary`}
+                onClick={() => completeChangeHandler(1)}
               >
                 미처리
               </AdminButton>
               <AdminButton
                 size="small"
-                type={isComplete && `primary`}
-                onClick={() => completeChangeHandler(true)}
+                type={isComplete === 2 && `primary`}
+                onClick={() => completeChangeHandler(2)}
               >
                 처리
               </AdminButton>
@@ -406,6 +404,7 @@ const OrderRequestList = () => {
         title="회원 상세보기"
         visible={userDetailModal}
         footer={null}
+        width={`600px`}
         onCancel={() => detailMdoalToggle(null)}
       >
         <Form
@@ -414,16 +413,22 @@ const OrderRequestList = () => {
           labelCol={{ span: 3 }}
           wrapperCol={{ span: 21 }}
         >
-          <Form.Item label="회원이름" name="questUserName">
+          <Form.Item label="회원이름" name="userName">
             <Input readOnly />
           </Form.Item>
-          <Form.Item label="닉네임" name="questUserNickName">
+          <Form.Item label="닉네임" name="userNickName">
             <Input readOnly />
           </Form.Item>
-          <Form.Item label="이메일" name="questUserEmail">
+          <Form.Item label="이메일" name="userEmail">
             <Input readOnly />
           </Form.Item>
-          <Form.Item label="전화번호" name="questUserMobile">
+          <Form.Item label="전화번호" name="userMobile">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item label="회사이름" name="userCompanyName">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item label="회사번호" name="userCompanyNo">
             <Input readOnly />
           </Form.Item>
         </Form>
@@ -444,22 +449,19 @@ const OrderRequestList = () => {
           labelCol={{ span: 3 }}
           wrapperCol={{ span: 21 }}
         >
-          <Form.Item name="totalPayment" label="총 가격">
+          <Form.Item name="payment" label="가격">
             <Input readOnly />
           </Form.Item>
-          <Form.Item name="chup" label="첩 수">
+          <Form.Item name="typeVolumn" label="종류">
             <Input readOnly />
           </Form.Item>
-          <Form.Item name="pack" label="팩 수">
+          <Form.Item name="packVolumn" label="포장">
             <Input readOnly />
           </Form.Item>
-          <Form.Item name="packVolumn" label="팩 용량">
+          <Form.Item name="unitVolumn" label="단위">
             <Input readOnly />
           </Form.Item>
-          <Form.Item name="totalVolumn" label="총 용량">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item name="orderAt" label="주문일">
+          <Form.Item name="otherVolumn" label="요구사항">
             <Input readOnly />
           </Form.Item>
           <Wrapper dr={`row`} ju={`flex-start`}>
@@ -532,6 +534,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
       type: PAYMENTREQUEST_LIST_REQUEST,
       data: {
         type: 1,
+        isComplete: 1,
       },
     });
 

@@ -14,7 +14,7 @@ import {
 // ******************************************************************************************************************
 function paymentRequestListAPI(data) {
   return axios.get(
-    `/api/payment/list/${data.type}?isComplete=${data.isComplete}`
+    `/api/payment/list?type=${data.type}&isComplete=${data.isComplete}`
   );
 }
 
