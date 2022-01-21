@@ -151,8 +151,6 @@ router.patch("/isRefuse/:pprId", isAdminCheck, async (req, res, next) => {
   const { pprId } = req.params;
   const { refuseContent } = req.body;
 
-  console.log(pprId);
-
   if (isNanCheck(pprId)) {
     return res
       .status(403)
