@@ -1,35 +1,36 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
-module.exports = class Materials extends Model {
+module.exports = class UserAddress extends Model {
   static init(sequelize) {
     return super.init(
       {
-        name: {
-          type: DataTypes.STRING(100),
+        postCode: {
+          type: DataTypes.STRING(10),
           allowNull: false, // 필수
         },
-        price: {
-          type: DataTypes.INTEGER,
+        address: {
+          type: DataTypes.STRING(500),
           allowNull: false, // 필수
+        },
+        detailAddress: {
+          type: DataTypes.STRING(500),
+          allowNull: false, // 필수
+        },
+        isNormal: {
+          type: DataTypes.BOOLEAN, // 기본 배송지 설정
+          allowNull: false,
+          defaultValue: false,
         },
         isDelete: {
           type: DataTypes.BOOLEAN,
           allowNull: false,
           defaultValue: false,
         },
-        stock: {
-          type: DataTypes.INTEGER,
-          allowNull: false, // 필수
-        },
-        unit: {
-          type: DataTypes.STRING(20),
-          allowNull: false, // 필수
-        },
       },
       {
-        modelName: "Materials",
-        tableName: "materials",
+        modelName: "UserAddress",
+        tableName: "userAddress",
         charset: "utf8mb4",
         collate: "utf8mb4_general_ci", // 한글 저장
         sequelize,

@@ -1,53 +1,46 @@
 const express = require("express");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const models = require("../models");
-const {
-  PaymentRequest,
-  User,
-  PaymentRequestMaterial,
-  Materials,
-  MaterialsHistory,
-} = require("../models");
+const { PaymentRequest, User } = require("../models");
 
 const router = express.Router();
 
-router.get("/list/:type", async (req, res, next) => {
-  const { type } = req.params;
-  const { isComplete } = req.query;
+router.get("/list", async (req, res, next) => {
+  const { isComplete, type } = req.query;
+
+  console.log(isComplete);
+  console.log(type);
 
   try {
-    console.log(Boolean(parseInt(isComplete)));
-
     const condition =
       type === "1"
-        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK );`
+        ? `WHERE  pr.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
         : type === "2"
-        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH );`
+        ? `WHERE  pr.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
+        : "";
+
+    const completedCondition =
+      isComplete === "1"
+        ? `AND  pr.isCompleted = TRUE`
+        : isComplete === "2"
+        ? `AND  pr.isCompleted = FALSE`
         : "";
 
     const selectQuery = `
-    SELECT	 A.id,
-            FORMAT(A.totalPayment, 0)							                AS totalPayment,
-            A.chup,
-            A.pack,
-            FORMAT(A.packVolumn, 0)								                AS packVolumn,
-            FORMAT(A.totalVolumn, 0) 							                AS totalVolumn,
-            DATE_FORMAT(A.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
-		        U.username                                             AS questUserName,
-		        U.nickname                                             AS questUserNickName,
-		        U.email                                                AS questUserEmail,
-		        U.mobile                                               AS questUserMobile,
-            B.MaterialId
-      FROM  paymentRequest					                                A
-      JOIN  paymentRequestMaterial 		                            B
-        ON  A.id = B.id
-      JOIN  materials	                                            M
-        ON  B.MaterialId = M.id
-      JOIN  users                                                  U 
-        ON  A.UserId = U.id
-     WHERE  NOT A.totalPayment IS NULL
-       AND  isComplete = ${Boolean(parseInt(isComplete)) ? "TRUE" : "FALSE"}
+    SELECT  pr.id,
+		        pr.payment,
+		        pr.packVolumn,
+		        pr.typeVolumn,
+		        pr.unitVolumn,
+		        pr.otherRequest,
+		        pr.isCompleted,
+		        pr.completedAt,
+            pr.deliveryNo,
+            pr.deliveryCompany
+		        DATE_FORMAT(pr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt
+      FROM  paymentRequest pr
      ${condition}
+     ${completedCondition};
     `;
 
     const result = await models.sequelize.query(selectQuery);
@@ -59,9 +52,17 @@ router.get("/list/:type", async (req, res, next) => {
   }
 });
 
-// 결재 요청 생성 (total payment X)
 router.post("/create", async (req, res, next) => {
-  const { userId, chup, pack, packVolumn, totalVolumn } = req.body;
+  const {
+    payment,
+    packVolumn,
+    typeVolumn,
+    unitVolumn,
+    otherRequest,
+    userId,
+    deliveryNo,
+    deliveryCompany,
+  } = req.body;
 
   try {
     if (userId) {
@@ -72,99 +73,29 @@ router.post("/create", async (req, res, next) => {
       });
 
       if (!exUser) {
-        return res.status(400).send("존재하지 않는 회원입니다.");
+        return res.status(400).send("회원이 없습니다.");
       }
     }
 
     const result = await PaymentRequest.create({
-      UserId: parseInt(userId),
-      chup,
-      pack,
-      packVolumn,
-      totalVolumn,
-    });
-
-    return res.status(200).json({ result: true });
-  } catch (e) {
-    console.error(e);
-    return res.status(400).send("잘못된 요청 입니다.");
-  }
-});
-
-// 걸재 요청 생성 후 결제 요청 재료 생성
-// 프론트에서 promiss 로 배열돌려 생성
-router.post("/prm/create", async (req, res, next) => {
-  const { paymentRequestId, materialId, qnt, unit, payment } = req.body;
-
-  try {
-    if (paymentRequestId) {
-      const exPayment = await PaymentRequest.findOne({
-        where: {
-          id: parseInt(paymentRequestId),
-        },
-      });
-
-      if (!exPayment) {
-        return res.status(400).send("존재하지 않는 결재요청입니다.");
-      }
-    }
-
-    if (materialId) {
-      const exMaterial = await Materials.findOne({
-        where: {
-          id: parseInt(materialId),
-        },
-      });
-
-      if (!exMaterial) {
-        return res.status(400).send("존재하지 않는 재료입니다.");
-      } else {
-        const materialHistoryReault = await MaterialsHistory.create({
-          materialName: exMaterial.name,
-          useQnt: qnt,
-          useUnit: unit,
-        });
-      }
-    }
-
-    const materialResult = await PaymentRequestMaterial.create({
-      PaymentRequestId: parseInt(paymentRequestId),
-      MaterialId: parseInt(materialId),
-      qnt,
-      unit,
       payment,
+      packVolumn,
+      typeVolumn,
+      unitVolumn,
+      otherRequest,
+      deliveryNo,
+      deliveryCompany,
+      UserId: parseInt(userId),
     });
 
     return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
-    return res.status(400).send("잘못된 요청 입니다.");
+    return res.status(400).send("잘못된 요청입니다.");
   }
 });
 
-router.patch("/totalPayment/update", async (req, res, next) => {
-  const { totalPayment, paymentRequestId } = req.body;
-
-  try {
-    const paymentResult = await PaymentRequest.update(
-      {
-        totalPayment,
-      },
-      {
-        where: {
-          id: parseInt(paymentRequestId),
-        },
-      }
-    );
-
-    return res.status(200).json({ result: true });
-  } catch (e) {
-    console.error(e);
-    return res.status(400).send("잘못된 요청 입니다.");
-  }
-});
-
-router.patch("/complete/:paymentId", async (req, res, next) => {
+router.patch("/isCompleted/:paymentId", async (req, res, next) => {
   const { paymentId } = req.params;
 
   try {
@@ -176,13 +107,13 @@ router.patch("/complete/:paymentId", async (req, res, next) => {
       });
 
       if (!exPayment) {
-        return res.status(400).send("주문 요청이 없습니다.");
+        return res.status(400).send("주문이 없습니다.");
       }
     }
 
     const result = await PaymentRequest.update(
       {
-        isComplete: true,
+        isCompleted: true,
         completedAt: new Date(),
       },
       {
@@ -195,7 +126,7 @@ router.patch("/complete/:paymentId", async (req, res, next) => {
     return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
-    return res.status(400).send("잘못된 요청 입니다.");
+    return res.status(400).send("잘못된 요청입니다.");
   }
 });
 

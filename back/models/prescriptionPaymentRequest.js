@@ -1,42 +1,24 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
-module.exports = class PaymentRequest extends Model {
+module.exports = class PrescriptionPaymentRequest extends Model {
   static init(sequelize) {
     return super.init(
       {
-        payment: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-
-        packVolumn: {
-          // 포장
-          type: DataTypes.STRING(100),
+        isRefuse: {
+          type: DataTypes.BOOLEAN,
           allowNull: false, // 필수
+          defaultValue: false,
         },
 
-        typeVolumn: {
-          // 종류
-          type: DataTypes.STRING(100),
-          allowNull: false, // 필수
-        },
-
-        unitVolumn: {
-          // 단위
-          type: DataTypes.STRING(100),
-          allowNull: false, // 필수
-        },
-
-        otherRequest: {
-          // 추가 요청사항
-          type: DataTypes.STRING(2000),
+        refuseContent: {
+          type: DataTypes.STRING(1000),
           allowNull: true,
         },
 
         isCompleted: {
           type: DataTypes.BOOLEAN,
-          allowNull: false,
+          allowNull: false, // 필수
           defaultValue: false,
         },
 
@@ -56,8 +38,8 @@ module.exports = class PaymentRequest extends Model {
         },
       },
       {
-        modelName: "PaymentRequest",
-        tableName: "paymentRequest",
+        modelName: "PrescriptionPaymentRequest",
+        tableName: "prescriptionPaymentRequest",
         charset: "utf8mb4",
         collate: "utf8mb4_general_ci", // 한글 저장
         sequelize,

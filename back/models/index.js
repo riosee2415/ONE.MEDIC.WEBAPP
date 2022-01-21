@@ -17,7 +17,9 @@ const discount = require("./discount");
 const materials = require("./materials");
 const materialsHistory = require("./materialsHistory");
 const paymentRequest = require("./paymentRequest");
-const paymentRequestMaterial = require("./paymentRequestMaterial");
+const prescriptionPaymentRequest = require("./prescriptionPaymentRequest");
+const useMaterial = require("./useMaterial");
+const useraddress = require("./useraddress");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -48,7 +50,9 @@ db.Discount = discount;
 db.Materials = materials;
 db.MaterialsHistory = materialsHistory;
 db.PaymentRequest = paymentRequest;
-db.PaymentRequestMaterial = paymentRequestMaterial;
+db.PrescriptionPaymentRequest = prescriptionPaymentRequest;
+db.UseMaterial = useMaterial;
+db.UserAddress = useraddress;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);

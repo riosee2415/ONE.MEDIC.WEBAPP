@@ -170,6 +170,7 @@ router.delete("/delete/:materialsId", isAdminCheck, async (req, res, next) => {
   }
 });
 
+// 시간에 따른 검색 물어보기
 router.get("/history/list/:type", async (req, res, next) => {
   const { type } = req.params;
 

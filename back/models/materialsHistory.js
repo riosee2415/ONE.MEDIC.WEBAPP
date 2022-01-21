@@ -10,7 +10,7 @@ module.exports = class MaterialsHistory extends Model {
           allowNull: false, // 필수
         },
         useUnit: {
-          type: DataTypes.STRING(20),
+          type: DataTypes.STRING(10),
           allowNull: false, // 필수
         },
         materialName: {
