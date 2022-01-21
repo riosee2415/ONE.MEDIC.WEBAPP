@@ -1,4 +1,5 @@
 const express = require("express");
+const isAdminCheck = require("../middlewares/isAdminCheck");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const models = require("../models");
 const { PaymentRequest, User } = require("../models");
@@ -30,11 +31,11 @@ router.get("/list", async (req, res, next) => {
 		        pr.typeVolumn,
 		        pr.unitVolumn,
 		        pr.otherRequest,
-		        pr.isCompleted,
 		        pr.completedAt,
             pr.deliveryNo,
             pr.deliveryCompany,
-		        DATE_FORMAT(pr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
+		        DATE_FORMAT(pr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
+		        DATE_FORMAT(pr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
             u.username,
 		        u.email,
 		        u.mobile,
@@ -57,7 +58,7 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", isLoggedIn, async (req, res, next) => {
   const {
     payment,
     packVolumn,
@@ -100,8 +101,52 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
-router.patch("/isCompleted/:paymentId", async (req, res, next) => {
+router.patch(
+  "/isCompleted/:paymentId",
+  isAdminCheck,
+  async (req, res, next) => {
+    const { paymentId } = req.params;
+
+    try {
+      if (paymentId) {
+        const exPayment = await PaymentRequest.findOne({
+          where: {
+            id: parseInt(paymentId),
+          },
+        });
+
+        if (!exPayment) {
+          return res.status(400).send("주문이 없습니다.");
+        } else {
+          if (!exPayment.deliveryNo) {
+            return res.status(400).send("배송정보를 등록해주세요.");
+          }
+        }
+      }
+
+      const result = await PaymentRequest.update(
+        {
+          isCompleted: true,
+          completedAt: new Date(),
+        },
+        {
+          where: {
+            id: parseInt(paymentId),
+          },
+        }
+      );
+
+      return res.status(200).json({ result: true });
+    } catch (e) {
+      console.error(e);
+      return res.status(400).send("잘못된 요청입니다.");
+    }
+  }
+);
+
+router.patch("/delivery/:paymentId", isAdminCheck, async (req, res, next) => {
   const { paymentId } = req.params;
+  const { deliveryNo, deliveryCompany } = req.body;
 
   try {
     if (paymentId) {
@@ -115,11 +160,10 @@ router.patch("/isCompleted/:paymentId", async (req, res, next) => {
         return res.status(400).send("주문이 없습니다.");
       }
     }
-
     const result = await PaymentRequest.update(
       {
-        isCompleted: true,
-        completedAt: new Date(),
+        deliveryNo,
+        deliveryCompany,
       },
       {
         where: {

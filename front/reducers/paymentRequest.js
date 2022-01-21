@@ -4,10 +4,9 @@ export const initialState = {
   paymentRequest: null,
 
   unitModal: false,
-
   userDetailModal: false,
-
   detailModal: false,
+  deliveryModal: false,
 
   st_paymentRequestListLoading: false,
   st_paymentRequestListDone: false,
@@ -16,6 +15,14 @@ export const initialState = {
   st_paymentRequestCompleteLoading: false,
   st_paymentRequestCompleteDone: false,
   st_paymentRequestCompleteError: null,
+  //
+  st_paymentRequestDeliveryLoading: false,
+  st_paymentRequestDeliveryDone: false,
+  st_paymentRequestDeliveryError: null,
+  //
+  st_paymentRequestDeliveryLoading: false,
+  st_paymentRequestDeliveryDone: false,
+  st_paymentRequestDeliveryError: null,
 };
 
 export const PAYMENTREQUEST_LIST_REQUEST = "PAYMENTREQUEST_LIST_REQUEST";
@@ -29,9 +36,20 @@ export const PAYMENTREQUEST_COMPLETE_SUCCESS =
 export const PAYMENTREQUEST_COMPLETE_FAILURE =
   "PAYMENTREQUEST_COMPLETE_FAILURE";
 
+export const PAYMENTREQUEST_DELIVERY_REQUEST =
+  "PAYMENTREQUEST_DELIVERY_REQUEST";
+export const PAYMENTREQUEST_DELIVERY_SUCCESS =
+  "PAYMENTREQUEST_DELIVERY_SUCCESS";
+export const PAYMENTREQUEST_DELIVERY_FAILURE =
+  "PAYMENTREQUEST_DELIVERY_FAILURE";
+
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
+
 export const USER_DETAIL_MODAL_TOGGLE = "USER_DETAIL_MODAL_TOGGLE";
+
 export const DETAIL_MODAL_TOGGLE = "DETAIL_MODAL_TOGGLE";
+
+export const DELIVERY_MODAL_TOGGLE = "DELIVERY_MODAL_TOGGLE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -69,6 +87,22 @@ const reducer = (state = initialState, action) =>
         break;
 
       ////////////////////
+      case PAYMENTREQUEST_DELIVERY_REQUEST:
+        draft.st_paymentRequestDeliveryLoading = true;
+        draft.st_paymentRequestDeliveryDone = false;
+        draft.st_paymentRequestDeliveryError = null;
+        break;
+      case PAYMENTREQUEST_DELIVERY_SUCCESS:
+        draft.st_paymentRequestDeliveryLoading = false;
+        draft.st_paymentRequestDeliveryDone = true;
+        break;
+      case PAYMENTREQUEST_DELIVERY_FAILURE:
+        draft.st_paymentRequestDeliveryLoading = false;
+        draft.st_paymentRequestDeliveryDone = false;
+        draft.st_paymentRequestDeliveryError = action.error;
+        break;
+
+      ////////////////////
 
       case UNIT_MODAL_TOGGLE:
         draft.unitModal = !draft.unitModal;
@@ -80,6 +114,10 @@ const reducer = (state = initialState, action) =>
 
       case USER_DETAIL_MODAL_TOGGLE:
         draft.userDetailModal = !draft.userDetailModal;
+        break;
+
+      case DELIVERY_MODAL_TOGGLE:
+        draft.deliveryModal = !draft.deliveryModal;
         break;
 
       ////////////////////

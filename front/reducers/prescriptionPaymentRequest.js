@@ -8,6 +8,7 @@ export const initialState = {
   userDetailModal: false,
   detialMdoal: false,
   deliveryModal: false,
+  refuseDetailModal: false,
 
   st_pprListLoading: false,
   st_pprListDone: false,
@@ -43,10 +44,16 @@ export const PPR_DELIVERY_SUCCESS = "PPR_DELIVERY_SUCCESS";
 export const PPR_DELIVERY_FAILURE = "PPR_DELIVERY_FAILURE";
 
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
+
 export const DETAIL_MODAL_TOGLE = "DETAIL_MODAL_TOGLE";
+
 export const USER_DETAIL_MODAL_TOGGLE = "USER_DETAIL_MODAL_TOGGLE";
+
 export const ISREFUSE_MODAL_TOGGLE = "ISREFUSE_MODAL_TOGGLE";
+
 export const DELIVERY_MODAL_TOGGLE = "DELIVERY_MODAL_TOGGLE";
+
+export const REFUSE_DETAIL_MODAL_TOGGLE = "REFUSE_DETAIL_MODAL_TOGGLE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -142,6 +149,10 @@ const reducer = (state = initialState, action) =>
 
       case DELIVERY_MODAL_TOGGLE:
         draft.deliveryModal = !draft.deliveryModal;
+        break;
+
+      case REFUSE_DETAIL_MODAL_TOGGLE:
+        draft.refuseDetailModal = !draft.refuseDetailModal;
         break;
 
       ////////////////////

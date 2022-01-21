@@ -38,6 +38,7 @@ import {
   USER_DETAIL_MODAL_TOGGLE,
   PPR_DELIVERY_REQUEST,
   DELIVERY_MODAL_TOGGLE,
+  REFUSE_DETAIL_MODAL_TOGGLE,
 } from "../../../reducers/prescriptionPaymentRequest";
 import { MATERIAL_DETAIL_REQUEST } from "../../../reducers/material";
 
@@ -55,6 +56,7 @@ const UserDeliAddress = ({}) => {
     detailModal,
     refuseModal,
     deliveryModal,
+    refuseDetailModal,
     //
     st_pprRefuseDone,
     st_pprRefuseError,
@@ -194,34 +196,29 @@ const UserDeliAddress = ({}) => {
     });
   }, [unitModal]);
 
-  const userDetailModalToggle = useCallback(
-    (data) => {
-      if (data) {
-        setDetailData(data);
-      } else {
-        setDetailData(null);
-      }
-
-      dispatch({
-        type: USER_DETAIL_MODAL_TOGGLE,
-      });
-    },
-    [detailData]
-  );
-
   const detailModalToggle = useCallback(
-    (data) => {
+    (data, type) => {
       if (data) {
         setDetailData(data);
       } else {
         setDetailData(null);
       }
 
-      dispatch({
-        type: DETAIL_MODAL_TOGLE,
-      });
+      if (type === 1) {
+        dispatch({
+          type: DETAIL_MODAL_TOGLE,
+        });
+      } else if (type === 2) {
+        dispatch({
+          type: USER_DETAIL_MODAL_TOGGLE,
+        });
+      } else {
+        dispatch({
+          type: REFUSE_DETAIL_MODAL_TOGGLE,
+        });
+      }
     },
-    [detailModal]
+    [detailModal, refuseDetailModal, userDetailModal]
   );
 
   const refuseModalTogggle = useCallback(
@@ -351,7 +348,7 @@ const UserDeliAddress = ({}) => {
         <Button
           type="primary"
           size="small"
-          onClick={() => userDetailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 2)}
         >
           주문자상세
         </Button>
@@ -363,7 +360,7 @@ const UserDeliAddress = ({}) => {
         <Button
           size="small"
           type="primary"
-          onClick={() => detailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 1)}
         >
           주문상세
         </Button>
@@ -435,7 +432,7 @@ const UserDeliAddress = ({}) => {
         <Button
           type="primary"
           size="small"
-          onClick={() => userDetailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 2)}
         >
           주문자상세
         </Button>
@@ -447,7 +444,7 @@ const UserDeliAddress = ({}) => {
         <Button
           size="small"
           type="primary"
-          onClick={() => detailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 1)}
         >
           주문상세
         </Button>
@@ -456,7 +453,11 @@ const UserDeliAddress = ({}) => {
     {
       title: "거절사유",
       render: (data) => (
-        <Button size="small" type="primary">
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => detailModalToggle(data, 3)}
+        >
           거절사유
         </Button>
       ),
@@ -489,7 +490,7 @@ const UserDeliAddress = ({}) => {
         <Button
           type="primary"
           size="small"
-          onClick={() => userDetailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 2)}
         >
           주문자상세
         </Button>
@@ -501,7 +502,7 @@ const UserDeliAddress = ({}) => {
         <Button
           size="small"
           type="primary"
-          onClick={() => detailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 1)}
         >
           주문상세
         </Button>
@@ -534,7 +535,7 @@ const UserDeliAddress = ({}) => {
         <Button
           type="primary"
           size="small"
-          onClick={() => userDetailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 2)}
         >
           주문자상세
         </Button>
@@ -546,7 +547,7 @@ const UserDeliAddress = ({}) => {
         <Button
           size="small"
           type="primary"
-          onClick={() => detailModalToggle(data)}
+          onClick={() => detailModalToggle(data, 1)}
         >
           주문상세
         </Button>
@@ -670,7 +671,7 @@ const UserDeliAddress = ({}) => {
         footer={null}
         width={`650px`}
         visible={userDetailModal}
-        onCancel={() => userDetailModalToggle(null)}
+        onCancel={() => detailModalToggle(null, 2)}
       >
         <Wrapper border={`1px solid ${Theme.black_C}`}>
           <Wrapper dr={`row`}>
@@ -794,7 +795,7 @@ const UserDeliAddress = ({}) => {
         visible={detailModal}
         footer={null}
         width={`800px`}
-        onCancel={() => detailModalToggle(null)}
+        onCancel={() => detailModalToggle(null, 1)}
       >
         <Wrapper border={`1px solid ${Theme.black_C}`}>
           <Wrapper dr={`row`}>
@@ -823,34 +824,6 @@ const UserDeliAddress = ({}) => {
             </Text>
             <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
               {detailData && detailData.orderAt}
-            </Text>
-          </Wrapper>
-          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
-            <Text
-              width={`20%`}
-              textAlign={"center"}
-              padding={`10px 0 `}
-              color={Theme.white_C}
-              bgColor={Theme.black_C}
-            >
-              회사이름
-            </Text>
-            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
-              {detailData && detailData.companyName}
-            </Text>
-          </Wrapper>
-          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
-            <Text
-              width={`20%`}
-              textAlign={"center"}
-              padding={`10px 0 `}
-              color={Theme.white_C}
-              bgColor={Theme.black_C}
-            >
-              사업자 번호
-            </Text>
-            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
-              {detailData && detailData.companyNo}
             </Text>
           </Wrapper>
           <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
@@ -1000,6 +973,31 @@ const UserDeliAddress = ({}) => {
             </AdminButton>
           </Wrapper>
         </Form>
+      </Modal>
+
+      <Modal
+        title="거절사유"
+        visible={refuseDetailModal}
+        onCancel={() => detailModalToggle(null, 3)}
+        footer={null}
+        width={`600px`}
+      >
+        <Wrapper border={`1px solid ${Theme.black_C}`}>
+          <Wrapper dr={`row`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              거절사유
+            </Text>
+            <Text padding={`10px `} width={`80%`}>
+              {detailData && detailData.refuseContent}
+            </Text>
+          </Wrapper>
+        </Wrapper>
       </Modal>
 
       {/* DELIVERY MODAL */}

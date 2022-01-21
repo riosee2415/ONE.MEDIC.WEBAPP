@@ -1,4 +1,5 @@
 const express = require("express");
+const isAdminCheck = require("../middlewares/isAdminCheck");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const isNanCheck = require("../middlewares/isNanCheck");
 const models = require("../models");
@@ -59,7 +60,7 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", isLoggedIn, async (req, res, next) => {
   const { userId, useMaterialData } = req.body;
 
   if (isNanCheck(userId)) {
@@ -107,14 +108,8 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
-router.patch("/isCompleted/:pprId", async (req, res, next) => {
+router.patch("/isCompleted/:pprId", isAdminCheck, async (req, res, next) => {
   const { pprId } = req.params;
-
-  if (isNanCheck(pprId)) {
-    return res
-      .status(403)
-      .send("올바르지 않은 요청 입니다. 다시 시도해주세요.");
-  }
 
   try {
     if (pprId) {
@@ -152,7 +147,7 @@ router.patch("/isCompleted/:pprId", async (req, res, next) => {
   }
 });
 
-router.patch("/isRefuse/:pprId", async (req, res, next) => {
+router.patch("/isRefuse/:pprId", isAdminCheck, async (req, res, next) => {
   const { pprId } = req.params;
   const { refuseContent } = req.body;
 
@@ -196,7 +191,7 @@ router.patch("/isRefuse/:pprId", async (req, res, next) => {
   }
 });
 
-router.patch("/delivery/:pprId", async (req, res, next) => {
+router.patch("/delivery/:pprId", isAdminCheck, async (req, res, next) => {
   const { pprId } = req.params;
   const { deliveryNo, deliveryCompany } = req.body;
 

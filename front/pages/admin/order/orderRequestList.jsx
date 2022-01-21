@@ -25,6 +25,8 @@ import {
   UNIT_MODAL_TOGGLE,
   USER_DETAIL_MODAL_TOGGLE,
   PAYMENTREQUEST_COMPLETE_REQUEST,
+  DELIVERY_MODAL_TOGGLE,
+  PAYMENTREQUEST_DELIVERY_REQUEST,
 } from "../../../reducers/paymentRequest";
 import {
   AdminContent,
@@ -48,9 +50,13 @@ const OrderRequestList = () => {
     detailModal,
     unitModal,
     userDetailModal,
+    deliveryModal,
     //
     st_paymentRequestCompleteDone,
     st_paymentRequestCompleteError,
+    //
+    st_paymentRequestDeliveryDone,
+    st_paymentRequestDeliveryError,
   } = useSelector((state) => state.paymentRequest);
 
   const router = useRouter();
@@ -76,14 +82,10 @@ const OrderRequestList = () => {
   const [isComplete, setIsComplete] = useState(1);
 
   const [paymentData, setPaymentData] = useState(null);
+  const [deliveryData, setDeliveryData] = useState(null);
 
-  const [userDetailData, setUserDetailData] = useState(null);
-
-  const [payForm] = Form.useForm();
-  const payFormRef = useRef();
-
-  const [userForm] = Form.useForm();
-  const userFormRef = useRef();
+  const [deliveryForm] = Form.useForm();
+  const deliveryFormRef = useRef();
 
   ////// USEEFFECT //////
 
@@ -98,23 +100,10 @@ const OrderRequestList = () => {
   }, [searchTab, isComplete]);
 
   useEffect(() => {
-    if (paymentData) {
-      console.log(paymentData);
-      dispatch({
-        type: MATERIAL_DETAIL_REQUEST,
-        data: {
-          paymentRequestId: paymentData.id,
-        },
-      });
-      onFill(paymentData);
+    if (deliveryData) {
+      deliveryOnFill(deliveryData);
     }
-  }, [paymentData]);
-
-  useEffect(() => {
-    if (userDetailData) {
-      onUserFill(userDetailData);
-    }
-  }, [userDetailData]);
+  }, [deliveryData]);
 
   useEffect(() => {
     if (st_paymentRequestCompleteDone) {
@@ -135,6 +124,31 @@ const OrderRequestList = () => {
     }
   }, [st_paymentRequestCompleteError]);
 
+  useEffect(() => {
+    if (st_paymentRequestDeliveryDone) {
+      dispatch({
+        type: PAYMENTREQUEST_LIST_REQUEST,
+        data: {
+          type: searchTab,
+          isComplete: isComplete,
+        },
+      });
+
+      dispatch({
+        type: DELIVERY_MODAL_TOGGLE,
+      });
+
+      deliveryForm.resetFields();
+
+      return message.success("배송정보가 등록되었습니다.");
+    }
+  }, [st_paymentRequestDeliveryDone]);
+  useEffect(() => {
+    if (st_paymentRequestDeliveryError) {
+      return message.error(st_paymentRequestDeliveryError);
+    }
+  }, [st_paymentRequestDeliveryError]);
+
   ////// TOGGLE //////
 
   const unitModalToggle = useCallback(() => {
@@ -143,35 +157,53 @@ const OrderRequestList = () => {
     });
   }, [unitModal]);
 
-  const detailMdoalToggle = useCallback(
-    (data) => {
-      if (data) {
-        setUserDetailData(data);
-      } else {
-        setUserDetailData(null);
-      }
-      dispatch({
-        type: USER_DETAIL_MODAL_TOGGLE,
-      });
-    },
-    [userDetailModal]
-  );
-
-  const paymentDetailToggle = useCallback(
-    (data) => {
+  const detailModalToggle = useCallback(
+    (data, type) => {
       if (data) {
         setPaymentData(data);
       } else {
         setPaymentData(null);
       }
+      if (type === 1) {
+        dispatch({
+          type: DETAIL_MODAL_TOGGLE,
+        });
+      } else {
+        dispatch({
+          type: USER_DETAIL_MODAL_TOGGLE,
+        });
+      }
+    },
+    [detailModal, paymentData, userDetailModal]
+  );
+
+  const deliveryModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setDeliveryData(data);
+      } else {
+        setDeliveryData(null);
+        deliveryForm.resetFields();
+      }
+
       dispatch({
-        type: DETAIL_MODAL_TOGGLE,
+        type: DELIVERY_MODAL_TOGGLE,
       });
     },
-    [detailModal, paymentData]
+    [deliveryModal, deliveryData]
   );
 
   ////// HANDLER //////
+
+  const deliveryOnFill = useCallback(
+    (data) => {
+      deliveryFormRef.current.setFieldsValue({
+        deliveryNo: data.deliveryNo,
+        deliveryCompany: data.deliveryCompany,
+      });
+    },
+    [deliveryFormRef]
+  );
 
   const tabChangeHandler = useCallback(
     (tab) => {
@@ -190,33 +222,6 @@ const OrderRequestList = () => {
     [isComplete]
   );
 
-  const onFill = useCallback(
-    (data) => {
-      payFormRef.current.setFieldsValue({
-        payment: data.payment,
-        packVolumn: data.packVolumn,
-        typeVolumn: data.typeVolumn,
-        unitVolumn: data.unitVolumn,
-        otherVolumn: data.otherVolumn,
-      });
-    },
-    [payFormRef]
-  );
-
-  const onUserFill = useCallback(
-    (data) => {
-      userFormRef.current.setFieldsValue({
-        userName: data.username,
-        userNickName: data.nickname,
-        userEmail: data.email,
-        userMobile: data.mobile,
-        userCompanyName: data.companyName,
-        userCompanyNo: data.companyNo,
-      });
-    },
-    [payFormRef]
-  );
-
   const onComplete = useCallback((data) => {
     dispatch({
       type: PAYMENTREQUEST_COMPLETE_REQUEST,
@@ -225,6 +230,20 @@ const OrderRequestList = () => {
       },
     });
   }, []);
+
+  const onDeliverySubmit = useCallback(
+    (data) => {
+      dispatch({
+        type: PAYMENTREQUEST_DELIVERY_REQUEST,
+        data: {
+          paymentId: deliveryData.id,
+          deliveryNo: data.deliveryNo,
+          deliveryCompany: data.deliveryCompany,
+        },
+      });
+    },
+    [deliveryData]
+  );
 
   ////// DATAVIEW //////
 
@@ -247,7 +266,7 @@ const OrderRequestList = () => {
         <Button
           type="primary"
           size="small"
-          onClick={() => detailMdoalToggle(data)}
+          onClick={() => detailModalToggle(data, 2)}
         >
           주문자 상세정보
         </Button>
@@ -271,7 +290,7 @@ const OrderRequestList = () => {
         <Button
           type="primary"
           size="small"
-          onClick={() => paymentDetailToggle(data)}
+          onClick={() => detailModalToggle(data, 1)}
         >
           주문상세
         </Button>
@@ -295,11 +314,70 @@ const OrderRequestList = () => {
     {
       title: "배송회사등록",
       render: (data) => (
-        <Button type="primary" size="small">
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => deliveryModalToggle(data)}
+        >
           배송회사등록
         </Button>
       ),
     },
+    {
+      title: "주문서 다운로드",
+      render: (data) => <Button size="small">주문서 다운로드</Button>,
+    },
+  ];
+  const completeColumns = [
+    {
+      title: "번호",
+      dataIndex: "id",
+    },
+    {
+      title: "처리일",
+      dataIndex: "completedAt",
+    },
+    {
+      title: "주문자",
+      dataIndex: "username",
+    },
+    {
+      title: "주문자 상세정보",
+      render: (data) => (
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => detailModalToggle(data, 2)}
+        >
+          주문자 상세정보
+        </Button>
+      ),
+    },
+    {
+      title: "종류",
+      dataIndex: "typeVolumn",
+    },
+    {
+      title: "포장",
+      dataIndex: "packVolumn",
+    },
+    {
+      title: "단위",
+      dataIndex: "unitVolumn",
+    },
+    {
+      title: "주문상세",
+      render: (data) => (
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => detailModalToggle(data, 1)}
+        >
+          주문상세
+        </Button>
+      ),
+    },
+
     {
       title: "주문서 다운로드",
       render: (data) => <Button size="small">주문서 다운로드</Button>,
@@ -376,7 +454,9 @@ const OrderRequestList = () => {
           </Wrapper>
         </Wrapper>
         <Table
-          columns={columns}
+          columns={
+            isComplete === 2 || isComplete === 3 ? completeColumns : columns
+          }
           size="small"
           dataSource={paymentRequest ? paymentRequest : []}
         />
@@ -415,33 +495,94 @@ const OrderRequestList = () => {
         visible={userDetailModal}
         footer={null}
         width={`650px`}
-        onCancel={() => detailMdoalToggle(null)}
+        onCancel={() => detailModalToggle(null, 2)}
       >
-        <Form
-          form={userForm}
-          ref={userFormRef}
-          labelCol={{ span: 3 }}
-          wrapperCol={{ span: 21 }}
-        >
-          <Form.Item label="주문자이름" name="userName">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item label="닉네임" name="userNickName">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item label="이메일" name="userEmail">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item label="전화번호" name="userMobile">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item label="회사이름" name="userCompanyName">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item label="사업자번호" name="userCompanyNo">
-            <Input readOnly />
-          </Form.Item>
-        </Form>
+        <Wrapper border={`1px solid ${Theme.black_C}`}>
+          <Wrapper dr={`row`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              주문자
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.username}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              닉네임
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.nickname}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              이메일
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.email}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              전화번호
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.mobile}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              회사이름
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.companyName}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              사업자번호
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.companyNo}
+            </Text>
+          </Wrapper>
+        </Wrapper>
       </Modal>
 
       {/* PAYMENT DETAIL MODAL */}
@@ -449,31 +590,182 @@ const OrderRequestList = () => {
       <Modal
         title="주문상세"
         visible={detailModal}
-        onCancel={() => paymentDetailToggle(null)}
+        onCancel={() => detailModalToggle(null, 1)}
         footer={null}
         width={`650px`}
       >
+        <Wrapper border={`1px solid ${Theme.black_C}`}>
+          <Wrapper dr={`row`}>
+            <Text
+              padding={`10px 0 `}
+              width={`20%`}
+              textAlign={"center"}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              주문자
+            </Text>
+            <Text padding={`10px 0 `} width={`80%`} textAlign={"center"}>
+              {paymentData && paymentData.username}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              주문일
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.orderAt}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              가격
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.payment}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              종류
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.typeVolumn}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              포장
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.packVolumn}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              단위
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.unitVolumn}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              추가요구사항
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.otherVolumn
+                ? paymentData.otherVolumn
+                : "추가요구사항이 없습니다."}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              배송회사
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.deliveryCompany
+                ? paymentData.deliveryCompany
+                : "배송회사가 등록되어있지 않습니다."}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              운송장번호
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.deliveryNo
+                ? paymentData.deliveryNo
+                : "운송장번호가 등록되어있지 않습니다."}
+            </Text>
+          </Wrapper>
+        </Wrapper>
+      </Modal>
+
+      <Modal
+        title="배송회사등록"
+        visible={deliveryModal}
+        onCancel={() => deliveryModalToggle(null)}
+        footer={null}
+        width={`600px`}
+      >
         <Form
-          form={payForm}
-          ref={payFormRef}
-          labelCol={{ span: 3 }}
-          wrapperCol={{ span: 21 }}
+          form={deliveryForm}
+          ref={deliveryFormRef}
+          onFinish={onDeliverySubmit}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
         >
-          <Form.Item name="payment" label="가격">
-            <Input readOnly />
+          <Form.Item
+            label="운송장번호"
+            name="deliveryNo"
+            rules={[{ required: true, message: "운송장번호를 입력해주세요." }]}
+          >
+            <Input />
           </Form.Item>
-          <Form.Item name="typeVolumn" label="종류">
-            <Input readOnly />
+          <Form.Item
+            label="배송회사"
+            name="deliveryCompany"
+            rules={[{ required: true, message: "배송회사를 입력해주세요." }]}
+          >
+            <Input />
           </Form.Item>
-          <Form.Item name="packVolumn" label="포장">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item name="unitVolumn" label="단위">
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item name="otherVolumn" label="요구사항">
-            <Input readOnly />
-          </Form.Item>
+          <Wrapper dr={`row`} ju={`flex-end`}>
+            <AdminButton size="small" onClick={() => deliveryModalToggle(null)}>
+              취소
+            </AdminButton>
+            <AdminButton size="small" type="primary" htmlType="submit">
+              등록
+            </AdminButton>
+          </Wrapper>
         </Form>
       </Modal>
     </AdminLayout>
