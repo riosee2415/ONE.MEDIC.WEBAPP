@@ -6,7 +6,7 @@ const { PrescriptionPaymentRequest, UseMaterial, User } = require("../models");
 const router = express.Router();
 
 router.get("/list", async (req, res, next) => {
-  const { isComplete, isRefuse, type } = req.query;
+  const { isCondition, type } = req.query;
   try {
     const condition =
       type === "1"
@@ -16,31 +16,32 @@ router.get("/list", async (req, res, next) => {
         : "";
 
     const completedCondition =
-      isComplete === "1"
-        ? `AND  ppr.isCompleted = false`
-        : isComplete === "2"
-        ? `AND  ppr.isCompleted = true`
-        : "";
-
-    const refuseCondition =
-      isRefuse === "1"
-        ? `AND  ppr.isRefuse = false`
-        : isRefuse === "2"
-        ? "AND  ppr.isRefuse = true"
+      isCondition === "1"
+        ? `AND  ppr.isCompleted = false 
+           AND  ppr.isRefuse = false`
+        : isCondition === "2"
+        ? `AND  ppr.isCompleted = true
+           AND  ppr.isRefuse = false`
+        : isCondition === "3"
+        ? `AND  ppr.isRefuse = true
+           AND  ppr.isCompleted = false`
         : "";
 
     const selectQuery = `
-        SELECT  ppr.isCompleted,
+        SELECT  ppr.id,
+                ppr.isCompleted,
 		        ppr.completedAt,
 		        ppr.isRefuse,
 		        ppr.refuseContent,
 		        ppr.deliveryCompany,
 		        ppr.deliveryNo,
-		        DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt
+		        DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS orderAt,
+                u.username
           FROM  prescriptionPaymentRequest ppr
+          JOIN  users u
+            ON  u.id = ppr.UserId
          ${condition}
-         ${completedCondition}
-         ${refuseCondition};
+           ${completedCondition};
         `;
 
     const result = await models.sequelize.query(selectQuery);

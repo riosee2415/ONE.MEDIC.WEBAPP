@@ -235,18 +235,18 @@ const OrderRequestList = () => {
       dataIndex: "id",
     },
     {
-      title: "회원",
+      title: "주문자",
       dataIndex: "username",
     },
     {
-      title: "회원상세",
+      title: "주문자 상세정보",
       render: (data) => (
         <Button
           type="primary"
           size="small"
           onClick={() => detailMdoalToggle(data)}
         >
-          회원상세
+          주문자 상세정보
         </Button>
       ),
     },

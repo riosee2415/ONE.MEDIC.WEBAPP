@@ -10,7 +10,7 @@ import {
 // ******************************************************************************************************************
 function pprListAPI(data) {
   return axios.get(
-    `/api/prescriptionPayment/list?type=${data.type}&isComplete=${data.isComplete}&isRefuse=${data.isRefuse}`
+    `/api/prescriptionPayment/list?type=${data.type}&isCondition=${data.isCondition}`
   );
 }
 function* pprList(action) {
