@@ -13,7 +13,7 @@ const Fourleaf = ({ Component }) => {
     <ThemeProvider theme={Theme}>
       <GlobalStyles />
       <Head>
-        <title>[[**4LEAF GEAR SAMPLE**]]</title>
+        <title>ModerlLab | administrator</title>
 
         <meta name="author" content="4LEAF SOFTWARE <4leaf.ysh@gmail.com>" />
         {/* <!-- OG tag  --> */}
@@ -21,6 +21,7 @@ const Fourleaf = ({ Component }) => {
         <meta property="og:url" content="https://www.sample.com/" />
         <meta property="og:image:width" content="800" />
         <meta property="og:image:height" content="400" />
+        <meta property="og:image" content="./og_img.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="canonical" href="https://www.sample.com" />
 
