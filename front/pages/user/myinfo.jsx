@@ -241,7 +241,7 @@ const Question = () => {
               </Wrapper>
               <Text>기본주소를 추가해주세요.</Text>
             </Wrapper>
-            <Wrapper
+            {/* <Wrapper
               radius={`20px`}
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
@@ -255,7 +255,7 @@ const Question = () => {
                 <MyinfoBtn>설정</MyinfoBtn>
               </Wrapper>
               <Text>쿠폰을 등록해주세요.</Text>
-            </Wrapper>
+            </Wrapper> */}
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
