@@ -59,16 +59,8 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const {
-    payment,
-    packVolumn,
-    typeVolumn,
-    unitVolumn,
-    otherRequest,
-    userId,
-    deliveryNo,
-    deliveryCompany,
-  } = req.body;
+  const { payment, packVolumn, typeVolumn, unitVolumn, otherRequest, userId } =
+    req.body;
 
   try {
     if (userId) {
@@ -89,8 +81,6 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
       typeVolumn,
       unitVolumn,
       otherRequest,
-      deliveryNo,
-      deliveryCompany,
       UserId: parseInt(userId),
     });
 

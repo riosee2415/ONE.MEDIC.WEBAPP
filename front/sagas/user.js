@@ -45,6 +45,10 @@ import {
   COMPANY_OPERATOR_SUCCESS,
   COMPANY_OPERATOR_FAILURE,
   /////////////////////////////
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -344,6 +348,33 @@ function* companyOperator(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function logoutAPI() {
+  return axios.get(`/api/user/logout`);
+}
+
+function* logout(action) {
+  try {
+    const result = yield call(logoutAPI, action.data);
+
+    yield put({
+      type: LOGOUT_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOGOUT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -390,6 +421,10 @@ function* watchCompanyOperator() {
   yield takeLatest(COMPANY_OPERATOR_REQUEST, companyOperator);
 }
 
+function* watchUserLogout() {
+  yield takeLatest(LOGOUT_REQUEST, logout);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -404,6 +439,7 @@ export default function* userSaga() {
     fork(watchCompanyRefusal),
     fork(watchCompanyApproval),
     fork(watchCompanyOperator),
+    fork(watchUserLogout),
     //
   ]);
 }

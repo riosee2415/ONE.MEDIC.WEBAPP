@@ -1,11 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../reducers/user";
-import useInput from "../hooks/useInput";
+import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
 import ClientLayout from "../components/ClientLayout";
 import axios from "axios";
 import wrapper from "../store/configureStore";
@@ -23,10 +18,9 @@ import Theme from "../components/Theme";
 import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../reducers/seo";
 import Head from "next/head";
-import Popup from "../components/popup/popup";
-import { useRef } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { DatePicker, Space } from "antd";
+import { useRouter } from "next/router";
 
 const TagBtn = styled(Wrapper)`
   width: 75px;
@@ -46,11 +40,20 @@ const Home = ({}) => {
     (state) => state.seo
   );
 
+  const router = useRouter();
+
+  const { me } = useSelector((state) => state.user);
+
   ////// HOOKS //////
   ////// REDUX //////
   ////// USEEFFECT //////
   ////// TOGGLE //////
   ////// HANDLER //////
+
+  const moveLinkHandler = useCallback((link) => {
+    router.push(link);
+  }, []);
+
   ////// DATAVIEW //////
 
   const getEditContent = (contentValue) => {
@@ -143,173 +146,181 @@ const Home = ({}) => {
                 }}
               />
             </Wrapper>
-
-            <Wrapper
-              dr={`row`}
-              ju={`space-between`}
-              margin={`20px 0`}
-              padding={width < 800 ? `10px` : `10px 38px`}
-              position={`sticky`}
-              top={`0`}
-              left={`0`}
-              bgColor={Theme.white_C}
-              zIndex={`10`}
-            >
-              <Text color={Theme.grey_C} fontWeight={`bold`}>
-                주문목록
-              </Text>
-              <Text color={Theme.subTheme2_C}>처방하기</Text>
-            </Wrapper>
-
-            <Wrapper
-              padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
-              minHeight={`calc(100vh - 149px - 170px)`}
-              ju={`flex-start`}
-            >
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Text fontSize={`14px`} color={Theme.grey_C}>
-                  2022/01/04
-                </Text>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper width={`auto`} al={`flex-start`}>
-                    <Text fontSize={`18px`} fontWeight={`bold`}>
-                      생강귤피탕
-                    </Text>
-                    <Text color={Theme.grey_C}>고객명</Text>
-                    <Text>환자명</Text>
-                  </Wrapper>
-                  <TagBtn>결제완료</TagBtn>
-                </Wrapper>
+            {me && (
+              <>
                 <Wrapper
                   dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
+                  ju={`space-between`}
+                  margin={`20px 0`}
+                  padding={width < 800 ? `10px` : `10px 38px`}
+                  position={`sticky`}
+                  top={`0`}
+                  left={`0`}
+                  bgColor={Theme.white_C}
+                  zIndex={`10`}
                 >
-                  <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 3)`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
+                  <Text color={Theme.grey_C} fontWeight={`bold`}>
+                    주문목록
+                  </Text>
+                  <Text
+                    color={Theme.subTheme2_C}
+                    onClick={() => moveLinkHandler("/prescription")}
                   >
-                    주문내역
-                  </Wrapper>
-                  <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                    처방하기
+                  </Text>
                 </Wrapper>
-              </Wrapper>
 
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Text fontSize={`14px`} color={Theme.grey_C}>
-                  2022/01/04
-                </Text>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper width={`auto`} al={`flex-start`}>
-                    <Text fontSize={`18px`} fontWeight={`bold`}>
-                      생강귤피탕
+                <Wrapper
+                  padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
+                  minHeight={`calc(100vh - 149px - 170px)`}
+                  ju={`flex-start`}
+                >
+                  <Wrapper
+                    radius={`20px`}
+                    shadow={Theme.shadow_C}
+                    padding={`15px`}
+                    al={`flex-start`}
+                    margin={`0 0 15px`}
+                  >
+                    <Text fontSize={`14px`} color={Theme.grey_C}>
+                      2022/01/04
                     </Text>
-                    <Text color={Theme.grey_C}>고객명</Text>
-                    <Text>환자명</Text>
+                    <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+                      <Wrapper width={`auto`} al={`flex-start`}>
+                        <Text fontSize={`18px`} fontWeight={`bold`}>
+                          생강귤피탕
+                        </Text>
+                        <Text color={Theme.grey_C}>고객명</Text>
+                        <Text>환자명</Text>
+                      </Wrapper>
+                      <TagBtn>결제완료</TagBtn>
+                    </Wrapper>
+                    <Wrapper
+                      dr={`row`}
+                      color={Theme.grey_C}
+                      borderTop={`1px solid ${Theme.grey2_C}`}
+                      padding={`10px 0 0`}
+                    >
+                      <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 3)`}
+                        borderRight={`1px solid ${Theme.grey2_C}`}
+                        borderLeft={`1px solid ${Theme.grey2_C}`}
+                      >
+                        주문내역
+                      </Wrapper>
+                      <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                    </Wrapper>
                   </Wrapper>
-                  <TagBtn>결제완료</TagBtn>
+
+                  <Wrapper
+                    radius={`20px`}
+                    shadow={Theme.shadow_C}
+                    padding={`15px`}
+                    al={`flex-start`}
+                    margin={`0 0 15px`}
+                  >
+                    <Text fontSize={`14px`} color={Theme.grey_C}>
+                      2022/01/04
+                    </Text>
+                    <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+                      <Wrapper width={`auto`} al={`flex-start`}>
+                        <Text fontSize={`18px`} fontWeight={`bold`}>
+                          생강귤피탕
+                        </Text>
+                        <Text color={Theme.grey_C}>고객명</Text>
+                        <Text>환자명</Text>
+                      </Wrapper>
+                      <TagBtn>결제완료</TagBtn>
+                    </Wrapper>
+                    <Wrapper
+                      dr={`row`}
+                      color={Theme.grey_C}
+                      borderTop={`1px solid ${Theme.grey2_C}`}
+                      padding={`10px 0 0`}
+                    >
+                      <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 3)`}
+                        borderRight={`1px solid ${Theme.grey2_C}`}
+                        borderLeft={`1px solid ${Theme.grey2_C}`}
+                      >
+                        주문내역
+                      </Wrapper>
+                      <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                    </Wrapper>
+                  </Wrapper>
+                  <Wrapper
+                    radius={`20px`}
+                    shadow={Theme.shadow_C}
+                    padding={`15px`}
+                    al={`flex-start`}
+                    margin={`0 0 15px`}
+                  >
+                    <Text fontSize={`14px`} color={Theme.grey_C}>
+                      2022/01/04
+                    </Text>
+                    <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+                      <Wrapper width={`auto`} al={`flex-start`}>
+                        <Text fontSize={`18px`} fontWeight={`bold`}>
+                          생강귤피탕
+                        </Text>
+                        <Text color={Theme.grey_C}>고객명</Text>
+                        <Text>환자명</Text>
+                      </Wrapper>
+                      <TagBtn>결제완료</TagBtn>
+                    </Wrapper>
+                    <Wrapper
+                      dr={`row`}
+                      color={Theme.grey_C}
+                      borderTop={`1px solid ${Theme.grey2_C}`}
+                      padding={`10px 0 0`}
+                    >
+                      <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 3)`}
+                        borderRight={`1px solid ${Theme.grey2_C}`}
+                        borderLeft={`1px solid ${Theme.grey2_C}`}
+                      >
+                        주문내역
+                      </Wrapper>
+                      <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                    </Wrapper>
+                  </Wrapper>
                 </Wrapper>
                 <Wrapper
+                  height={`50px`}
+                  position={`sticky`}
+                  bottom={`0`}
+                  left={`0`}
                   dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
+                  zIndex={`10`}
+                  bgColor={Theme.white_C}
                 >
-                  <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
                   <Wrapper
-                    width={`calc(100% / 3)`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
+                    height={`100%`}
+                    dr={`row`}
+                    width={
+                      width < 800 ? `calc(100% - 130px)` : `calc(100% - 170px)`
+                    }
+                    ju={`flex-start`}
+                    padding={width < 800 ? `0 10px` : `0 38px`}
+                    fontSize={width < 800 ? `15px` : `20px`}
                   >
-                    주문내역
+                    <Text fontWeight={`bold`}>총 주문금액 : </Text>
+                    <Text fontWeight={`bold`}> 432,000</Text>
                   </Wrapper>
-                  <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
-                </Wrapper>
-              </Wrapper>
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Text fontSize={`14px`} color={Theme.grey_C}>
-                  2022/01/04
-                </Text>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper width={`auto`} al={`flex-start`}>
-                    <Text fontSize={`18px`} fontWeight={`bold`}>
-                      생강귤피탕
-                    </Text>
-                    <Text color={Theme.grey_C}>고객명</Text>
-                    <Text>환자명</Text>
-                  </Wrapper>
-                  <TagBtn>결제완료</TagBtn>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
-                >
-                  <Wrapper width={`calc(100% / 3)`}>배송조회</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 3)`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
+                  <CommonButton
+                    width={width < 800 ? `130px` : `170px`}
+                    height={`100%`}
+                    radius={`0`}
+                    cursor={`pointer`}
                   >
-                    주문내역
-                  </Wrapper>
-                  <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                    주문하기
+                  </CommonButton>
                 </Wrapper>
-              </Wrapper>
-            </Wrapper>
-            <Wrapper
-              height={`50px`}
-              position={`sticky`}
-              bottom={`0`}
-              left={`0`}
-              dr={`row`}
-              zIndex={`10`}
-              bgColor={Theme.white_C}
-            >
-              <Wrapper
-                height={`100%`}
-                dr={`row`}
-                width={
-                  width < 800 ? `calc(100% - 130px)` : `calc(100% - 170px)`
-                }
-                ju={`flex-start`}
-                padding={width < 800 ? `0 10px` : `0 38px`}
-                fontSize={width < 800 ? `15px` : `20px`}
-              >
-                <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                <Text fontWeight={`bold`}> 432,000</Text>
-              </Wrapper>
-              <CommonButton
-                width={width < 800 ? `130px` : `170px`}
-                height={`100%`}
-                radius={`0`}
-                cursor={`pointer`}
-              >
-                주문하기
-              </CommonButton>
-            </Wrapper>
+              </>
+            )}
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>

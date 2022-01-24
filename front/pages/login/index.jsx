@@ -1,11 +1,13 @@
-import React from "react";
-import ClientLayout from "../../components/ClientLayout";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
+import React, { useCallback, useEffect } from "react";
 import Head from "next/head";
-import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
+import styled from "styled-components";
 import axios from "axios";
 import { END } from "redux-saga";
 import { useSelector } from "react-redux";
+import { Form, message } from "antd";
+import ClientLayout from "../../components/ClientLayout";
+import { SEO_LIST_REQUEST } from "../../reducers/seo";
+import { LOAD_MY_INFO_REQUEST, LOGIN_REQUEST } from "../../reducers/user";
 import wrapper from "../../store/configureStore";
 import {
   RsWrapper,
@@ -18,6 +20,12 @@ import {
 } from "../../components/commonComponents";
 import Link from "next/link";
 import Theme from "../../components/Theme";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/router";
+
+const CustomForm = styled(Form)`
+  width: 100%;
+`;
 
 const Login = () => {
   ////// GLOBAL STATE //////
@@ -25,9 +33,41 @@ const Login = () => {
     (state) => state.seo
   );
 
+  const { st_loginError, st_loginDone, me } = useSelector(
+    (state) => state.user
+  );
+
+  const router = useRouter();
+
   ////// HOOKS //////
+
+  const dispatch = useDispatch();
+
+  const loginHandler = useCallback((data) => {
+    dispatch({
+      type: LOGIN_REQUEST,
+      data: {
+        email: data.email,
+        password: data.password,
+      },
+    });
+  }, []);
+
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (st_loginError) {
+      return message.error(st_loginError);
+    }
+  }, [st_loginError]);
+
+  useEffect(() => {
+    if (st_loginDone) {
+      router.push("/");
+      return message.success("로그인 되었습니다.");
+    }
+  }, [st_loginDone]);
   ////// TOGGLE //////
   ////// HANDLER //////
   ////// DATAVIEW //////
@@ -86,22 +126,44 @@ const Login = () => {
                 width={`170px`}
                 margin={`0 0 60px`}
               />
-              <TextInput
-                type="text"
-                width={`100%`}
-                height={`50px`}
-                placeholder={`아이디`}
-              />
-              <TextInput
-                type="text"
-                width={`100%`}
-                height={`50px`}
-                placeholder={`비밀번호`}
-                margin={`15px 0`}
-              />
-              <CommonButton width={`100%`} height={`50px`} margin={`15px 0`}>
-                로그인
-              </CommonButton>
+              <CustomForm onFinish={loginHandler}>
+                <Form.Item
+                  rules={[
+                    { required: true, message: "이메일을 입력해주세요." },
+                  ]}
+                  name="email"
+                >
+                  <TextInput
+                    type="text"
+                    width={`100%`}
+                    height={`50px`}
+                    placeholder={`이메일`}
+                  />
+                </Form.Item>
+                <Form.Item
+                  rules={[
+                    { required: true, message: "비밀번호를 입력해주세요." },
+                  ]}
+                  name="password"
+                >
+                  <TextInput
+                    type="password"
+                    width={`100%`}
+                    height={`50px`}
+                    placeholder={`비밀번호`}
+                    margin={`15px 0`}
+                  />
+                </Form.Item>
+                <CommonButton
+                  width={`100%`}
+                  height={`50px`}
+                  margin={`15px 0`}
+                  htmlType="submit"
+                >
+                  로그인
+                </CommonButton>
+              </CustomForm>
+
               <Wrapper dr={`row`} color={Theme.grey_C}>
                 <Link href={`/join`}>
                   <a>

@@ -11,10 +11,12 @@ import {
 import { withResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
 import Theme from "./Theme";
-import { Drawer } from "antd";
+import { Drawer, message } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { LOGOUT_REQUEST } from "../reducers/user";
 
 const Dot = styled(Wrapper)`
   width: 4.5px;
@@ -42,12 +44,19 @@ const DotWrapper = styled(Wrapper)`
 const AppHeader = ({ children, width }) => {
   const router = useRouter();
   ////////////// - USE STATE- ///////////////
+
+  const { me, st_logoutDone, st_logoutError } = useSelector(
+    (state) => state.user
+  );
+
   const [headerScroll, setHeaderScroll] = useState(false);
   const [pageY, setPageY] = useState(0);
   // const documentRef = useRef(document);
 
   const [drawar, setDrawar] = useState(false);
   const [subMenu, setSubMenu] = useState(``);
+
+  const dispatch = useDispatch();
 
   ///////////// - EVENT HANDLER- ////////////
 
@@ -63,11 +72,38 @@ const AppHeader = ({ children, width }) => {
     setPageY(pageYOffset);
   });
 
+  const moveLinkHandler = useCallback(
+    (link) => {
+      router.replace(link);
+    },
+    [router]
+  );
+
+  const logoutHandler = useCallback(() => {
+    dispatch({
+      type: LOGOUT_REQUEST,
+    });
+  }, []);
+
   ////////////// - USE EFFECT- //////////////
   useEffect(() => {
     document.addEventListener("scroll", handleScroll);
     return () => document.removeEventListener("scroll", handleScroll);
   }, [pageY]);
+
+  useEffect(() => {
+    if (st_logoutError) {
+      return message.error(st_logoutError);
+    }
+  }, [st_logoutError]);
+
+  useEffect(() => {
+    if (st_logoutDone) {
+      router.push("/");
+      setDrawar(false);
+      return message.success("로그아웃 되었습니다.");
+    }
+  }, [st_logoutDone]);
   return (
     <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>
       {router.pathname === "/join" ? (
@@ -206,38 +242,64 @@ const AppHeader = ({ children, width }) => {
                   color={Theme.white_C}
                   padding={width < 800 ? `25px 20px 40px` : `25px 38px 40px`}
                 >
-                  <Wrapper dr={`row`} ju={`space-between`}>
-                    <Wrapper
-                      width={`auto`}
-                      dr={`row`}
-                      fontSize={width < 800 ? `16px` : `18px`}
-                    >
-                      <Image
-                        alt="profile"
-                        width={`50px`}
-                        height={`50px`}
-                        radius={`100%`}
-                        src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/thumbnail/detail_thumb.png`}
-                      />
-                      <Text
-                        fontSize={`20px`}
-                        fontWeight={`bold`}
-                        margin={`0 2px 0 10px`}
+                  {me ? (
+                    <Wrapper dr={`row`} ju={`space-between`}>
+                      <Wrapper
+                        width={`auto`}
+                        dr={`row`}
+                        fontSize={width < 800 ? `16px` : `18px`}
                       >
-                        홍길동
-                      </Text>
-                      님
+                        <Image
+                          alt="profile"
+                          width={`50px`}
+                          height={`50px`}
+                          radius={`100%`}
+                          src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/thumbnail/detail_thumb.png`}
+                        />
+                        <Text
+                          fontSize={`20px`}
+                          fontWeight={`bold`}
+                          margin={`0 2px 0 10px`}
+                        >
+                          {me.username}
+                        </Text>
+                        님
+                      </Wrapper>
+                      <Wrapper
+                        width={`auto`}
+                        dr={`row`}
+                        fontSize={`14px`}
+                        color={Theme.grey2_C}
+                      >
+                        <Text margin={`0 10px 0 0`}>계정관리</Text>
+                        <Text onClick={logoutHandler}>로그아웃</Text>
+                      </Wrapper>
                     </Wrapper>
-                    <Wrapper
-                      width={`auto`}
-                      dr={`row`}
-                      fontSize={`14px`}
-                      color={Theme.grey2_C}
-                    >
-                      <Text margin={`0 10px 0 0`}>계정관리</Text>
-                      <Text>로그아웃</Text>
+                  ) : (
+                    <Wrapper dr={`row`} ju={`space-between`}>
+                      <Wrapper
+                        width={`auto`}
+                        dr={`row`}
+                        fontSize={width < 800 ? `16px` : `18px`}
+                      ></Wrapper>
+                      <Wrapper
+                        width={`auto`}
+                        dr={`row`}
+                        fontSize={`14px`}
+                        color={Theme.grey2_C}
+                      >
+                        <Text
+                          margin={`0 10px 0 0`}
+                          onClick={() => moveLinkHandler("/login")}
+                        >
+                          로그인
+                        </Text>
+                        <Text onClick={() => moveLinkHandler("/join")}>
+                          회원가입
+                        </Text>
+                      </Wrapper>
                     </Wrapper>
-                  </Wrapper>
+                  )}
                 </Wrapper>
                 <Wrapper padding={width < 800 ? `0 20px` : `0 38px`}>
                   <Wrapper
@@ -270,41 +332,7 @@ const AppHeader = ({ children, width }) => {
                         </Wrapper>
                       </ATag>
                     </Link>
-                    <Wrapper
-                      dr={`row`}
-                      ju={`flex-start`}
-                      padding={`0 0 20px`}
-                      margin={`0 0 20px`}
-                      borderBottom={`1px solid ${Theme.grey2_C}`}
-                    >
-                      <Image
-                        alt="icon"
-                        width={`26px`}
-                        height={`26px`}
-                        src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/2.prescript.png`}
-                      />
-                      <Text
-                        fontSize={width < 800 ? `16px` : `18px`}
-                        margin={`0 0 0 30px`}
-                      >
-                        처방하기
-                      </Text>
-                    </Wrapper>
-                    <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
-                      <Image
-                        alt="icon"
-                        width={`26px`}
-                        height={`26px`}
-                        src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/3.list.png`}
-                      />
-                      <Text
-                        fontSize={width < 800 ? `16px` : `18px`}
-                        margin={`0 0 0 30px`}
-                      >
-                        주문조회
-                      </Text>
-                    </Wrapper>
-                    <Link href={`/cart`}>
+                    <Link href={`/prescription`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper
                           dr={`row`}
@@ -317,17 +345,63 @@ const AppHeader = ({ children, width }) => {
                             alt="icon"
                             width={`26px`}
                             height={`26px`}
-                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/4.cart.png`}
+                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/2.prescript.png`}
                           />
                           <Text
                             fontSize={width < 800 ? `16px` : `18px`}
                             margin={`0 0 0 30px`}
                           >
-                            장바구니
+                            처방하기
                           </Text>
                         </Wrapper>
                       </ATag>
                     </Link>
+                    {me && (
+                      <>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`flex-start`}
+                          margin={`0 0 20px`}
+                        >
+                          <Image
+                            alt="icon"
+                            width={`26px`}
+                            height={`26px`}
+                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/3.list.png`}
+                          />
+                          <Text
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            margin={`0 0 0 30px`}
+                          >
+                            주문조회
+                          </Text>
+                        </Wrapper>
+                        <Link href={`/cart`}>
+                          <ATag al={`flex-start`} onClick={drawarToggle}>
+                            <Wrapper
+                              dr={`row`}
+                              ju={`flex-start`}
+                              padding={`0 0 20px`}
+                              margin={`0 0 20px`}
+                              borderBottom={`1px solid ${Theme.grey2_C}`}
+                            >
+                              <Image
+                                alt="icon"
+                                width={`26px`}
+                                height={`26px`}
+                                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/4.cart.png`}
+                              />
+                              <Text
+                                fontSize={width < 800 ? `16px` : `18px`}
+                                margin={`0 0 0 30px`}
+                              >
+                                장바구니
+                              </Text>
+                            </Wrapper>
+                          </ATag>
+                        </Link>
+                      </>
+                    )}
                     <Link href={`/notice`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper

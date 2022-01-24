@@ -93,7 +93,7 @@ router.get("/signin", async (req, res, next) => {
     if (req.user) {
       const fullUserWithoutPassword = await User.findOne({
         where: { id: req.user.id },
-        attributes: ["id", "nickname", "email", "level"],
+        attributes: ["id", "nickname", "email", "level", "username"],
       });
 
       console.log("🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀");
@@ -608,5 +608,13 @@ router.get(
     }
   })
 );
+
+router.get("/logout", function (req, res) {
+  req.logout();
+  req.session.save(() => {
+    res.clearCookie("connect.sid");
+    res.redirect("/");
+  });
+});
 
 module.exports = router;

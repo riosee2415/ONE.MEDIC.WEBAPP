@@ -92,7 +92,7 @@ const Join = () => {
               <Wrapper dr={`row`} margin={`0 0 10px`}>
                 <TextInput
                   placeholder={`이메일`}
-                  type={`text`}
+                  type="email"
                   width={
                     width < 800 ? `calc(100% - 105px)` : `calc(100% - 120px)`
                   }
@@ -138,13 +138,13 @@ const Join = () => {
               </Text>
               <TextInput
                 placeholder={`비밀번호를 입력해주세요.`}
-                type={`text`}
+                type="password"
                 width={`100%`}
                 margin={`0 0 10px`}
               />
               <TextInput
                 placeholder={`비밀번호를 재입력해주세요.`}
-                type={`text`}
+                type="password"
                 width={`100%`}
                 margin={`0 0 10px`}
               />

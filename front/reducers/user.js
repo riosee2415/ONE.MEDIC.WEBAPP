@@ -28,6 +28,10 @@ export const initailState = {
   st_loginAdminDone: false,
   st_loginAdminError: null,
   //
+  st_logoutLoading: false,
+  st_logoutDone: false,
+  st_logoutError: null,
+  //
   st_signUpLoading: false,
   st_signUpDone: false,
   st_signUpError: null,
@@ -76,6 +80,10 @@ export const LOGIN_ADMIN_FAILURE = "LOGIN_ADMIN_FAILURE";
 export const SIGNUP_REQUEST = "SIGNUP_REQUEST";
 export const SIGNUP_SUCCESS = "SIGNUP_SUCCESS";
 export const SIGNUP_FAILURE = "SIGNUP_FAILURE";
+
+export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const LOGOUT_FAILURE = "LOGOUT_FAILURE";
 
 export const USERLIST_REQUEST = "USERLIST_REQUEST";
 export const USERLIST_SUCCESS = "USERLIST_SUCCESS";
@@ -347,6 +355,26 @@ const reducer = (state = initailState, action) =>
         draft.st_companyOperatorLoading = false;
         draft.st_companyOperatorDone = false;
         draft.st_companyOperatorError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case LOGOUT_REQUEST: {
+        draft.st_logoutLoading = true;
+        draft.st_logoutDone = null;
+        draft.st_logoutError = false;
+        break;
+      }
+      case LOGOUT_SUCCESS: {
+        draft.st_logoutLoading = false;
+        draft.st_logoutDone = true;
+        draft.st_logoutError = null;
+        break;
+      }
+      case LOGOUT_FAILURE: {
+        draft.st_logoutLoading = false;
+        draft.st_logoutDone = false;
+        draft.st_logoutError = action.error;
         break;
       }
       //////////////////////////////////////////////

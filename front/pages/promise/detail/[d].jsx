@@ -32,11 +32,20 @@ import {
   PRODUCT_UNIT_LIST_REQUEST,
   PRODUCT_DETAIL_REQUEST,
 } from "../../../reducers/prescription";
+import { PAYMENTREQUEST_CREATE_REQUEST } from "../../../reducers/paymentRequest";
 import { useRouter } from "next/router";
+import { message } from "antd";
 
 const Detail = ({}) => {
+  const { me } = useSelector((state) => state.user);
+
+  const moveLinkHandler = useCallback((link) => {
+    router.push(link);
+  }, []);
+
   const width = useWidth();
   ////// GLOBAL STATE //////
+
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
     (state) => state.seo
   );
@@ -48,8 +57,9 @@ const Detail = ({}) => {
   ////// HOOKS //////
 
   const [type, setType] = useState(0);
-  const [packType, setPackType] = useState(0);
+  const [pack, setPack] = useState(0);
   const [unit, setUnit] = useState(null);
+  const otherInput = useInput(null);
 
   const [topSlider, setTopSlider] = useState(null);
 
@@ -57,8 +67,45 @@ const Detail = ({}) => {
 
   const router = useRouter();
 
+  const userProductDatum = [];
+
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (type && pack && unit && userProductDatum) {
+      if (!me) {
+        moveLinkHandler(`/login`);
+        return message.error("로그인후 이용해주세요.");
+      } else {
+        userProductDatum.push({
+          payment: product.price,
+          packVolumn: pack,
+          typeVolumn: type,
+          unit: unit,
+          otherRequest: otherInput.value,
+          userId: me.id,
+        });
+
+        setType(null);
+        setPack(null);
+        setUnit(null);
+        userProductDatum.setValue(null);
+
+        // dispatch({
+        //   type: PAYMENTREQUEST_CREATE_REQUEST,
+        //   data: {
+        //     payment: product.price,
+        //     packVolumn: type,
+        //     typeVolumn: pack,
+        //     unitVolumn: unit,
+        //     otherRequest: orderInput.value,
+        //     userId: me.id,
+        //   },
+        // });
+      }
+    }
+  }, [type, pack, unit, otherInput, me, product]);
 
   useEffect(() => {
     if (router.query) {
@@ -93,17 +140,7 @@ const Detail = ({}) => {
   useEffect(() => {
     if (typeList) {
       if (typeList.length > 0) {
-        setType(typeList[0].id);
-      }
-    }
-    if (packList) {
-      if (packList.length > 0) {
-        setPackType(packList[0].id);
-      }
-    }
-    if (unitList) {
-      if (unitList.length > 0) {
-        setUnit(unitList[0].id);
+        setType(typeList[0].name);
       }
     }
 
@@ -128,9 +165,9 @@ const Detail = ({}) => {
 
   const packChangeHandler = useCallback(
     (pack) => {
-      setPackType(pack);
+      setPack(pack);
     },
-    [packType]
+    [pack]
   );
 
   const unitChangeHandler = useCallback(
@@ -233,8 +270,8 @@ const Detail = ({}) => {
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
-                          kindOf={type !== data.id && `white`}
-                          onClick={() => typeChangeHandler(data.id)}
+                          kindOf={type !== data.name && `white`}
+                          onClick={() => typeChangeHandler(data.name)}
                         >
                           {data.name}
                         </CommonButton>
@@ -267,8 +304,8 @@ const Detail = ({}) => {
                         height={`45px`}
                         radius={`15px`}
                         margin={`2px`}
-                        kindOf={packType !== data.id && `white`}
-                        onClick={() => packChangeHandler(data.id)}
+                        kindOf={pack !== data.name && `white`}
+                        onClick={() => packChangeHandler(data.name)}
                       >
                         {data.name}
                       </CommonButton>
@@ -301,8 +338,8 @@ const Detail = ({}) => {
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
-                          kindOf={unit !== data.id && `white`}
-                          onClick={() => unitChangeHandler(data.id)}
+                          kindOf={unit !== data.name && `white`}
+                          onClick={() => unitChangeHandler(data.name)}
                         >
                           {data.name}
                         </CommonButton>

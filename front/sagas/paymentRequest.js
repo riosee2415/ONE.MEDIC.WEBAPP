@@ -12,6 +12,10 @@ import {
   PAYMENTREQUEST_DELIVERY_REQUEST,
   PAYMENTREQUEST_DELIVERY_SUCCESS,
   PAYMENTREQUEST_DELIVERY_FAILURE,
+  //
+  PAYMENTREQUEST_CREATE_REQUEST,
+  PAYMENTREQUEST_CREATE_SUCCESS,
+  PAYMENTREQUEST_CREATE_FAILURE,
 } from "../reducers/paymentRequest";
 
 // SAGA AREA ********************************************************************************************************
@@ -97,6 +101,33 @@ function* paymentRequestDelivery(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function paymentRequestCreateAPI(data) {
+  return axios.post(`/api/payment/create`, data);
+}
+
+function* paymentRequestCreate(action) {
+  try {
+    const result = yield call(paymentRequestCreateAPI, action.data);
+
+    yield put({
+      type: PAYMENTREQUEST_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PAYMENTREQUEST_CREATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 function* watchPaymentRequestList() {
   yield takeLatest(PAYMENTREQUEST_LIST_REQUEST, paymentRequestList);
 }
@@ -109,12 +140,17 @@ function* watchPaymentRequestDelivery() {
   yield takeLatest(PAYMENTREQUEST_DELIVERY_REQUEST, paymentRequestDelivery);
 }
 
+function* watchPaymentRequestCreate() {
+  yield takeLatest(PAYMENTREQUEST_CREATE_REQUEST, paymentRequestCreate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* paymentRequestSaga() {
   yield all([
     fork(watchPaymentRequestList),
     fork(watchPaymentRequestComplete),
     fork(watchPaymentRequestDelivery),
+    fork(watchPaymentRequestCreate),
     //
   ]);
 }
