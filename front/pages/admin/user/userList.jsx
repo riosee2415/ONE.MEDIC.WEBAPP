@@ -163,12 +163,16 @@ const UserList = ({}) => {
   ////// TOGGLE //////
   const updateModalOpen = useCallback(
     (data) => {
-      dispatch({
-        type: UPDATE_MODAL_OPEN_REQUEST,
-      });
+      if (data.level !== 5) {
+        dispatch({
+          type: UPDATE_MODAL_OPEN_REQUEST,
+        });
 
-      setUpdateData(data);
-      inputLevel.setValue(data.level);
+        setUpdateData(data);
+        inputLevel.setValue(data.level);
+      } else {
+        return message.error("권한이 개발사인 회원은 수정할 수 없습니다.");
+      }
     },
     [updateModal]
   );

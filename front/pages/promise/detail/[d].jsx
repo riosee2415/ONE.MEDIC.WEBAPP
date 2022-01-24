@@ -179,9 +179,6 @@ const Detail = ({}) => {
 
   ////// DATAVIEW //////
 
-  const getEditContent = (contentValue) => {
-    console.log(contentValue);
-  };
   return (
     <>
       <Head>
