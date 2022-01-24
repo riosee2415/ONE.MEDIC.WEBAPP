@@ -24,9 +24,11 @@ import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
-import { Checkbox } from "antd";
+import { Checkbox, Empty, message } from "antd";
 import { useRef } from "react";
 import { SearchOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
+import { ADDRESS_LIST_REQUEST } from "../../reducers/address";
 
 const TagBtn = styled(Wrapper)`
   width: 75px;
@@ -45,9 +47,33 @@ const Address = ({}) => {
     (state) => state.seo
   );
 
+  const { me } = useSelector((state) => state.user);
+  const { addressList } = useSelector((state) => state.address);
+
   ////// HOOKS //////
   ////// REDUX //////
+  const dispatch = useDispatch();
+  const router = useRouter();
   ////// USEEFFECT //////
+  useEffect(() => {
+    dispatch({ type: LOAD_MY_INFO_REQUEST });
+  }, [router.query]);
+
+  useEffect(() => {
+    if (me) {
+      console.log(me);
+      dispatch({
+        type: ADDRESS_LIST_REQUEST,
+        data: {
+          userId: me.id,
+        },
+      });
+    } else {
+      message.error(`로그인 후 이용하실 수 있습니다.`);
+      router.push(`/login`);
+    }
+  }, [router.query, me]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
   ////// DATAVIEW //////
@@ -159,49 +185,6 @@ const Address = ({}) => {
               minHeight={`calc(100vh - 185px - 75px)`}
               ju={`flex-start`}
             >
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper dr={`row`} width={`auto`}>
-                    <CommonCheckBox style={{ alignItems: "center" }}>
-                      <Wrapper
-                        width={`auto`}
-                        al={`flex-start`}
-                        margin={`0 0 0 15px`}
-                      >
-                        <Text fontSize={`18px`} fontWeight={`bold`}>
-                          고객명
-                        </Text>
-                        <Text color={Theme.grey_C}>
-                          서울 성동구 성수이로6길 13
-                        </Text>
-                        <Text>010-0000-0000</Text>
-                      </Wrapper>
-                    </CommonCheckBox>
-                  </Wrapper>
-                  <TagBtn>기본주소</TagBtn>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
-                >
-                  <Wrapper width={`calc(100% / 2)`}>수정</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 2)`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
-                  >
-                    삭제
-                  </Wrapper>
-                </Wrapper>
-              </Wrapper>
-
               <Wrapper
                 radius={`20px`}
                 shadow={Theme.shadow_C}

@@ -46,7 +46,6 @@ const Question = () => {
   );
 
   const { me } = useSelector((state) => state.user);
-  console.log(me);
 
   ////// HOOKS //////
   ////// REDUX //////
@@ -145,19 +144,19 @@ const Question = () => {
               <Wrapper dr={`row`}>
                 <Text width={`25%`}>이메일</Text>
                 <Text width={`75%`} fontWeight={`bold`}>
-                  {me.email}
+                  {me && me.email}
                 </Text>
               </Wrapper>
               <Wrapper dr={`row`} padding={`18px 0`}>
                 <Text width={`25%`}>연락처</Text>
                 <Text width={`75%`} fontWeight={`bold`}>
-                  {/* {data.mobile} */}
+                  {me && me.mobile}
                 </Text>
               </Wrapper>
               <Wrapper dr={`row`}>
                 <Text width={`25%`}>면허번호</Text>
                 <Text width={`75%`} fontWeight={`bold`}>
-                  {/* {data.licenseNo} */}
+                  {me && me.licenseNo}
                 </Text>
               </Wrapper>
             </Wrapper>
@@ -233,7 +232,13 @@ const Question = () => {
                 <Text fontSize={`22px`} padding={`0 0 23px`}>
                   나의 주소록
                 </Text>
-                <MyinfoBtn>설정</MyinfoBtn>
+                <MyinfoBtn
+                  onClick={() => {
+                    moveLinkHandler(`/address`);
+                  }}
+                >
+                  설정
+                </MyinfoBtn>
               </Wrapper>
               <Text>기본주소를 추가해주세요.</Text>
             </Wrapper>
