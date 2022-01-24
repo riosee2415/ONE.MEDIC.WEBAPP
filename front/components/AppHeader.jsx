@@ -104,6 +104,51 @@ const AppHeader = ({ children, width }) => {
       return message.success("로그아웃 되었습니다.");
     }
   }, [st_logoutDone]);
+
+  console.log(router);
+
+  const headerView = [
+    {
+      router: "/",
+      title: "주문목록",
+    },
+    {
+      router: "/address",
+      title: "나의주소록",
+    },
+    {
+      router: "/promise",
+      title: "약속처방",
+    },
+    {
+      router: "/promise/detail/[d]",
+      title: "약속처방",
+    },
+    {
+      router: "/prescription",
+      title: "처방하기",
+    },
+    {
+      router: "/deliveryInfo",
+      title: "배송정보",
+    },
+    {
+      router: "/payInfo",
+      title: "결제정보",
+    },
+    {
+      router: "/notice",
+      title: "공지사항",
+    },
+    {
+      router: "/question",
+      title: "문의하기",
+    },
+    {
+      router: "/payment",
+      title: "결제정보",
+    },
+  ];
   return (
     <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>
       {router.pathname === "/join" ? (
@@ -156,7 +201,9 @@ const AppHeader = ({ children, width }) => {
         <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
           <Wrapper dr={`row`} ju={`space-between`}>
             <Text fontSize={width < 800 ? `20px` : `26px`} fontWeight={`bold`}>
-              처방하기
+              {headerView.map((data) => {
+                return data.router === router.pathname && data.title;
+              })}
             </Text>
             <SearchOutlined style={{ fontSize: 26 }} onClick={drawarToggle} />
           </Wrapper>
@@ -214,7 +261,9 @@ const AppHeader = ({ children, width }) => {
         <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
           <Wrapper dr={`row`} ju={`space-between`}>
             <Text fontSize={width < 800 ? `20px` : `26px`} fontWeight={`bold`}>
-              주문목록
+              {headerView.map((data) => {
+                return data.router === router.pathname && data.title;
+              })}
             </Text>
             <DotWrapper width={`26px`} onClick={drawarToggle}>
               <Dot />
@@ -358,25 +407,29 @@ const AppHeader = ({ children, width }) => {
                     </Link>
                     {me && (
                       <>
-                        <Wrapper
-                          dr={`row`}
-                          ju={`flex-start`}
-                          margin={`0 0 20px`}
-                        >
-                          <Image
-                            alt="icon"
-                            width={`26px`}
-                            height={`26px`}
-                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/3.list.png`}
-                          />
-                          <Text
-                            fontSize={width < 800 ? `16px` : `18px`}
-                            margin={`0 0 0 30px`}
-                          >
-                            주문조회
-                          </Text>
-                        </Wrapper>
-                        <Link href={`/cart`}>
+                        <Link href={`/`}>
+                          <ATag al={`flex-start`} onClick={drawarToggle}>
+                            <Wrapper
+                              dr={`row`}
+                              ju={`flex-start`}
+                              margin={`0 0 20px`}
+                            >
+                              <Image
+                                alt="icon"
+                                width={`26px`}
+                                height={`26px`}
+                                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/3.list.png`}
+                              />
+                              <Text
+                                fontSize={width < 800 ? `16px` : `18px`}
+                                margin={`0 0 0 30px`}
+                              >
+                                주문조회
+                              </Text>
+                            </Wrapper>
+                          </ATag>
+                        </Link>
+                        {/* <Link href={`/cart`}>
                           <ATag al={`flex-start`} onClick={drawarToggle}>
                             <Wrapper
                               dr={`row`}
@@ -399,7 +452,7 @@ const AppHeader = ({ children, width }) => {
                               </Text>
                             </Wrapper>
                           </ATag>
-                        </Link>
+                        </Link> */}
                       </>
                     )}
                     <Link href={`/notice`}>
