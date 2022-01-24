@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import ClientLayout from "../../components/ClientLayout";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
-import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
+import { LOAD_MY_INFO_REQUEST, LOGIN_SUCCESS } from "../../reducers/user";
 import axios from "axios";
 import { END } from "redux-saga";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,22 +45,29 @@ const Question = () => {
     (state) => state.seo
   );
 
+  const { me } = useSelector((state) => state.user);
+  console.log(me);
+
   ////// HOOKS //////
   ////// REDUX //////
+
   ////// USEEFFECT //////
+  useEffect(() => {
+    dispatch({ type: LOAD_MY_INFO_REQUEST });
+  }, [router.query]);
+
+  useEffect(() => {
+    if (!me) {
+      message.error(`로그인 후 이용하실 수 있습니다.`);
+      router.push(`/login`);
+    }
+  }, [router.query, me]);
   ////// TOGGLE //////
   ////// HANDLER //////
   const moveLinkHandler = useCallback((link) => {
     router.push(link);
   }, []);
   ////// DATAVIEW //////
-  const testInfoData = [
-    {
-      email: "example@gmail.com",
-      mobile: "00000000000",
-      licenseNo: "00000",
-    },
-  ];
 
   const tangjeonTestData = [
     {
@@ -134,33 +141,25 @@ const Question = () => {
                   회원정보
                 </Text>
               </Wrapper>
-              {testInfoData && testInfoData.length === 0
-                ? ``
-                : testInfoData &&
-                  testInfoData.map((data) => {
-                    return (
-                      <>
-                        <Wrapper dr={`row`}>
-                          <Text width={`25%`}>이메일</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.email}
-                          </Text>
-                        </Wrapper>
-                        <Wrapper dr={`row`} padding={`18px 0`}>
-                          <Text width={`25%`}>연락처</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.mobile}
-                          </Text>
-                        </Wrapper>
-                        <Wrapper dr={`row`}>
-                          <Text width={`25%`}>면허번호</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.licenseNo}
-                          </Text>
-                        </Wrapper>
-                      </>
-                    );
-                  })}
+
+              <Wrapper dr={`row`}>
+                <Text width={`25%`}>이메일</Text>
+                <Text width={`75%`} fontWeight={`bold`}>
+                  {me.email}
+                </Text>
+              </Wrapper>
+              <Wrapper dr={`row`} padding={`18px 0`}>
+                <Text width={`25%`}>연락처</Text>
+                <Text width={`75%`} fontWeight={`bold`}>
+                  {/* {data.mobile} */}
+                </Text>
+              </Wrapper>
+              <Wrapper dr={`row`}>
+                <Text width={`25%`}>면허번호</Text>
+                <Text width={`75%`} fontWeight={`bold`}>
+                  {/* {data.licenseNo} */}
+                </Text>
+              </Wrapper>
             </Wrapper>
             <Wrapper
               radius={`20px`}
@@ -175,39 +174,36 @@ const Question = () => {
                 </Text>
                 <MyinfoBtn>설정</MyinfoBtn>
               </Wrapper>
-              {tangjeonTestData && tangjeonTestData.length === 0
-                ? ``
-                : tangjeonTestData &&
-                  tangjeonTestData.map((data) => {
-                    return (
-                      <>
-                        <Wrapper dr={`row`}>
-                          <Text width={`25%`}>유압</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.Hydraulics}
-                          </Text>
-                        </Wrapper>
-                        <Wrapper dr={`row`} padding={`18px 0`}>
-                          <Text width={`25%`}>본탕</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.bontang}
-                          </Text>
-                        </Wrapper>
-                        <Wrapper dr={`row`}>
-                          <Text width={`25%`}>파우치</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.pouch}
-                          </Text>
-                        </Wrapper>
-                        <Wrapper dr={`row`} padding={`18px 0 0`}>
-                          <Text width={`25%`}>포장</Text>
-                          <Text width={`75%`} fontWeight={`bold`}>
-                            {data.packaging}
-                          </Text>
-                        </Wrapper>
-                      </>
-                    );
-                  })}
+              {/* {me.map((data) => {
+                return (
+                  <>
+                    <Wrapper dr={`row`}>
+                      <Text width={`25%`}>유압</Text>
+                      <Text width={`75%`} fontWeight={`bold`}>
+                        {data.Hydraulics}
+                      </Text>
+                    </Wrapper>
+                    <Wrapper dr={`row`} padding={`18px 0`}>
+                      <Text width={`25%`}>본탕</Text>
+                      <Text width={`75%`} fontWeight={`bold`}>
+                        {data.bontang}
+                      </Text>
+                    </Wrapper>
+                    <Wrapper dr={`row`}>
+                      <Text width={`25%`}>파우치</Text>
+                      <Text width={`75%`} fontWeight={`bold`}>
+                        {data.pouch}
+                      </Text>
+                    </Wrapper>
+                    <Wrapper dr={`row`} padding={`18px 0 0`}>
+                      <Text width={`25%`}>포장</Text>
+                      <Text width={`75%`} fontWeight={`bold`}>
+                        {data.packaging}
+                      </Text>
+                    </Wrapper>
+                  </>
+                );
+              })} */}
             </Wrapper>
             <Wrapper
               radius={`20px`}
