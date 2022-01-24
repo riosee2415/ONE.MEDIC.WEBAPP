@@ -1,5 +1,6 @@
 const express = require("express");
 const isAdminCheck = require("../middlewares/isAdminCheck");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 const { Discount } = require("../models");
 const models = require("../models");
 
@@ -118,6 +119,21 @@ router.delete("/delete/:discountId", isAdminCheck, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("잘못된 요청 입니다.");
+  }
+});
+
+router.get("/user/:operatorLevel", isLoggedIn, async (req, res, next) => {
+  const { operatorLevel } = req.params;
+
+  try {
+    const result = await Discount.findOne({
+      where: { id: parseInt(operatorLevel) },
+    });
+
+    return res.status(200).json(result);
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
   }
 });
 
