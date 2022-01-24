@@ -1,9 +1,10 @@
 const express = require("express");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 const { UserAddress, User } = require("../models");
 
 const router = express.Router();
 
-router.get("/list:userId", async (req, res, next) => {
+router.get("/list:userId", isLoggedIn, async (req, res, next) => {
   const { userId } = req.params;
 
   try {
@@ -32,7 +33,7 @@ router.get("/list:userId", async (req, res, next) => {
   }
 });
 
-router.post("/create", async (req, res, next) => {
+router.post("/create", isLoggedIn, async (req, res, next) => {
   const { postCode, address, detailAddress, userId } = req.body;
 
   try {
@@ -62,7 +63,7 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
-router.patch("/update", async (req, res, next) => {
+router.patch("/update", isLoggedIn, async (req, res, next) => {
   const { postCode, address, detailAddress, addressId } = req.body;
 
   try {
@@ -98,7 +99,7 @@ router.patch("/update", async (req, res, next) => {
   }
 });
 
-router.delete("/delete/:addressId", async (req, res, next) => {
+router.delete("/delete/:addressId", isLoggedIn, async (req, res, next) => {
   const { addressId } = req.body;
 
   try {
@@ -132,7 +133,7 @@ router.delete("/delete/:addressId", async (req, res, next) => {
   }
 });
 
-router.patch("/isNormal", async (req, res, next) => {
+router.patch("/isNormal", isLoggedIn, async (req, res, next) => {
   const { addressId, isNormal } = req.body;
 
   try {
