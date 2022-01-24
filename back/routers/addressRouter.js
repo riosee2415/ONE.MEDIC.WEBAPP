@@ -132,7 +132,7 @@ router.delete("/delete/:addressId", async (req, res, next) => {
   }
 });
 
-router.update("/isNormal", async (req, res, next) => {
+router.patch("/isNormal", async (req, res, next) => {
   const { addressId, isNormal } = req.body;
 
   try {
