@@ -4,7 +4,7 @@ const { UserAddress, User } = require("../models");
 
 const router = express.Router();
 
-router.get("/list:userId", isLoggedIn, async (req, res, next) => {
+router.get("/list/:userId", isLoggedIn, async (req, res, next) => {
   const { userId } = req.params;
 
   try {
@@ -71,6 +71,7 @@ router.patch("/update", isLoggedIn, async (req, res, next) => {
       const exAddress = UserAddress.findOne({
         where: {
           id: parseInt(addressId),
+          isDelete: false,
         },
       });
 
@@ -107,6 +108,7 @@ router.delete("/delete/:addressId", isLoggedIn, async (req, res, next) => {
       const exAddress = UserAddress.findOne({
         where: {
           id: parseInt(addressId),
+          isDelete: false,
         },
       });
 
@@ -141,6 +143,7 @@ router.patch("/isNormal", isLoggedIn, async (req, res, next) => {
       const exAddress = UserAddress.findOne({
         where: {
           id: parseInt(addressId),
+          isDelete: false,
         },
       });
 
@@ -152,6 +155,7 @@ router.patch("/isNormal", isLoggedIn, async (req, res, next) => {
         const exAddressCheck = UserAddress.findOne({
           where: {
             id: parseInt(addressId),
+            isDelete: false,
             isNormal: true,
           },
         });
