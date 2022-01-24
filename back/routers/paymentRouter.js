@@ -91,6 +91,29 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.patch("/delivery/update", async (req, res, next) => {
+  const { deliveryCompany, deliveryNo, paymentId } = req.body;
+
+  try {
+    const result = await PaymentRequest.update(
+      {
+        deliveryCompany,
+        deliveryNo,
+      },
+      {
+        where: {
+          id: parseInt(paymentId),
+        },
+      }
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
 router.patch(
   "/isCompleted/:paymentId",
   isAdminCheck,
