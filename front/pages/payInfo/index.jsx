@@ -169,7 +169,7 @@ const Index = ({}) => {
               <RightOutlined
                 style={{ color: Theme.grey2_C, margin: "0 20px" }}
               />
-              <Wrapper width={`auto`}>
+              {/* <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
                   src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/2.cart.png`}
@@ -181,7 +181,7 @@ const Index = ({}) => {
               </Wrapper>
               <RightOutlined
                 style={{ color: Theme.grey2_C, margin: "0 20px" }}
-              />
+              /> */}
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
