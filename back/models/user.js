@@ -42,6 +42,7 @@ module.exports = class User extends Model {
           allowNull: true,
           defaultValue: null,
         },
+
         terms: {
           // 이용약관동의
           type: DataTypes.BOOLEAN,
@@ -83,6 +84,10 @@ module.exports = class User extends Model {
         // 거절사유
         resusalReason: {
           type: DataTypes.STRING(500),
+          allowNull: true,
+        },
+        licenseNo: {
+          type: DataTypes.INTEGER,
           allowNull: true,
         },
       },
