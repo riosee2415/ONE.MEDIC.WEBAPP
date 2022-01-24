@@ -4,7 +4,7 @@ const { UserCard, User } = require("../models");
 
 const router = express.Router();
 
-router.get("/list/:userId", isLoggedIn, async (req, res, next) => {
+router.get("/list/:userId", async (req, res, next) => {
   const { userId } = req.params;
 
   try {
@@ -23,6 +23,7 @@ router.get("/list/:userId", isLoggedIn, async (req, res, next) => {
     const result = await UserCard.findAll({
       where: {
         UserId: parseInt(userId),
+        isDelete: false,
       },
     });
 
@@ -64,7 +65,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.patch("/update", isLoggedIn, async (req, res, next) => {
+router.patch("/update", async (req, res, next) => {
   const { cardNo, cardDate, birth, terms, cardId } = req.body;
 
   try {
@@ -102,7 +103,7 @@ router.patch("/update", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.delete("/delete/:cardId", isLoggedIn, async (req, res, next) => {
+router.delete("/delete/:cardId", async (req, res, next) => {
   const { cardId } = req.body;
 
   try {

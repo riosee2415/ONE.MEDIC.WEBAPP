@@ -23,6 +23,7 @@ router.get("/list/:userId", isLoggedIn, async (req, res, next) => {
     const result = await UserAddress.findAll({
       where: {
         UserId: parseInt(userId),
+        isDelete: false,
       },
     });
 

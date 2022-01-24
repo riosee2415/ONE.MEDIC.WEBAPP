@@ -6,7 +6,7 @@ module.exports = class UserCard extends Model {
     return super.init(
       {
         cardNo: {
-          type: DataTypes.STRING(10),
+          type: DataTypes.STRING(50),
           allowNull: false, // 필수
         },
         cardDate: {
