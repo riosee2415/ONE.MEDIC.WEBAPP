@@ -1,8 +1,9 @@
 const express = require("express");
 const isAdminCheck = require("../middlewares/isAdminCheck");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+const isNanCheck = require("../middlewares/isNanCheck");
 const models = require("../models");
-const { PaymentRequest, User } = require("../models");
+const { PaymentRequest, User, Payment } = require("../models");
 
 const router = express.Router();
 
@@ -59,8 +60,17 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { payment, packVolumn, typeVolumn, unitVolumn, otherRequest, userId } =
-    req.body;
+  const { userId, paymentRequestDatum } = req.body;
+
+  if (isNanCheck(userId)) {
+    return res
+      .status(403)
+      .send("올바르지 않은 요청 입니다. 다시 시도해주세요.");
+  }
+
+  if (!Array.isArray(paymentRequestDatum)) {
+    return res.status(400).send("잘못된 요청입니다.");
+  }
 
   try {
     if (userId) {
@@ -75,16 +85,25 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
       }
     }
 
-    const result = await PaymentRequest.create({
-      payment,
-      packVolumn,
-      typeVolumn,
-      unitVolumn,
-      otherRequest,
+    const result = await Payment.create({
       UserId: parseInt(userId),
     });
 
-    return res.status(200).json({ result: true });
+    await Promise.all(
+      paymentRequestDatum.map(
+        async (data) =>
+          await PaymentRequest.create({
+            payment: data.payment,
+            packVolumn: data.packVolumn,
+            typeVolumn: data.typeVolumn,
+            unitVolumn: data.unitVolumn,
+            otherRequest: data.otherRequest,
+            PaymentId: result.id,
+          })
+      )
+    );
+
+    return res.status(200).json({ result: true, paymentId: result.id });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
@@ -186,6 +205,28 @@ router.patch("/delivery/:paymentId", isAdminCheck, async (req, res, next) => {
     );
 
     return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
+router.get("/detail/:paymentId", async (req, res, next) => {
+  const { paymentId } = req.params;
+
+  try {
+    const result = await Payment.findOne({
+      where: {
+        id: parseInt(paymentId),
+      },
+      include: [
+        {
+          model: PaymentRequest,
+        },
+      ],
+    });
+
+    return res.status(200).json(result);
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");

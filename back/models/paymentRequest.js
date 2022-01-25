@@ -33,27 +33,6 @@ module.exports = class PaymentRequest extends Model {
           type: DataTypes.STRING(2000),
           allowNull: true,
         },
-
-        isCompleted: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-        },
-
-        completedAt: {
-          type: DataTypes.DATE,
-          allowNull: true,
-        },
-
-        deliveryCompany: {
-          type: DataTypes.STRING(50),
-          allowNull: true,
-        },
-
-        deliveryNo: {
-          type: DataTypes.STRING(50),
-          allowNull: true,
-        },
       },
       {
         modelName: "PaymentRequest",
