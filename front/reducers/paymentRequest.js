@@ -2,6 +2,9 @@ import produce from "../util/produce";
 
 export const initialState = {
   paymentRequest: null,
+  paymentDetail: null,
+
+  paymentId: null,
 
   unitModal: false,
   userDetailModal: false,
@@ -23,6 +26,10 @@ export const initialState = {
   st_paymentRequestCreateLoading: false,
   st_payemtnRequestCreateDone: false,
   st_paymentRequestCreateError: null,
+  //
+  st_paymentDetailLoading: false,
+  st_payemtnDetailDone: false,
+  st_paymentDetailError: null,
 };
 
 export const PAYMENTREQUEST_LIST_REQUEST = "PAYMENTREQUEST_LIST_REQUEST";
@@ -46,6 +53,10 @@ export const PAYMENTREQUEST_DELIVERY_FAILURE =
 export const PAYMENTREQUEST_CREATE_REQUEST = "PAYMENTREQUEST_CREATE_REQUEST";
 export const PAYMENTREQUEST_CREATE_SUCCESS = "PAYMENTREQUEST_CREATE_SUCCESS";
 export const PAYMENTREQUEST_CREATE_FAILURE = "PAYMENTREQUEST_CREATE_FAILURE";
+
+export const PAYMENT_DETAIL_REQUEST = "PAYMENT_DETAIL_REQUEST";
+export const PAYMENT_DETAIL_SUCCESS = "PAYMENT_DETAIL_SUCCESS";
+export const PAYMENT_DETAIL_FAILURE = "PAYMENT_DETAIL_FAILURE";
 
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 
@@ -115,11 +126,29 @@ const reducer = (state = initialState, action) =>
       case PAYMENTREQUEST_CREATE_SUCCESS:
         draft.st_paymentRequestCreateLoading = false;
         draft.st_payemtnRequestCreateDone = true;
+        draft.paymentId = action.data.paymentId;
         break;
       case PAYMENTREQUEST_CREATE_FAILURE:
         draft.st_paymentRequestCreateLoading = false;
         draft.st_payemtnRequestCreateDone = false;
         draft.st_paymentRequestCreateError = action.error;
+        break;
+
+      ////////////////////
+      case PAYMENT_DETAIL_REQUEST:
+        draft.st_paymentDetailLoading = true;
+        draft.st_payemtnDetailDone = false;
+        draft.st_paymentDetailError = null;
+        break;
+      case PAYMENT_DETAIL_SUCCESS:
+        draft.st_paymentDetailLoading = false;
+        draft.st_payemtnDetailDone = true;
+        draft.paymentDetail = action.data;
+        break;
+      case PAYMENT_DETAIL_FAILURE:
+        draft.st_paymentDetailLoading = false;
+        draft.st_payemtnDetailDone = false;
+        draft.st_paymentDetailError = action.error;
         break;
 
       ////////////////////

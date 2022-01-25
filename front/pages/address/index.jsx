@@ -61,7 +61,6 @@ const Address = ({}) => {
 
   useEffect(() => {
     if (me) {
-      console.log(me);
       dispatch({
         type: ADDRESS_LIST_REQUEST,
         data: {

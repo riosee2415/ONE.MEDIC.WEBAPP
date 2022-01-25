@@ -36,6 +36,30 @@ import { PAYMENTREQUEST_CREATE_REQUEST } from "../../../reducers/paymentRequest"
 import { useRouter } from "next/router";
 import { message } from "antd";
 
+const CheckdButton = styled.button`
+  padding: 5px 10px;
+
+  outline: none;
+  background-color: ${Theme.white_C};
+  color: ${Theme.basicTheme_C};
+  border: 1px solid ${Theme.basicTheme_C};
+  width: ${(props) => props.width};
+  height: 45px;
+  border-radius: 15px;
+  margin: 2px;
+  transition: 0.3s;
+
+  cursor: pointer;
+
+  ${(props) =>
+    props.kindOf &&
+    `background-color: ${Theme.basicTheme_C}; color: ${Theme.white_C};`}
+
+  &:hover {
+    background-color: ${Theme.basicTheme_C};
+    color: ${Theme.white_C};
+  }
+`;
 const Detail = ({}) => {
   const { me } = useSelector((state) => state.user);
 
@@ -54,58 +78,28 @@ const Detail = ({}) => {
     (state) => state.prescription
   );
 
+  const {
+    paymentId,
+    st_payemtnRequestCreateDone,
+    st_paymentRequestCreateError,
+  } = useSelector((state) => state.paymentRequest);
+
   ////// HOOKS //////
 
-  const [type, setType] = useState(0);
-  const [pack, setPack] = useState(0);
-  const [unit, setUnit] = useState(null);
+  const type = useInput(null);
+  const pack = useInput(null);
+  const unit = useInput(null);
   const otherInput = useInput(null);
 
   const [topSlider, setTopSlider] = useState(null);
+  const [temporaryDatum, setTemporaryDatum] = useState([]);
 
   const dispatch = useDispatch();
 
   const router = useRouter();
 
-  const userProductDatum = [];
-
   ////// REDUX //////
   ////// USEEFFECT //////
-
-  useEffect(() => {
-    if (type && pack && unit && userProductDatum) {
-      if (!me) {
-        moveLinkHandler(`/login`);
-        return message.error("로그인후 이용해주세요.");
-      } else {
-        userProductDatum.push({
-          payment: product.price,
-          packVolumn: pack,
-          typeVolumn: type,
-          unit: unit,
-          otherRequest: otherInput.value,
-          userId: me.id,
-        });
-
-        setType(null);
-        setPack(null);
-        setUnit(null);
-        userProductDatum.setValue(null);
-
-        // dispatch({
-        //   type: PAYMENTREQUEST_CREATE_REQUEST,
-        //   data: {
-        //     payment: product.price,
-        //     packVolumn: type,
-        //     typeVolumn: pack,
-        //     unitVolumn: unit,
-        //     otherRequest: orderInput.value,
-        //     userId: me.id,
-        //   },
-        // });
-      }
-    }
-  }, [type, pack, unit, otherInput, me, product]);
 
   useEffect(() => {
     if (router.query) {
@@ -140,7 +134,7 @@ const Detail = ({}) => {
   useEffect(() => {
     if (typeList) {
       if (typeList.length > 0) {
-        setType(typeList[0].name);
+        type.setValue(typeList[0].name);
       }
     }
 
@@ -153,31 +147,86 @@ const Detail = ({}) => {
       ]);
     }
   }, [typeList, packList, unitList, product]);
+
+  useEffect(() => {
+    if (st_paymentRequestCreateError) {
+      return message.error(st_paymentRequestCreateError);
+    }
+  }, [st_paymentRequestCreateError]);
+
+  useEffect(() => {
+    if (st_payemtnRequestCreateDone) {
+      router.push(`/deliveryInfo/${paymentId}?type=payment`);
+    }
+  }, [st_payemtnRequestCreateDone]);
   ////// TOGGLE //////
   ////// HANDLER //////
 
   const typeChangeHandler = useCallback(
-    (type) => {
-      setType(type);
+    (value) => {
+      type.setValue(value);
     },
     [type]
   );
 
   const packChangeHandler = useCallback(
-    (pack) => {
-      setPack(pack);
+    (value) => {
+      pack.setValue(value);
     },
     [pack]
   );
 
   const unitChangeHandler = useCallback(
-    (unit) => {
-      setUnit(unit);
+    (value) => {
+      unit.setValue(value);
     },
     [unit]
   );
 
+  const createPaymentArrHandler = useCallback(() => {
+    if (!type) {
+      return message.error("종류을 선택해주세요.");
+    }
+    if (!pack) {
+      return message.error("포장을 선택해주세요.");
+    }
+    if (!unit) {
+      return message.error("단위을 선택해주세요.");
+    }
+
+    temporaryDatum.push({
+      payment: product.price,
+      packVolumn: type.value,
+      typeVolumn: pack.value,
+      unitVolumn: unit.value,
+      otherRequest: otherInput.value,
+    });
+
+    setTemporaryDatum(temporaryDatum);
+  }, [type, pack, unit, otherInput.value, temporaryDatum, product]);
+
+  const createPaymentRequestHandler = useCallback(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+
+    if (temporaryDatum.length === 0) {
+      return message.error("주문을 추가해주세요.");
+    }
+    dispatch({
+      type: PAYMENTREQUEST_CREATE_REQUEST,
+      data: {
+        userId: me.id,
+        paymentRequestDatum: temporaryDatum,
+      },
+    });
+  }, [temporaryDatum, me]);
+
   ////// DATAVIEW //////
+
+  // 원외탕에서
+  // 종류, 포장, 단위를 선택하고 주문 추가하기를 하면 추가가 되야하는데 데이터 상으로는 추가가 되거든요 근데 누른후에 다른 이벤트? 가 발생이 되야 화면에 보여져서 이걸 어떻게 처리해줘야할지 모르겟어요
 
   return (
     <>
@@ -256,22 +305,23 @@ const Detail = ({}) => {
                       placeholder="직접입력"
                       type={`text`}
                       width={`100%`}
+                      {...type}
                     />
                   ) : (
                     typeList.map((data) => {
                       return (
-                        <CommonButton
+                        <CheckdButton
                           key={data.id}
                           shadow={`0`}
                           width={`calc(100% / 2 - 4px)`}
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
-                          kindOf={type !== data.name && `white`}
+                          kindOf={type.value === data.name}
                           onClick={() => typeChangeHandler(data.name)}
                         >
                           {data.name}
-                        </CommonButton>
+                        </CheckdButton>
                       );
                     })
                   ))}
@@ -290,22 +340,23 @@ const Detail = ({}) => {
                     placeholder="직접입력"
                     type={`text`}
                     width={`100%`}
+                    {...pack}
                   />
                 ) : (
                   packList.map((data) => {
                     return (
-                      <CommonButton
+                      <CheckdButton
                         key={data.id}
                         shadow={`0`}
                         width={`calc(100% / 3 - 4px)`}
                         height={`45px`}
                         radius={`15px`}
                         margin={`2px`}
-                        kindOf={pack !== data.name && `white`}
+                        kindOf={pack.value === data.name}
                         onClick={() => packChangeHandler(data.name)}
                       >
                         {data.name}
-                      </CommonButton>
+                      </CheckdButton>
                     );
                   })
                 )}
@@ -324,22 +375,23 @@ const Detail = ({}) => {
                       placeholder="직접입력"
                       type={`text`}
                       width={`100%`}
+                      {...unit}
                     />
                   ) : (
                     unitList.map((data) => {
                       return (
-                        <CommonButton
+                        <CheckdButton
                           key={data.id}
                           shadow={`0`}
                           width={`calc(100% / 4 - 4px)`}
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
-                          kindOf={unit !== data.name && `white`}
+                          kindOf={unit.value === data.name}
                           onClick={() => unitChangeHandler(data.name)}
                         >
                           {data.name}
-                        </CommonButton>
+                        </CheckdButton>
                       );
                     })
                   ))}
@@ -352,82 +404,75 @@ const Detail = ({}) => {
               >
                 추가요청사항
               </Text>
-              <TextInput type={`text`} width={`100%`} />
+              <TextInput type={`text`} width={`100%`} {...otherInput} />
             </Wrapper>
+            <Wrapper
+              al={`flex-end`}
+              margin={`0 0 20px`}
+              padding={width < 800 ? `0 10px` : `0 35px`}
+            >
+              <CommonButton onClick={createPaymentArrHandler}>
+                주문추가하기
+              </CommonButton>
+            </Wrapper>
+
             <Wrapper
               bgColor={Theme.lightGrey2_C}
               padding={width < 800 ? `15px 10px` : `15px 38px`}
             >
-              <Wrapper
-                shadow={Theme.shadow_C}
-                padding={`25px`}
-                bgColor={Theme.white_C}
-                margin={`0 0 15px`}
-                radius={`20px`}
-              >
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text color={Theme.grey2_C}>원방 | 지퍼백 | 직접선택</Text>
-                  <Image
-                    alt="close"
-                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/header_icon/close-grey.png`}
-                    width={`16px`}
-                  />
-                </Wrapper>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`10px 0 0`}>
-                  <Wrapper width={`auto`} dr={`row`}>
-                    <Text>수량</Text>
-                    <Text width={`100px`} textAlign={`center`}>
-                      1
-                    </Text>
-                  </Wrapper>
-                  <Wrapper width={`auto`} dr={`row`}>
-                    <Text fontSize={`12px`}>총 1구</Text>
-                    <Text
-                      fontSize={`20px`}
-                      fontWeight={`bold`}
-                      margin={`0 0 0 15px`}
-                      color={Theme.basicTheme_C}
+              {temporaryDatum &&
+                temporaryDatum.length > 0 &&
+                temporaryDatum.map((data, idx) => {
+                  console.log(data);
+                  return (
+                    <Wrapper
+                      key={idx}
+                      shadow={Theme.shadow_C}
+                      padding={`25px`}
+                      bgColor={Theme.white_C}
+                      margin={`0 0 15px`}
+                      radius={`20px`}
                     >
-                      19,500
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
-              </Wrapper>
-              <Wrapper
-                shadow={Theme.shadow_C}
-                padding={`25px`}
-                bgColor={Theme.white_C}
-                margin={`0 0 15px`}
-                radius={`20px`}
-              >
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text color={Theme.grey2_C}>원방 | 지퍼백 | 직접선택</Text>
-                  <Image
-                    alt="close"
-                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/header_icon/close-grey.png`}
-                    width={`16px`}
-                  />
-                </Wrapper>
-                <Wrapper dr={`row`} ju={`space-between`} margin={`10px 0 0`}>
-                  <Wrapper width={`auto`} dr={`row`}>
-                    <Text>수량</Text>
-                    <Text width={`100px`} textAlign={`center`}>
-                      1
-                    </Text>
-                  </Wrapper>
-                  <Wrapper width={`auto`} dr={`row`}>
-                    <Text fontSize={`12px`}>총 1구</Text>
-                    <Text
-                      fontSize={`20px`}
-                      fontWeight={`bold`}
-                      margin={`0 0 0 15px`}
-                      color={Theme.basicTheme_C}
-                    >
-                      19,500
-                    </Text>
-                  </Wrapper>
-                </Wrapper>
-              </Wrapper>
+                      <Wrapper dr={`row`} ju={`space-between`}>
+                        <Text color={Theme.grey2_C}>
+                          {data.typeVolumn} | {data.packVolumn} |
+                          {data.unitVolumn}
+                        </Text>
+                        <Image
+                          alt="close"
+                          src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/header_icon/close-grey.png`}
+                          width={`16px`}
+                        />
+                      </Wrapper>
+                      <Wrapper
+                        dr={`row`}
+                        ju={`space-between`}
+                        margin={`10px 0 0`}
+                      >
+                        <Wrapper width={`auto`} dr={`row`}>
+                          <Text>수량</Text>
+                          <Text width={`100px`} textAlign={`center`}>
+                            1
+                          </Text>
+                        </Wrapper>
+                        <Wrapper width={`auto`} dr={`row`}>
+                          <Text fontSize={`12px`}>총 {data.unitVolumn}</Text>
+                          <Text
+                            fontSize={`20px`}
+                            fontWeight={`bold`}
+                            margin={`0 0 0 15px`}
+                            color={Theme.basicTheme_C}
+                          >
+                            {String(data.payment).replace(
+                              /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                              ","
+                            )}
+                          </Text>
+                        </Wrapper>
+                      </Wrapper>
+                    </Wrapper>
+                  );
+                })}
             </Wrapper>
             <Wrapper
               height={`50px`}
@@ -448,8 +493,15 @@ const Detail = ({}) => {
                 padding={width < 800 ? `0 10px` : `0 38px`}
                 fontSize={width < 800 ? `15px` : `20px`}
               >
-                <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                <Text fontWeight={`bold`}> 432,000</Text>
+                <Text fontWeight={`bold`}>총 주문금액&nbsp;:&nbsp;</Text>
+                <Text fontWeight={`bold`}>
+                  {product &&
+                    temporaryDatum &&
+                    String(product.price * temporaryDatum.length).replace(
+                      /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                      ","
+                    )}
+                </Text>
               </Wrapper>
               <CommonButton
                 shadow={`0`}
@@ -457,6 +509,7 @@ const Detail = ({}) => {
                 height={`100%`}
                 radius={`0`}
                 cursor={`pointer`}
+                onClick={createPaymentRequestHandler}
               >
                 주문하기
               </CommonButton>
@@ -493,4 +546,5 @@ export const getServerSideProps = wrapper.getServerSideProps(
     await context.store.sagaTask.toPromise();
   }
 );
+
 export default Detail;

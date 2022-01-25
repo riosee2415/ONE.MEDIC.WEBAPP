@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   KAKAO_LOGIN_REQUEST,
@@ -31,7 +31,13 @@ import {
   RightOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Select } from "antd";
+import { Modal, Select } from "antd";
+import {
+  DELIVERY_MODAL_TOGGLE,
+  PAYMENT_DETAIL_REQUEST,
+} from "../../reducers/paymentRequest";
+import DaumPostcode from "react-daum-postcode";
+import useInput from "../../hooks/useInput";
 
 const CustomSelect = styled(Select)`
   width: 100%;
@@ -67,6 +73,10 @@ const CustomSelect = styled(Select)`
   }
 `;
 
+const style = {
+  overflow: "hidden",
+};
+
 const Index = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
@@ -74,15 +84,40 @@ const Index = ({}) => {
     (state) => state.seo
   );
 
+  const { paymentDetail, deliveryModal } = useSelector(
+    (state) => state.paymentRequest
+  );
+
   ////// HOOKS //////
   const router = useRouter();
 
-  const dispacth = useDispatch();
+  const address = useInput();
+  const zoneCode = useInput();
+  const [newPostCode, setNewPostCode] = useState();
+
+  const dispatch = useDispatch();
 
   ////// REDUX //////
   ////// USEEFFECT //////
 
+  useEffect(() => {
+    if (router.query) {
+      dispatch({
+        type: PAYMENT_DETAIL_REQUEST,
+        data: {
+          paymentId: router.query.id,
+        },
+      });
+    }
+  }, [router.query]);
+
   ////// TOGGLE //////
+
+  const deliveryModalToggle = useCallback(() => {
+    dispatch({
+      type: DELIVERY_MODAL_TOGGLE,
+    });
+  }, []);
   ////// HANDLER //////
 
   ////// DATAVIEW //////
@@ -279,7 +314,7 @@ const Index = ({}) => {
                         radius={`0`}
                         shadow={`none`}
                         width={`100%`}
-                        placeholder={`받는 사람을 입력해주세요`}
+                        placeholder={`주소를 입력해주세요.`}
                         phFontSize={width < 450 ? `14px` : `16px`}
                         focusBorder={`none`}
                         focusBorderBottom={`1px solid ${Theme.black_C}`}
@@ -359,7 +394,7 @@ const Index = ({}) => {
                       radius={`0`}
                       shadow={`none`}
                       width={`100%`}
-                      placeholder={`받는 사람을 입력해주세요`}
+                      placeholder={`보내는 사람을 입력해주세요`}
                       phFontSize={width < 450 ? `14px` : `16px`}
                       focusBorder={`none`}
                       focusBorderBottom={`1px solid ${Theme.black_C}`}
@@ -397,7 +432,10 @@ const Index = ({}) => {
                     >
                       주소
                     </Text>
-                    <Wrapper position={`relative`}>
+                    <Wrapper
+                      position={`relative`}
+                      onClick={deliveryModalToggle}
+                    >
                       <TextInput
                         border={`none`}
                         borderBottom={`1px solid ${Theme.grey2_C}`}
@@ -531,6 +569,29 @@ const Index = ({}) => {
               </CommonButton>
             </Wrapper>
           </RsWrapper>
+
+          {/* DELIVERY MODAL */}
+          <Modal
+            width={`500px`}
+            style={{ top: 200 }}
+            footer={null}
+            visible={deliveryModal}
+            onCancel={deliveryModalToggle}
+          >
+            <DaumPostcode
+              onComplete={(data) => {
+                console.log(data);
+                address.setValue(data.address);
+                zoneCode.setValue(data.zonecode);
+                setNewPostCode(false);
+              }}
+              width={width < 600 ? `100%` : `600px`}
+              height={`500px`}
+              autoClose
+              animation
+              style={style}
+            />
+          </Modal>
         </WholeWrapper>
       </ClientLayout>
     </>

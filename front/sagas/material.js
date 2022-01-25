@@ -164,7 +164,6 @@ function* materialHistoryList(action) {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function materialDetailAPI(data) {
-  console.log(data);
   return axios.get(`/api/materials/list/detail/${data.pprId}`);
 }
 

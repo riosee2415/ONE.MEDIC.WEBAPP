@@ -16,6 +16,10 @@ import {
   PAYMENTREQUEST_CREATE_REQUEST,
   PAYMENTREQUEST_CREATE_SUCCESS,
   PAYMENTREQUEST_CREATE_FAILURE,
+  //
+  PAYMENT_DETAIL_REQUEST,
+  PAYMENT_DETAIL_SUCCESS,
+  PAYMENT_DETAIL_FAILURE,
 } from "../reducers/paymentRequest";
 
 // SAGA AREA ********************************************************************************************************
@@ -103,13 +107,13 @@ function* paymentRequestDelivery(action) {
 
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
-function paymentRequestCreateAPI(data) {
+function paymentCreateAPI(data) {
   return axios.post(`/api/payment/create`, data);
 }
 
-function* paymentRequestCreate(action) {
+function* paymentCreate(action) {
   try {
-    const result = yield call(paymentRequestCreateAPI, action.data);
+    const result = yield call(paymentCreateAPI, action.data);
 
     yield put({
       type: PAYMENTREQUEST_CREATE_SUCCESS,
@@ -119,6 +123,32 @@ function* paymentRequestCreate(action) {
     console.error(err);
     yield put({
       type: PAYMENTREQUEST_CREATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function paymentDetailAPI(data) {
+  return axios.get(`/api/payment/detail/${data.paymentId}`, data);
+}
+
+function* paymentDetail(action) {
+  try {
+    const result = yield call(paymentDetailAPI, action.data);
+
+    yield put({
+      type: PAYMENT_DETAIL_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PAYMENT_DETAIL_FAILURE,
       error: err.response.data,
     });
   }
@@ -140,8 +170,12 @@ function* watchPaymentRequestDelivery() {
   yield takeLatest(PAYMENTREQUEST_DELIVERY_REQUEST, paymentRequestDelivery);
 }
 
-function* watchPaymentRequestCreate() {
-  yield takeLatest(PAYMENTREQUEST_CREATE_REQUEST, paymentRequestCreate);
+function* watchPaymentCreate() {
+  yield takeLatest(PAYMENTREQUEST_CREATE_REQUEST, paymentCreate);
+}
+
+function* watchPaymentDetail() {
+  yield takeLatest(PAYMENT_DETAIL_REQUEST, paymentDetail);
 }
 
 //////////////////////////////////////////////////////////////
@@ -150,7 +184,8 @@ export default function* paymentRequestSaga() {
     fork(watchPaymentRequestList),
     fork(watchPaymentRequestComplete),
     fork(watchPaymentRequestDelivery),
-    fork(watchPaymentRequestCreate),
+    fork(watchPaymentCreate),
+    fork(watchPaymentDetail),
     //
   ]);
 }

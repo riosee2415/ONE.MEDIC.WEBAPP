@@ -37,7 +37,6 @@ const MainSliderWrapper = styled(RowWrapper)`
 `;
 
 const ProductSlider = ({ topSlider }) => {
-  console.log(topSlider);
   const width = useWidth();
 
   const dispatch = useDispatch();

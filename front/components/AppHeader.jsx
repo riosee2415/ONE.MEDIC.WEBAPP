@@ -105,8 +105,6 @@ const AppHeader = ({ children, width }) => {
     }
   }, [st_logoutDone]);
 
-  console.log(router);
-
   const headerView = [
     {
       router: "/",
@@ -129,7 +127,7 @@ const AppHeader = ({ children, width }) => {
       title: "처방하기",
     },
     {
-      router: "/deliveryInfo",
+      router: "/deliveryInfo/[id]",
       title: "배송정보",
     },
     {

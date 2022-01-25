@@ -30,6 +30,8 @@ const Fourleaf = ({ Component }) => {
           type="text/css"
           href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css"
         ></link>
+
+        <script type="text/javascript" src="../customScript.js"></script>
       </Head>
       <Component />
     </ThemeProvider>
