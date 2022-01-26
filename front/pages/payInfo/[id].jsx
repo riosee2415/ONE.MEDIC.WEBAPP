@@ -34,8 +34,9 @@ import {
   RightOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { Modal, Select } from "antd";
+import { Modal, Select, message } from "antd";
 import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
+import { DISCOUNT_USER_REQUEST } from "../../reducers/discount";
 
 const CustomSelect = styled(Select)`
   width: 100%;
@@ -88,6 +89,9 @@ const Index = ({}) => {
 
   const { paymentDetail } = useSelector((state) => state.paymentRequest);
 
+  const { userDiscount } = useSelector((state) => state.discount);
+  console.log(userDiscount);
+
   ////// HOOKS //////
   const router = useRouter();
 
@@ -97,11 +101,34 @@ const Index = ({}) => {
   const [payOkModal, setPayOkModal] = useState(false);
   const [payOpenToggle, setPayOpenToggle] = useState(false);
 
+  const [productPayment, setProductPayment] = useState(0);
+  const [discount, setDiscount] = useState(0);
+
   const [isAgree1, setIsAgree1] = useState(false);
   const [isAgree2, setIsAgree2] = useState(false);
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    } else {
+      dispatch({
+        type: DISCOUNT_USER_REQUEST,
+        data: {
+          operatorLevel: me.operatorLevel,
+        },
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userDiscount) {
+      setDiscount(parseInt((userDiscount.value / 100) * productPayment));
+    }
+  }, [userDiscount]);
 
   useEffect(() => {
     if (router.query) {
@@ -113,6 +140,17 @@ const Index = ({}) => {
       });
     }
   }, [router.query]);
+
+  useEffect(() => {
+    if (paymentDetail) {
+      let total = 0;
+      for (let i = 0; i < paymentDetail.PaymentRequests.length; i++) {
+        total += paymentDetail.PaymentRequests[i].payment;
+      }
+
+      setProductPayment(total);
+    }
+  }, [paymentDetail]);
 
   ////// TOGGLE //////
   ////// HANDLER //////
@@ -248,14 +286,14 @@ const Index = ({}) => {
                     color={Theme.black_C}
                     margin={`0 0 12px`}
                   >
-                    {me.username}
+                    {me && me.username}
                   </Text>
                   <Text
                     fontSize={`16px`}
                     color={Theme.grey_C}
                     margin={`0 0 12px`}
                   >
-                    {me.mobile}
+                    {me && me.mobile}
                   </Text>
                   <Text fontSize={`16px`} color={Theme.grey_C}>
                     {paymentDetail && paymentDetail.receiveAddress}
@@ -312,14 +350,14 @@ const Index = ({}) => {
                   margin={`0 0 20px`}
                 >
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    생강귤피탕
+                    {paymentDetail && paymentDetail.productName}
                   </Text>
                   <Text
                     fontSize={`18px`}
                     color={Theme.black_C}
                     cursor={`pointer`}
                   >
-                    고객명
+                    {me && me.username}
                   </Text>
                 </Wrapper>
 
@@ -327,48 +365,91 @@ const Index = ({}) => {
                   borderBottom={`1px solid ${Theme.grey_C}`}
                   margin={`0 0 20px`}
                 >
-                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
-                    <Text color={Theme.gray_C} fontSize={`16px`}>
-                      약재
-                    </Text>
-                    <Text fontSize={`18px`} color={Theme.grey_C}>
-                      174,000
-                    </Text>
-                  </Wrapper>
+                  {router.query &&
+                    paymentDetail &&
+                    (router.query.type === "payment" ? (
+                      <>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 20px`}
+                        >
+                          <Text color={Theme.gray_C} fontSize={`16px`}>
+                            가격
+                          </Text>
+                          <Text fontSize={`18px`} color={Theme.grey_C}>
+                            {String(productPayment).replace(
+                              /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                              ","
+                            )}
+                          </Text>
+                        </Wrapper>
+                      </>
+                    ) : (
+                      <>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 20px`}
+                        >
+                          <Text color={Theme.gray_C} fontSize={`16px`}>
+                            약재
+                          </Text>
+                          <Text fontSize={`18px`} color={Theme.grey_C}>
+                            174,000
+                          </Text>
+                        </Wrapper>
 
-                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
-                    <Text color={Theme.gray_C} fontSize={`16px`}>
-                      조제
-                    </Text>
-                    <Text fontSize={`18px`} color={Theme.grey_C}>
-                      3,000
-                    </Text>
-                  </Wrapper>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 20px`}
+                        >
+                          <Text color={Theme.gray_C} fontSize={`16px`}>
+                            조제
+                          </Text>
+                          <Text fontSize={`18px`} color={Theme.grey_C}>
+                            3,000
+                          </Text>
+                        </Wrapper>
 
-                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
-                    <Text color={Theme.gray_C} fontSize={`16px`}>
-                      탕전
-                    </Text>
-                    <Text fontSize={`18px`} color={Theme.grey_C}>
-                      12,000
-                    </Text>
-                  </Wrapper>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 20px`}
+                        >
+                          <Text color={Theme.gray_C} fontSize={`16px`}>
+                            탕전
+                          </Text>
+                          <Text fontSize={`18px`} color={Theme.grey_C}>
+                            12,000
+                          </Text>
+                        </Wrapper>
 
-                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
-                    <Text color={Theme.gray_C} fontSize={`16px`}>
-                      포장
-                    </Text>
-                    <Text fontSize={`18px`} color={Theme.grey_C}>
-                      5,440
-                    </Text>
-                  </Wrapper>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 20px`}
+                        >
+                          <Text color={Theme.gray_C} fontSize={`16px`}>
+                            포장
+                          </Text>
+                          <Text fontSize={`18px`} color={Theme.grey_C}>
+                            5,440
+                          </Text>
+                        </Wrapper>
+                      </>
+                    ))}
 
                   <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
                     <Text color={Theme.gray_C} fontSize={`16px`}>
                       합계
                     </Text>
                     <Text fontSize={`18px`} color={Theme.grey_C}>
-                      5,440
+                      {String(productPayment).replace(
+                        /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                        ","
+                      )}
                     </Text>
                   </Wrapper>
                 </Wrapper>
@@ -386,7 +467,10 @@ const Index = ({}) => {
                       color={Theme.black_C}
                       fontWeight={`700`}
                     >
-                      195,840
+                      {String(productPayment).replace(
+                        /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                        ","
+                      )}
                     </Text>
                   </Wrapper>
 
@@ -399,7 +483,11 @@ const Index = ({}) => {
                       color={Theme.black_C}
                       fontWeight={`700`}
                     >
-                      -5,000
+                      -
+                      {String(discount).replace(
+                        /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                        ","
+                      )}
                     </Text>
                   </Wrapper>
 
@@ -418,7 +506,11 @@ const Index = ({}) => {
                 </Wrapper>
                 <Wrapper al={`flex-end`}>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    195,840<SpanText fontWeight={`500`}>원</SpanText>
+                    {String(productPayment - discount + 5000).replace(
+                      /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                      ","
+                    )}
+                    <SpanText fontWeight={`500`}>원</SpanText>
                   </Text>
                 </Wrapper>
               </Wrapper>

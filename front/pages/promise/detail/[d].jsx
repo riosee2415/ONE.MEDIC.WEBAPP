@@ -25,7 +25,6 @@ import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../../../reducers/seo";
 import ProductSlider from "../../../components/slide/ProductSlider";
 import Head from "next/head";
-import { useRef } from "react";
 import {
   PRODUCT_PACK_LIST_REQUEST,
   PRODUCT_TYPE_LIST_REQUEST,
@@ -60,15 +59,9 @@ const CheckdButton = styled.button`
     color: ${Theme.white_C};
   }
 `;
-const Detail = ({}) => {
-  const { me } = useSelector((state) => state.user);
-
-  const moveLinkHandler = useCallback((link) => {
-    router.push(link);
-  }, []);
-
-  const width = useWidth();
+const PromiseDetail = () => {
   ////// GLOBAL STATE //////
+  const { me } = useSelector((state) => state.user);
 
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
     (state) => state.seo
@@ -85,14 +78,18 @@ const Detail = ({}) => {
   } = useSelector((state) => state.paymentRequest);
 
   ////// HOOKS //////
+  const width = useWidth();
 
-  const type = useInput(null);
-  const pack = useInput(null);
-  const unit = useInput(null);
-  const otherInput = useInput(null);
+  const type = useInput("");
+  const pack = useInput("");
+  const unit = useInput("");
+  const otherInput = useInput("");
 
+  const [totalPayment, setTotalPayment] = useState(null);
   const [topSlider, setTopSlider] = useState(null);
   const [temporaryDatum, setTemporaryDatum] = useState([]);
+
+  const temporayArr = temporaryDatum ? temporaryDatum : [];
 
   const dispatch = useDispatch();
 
@@ -100,6 +97,19 @@ const Detail = ({}) => {
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (temporaryDatum) {
+      let total = 0;
+      for (let i = 0; i < temporaryDatum.length; i++) {
+        total += temporaryDatum[i].payment;
+      }
+
+      console.log(total);
+
+      setTotalPayment(total);
+    }
+  }, [{ ...temporaryDatum }, { ...temporayArr }]);
 
   useEffect(() => {
     if (router.query) {
@@ -134,7 +144,7 @@ const Detail = ({}) => {
   useEffect(() => {
     if (typeList) {
       if (typeList.length > 0) {
-        type.setValue(typeList[0].name);
+        type.setValue(typeList[0]);
       }
     }
 
@@ -156,7 +166,7 @@ const Detail = ({}) => {
 
   useEffect(() => {
     if (st_paymentRequestCreateDone) {
-      router.push(`/deliveryInfo/${paymentId}?type=payment`);
+      return router.push(`/deliveryInfo/${paymentId}?type=payment`);
     }
   }, [st_paymentRequestCreateDone]);
   ////// TOGGLE //////
@@ -166,44 +176,65 @@ const Detail = ({}) => {
     (value) => {
       type.setValue(value);
     },
-    [type]
+    [type.value]
   );
 
   const packChangeHandler = useCallback(
     (value) => {
       pack.setValue(value);
     },
-    [pack]
+    [pack.value]
   );
 
   const unitChangeHandler = useCallback(
     (value) => {
       unit.setValue(value);
     },
-    [unit]
+    [unit.value]
   );
 
-  const createPaymentArrHandler = useCallback(() => {
-    if (!type) {
+  const createPaymentArrHandler = useCallback(async () => {
+    if (!type.value) {
       return message.error("종류을 선택해주세요.");
     }
-    if (!pack) {
+    if (!pack.value) {
       return message.error("포장을 선택해주세요.");
     }
-    if (!unit) {
+    if (!unit.value) {
       return message.error("단위을 선택해주세요.");
     }
 
-    temporaryDatum.push({
-      payment: product.price,
-      packVolumn: type.value,
-      typeVolumn: pack.value,
-      unitVolumn: unit.value,
+    temporayArr.push({
+      payment:
+        product &&
+        product.price +
+          type.value.originAddPrice +
+          pack.value.originAddPrice +
+          unit.value.originAddPrice,
+      packVolumn: type.value.name,
+      typeVolumn: pack.value.name,
+      unitVolumn: unit.value.name,
       otherRequest: otherInput.value,
     });
 
-    setTemporaryDatum(temporaryDatum);
-  }, [type, pack, unit, otherInput.value, temporaryDatum, product]);
+    await setTemporaryDatum(temporayArr);
+  }, [
+    type.value,
+    pack.value,
+    unit.value,
+    otherInput.value,
+    { ...temporayArr },
+    temporaryDatum,
+  ]);
+
+  const deletePaymentArrHadnler = useCallback(
+    async (index) => {
+      temporayArr.splice(index, index + 1);
+
+      await setTemporaryDatum(temporayArr);
+    },
+    [{ ...temporayArr }, temporaryDatum]
+  );
 
   const createPaymentRequestHandler = useCallback(() => {
     if (!me) {
@@ -211,22 +242,20 @@ const Detail = ({}) => {
       return message.error("로그인 후 이용해주세요.");
     }
 
-    if (temporaryDatum.length === 0) {
+    if (!temporaryDatum) {
       return message.error("주문을 추가해주세요.");
     }
     dispatch({
       type: PAYMENTREQUEST_CREATE_REQUEST,
       data: {
         userId: me.id,
+        productName: product.title,
         paymentRequestDatum: temporaryDatum,
       },
     });
-  }, [temporaryDatum, me]);
+  }, [temporaryDatum, me, product]);
 
   ////// DATAVIEW //////
-
-  // 원외탕에서
-  // 종류, 포장, 단위를 선택하고 주문 추가하기를 하면 추가가 되야하는데 데이터 상으로는 추가가 되거든요 근데 누른후에 다른 이벤트? 가 발생이 되야 화면에 보여져서 이걸 어떻게 처리해줘야할지 모르겟어요
 
   return (
     <>
@@ -317,8 +346,8 @@ const Detail = ({}) => {
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
-                          kindOf={type.value === data.name}
-                          onClick={() => typeChangeHandler(data.name)}
+                          kindOf={type.value && type.value.id === data.id}
+                          onClick={() => typeChangeHandler(data)}
                         >
                           {data.name}
                         </CheckdButton>
@@ -335,31 +364,32 @@ const Detail = ({}) => {
                 포장
               </Text>
               <Wrapper dr={`row`} ju={`flex-start`}>
-                {packList && packList.length === 0 ? (
-                  <TextInput
-                    placeholder="직접입력"
-                    type={`text`}
-                    width={`100%`}
-                    {...pack}
-                  />
-                ) : (
-                  packList.map((data) => {
-                    return (
-                      <CheckdButton
-                        key={data.id}
-                        shadow={`0`}
-                        width={`calc(100% / 3 - 4px)`}
-                        height={`45px`}
-                        radius={`15px`}
-                        margin={`2px`}
-                        kindOf={pack.value === data.name}
-                        onClick={() => packChangeHandler(data.name)}
-                      >
-                        {data.name}
-                      </CheckdButton>
-                    );
-                  })
-                )}
+                {packList &&
+                  (packList.length === 0 ? (
+                    <TextInput
+                      placeholder="직접입력"
+                      type={`text`}
+                      width={`100%`}
+                      {...pack}
+                    />
+                  ) : (
+                    packList.map((data) => {
+                      return (
+                        <CheckdButton
+                          key={data.id}
+                          shadow={`0`}
+                          width={`calc(100% / 3 - 4px)`}
+                          height={`45px`}
+                          radius={`15px`}
+                          margin={`2px`}
+                          kindOf={pack.value && pack.value.id === data.id}
+                          onClick={() => packChangeHandler(data)}
+                        >
+                          {data.name}
+                        </CheckdButton>
+                      );
+                    })
+                  ))}
               </Wrapper>
               <Text
                 color={Theme.grey_C}
@@ -387,8 +417,8 @@ const Detail = ({}) => {
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
-                          kindOf={unit.value === data.name}
-                          onClick={() => unitChangeHandler(data.name)}
+                          kindOf={unit.value && unit.value.id === data.id}
+                          onClick={() => unitChangeHandler(data)}
                         >
                           {data.name}
                         </CheckdButton>
@@ -421,7 +451,6 @@ const Detail = ({}) => {
               padding={width < 800 ? `15px 10px` : `15px 38px`}
             >
               {temporaryDatum &&
-                temporaryDatum.length > 0 &&
                 temporaryDatum.map((data, idx) => {
                   return (
                     <Wrapper
@@ -434,10 +463,13 @@ const Detail = ({}) => {
                     >
                       <Wrapper dr={`row`} ju={`space-between`}>
                         <Text color={Theme.grey2_C}>
-                          {data.typeVolumn} | {data.packVolumn} |
+                          {data.typeVolumn}&nbsp;|&nbsp;{data.packVolumn}
+                          &nbsp;|&nbsp;
                           {data.unitVolumn}
                         </Text>
                         <Image
+                          cursor={`pointer`}
+                          onClick={() => deletePaymentArrHadnler(idx)}
                           alt="close"
                           src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/header_icon/close-grey.png`}
                           width={`16px`}
@@ -473,6 +505,7 @@ const Detail = ({}) => {
                   );
                 })}
             </Wrapper>
+
             <Wrapper
               height={`50px`}
               position={`sticky`}
@@ -493,14 +526,7 @@ const Detail = ({}) => {
                 fontSize={width < 800 ? `15px` : `20px`}
               >
                 <Text fontWeight={`bold`}>총 주문금액&nbsp;:&nbsp;</Text>
-                <Text fontWeight={`bold`}>
-                  {product &&
-                    temporaryDatum &&
-                    String(product.price * temporaryDatum.length).replace(
-                      /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-                      ","
-                    )}
-                </Text>
+                <Text fontWeight={`bold`}>{totalPayment}</Text>
               </Wrapper>
               <CommonButton
                 shadow={`0`}
@@ -546,4 +572,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default Detail;
+export default PromiseDetail;

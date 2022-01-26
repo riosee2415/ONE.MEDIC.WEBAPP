@@ -12,6 +12,10 @@ import {
   DISCOUNT_UPDATE_REQUEST,
   DISCOUNT_UPDATE_SUCCESS,
   DISCOUNT_UPDATE_FAILURE,
+  //
+  DISCOUNT_USER_REQUEST,
+  DISCOUNT_USER_SUCCESS,
+  DISCOUNT_USER_FAILURE,
 } from "../reducers/discount";
 
 // ******************************************************************************************************************
@@ -99,6 +103,34 @@ function* discountUpdate(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function discountUserAPI(data) {
+  return axios.get(`/api/discount/user/${data.operatorLevel}`);
+}
+
+function* discountUser(action) {
+  try {
+    const result = yield call(discountUserAPI, action.data);
+
+    yield put({
+      type: DISCOUNT_USER_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: DISCOUNT_USER_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 function* watchDiscountList() {
   yield takeLatest(DISCOUNT_LIST_REQUEST, discountList);
@@ -109,6 +141,9 @@ function* watchDiscountCreate() {
 function* watchDiscountUpdate() {
   yield takeLatest(DISCOUNT_UPDATE_REQUEST, discountUpdate);
 }
+function* watchDiscountUser() {
+  yield takeLatest(DISCOUNT_USER_REQUEST, discountUser);
+}
 
 //////////////////////////////////////////////////////////////
 export default function* discountSaga() {
@@ -116,6 +151,7 @@ export default function* discountSaga() {
     fork(watchDiscountList),
     fork(watchDiscountCreate),
     fork(watchDiscountUpdate),
+    fork(watchDiscountUser),
     //
   ]);
 }

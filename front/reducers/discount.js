@@ -3,6 +3,8 @@ import produce from "../util/produce";
 export const initialState = {
   discounts: null,
 
+  userDiscount: null,
+
   cuModal: false,
   unitModal: false,
   //
@@ -17,6 +19,10 @@ export const initialState = {
   st_discountUpdateLoading: false,
   st_discountUpdateDone: false,
   st_discountUpdateError: null,
+  //
+  st_discountUserLoading: false,
+  st_discountUserDone: false,
+  st_discountUserError: null,
 };
 
 export const DISCOUNT_LIST_REQUEST = "DISCOUNT_LIST_REQUEST";
@@ -30,6 +36,10 @@ export const DISCOUNT_CREATE_FAILURE = "DISCOUNT_CREATE_FAILURE";
 export const DISCOUNT_UPDATE_REQUEST = "DISCOUNT_UPDATE_REQUEST";
 export const DISCOUNT_UPDATE_SUCCESS = "DISCOUNT_UPDATE_SUCCESS";
 export const DISCOUNT_UPDATE_FAILURE = "DISCOUNT_UPDATE_FAILURE";
+
+export const DISCOUNT_USER_REQUEST = "DISCOUNT_USER_REQUEST";
+export const DISCOUNT_USER_SUCCESS = "DISCOUNT_USER_SUCCESS";
+export const DISCOUNT_USER_FAILURE = "DISCOUNT_USER_FAILURE";
 
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 export const CU_MODAL_TOGGLE = "CU_MODAL_TOGGLE";
@@ -90,6 +100,26 @@ const reducer = (state = initialState, action) =>
         draft.st_discountUpdateLoading = false;
         draft.st_discountUpdateDone = false;
         draft.st_discountUpdateError = action.error;
+        break;
+      }
+      ///////////////////////////////////////////////////////
+      case DISCOUNT_USER_REQUEST: {
+        draft.st_discountUserLoading = true;
+        draft.st_discountUserDone = null;
+        draft.st_discountUserError = false;
+        break;
+      }
+      case DISCOUNT_USER_SUCCESS: {
+        draft.st_discountUserLoading = false;
+        draft.st_discountUserDone = true;
+        draft.st_discountUserError = null;
+        draft.userDiscount = action.data;
+        break;
+      }
+      case DISCOUNT_USER_FAILURE: {
+        draft.st_discountUserLoading = false;
+        draft.st_discountUserDone = false;
+        draft.st_discountUserError = action.error;
         break;
       }
       ///////////////////////////////////////////////////////

@@ -48,9 +48,13 @@ const ProductSlider = ({ topSlider }) => {
       <Carousel autoplay={false} speed={3000}>
         {topSlider &&
           topSlider.length > 0 &&
-          topSlider.map((data) => {
+          topSlider.map((data, idx) => {
             return (
-              <Wrapper position={`relative`} display={`flex !important`}>
+              <Wrapper
+                key={idx}
+                position={`relative`}
+                display={`flex !important`}
+              >
                 <Image height={`210px`} src={data} />
               </Wrapper>
             );

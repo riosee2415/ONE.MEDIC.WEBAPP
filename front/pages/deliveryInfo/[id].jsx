@@ -128,6 +128,13 @@ const Index = ({}) => {
   ////// USEEFFECT //////
 
   useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+  }, []);
+
+  useEffect(() => {
     if (router.query) {
       dispatch({
         type: PAYMENT_DETAIL_REQUEST,
