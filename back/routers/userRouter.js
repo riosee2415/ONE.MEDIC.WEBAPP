@@ -101,6 +101,7 @@ router.get("/signin", async (req, res, next) => {
           "username",
           "mobile",
           "licenseNo",
+          "operatorLevel",
         ],
       });
 
@@ -145,6 +146,7 @@ router.post("/signin", (req, res, next) => {
           "username",
           "mobile",
           "licenseNo",
+          "operatorLevel",
         ],
       });
 
@@ -186,6 +188,7 @@ router.post("/signin/admin", (req, res, next) => {
           "username",
           "mobile",
           "licenseNo",
+          "operatorLevel",
         ],
       });
 

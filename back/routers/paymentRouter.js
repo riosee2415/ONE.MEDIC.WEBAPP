@@ -60,7 +60,7 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { userId, paymentRequestDatum } = req.body;
+  const { userId, productName, paymentRequestDatum } = req.body;
 
   if (isNanCheck(userId)) {
     return res
@@ -86,6 +86,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
     }
 
     const result = await Payment.create({
+      productName,
       UserId: parseInt(userId),
     });
 
