@@ -35,6 +35,7 @@ import {
   UpOutlined,
 } from "@ant-design/icons";
 import { Modal, Select } from "antd";
+import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
 
 const CustomSelect = styled(Select)`
   width: 100%;
@@ -83,10 +84,14 @@ const Index = ({}) => {
     (state) => state.seo
   );
 
+  const { me } = useSelector((state) => state.user);
+
+  const { paymentDetail } = useSelector((state) => state.paymentRequest);
+
   ////// HOOKS //////
   const router = useRouter();
 
-  const dispacth = useDispatch();
+  const dispatch = useDispatch();
 
   const [couponModal, setCouponModal] = useState(false);
   const [payOkModal, setPayOkModal] = useState(false);
@@ -97,6 +102,17 @@ const Index = ({}) => {
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (router.query) {
+      dispatch({
+        type: PAYMENT_DETAIL_REQUEST,
+        data: {
+          paymentId: router.query.id,
+        },
+      });
+    }
+  }, [router.query]);
 
   ////// TOGGLE //////
   ////// HANDLER //////
@@ -232,17 +248,17 @@ const Index = ({}) => {
                     color={Theme.black_C}
                     margin={`0 0 12px`}
                   >
-                    고객명
+                    {me.username}
                   </Text>
                   <Text
                     fontSize={`16px`}
                     color={Theme.grey_C}
                     margin={`0 0 12px`}
                   >
-                    고객명
+                    {me.mobile}
                   </Text>
                   <Text fontSize={`16px`} color={Theme.grey_C}>
-                    주소
+                    {paymentDetail && paymentDetail.receiveAddress}
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -266,7 +282,9 @@ const Index = ({}) => {
                     color={Theme.black_C}
                     margin={`0 0 12px`}
                   >
-                    배송시 요청사항이 없습니다.
+                    {paymentDetail && paymentDetail.deliveryMessage
+                      ? paymentDetail.deliveryMessage
+                      : "요청사항이 없습니다."}
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -285,14 +303,6 @@ const Index = ({}) => {
                 >
                   <Text fontSize={`22px`} color={Theme.black_C}>
                     주문내역
-                  </Text>
-                  <Text
-                    fontSize={`16px`}
-                    color={Theme.subTheme2_C}
-                    cursor={`pointer`}
-                    onClick={() => setCouponModal(true)}
-                  >
-                    쿠폰함
                   </Text>
                 </Wrapper>
                 <Wrapper

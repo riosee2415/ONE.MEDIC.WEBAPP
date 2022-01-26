@@ -20,6 +20,10 @@ import {
   PAYMENT_DETAIL_REQUEST,
   PAYMENT_DETAIL_SUCCESS,
   PAYMENT_DETAIL_FAILURE,
+  //
+  PAYMENT_DELIVERY_REQUEST,
+  PAYMENT_DELIVERY_SUCCESS,
+  PAYMENT_DELIVERY_FAILURE,
 } from "../reducers/paymentRequest";
 
 // SAGA AREA ********************************************************************************************************
@@ -157,6 +161,32 @@ function* paymentDetail(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 // ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function paymentDeliveryAPI(data) {
+  return axios.patch(`/api/payment/address/update`, data);
+}
+
+function* paymentDelivery(action) {
+  try {
+    const result = yield call(paymentDeliveryAPI, action.data);
+
+    yield put({
+      type: PAYMENT_DELIVERY_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PAYMENT_DELIVERY_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
 
 function* watchPaymentRequestList() {
   yield takeLatest(PAYMENTREQUEST_LIST_REQUEST, paymentRequestList);
@@ -178,6 +208,10 @@ function* watchPaymentDetail() {
   yield takeLatest(PAYMENT_DETAIL_REQUEST, paymentDetail);
 }
 
+function* watchPaymentDelivery() {
+  yield takeLatest(PAYMENT_DELIVERY_REQUEST, paymentDelivery);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* paymentRequestSaga() {
   yield all([
@@ -186,6 +220,7 @@ export default function* paymentRequestSaga() {
     fork(watchPaymentRequestDelivery),
     fork(watchPaymentCreate),
     fork(watchPaymentDetail),
+    fork(watchPaymentDelivery),
     //
   ]);
 }

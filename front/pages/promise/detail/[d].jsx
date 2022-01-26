@@ -80,7 +80,7 @@ const Detail = ({}) => {
 
   const {
     paymentId,
-    st_payemtnRequestCreateDone,
+    st_paymentRequestCreateDone,
     st_paymentRequestCreateError,
   } = useSelector((state) => state.paymentRequest);
 
@@ -155,10 +155,10 @@ const Detail = ({}) => {
   }, [st_paymentRequestCreateError]);
 
   useEffect(() => {
-    if (st_payemtnRequestCreateDone) {
+    if (st_paymentRequestCreateDone) {
       router.push(`/deliveryInfo/${paymentId}?type=payment`);
     }
-  }, [st_payemtnRequestCreateDone]);
+  }, [st_paymentRequestCreateDone]);
   ////// TOGGLE //////
   ////// HANDLER //////
 
@@ -423,7 +423,6 @@ const Detail = ({}) => {
               {temporaryDatum &&
                 temporaryDatum.length > 0 &&
                 temporaryDatum.map((data, idx) => {
-                  console.log(data);
                   return (
                     <Wrapper
                       key={idx}

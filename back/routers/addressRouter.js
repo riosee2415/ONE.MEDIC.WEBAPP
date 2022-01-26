@@ -4,8 +4,8 @@ const { UserAddress, User } = require("../models");
 
 const router = express.Router();
 
-router.get("/list/:userId", isLoggedIn, async (req, res, next) => {
-  const { userId } = req.params;
+router.get("/list", isLoggedIn, async (req, res, next) => {
+  const { userId, type } = req.query;
 
   try {
     if (userId) {
@@ -20,14 +20,26 @@ router.get("/list/:userId", isLoggedIn, async (req, res, next) => {
       }
     }
 
-    const result = await UserAddress.findAll({
-      where: {
-        UserId: parseInt(userId),
-        isDelete: false,
-      },
-    });
+    if (type === "1") {
+      const result = await UserAddress.findOne({
+        where: {
+          UserId: parseInt(userId),
+          isDelete: false,
+          isNormal: true,
+        },
+      });
 
-    return res.status(200).json(result);
+      return res.status(200).json(result);
+    } else {
+      const result = await UserAddress.findAll({
+        where: {
+          UserId: parseInt(userId),
+          isDelete: false,
+        },
+      });
+
+      return res.status(200).json(result);
+    }
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");

@@ -131,7 +131,7 @@ const AppHeader = ({ children, width }) => {
       title: "배송정보",
     },
     {
-      router: "/payInfo",
+      router: "/payInfo/[id]",
       title: "결제정보",
     },
     {

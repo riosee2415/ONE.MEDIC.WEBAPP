@@ -65,6 +65,16 @@ module.exports = class Payment extends Model {
           type: DataTypes.STRING(300),
           allowNull: true,
         },
+
+        deliveryMessage: {
+          type: DataTypes.STRING(300),
+          allowNull: true,
+        },
+
+        deliveryRequest: {
+          type: DataTypes.STRING(300),
+          allowNull: true,
+        },
       },
       {
         modelName: "Payment",

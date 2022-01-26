@@ -3,6 +3,8 @@ import produce from "../util/produce";
 export const initailState = {
   addressList: null,
 
+  addressListModal: false,
+
   //
   st_addressListLoading: false, // 주소 리스트 가져오기
   st_addressListDone: false,
@@ -13,6 +15,8 @@ export const initailState = {
 export const ADDRESS_LIST_REQUEST = "ADDRESS_LIST_REQUEST";
 export const ADDRESS_LIST_SUCCESS = "ADDRESS_LIST_SUCCESS";
 export const ADDRESS_LIST_FAILURE = "ADDRESS_LIST_FAILURE";
+
+export const ADDRESS_LIST_MODAL_TOGGLE = "ADDRESS_LIST_MODAL_TOGGLE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -41,6 +45,11 @@ const reducer = (state = initailState, action) =>
       }
 
       //////////////////////////////////////////////
+
+      case ADDRESS_LIST_MODAL_TOGGLE: {
+        draft.addressListModal = !draft.addressListModal;
+        break;
+      }
 
       default:
         break;

@@ -211,7 +211,7 @@ router.patch("/delivery/:paymentId", isAdminCheck, async (req, res, next) => {
   }
 });
 
-router.get("/detail/:paymentId", async (req, res, next) => {
+router.get("/detail/:paymentId", isLoggedIn, async (req, res, next) => {
   const { paymentId } = req.params;
 
   try {
@@ -227,6 +227,66 @@ router.get("/detail/:paymentId", async (req, res, next) => {
     });
 
     return res.status(200).json(result);
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
+router.patch("/address/update", async (req, res, next) => {
+  const {
+    paymentId,
+    receiveUser,
+    receiveMobile,
+    receiveAddress,
+    receiveDetailAddress,
+    sendUser,
+    sendMobile,
+    sendAddress,
+    sendDetailAddress,
+    deliveryMessage,
+    deliveryRequest,
+  } = req.body;
+
+  if (isNanCheck(paymentId)) {
+    return res
+      .status(403)
+      .send("올바르지 않은 요청 입니다. 다시 시도해주세요.");
+  }
+
+  try {
+    if (paymentId) {
+      const exPayment = await PaymentRequest.findOne({
+        where: {
+          id: parseInt(paymentId),
+        },
+      });
+
+      if (!exPayment) {
+        return res.status(400).send("주문이 없습니다.");
+      }
+    }
+    const result = await Payment.update(
+      {
+        receiveUser,
+        receiveMobile,
+        receiveAddress,
+        receiveDetailAddress,
+        sendUser,
+        sendMobile,
+        sendAddress,
+        sendDetailAddress,
+        deliveryMessage,
+        deliveryRequest,
+      },
+      {
+        where: {
+          id: parseInt(paymentId),
+        },
+      }
+    );
+
+    return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");

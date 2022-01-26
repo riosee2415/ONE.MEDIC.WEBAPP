@@ -65,6 +65,7 @@ const Address = ({}) => {
         type: ADDRESS_LIST_REQUEST,
         data: {
           userId: me.id,
+          type: "",
         },
       });
     } else {

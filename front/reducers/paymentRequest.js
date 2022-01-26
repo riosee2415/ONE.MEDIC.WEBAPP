@@ -10,6 +10,8 @@ export const initialState = {
   userDetailModal: false,
   detailModal: false,
   deliveryModal: false,
+  sendDeliveryModal: false,
+  receiveDeliveryModal: false,
 
   st_paymentRequestListLoading: false,
   st_paymentRequestListDone: false,
@@ -24,12 +26,16 @@ export const initialState = {
   st_paymentRequestDeliveryError: null,
   //
   st_paymentRequestCreateLoading: false,
-  st_payemtnRequestCreateDone: false,
+  st_paymentRequestCreateDone: false,
   st_paymentRequestCreateError: null,
   //
   st_paymentDetailLoading: false,
-  st_payemtnDetailDone: false,
+  st_paymentDetailDone: false,
   st_paymentDetailError: null,
+  //
+  st_paymentDeliveryLoading: false,
+  st_paymentDeliveryDone: false,
+  st_paymentDeliveryError: null,
 };
 
 export const PAYMENTREQUEST_LIST_REQUEST = "PAYMENTREQUEST_LIST_REQUEST";
@@ -58,6 +64,10 @@ export const PAYMENT_DETAIL_REQUEST = "PAYMENT_DETAIL_REQUEST";
 export const PAYMENT_DETAIL_SUCCESS = "PAYMENT_DETAIL_SUCCESS";
 export const PAYMENT_DETAIL_FAILURE = "PAYMENT_DETAIL_FAILURE";
 
+export const PAYMENT_DELIVERY_REQUEST = "PAYMENT_DELIVERY_REQUEST";
+export const PAYMENT_DELIVERY_SUCCESS = "PAYMENT_DELIVERY_SUCCESS";
+export const PAYMENT_DELIVERY_FAILURE = "PAYMENT_DELIVERY_FAILURE";
+
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 
 export const USER_DETAIL_MODAL_TOGGLE = "USER_DETAIL_MODAL_TOGGLE";
@@ -65,6 +75,10 @@ export const USER_DETAIL_MODAL_TOGGLE = "USER_DETAIL_MODAL_TOGGLE";
 export const DETAIL_MODAL_TOGGLE = "DETAIL_MODAL_TOGGLE";
 
 export const DELIVERY_MODAL_TOGGLE = "DELIVERY_MODAL_TOGGLE";
+
+export const SEND_DELIVERY_MODAL_TOGGLE = "SEND_DELIVERY_MODAL_TOGGLE";
+
+export const RECEIVE_DELIVERY_MODAL_TOGGLE = "RECEIVE_DELIVERY_MODAL_TOGGLE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -120,35 +134,52 @@ const reducer = (state = initialState, action) =>
       ////////////////////
       case PAYMENTREQUEST_CREATE_REQUEST:
         draft.st_paymentRequestCreateLoading = true;
-        draft.st_payemtnRequestCreateDone = false;
+        draft.st_paymentRequestCreateDone = false;
         draft.st_paymentRequestCreateError = null;
         break;
       case PAYMENTREQUEST_CREATE_SUCCESS:
         draft.st_paymentRequestCreateLoading = false;
-        draft.st_payemtnRequestCreateDone = true;
+        draft.st_paymentRequestCreateDone = true;
         draft.paymentId = action.data.paymentId;
         break;
       case PAYMENTREQUEST_CREATE_FAILURE:
         draft.st_paymentRequestCreateLoading = false;
-        draft.st_payemtnRequestCreateDone = false;
+        draft.st_paymentRequestCreateDone = false;
         draft.st_paymentRequestCreateError = action.error;
         break;
 
       ////////////////////
       case PAYMENT_DETAIL_REQUEST:
         draft.st_paymentDetailLoading = true;
-        draft.st_payemtnDetailDone = false;
+        draft.st_paymentDetailDone = false;
         draft.st_paymentDetailError = null;
         break;
       case PAYMENT_DETAIL_SUCCESS:
         draft.st_paymentDetailLoading = false;
-        draft.st_payemtnDetailDone = true;
+        draft.st_paymentDetailDone = true;
         draft.paymentDetail = action.data;
         break;
       case PAYMENT_DETAIL_FAILURE:
         draft.st_paymentDetailLoading = false;
-        draft.st_payemtnDetailDone = false;
+        draft.st_paymentDetailDone = false;
         draft.st_paymentDetailError = action.error;
+        break;
+
+      ////////////////////
+      case PAYMENT_DELIVERY_REQUEST:
+        draft.st_paymentDeliveryLoading = true;
+        draft.st_paymentDeliveryDone = false;
+        draft.st_paymentDeliveryError = null;
+        break;
+      case PAYMENT_DELIVERY_SUCCESS:
+        draft.st_paymentDeliveryLoading = false;
+        draft.st_paymentDeliveryDone = true;
+        draft.st_paymentDeliveryError = null;
+        break;
+      case PAYMENT_DELIVERY_FAILURE:
+        draft.st_paymentDeliveryLoading = false;
+        draft.st_paymentDeliveryDone = false;
+        draft.st_paymentDeliveryError = action.error;
         break;
 
       ////////////////////
@@ -167,6 +198,14 @@ const reducer = (state = initialState, action) =>
 
       case DELIVERY_MODAL_TOGGLE:
         draft.deliveryModal = !draft.deliveryModal;
+        break;
+
+      case SEND_DELIVERY_MODAL_TOGGLE:
+        draft.sendDeliveryModal = !draft.sendDeliveryModal;
+        break;
+
+      case RECEIVE_DELIVERY_MODAL_TOGGLE:
+        draft.receiveDeliveryModal = !draft.receiveDeliveryModal;
         break;
 
       ////////////////////

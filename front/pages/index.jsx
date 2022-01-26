@@ -288,37 +288,6 @@ const Home = ({}) => {
                     </Wrapper>
                   </Wrapper>
                 </Wrapper>
-                <Wrapper
-                  height={`50px`}
-                  position={`sticky`}
-                  bottom={`0`}
-                  left={`0`}
-                  dr={`row`}
-                  zIndex={`10`}
-                  bgColor={Theme.white_C}
-                >
-                  <Wrapper
-                    height={`100%`}
-                    dr={`row`}
-                    width={
-                      width < 800 ? `calc(100% - 130px)` : `calc(100% - 170px)`
-                    }
-                    ju={`flex-start`}
-                    padding={width < 800 ? `0 10px` : `0 38px`}
-                    fontSize={width < 800 ? `15px` : `20px`}
-                  >
-                    <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                    <Text fontWeight={`bold`}> 432,000</Text>
-                  </Wrapper>
-                  <CommonButton
-                    width={width < 800 ? `130px` : `170px`}
-                    height={`100%`}
-                    radius={`0`}
-                    cursor={`pointer`}
-                  >
-                    주문하기
-                  </CommonButton>
-                </Wrapper>
               </>
             )}
           </RsWrapper>
