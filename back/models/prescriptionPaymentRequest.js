@@ -27,6 +27,12 @@ module.exports = class PrescriptionPaymentRequest extends Model {
           allowNull: true,
         },
 
+        isPayment: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false, // 필수
+          defaultValue: false,
+        },
+
         deliveryCompany: {
           type: DataTypes.STRING(50),
           allowNull: true,

@@ -34,8 +34,11 @@ import {
   RightOutlined,
   UpOutlined,
 } from "@ant-design/icons";
-import { Modal, Select, message } from "antd";
-import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
+import { Modal, Select, message, notification } from "antd";
+import {
+  PAYMENT_DETAIL_REQUEST,
+  PAYMENT_ISPAYMENT_REQUEST,
+} from "../../reducers/paymentRequest";
 import { DISCOUNT_USER_REQUEST } from "../../reducers/discount";
 
 const CustomSelect = styled(Select)`
@@ -78,6 +81,17 @@ const CustomModal = styled(Modal)`
   }
 `;
 
+const LoadNotification = (msg, content) => {
+  notification.open({
+    message: msg,
+    description: content,
+    style: {
+      marginTop: "100px",
+    },
+    onClick: () => {},
+  });
+};
+
 const Index = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
@@ -90,14 +104,12 @@ const Index = ({}) => {
   const { paymentDetail } = useSelector((state) => state.paymentRequest);
 
   const { userDiscount } = useSelector((state) => state.discount);
-  console.log(userDiscount);
 
   ////// HOOKS //////
   const router = useRouter();
 
   const dispatch = useDispatch();
 
-  const [couponModal, setCouponModal] = useState(false);
   const [payOkModal, setPayOkModal] = useState(false);
   const [payOpenToggle, setPayOpenToggle] = useState(false);
 
@@ -153,7 +165,71 @@ const Index = ({}) => {
   }, [paymentDetail]);
 
   ////// TOGGLE //////
+
   ////// HANDLER //////
+
+  const boughtProductHandler = useCallback(() => {
+    if (!isAgree2) {
+      return LoadNotification("안내", "결제 동의을 체크해주세요.");
+    }
+
+    const d = new Date();
+
+    let year = d.getFullYear() + "";
+    let month = d.getMonth() + 1 + "";
+    let date = d.getDate() + "";
+    let hour = d.getHours() + "";
+    let min = d.getMinutes() + "";
+    let sec = d.getSeconds() + "";
+    let mSec = d.getMilliseconds() + "";
+
+    month = month < 10 ? "0" + month : month;
+    date = date < 10 ? "0" + date : date;
+    hour = hour < 10 ? "0" + hour : hour;
+    min = min < 10 ? "0" + min : min;
+    sec = sec < 10 ? "0" + sec : sec;
+    mSec = mSec < 10 ? "0" + mSec : mSec;
+
+    let orderPK = "ORD" + year + month + date + hour + min + sec + mSec;
+
+    const IMP = window.IMP;
+
+    if (me && paymentDetail) {
+      IMP.request_pay(
+        {
+          pg: "danal_tpay",
+          pay_method: "card",
+          merchant_uid: orderPK,
+          name: me.username,
+          amount: productPayment - discount + 5000,
+          amount: 150,
+          buyer_name: me.username,
+          buyer_tel: me.mobile,
+          buyer_email: me.email,
+          buyer_addr: paymentDetail.receiveAddress,
+          buyer_postcode: paymentDetail.receiveAddress.substring(
+            paymentDetail.receiveAddress.length - 6,
+            paymentDetail.receiveAddress.length - 1
+          ),
+        },
+        async (rsp) => {
+          if (rsp.success) {
+            dispatch({
+              type: PAYMENT_ISPAYMENT_REQUEST,
+              data: {
+                paymentId: router.query.id,
+              },
+            });
+            message.success("결제되었습니다.");
+            return router.push("/");
+          } else {
+            console.log(rsp);
+            return console.log("결제실패");
+          }
+        }
+      );
+    }
+  }, [isAgree2, productPayment, discount, router.query]);
 
   ////// DATAVIEW //////
 
@@ -476,7 +552,7 @@ const Index = ({}) => {
 
                   <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
                     <Text color={Theme.black_C} fontSize={`16px`}>
-                      쿠폰적용
+                      회원할인적용
                     </Text>
                     <Text
                       fontSize={`16px`}
@@ -664,98 +740,16 @@ const Index = ({}) => {
                   fontWeight={`700`}
                   onClick={() => setPayOkModal(true)}
                 >
-                  195,840원 결제하기
+                  {String(productPayment - discount + 5000).replace(
+                    /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                    ","
+                  )}
+                  원 결제하기
                 </Text>
               </CommonButton>
             </Wrapper>
-            <CustomModal
-              visible={couponModal}
-              footer={null}
-              closable={false}
-              width={360}
-            >
-              <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 30px`}>
-                <Text fontSize={`20px`} fontWeight={`700`}>
-                  쿠폰함
-                </Text>
-                <CloseOutlined
-                  onClick={() => setCouponModal(false)}
-                  style={{ fontSize: `18px` }}
-                />
-              </Wrapper>
-              <Wrapper
-                padding={`0 0 30px`}
-                borderBottom={`1px solid ${Theme.grey2_C}`}
-              >
-                <CustomSelect placeholder={`쿠폰선택`}>
-                  <Select.Option></Select.Option>
-                </CustomSelect>
-              </Wrapper>
-              <Wrapper margin={`20px 0 0 0`}>
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text fontSize={`18px`} color={Theme.black_C}>
-                    처방 금액
-                  </Text>
-                  <Text color={Theme.black_C} fontSize={`18px`}>
-                    36,000
-                  </Text>
-                </Wrapper>
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text fontSize={`18px`} color={Theme.black_C}>
-                    쿠폰 할인가
-                  </Text>
-                  <Text
-                    color={Theme.black_C}
-                    fontSize={`18px`}
-                    fontWeight={`700`}
-                    color={Theme.subTheme2_C}
-                  >
-                    8,600
-                  </Text>
-                </Wrapper>
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text
-                    fontSize={`18px`}
-                    fontWeight={`700`}
-                    color={Theme.black_C}
-                  >
-                    최종 처방 금액
-                  </Text>
-                  <Text
-                    color={Theme.black_C}
-                    fontSize={`18px`}
-                    fontWeight={`700`}
-                  >
-                    27,400
-                  </Text>
-                </Wrapper>
-              </Wrapper>
 
-              <Wrapper dr={`row`} ju={`flex-end`} margin={`30px 0 0 0`}>
-                <Wrapper
-                  fontSize={`18px`}
-                  width={`90px`}
-                  height={`40px`}
-                  padding={`0`}
-                  margin={`0 5px 0 0`}
-                  cursor={`pointer`}
-                  onClick={() => setCouponModal(false)}
-                >
-                  취소
-                </Wrapper>
-                <CommonButton
-                  fontSize={`18px`}
-                  fontWeight={`700`}
-                  width={`90px`}
-                  height={`40px`}
-                  padding={`0`}
-                  onClick={() => setCouponModal(false)}
-                >
-                  적용하기
-                </CommonButton>
-              </Wrapper>
-            </CustomModal>
-
+            {/* BOUHGT MODAL */}
             <CustomModal
               visible={payOkModal}
               footer={null}
@@ -789,7 +783,7 @@ const Index = ({}) => {
                     width={`90px`}
                     height={`40px`}
                     padding={`0`}
-                    onClick={() => setPayOkModal(false)}
+                    onClick={boughtProductHandler}
                   >
                     네
                   </CommonButton>

@@ -516,7 +516,7 @@ export const SearchForm = styled(Form)`
 export const SearchFormItem = styled(Form.Item)`
   margin-bottom: 0px;
   .ant-form-item-label > label {
-    color: #fff;
+    color: ${(props) => props.theme.white_C};
   }
 `;
 

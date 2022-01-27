@@ -7,7 +7,7 @@ module.exports = class Payment extends Model {
       {
         isCompleted: {
           type: DataTypes.BOOLEAN,
-          allowNull: false,
+          allowNull: false, // 필수
           defaultValue: false,
         },
 
@@ -16,9 +16,15 @@ module.exports = class Payment extends Model {
           allowNull: true,
         },
 
+        isPayment: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false, // 필수
+          defaultValue: false,
+        },
+
         productName: {
           type: DataTypes.STRING(200),
-          allowNull: false,
+          allowNull: false, // 필수
         },
 
         deliveryCompany: {

@@ -231,4 +231,26 @@ router.patch("/delivery/:pprId", isAdminCheck, async (req, res, next) => {
   }
 });
 
+router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
+  const { paymentId } = req.params;
+
+  try {
+    const result = await PrescriptionPaymentRequest.update(
+      {
+        isPayment: true,
+      },
+      {
+        where: {
+          id: parseInt(paymentId),
+        },
+      }
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
 module.exports = router;
