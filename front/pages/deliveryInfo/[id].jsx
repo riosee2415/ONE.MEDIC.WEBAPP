@@ -26,12 +26,8 @@ import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  DropboxOutlined,
-  RightOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { Modal, Select, Form, Empty, message } from "antd";
+import { RightOutlined, SearchOutlined } from "@ant-design/icons";
+import { Modal, Select, Form, Empty, message, Input } from "antd";
 import {
   DELIVERY_MODAL_TOGGLE,
   PAYMENT_DETAIL_REQUEST,
@@ -40,6 +36,10 @@ import {
   PAYMENT_DELIVERY_REQUEST,
 } from "../../reducers/paymentRequest";
 import DaumPostcode from "react-daum-postcode";
+import {
+  ADDRESS_LIST_REQUEST,
+  ADDRESS_LIST_MODAL_TOGGLE,
+} from "../../reducers/address";
 import useInput from "../../hooks/useInput";
 
 const CustomSelect = styled(Select)`
@@ -103,7 +103,7 @@ const Index = ({}) => {
   );
 
   const { me } = useSelector((state) => state.user);
-  const { addressList, addressListModal } = useSelector(
+  const { addressList, addressDetail, addressListModal } = useSelector(
     (state) => state.address
   );
 
@@ -122,6 +122,8 @@ const Index = ({}) => {
   const formRef = useRef();
 
   const dispatch = useDispatch();
+
+  const searchInput = useInput("");
 
   const [payment, setPayment] = useState(null);
   ////// REDUX //////
@@ -170,6 +172,18 @@ const Index = ({}) => {
     }
   }, [st_paymentDeliveryError]);
 
+  useEffect(() => {
+    if (searchInput && me) {
+      dispatch({
+        type: ADDRESS_LIST_REQUEST,
+        data: {
+          userId: me.id,
+          searchAddress: searchInput.value,
+        },
+      });
+    }
+  }, [searchInput.value]);
+
   ////// TOGGLE //////
 
   const deliveryModalToggle = useCallback((type) => {
@@ -190,14 +204,17 @@ const Index = ({}) => {
         type: ADDRESS_LIST_REQUEST,
         data: {
           userId: me.id,
-          type: 2,
+          type,
+          searchAddress: "",
         },
       });
     }
 
-    dispatch({
-      type: ADDRESS_LIST_MODAL_TOGGLE,
-    });
+    if (type === 2) {
+      dispatch({
+        type: ADDRESS_LIST_MODAL_TOGGLE,
+      });
+    }
   }, []);
   ////// HANDLER //////
 
@@ -224,6 +241,27 @@ const Index = ({}) => {
     },
     [router.query]
   );
+
+  const selectAddressHandler = useCallback((data) => {
+    formRef.current.setFieldsValue({
+      ruser: data.username,
+      rmobile: data.userMobile,
+      raddress: data.address,
+      rdetailAddress: data.detailAddress,
+    });
+    dispatch({
+      type: ADDRESS_LIST_MODAL_TOGGLE,
+    });
+  }, []);
+
+  const normalAddressHandler = useCallback(() => {
+    formRef.current.setFieldsValue({
+      suser: addressDetail.username,
+      smobile: addressDetail.userMobile,
+      saddress: addressDetail.address,
+      sdetailAddress: addressDetail.detailAddress,
+    });
+  }, [addressDetail]);
 
   ////// DATAVIEW //////
 
@@ -356,6 +394,7 @@ const Index = ({}) => {
                       fontSize={`16px`}
                       color={Theme.subTheme2_C}
                       cursor={`pointer`}
+                      onClick={() => addressListModalToggle(2)}
                     >
                       주소록 불러오기
                     </Text>
@@ -512,6 +551,7 @@ const Index = ({}) => {
                       fontSize={`16px`}
                       color={Theme.subTheme2_C}
                       cursor={`pointer`}
+                      onClick={normalAddressHandler}
                     >
                       기본주소 불러오기
                     </Text>
@@ -795,16 +835,93 @@ const Index = ({}) => {
             />
           </Modal>
 
-          <Modal width={`500px`} visible={addressListModal}>
+          {/* SEARCH ADDRESS MODAL */}
+
+          <Modal
+            width={`424px`}
+            style={{ top: 200, borderRadius: 30 }}
+            visible={addressListModal}
+            footer={null}
+            closable={false}
+            onCancel={() => addressListModalToggle(2)}
+          >
             <Wrapper>
-              {addressList &&
-                (addressList.length === 0 ? (
-                  <Empty />
-                ) : (
-                  addressList.map((data) => {
-                    return <Wrapper>{data.name}</Wrapper>;
-                  })
-                ))}
+              <Wrapper dr={`row`} margin={`0 0 21px`} ju={`space-between`}>
+                <Text
+                  fontSize={width < 500 ? `18px` : `22px`}
+                  fontWeight={`bold`}
+                >
+                  주소록 불러오기
+                </Text>
+                <Wrapper width={width < 500 ? `190px` : `212px`}>
+                  <Input
+                    {...searchInput}
+                    style={{
+                      height: `45px`,
+                      borderRadius: `20px`,
+                      border: `none`,
+                      boxShadow: `5px 5px 5px ${Theme.lightGrey_C}`,
+                    }}
+                    placeholder="주소록에서 검색"
+                    prefix={<SearchOutlined />}
+                  />
+                </Wrapper>
+              </Wrapper>
+              <Wrapper borderTop={`1px solid ${Theme.grey2_C}`}>
+                {addressList &&
+                  (addressList.length === 0 ? (
+                    <Wrapper margin={`20px 0 0`}>
+                      <Empty />
+                    </Wrapper>
+                  ) : (
+                    addressList.map((data) => {
+                      return (
+                        <Wrapper
+                          borderBottom={`1px solid ${Theme.grey2_C}`}
+                          dr={`row`}
+                          padding={`17px 0 15px`}
+                        >
+                          <Wrapper width={`30%`}>
+                            <Text>{data.username}</Text>
+                            <Text color={Theme.subTheme2_C}>
+                              {data.isNormal && "기본주소"}
+                            </Text>
+                          </Wrapper>
+                          <Wrapper
+                            width={`40%`}
+                            al={`flex-start`}
+                            fontSize={`14px`}
+                          >
+                            <Text>{data.address}</Text>
+                            <Text>{data.userMobile}</Text>
+                          </Wrapper>
+                          <Wrapper width={`30%`}>
+                            <CommonButton
+                              kindOf={`white`}
+                              width={`70%`}
+                              onClick={() => selectAddressHandler(data)}
+                            >
+                              선택
+                            </CommonButton>
+                          </Wrapper>
+                        </Wrapper>
+                      );
+                    })
+                  ))}
+              </Wrapper>
+
+              <Wrapper dr={`row`} ju={`flex-end`} margin={`14px 0 0`}>
+                <CommonButton
+                  kindOf={`grey`}
+                  height={`40px`}
+                  onClick={() => addressListModalToggle(2)}
+                >
+                  취소
+                </CommonButton>
+                <CommonButton margin={`0 0 0 10px`} height={`40px`}>
+                  나에게 보내기
+                </CommonButton>
+              </Wrapper>
             </Wrapper>
           </Modal>
         </WholeWrapper>

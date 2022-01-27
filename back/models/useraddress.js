@@ -5,6 +5,14 @@ module.exports = class UserAddress extends Model {
   static init(sequelize) {
     return super.init(
       {
+        username: {
+          type: DataTypes.STRING(300),
+          allowNull: false, // 필수
+        },
+        userMobile: {
+          type: DataTypes.STRING(150),
+          allowNull: false, // 필수
+        },
         postCode: {
           type: DataTypes.STRING(10),
           allowNull: false, // 필수

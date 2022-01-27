@@ -2,6 +2,7 @@ import produce from "../util/produce";
 
 export const initailState = {
   addressList: null,
+  addressDetail: null,
 
   addressListModal: false,
 
@@ -32,8 +33,8 @@ const reducer = (state = initailState, action) =>
       case ADDRESS_LIST_SUCCESS: {
         draft.st_addressListLoading = false;
         draft.st_addressListDone = true;
-        draft.addressList = action.data;
-
+        draft.addressList = action.data.list;
+        draft.addressDetail = action.data.detail;
         break;
       }
 

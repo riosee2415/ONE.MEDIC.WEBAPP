@@ -10,7 +10,9 @@ import {
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function addressGetAPI(data) {
-  return axios.get(`/api/address/list/userId=${data.userId}&type=${data.type}`);
+  return axios.get(
+    `/api/address/list?userId=${data.userId}&searchAddress=${data.searchAddress}`
+  );
 }
 
 function* addressGet(action) {

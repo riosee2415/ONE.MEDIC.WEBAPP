@@ -1,11 +1,12 @@
 const express = require("express");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const { UserAddress, User } = require("../models");
+const { Op } = require("sequelize");
 
 const router = express.Router();
 
 router.get("/list", isLoggedIn, async (req, res, next) => {
-  const { userId, type } = req.query;
+  const { userId, searchAddress } = req.query;
 
   try {
     if (userId) {
@@ -20,26 +21,25 @@ router.get("/list", isLoggedIn, async (req, res, next) => {
       }
     }
 
-    if (type === "1") {
-      const result = await UserAddress.findOne({
-        where: {
-          UserId: parseInt(userId),
-          isDelete: false,
-          isNormal: true,
-        },
-      });
+    const detail = await UserAddress.findOne({
+      where: {
+        UserId: parseInt(userId),
+        isDelete: false,
+        isNormal: true,
+      },
+    });
 
-      return res.status(200).json(result);
-    } else {
-      const result = await UserAddress.findAll({
-        where: {
-          UserId: parseInt(userId),
-          isDelete: false,
+    const list = await UserAddress.findAll({
+      where: {
+        UserId: parseInt(userId),
+        isDelete: false,
+        address: {
+          [Op.like]: `%${searchAddress}%`,
         },
-      });
+      },
+    });
 
-      return res.status(200).json(result);
-    }
+    return res.status(200).json({ list, detail });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
