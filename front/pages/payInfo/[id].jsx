@@ -41,40 +41,6 @@ import {
 } from "../../reducers/paymentRequest";
 import { DISCOUNT_USER_REQUEST } from "../../reducers/discount";
 
-const CustomSelect = styled(Select)`
-  width: 100%;
-  & .ant-select-selection-item {
-    font-size: ${(props) => props.fontSize || `18px`};
-    color: ${(props) => props.color || Theme.black_C};
-    line-height: 45px !important;
-  }
-
-  & .ant-select-selector {
-    height: ${(props) => props.height || `45px`} !important;
-  }
-  & .ant-select-selector:hover {
-    height: ${(props) => props.height || `45px`} !important;
-    border-color: ${Theme.basicTheme_C} !important;
-  }
-
-  & .ant-select-selection-placeholder {
-    line-height: 45px !important;
-  }
-  & .ant-select-selection-search-input {
-    height: 45px !important;
-    font-size: 18px !important;
-  }
-
-  & .ant-select-selector {
-    border: 1px solid ${Theme.grey2_C} !important;
-    border-radius: 10px !important;
-  }
-
-  & .ant-select-selection-placeholder {
-    font-size: 18px !important;
-  }
-`;
-
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
     border-radius: 20px;
@@ -116,6 +82,8 @@ const Index = ({}) => {
   const [productPayment, setProductPayment] = useState(0);
   const [discount, setDiscount] = useState(0);
 
+  const [paymentType, setPaymentType] = useState(null);
+
   const [isAgree1, setIsAgree1] = useState(false);
   const [isAgree2, setIsAgree2] = useState(false);
 
@@ -137,10 +105,10 @@ const Index = ({}) => {
   }, []);
 
   useEffect(() => {
-    if (userDiscount) {
+    if (userDiscount && productPayment) {
       setDiscount(parseInt((userDiscount.value / 100) * productPayment));
     }
-  }, [userDiscount]);
+  }, [userDiscount, productPayment]);
 
   useEffect(() => {
     if (router.query) {
@@ -168,9 +136,19 @@ const Index = ({}) => {
 
   ////// HANDLER //////
 
+  const paymentSelectHadnler = useCallback(
+    (type) => {
+      setPaymentType(type);
+    },
+    [paymentType]
+  );
+
   const boughtProductHandler = useCallback(() => {
     if (!isAgree2) {
       return LoadNotification("안내", "결제 동의을 체크해주세요.");
+    }
+    if (!paymentType) {
+      return LoadNotification("안내", "결제 수단을 선택해주세요.");
     }
 
     const d = new Date();
@@ -197,14 +175,17 @@ const Index = ({}) => {
     if (me && paymentDetail) {
       IMP.request_pay(
         {
-          pg: "danal_tpay",
-          pay_method: "card",
+          pg: paymentType === "phone" ? "danal" : "danal_tpay",
+          pay_method: paymentType,
           merchant_uid: orderPK,
           name: me.username,
           amount: productPayment - discount + 5000,
           amount: 150,
           buyer_name: me.username,
-          buyer_tel: me.mobile,
+          buyer_tel: me.mobile.replace(
+            /^(\d{2,3})(\d{3,4})(\d{4})$/,
+            `$1-$2-$3`
+          ),
           buyer_email: me.email,
           buyer_addr: paymentDetail.receiveAddress,
           buyer_postcode: paymentDetail.receiveAddress.substring(
@@ -229,7 +210,7 @@ const Index = ({}) => {
         }
       );
     }
-  }, [isAgree2, productPayment, discount, router.query]);
+  }, [isAgree2, productPayment, discount, router.query, paymentType, me]);
 
   ////// DATAVIEW //////
 
@@ -530,6 +511,8 @@ const Index = ({}) => {
                   </Wrapper>
                 </Wrapper>
 
+                {/* 처방가격 */}
+
                 <Wrapper
                   borderBottom={`1px solid ${Theme.grey_C}`}
                   margin={`0 0 20px`}
@@ -620,15 +603,17 @@ const Index = ({}) => {
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
+                        // onClick={() => paymentSelectHadnler("")}
                       >
                         <Text fontSize={`16px`}>카드 간편 결제</Text>
                       </CommonButton>
                       <CommonButton
-                        kindOf={`white`}
+                        kindOf={paymentType !== "trans" && `white`}
                         width={`calc(50% - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
+                        onClick={() => paymentSelectHadnler("trans")}
                       >
                         <Text fontSize={`16px`}>계좌 간편 결제</Text>
                       </CommonButton>
@@ -639,20 +624,22 @@ const Index = ({}) => {
                       margin={`0 0 30px`}
                     >
                       <CommonButton
-                        kindOf={`white`}
+                        kindOf={paymentType !== "card" && `white`}
                         width={`calc(100% / 3 - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
+                        onClick={() => paymentSelectHadnler("card")}
                       >
                         <Text fontSize={`16px`}>신용카드</Text>
                       </CommonButton>
                       <CommonButton
-                        kindOf={`white`}
+                        kindOf={paymentType !== "phone" && `white`}
                         width={`calc(100% / 3 - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
+                        onClick={() => paymentSelectHadnler("phone")}
                       >
                         <Text fontSize={`16px`}>휴대폰 결제</Text>
                       </CommonButton>
@@ -662,6 +649,7 @@ const Index = ({}) => {
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
+                        // onClick={() => paymentSelectHadnler("")}
                       >
                         <Text fontSize={`16px`}>무통장입금</Text>
                       </CommonButton>

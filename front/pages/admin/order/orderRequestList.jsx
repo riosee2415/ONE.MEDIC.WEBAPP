@@ -272,18 +272,7 @@ const OrderRequestList = () => {
         </Button>
       ),
     },
-    {
-      title: "종류",
-      dataIndex: "typeVolumn",
-    },
-    {
-      title: "포장",
-      dataIndex: "packVolumn",
-    },
-    {
-      title: "단위",
-      dataIndex: "unitVolumn",
-    },
+
     {
       title: "주문상세",
       render: (data) => (
@@ -352,18 +341,6 @@ const OrderRequestList = () => {
           주문자 상세정보
         </Button>
       ),
-    },
-    {
-      title: "종류",
-      dataIndex: "typeVolumn",
-    },
-    {
-      title: "포장",
-      dataIndex: "packVolumn",
-    },
-    {
-      title: "단위",
-      dataIndex: "unitVolumn",
     },
     {
       title: "주문상세",
@@ -458,7 +435,7 @@ const OrderRequestList = () => {
             isComplete === 2 || isComplete === 3 ? completeColumns : columns
           }
           size="small"
-          dataSource={paymentRequest ? paymentRequest : []}
+          dataSource={paymentRequest ? paymentRequest.result : []}
         />
       </AdminContent>
 
@@ -623,62 +600,7 @@ const OrderRequestList = () => {
               {paymentData && paymentData.orderAt}
             </Text>
           </Wrapper>
-          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
-            <Text
-              width={`20%`}
-              textAlign={"center"}
-              padding={`10px 0 `}
-              color={Theme.white_C}
-              bgColor={Theme.black_C}
-            >
-              가격
-            </Text>
-            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
-              {paymentData && paymentData.payment}
-            </Text>
-          </Wrapper>
-          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
-            <Text
-              width={`20%`}
-              textAlign={"center"}
-              padding={`10px 0 `}
-              color={Theme.white_C}
-              bgColor={Theme.black_C}
-            >
-              종류
-            </Text>
-            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
-              {paymentData && paymentData.typeVolumn}
-            </Text>
-          </Wrapper>
-          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
-            <Text
-              width={`20%`}
-              textAlign={"center"}
-              padding={`10px 0 `}
-              color={Theme.white_C}
-              bgColor={Theme.black_C}
-            >
-              포장
-            </Text>
-            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
-              {paymentData && paymentData.packVolumn}
-            </Text>
-          </Wrapper>
-          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
-            <Text
-              width={`20%`}
-              textAlign={"center"}
-              padding={`10px 0 `}
-              color={Theme.white_C}
-              bgColor={Theme.black_C}
-            >
-              단위
-            </Text>
-            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
-              {paymentData && paymentData.unitVolumn}
-            </Text>
-          </Wrapper>
+
           <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
             <Text
               width={`20%`}
@@ -695,6 +617,119 @@ const OrderRequestList = () => {
                 : "추가요구사항이 없습니다."}
             </Text>
           </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              받는사람
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.receiveUser}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              받는전화번호
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.receiveMobile}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              받는주소
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.receiveAddress}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              받는상세주소
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.receiveDetailAddress}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              보내는사람
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.sendUser}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              보내는전화번호
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.sendMobile}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              보내는주소
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.sendAddress}
+            </Text>
+          </Wrapper>
+          <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
+            <Text
+              width={`20%`}
+              textAlign={"center"}
+              padding={`10px 0 `}
+              color={Theme.white_C}
+              bgColor={Theme.black_C}
+            >
+              보내는상세주소
+            </Text>
+            <Text width={`80%`} textAlign={"center"} padding={`10px 0 `}>
+              {paymentData && paymentData.sendDetailAddress}
+            </Text>
+          </Wrapper>
+
           <Wrapper dr={`row`} borderTop={`1px solid ${Theme.black_C}`}>
             <Text
               width={`20%`}
@@ -726,6 +761,164 @@ const OrderRequestList = () => {
                 ? paymentData.deliveryNo
                 : "운송장번호가 등록되어있지 않습니다."}
             </Text>
+          </Wrapper>
+          <Wrapper
+            dr={`row`}
+            al={`flex-start`}
+            borderTop={`1px solid ${Theme.black_C}`}
+          >
+            {paymentRequest && paymentRequest.result2 && (
+              <>
+                <Wrapper
+                  width={`20%`}
+                  height={`100%`}
+                  ju={`flex-start`}
+                  padding={`${
+                    90 *
+                    (paymentRequest.result2.length === 0
+                      ? 4
+                      : paymentRequest.result2.length)
+                  }px 0`}
+                  color={Theme.white_C}
+                  bgColor={Theme.black_C}
+                >
+                  <Text>주문재료목록</Text>
+                </Wrapper>
+
+                <Wrapper
+                  width={`80%`}
+                  dr={`row`}
+                  ju={`space-between`}
+                  padding={`10px 20px`}
+                >
+                  {paymentRequest.result2.length === 0 ? (
+                    <Wrapper padding={`5px 0 0`}>
+                      <Empty />
+                    </Wrapper>
+                  ) : (
+                    paymentRequest.result2.map((data) => {
+                      return (
+                        <Wrapper
+                          width={`calc(100% - 5px)`}
+                          al={`flex-start`}
+                          border={`1px solid ${Theme.black_C}`}
+                          margin={`0 0 15px`}
+                        >
+                          <Wrapper
+                            dr={`row`}
+                            borderBottom={`1px solid ${Theme.black_C}`}
+                          >
+                            <Text
+                              width={`25%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                              bgColor={Theme.black_C}
+                              color={Theme.white_C}
+                            >
+                              가격
+                            </Text>
+                            <Text
+                              width={`75%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                            >
+                              {String(data.payment).replace(
+                                /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                                ","
+                              )}
+                              원
+                            </Text>
+                          </Wrapper>
+                          <Wrapper
+                            dr={`row`}
+                            borderBottom={`1px solid ${Theme.black_C}`}
+                          >
+                            <Text
+                              width={`25%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                              bgColor={Theme.black_C}
+                              color={Theme.white_C}
+                            >
+                              종류
+                            </Text>
+                            <Text
+                              width={`75%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                            >
+                              {data.typeVolumn}
+                            </Text>
+                          </Wrapper>
+                          <Wrapper
+                            dr={`row`}
+                            borderBottom={`1px solid ${Theme.black_C}`}
+                          >
+                            <Text
+                              width={`25%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                              bgColor={Theme.black_C}
+                              color={Theme.white_C}
+                            >
+                              포장
+                            </Text>
+                            <Text
+                              width={`75%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                            >
+                              {data.packVolumn}
+                            </Text>
+                          </Wrapper>
+                          <Wrapper
+                            dr={`row`}
+                            borderBottom={`1px solid ${Theme.black_C}`}
+                          >
+                            <Text
+                              width={`25%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                              bgColor={Theme.black_C}
+                              color={Theme.white_C}
+                            >
+                              단위
+                            </Text>
+                            <Text
+                              width={`75%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                            >
+                              {data.unitVolumn}
+                            </Text>
+                          </Wrapper>
+                          <Wrapper dr={`row`}>
+                            <Text
+                              width={`25%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                              bgColor={Theme.black_C}
+                              color={Theme.white_C}
+                            >
+                              요구사항
+                            </Text>
+                            <Text
+                              width={`75%`}
+                              textAlign={`center`}
+                              padding={`5px 0`}
+                            >
+                              {data.otherRequest
+                                ? otherRequest
+                                : "요구사항이 없습니다."}
+                            </Text>
+                          </Wrapper>
+                        </Wrapper>
+                      );
+                    })
+                  )}
+                </Wrapper>
+              </>
+            )}
           </Wrapper>
         </Wrapper>
       </Modal>

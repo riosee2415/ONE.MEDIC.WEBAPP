@@ -13,39 +13,44 @@ router.get("/list", async (req, res, next) => {
   try {
     const condition =
       type === "1"
-        ? `WHERE  pr.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
+        ? `AND  p.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
         : type === "2"
-        ? `WHERE  pr.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
+        ? `AND  p.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
         : "";
 
     const completedCondition =
       isComplete === "1"
-        ? `AND  pr.isCompleted = false`
+        ? `AND  p.isCompleted = false`
         : isComplete === "2"
-        ? `AND  pr.isCompleted = true`
+        ? `AND  p.isCompleted = true`
         : "";
 
     const selectQuery = `
-    SELECT  pr.id,
-		        pr.payment,
-		        pr.packVolumn,
-		        pr.typeVolumn,
-		        pr.unitVolumn,
-		        pr.otherRequest,
-		        pr.completedAt,
-            pr.deliveryNo,
-            pr.deliveryCompany,
-		        DATE_FORMAT(pr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
-		        DATE_FORMAT(pr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+    SELECT  p.id,
+		        p.productName,
+            p.completedAt,
+            p.deliveryNo,
+            p.receiveUser,
+            p.receiveMobile,
+            p.receiveAddress,
+            p.receiveDetailAddress,
+            p.sendUser,
+            p.sendMobile,
+            p.sendAddress,
+            p.sendDetailAddress,
+            p.deliveryCompany,
+		        DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
+		        DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
             u.username,
 		        u.email,
 		        u.mobile,
 		        u.nickname,
-		        companyName,
-		        companyNo
-      FROM  paymentRequest pr
+		        u.companyName,
+		        u.companyNo
+      FROM  payment p
       JOIN  users u
-        ON  u.id = pr.UserId
+        ON  u.id = p.UserId
+     WHERE  isPayment = TRUE
      ${condition}
      ${completedCondition};
     `;
@@ -56,6 +61,28 @@ router.get("/list", async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(400).send("결제 요청이 없습니다.");
+  }
+});
+
+router.get("/list/request/:paymentId", async (req, res, next) => {
+  const { paymentId } = req.params;
+
+  try {
+    const selectQuery = `
+      SELECT  p.payment,
+              p.packVolumn,
+              p.typeVolumn,
+              p.unitVolumn,
+              p.otherRequest
+        FROM  paymentRequest p
+       WHERE  PaymentId = ${paymentId};
+      `;
+
+    const result = await models.sequelize.query(selectQuery);
+    return res.status(200).json(result[0]);
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
   }
 });
 
@@ -115,7 +142,7 @@ router.patch("/delivery/update", async (req, res, next) => {
   const { deliveryCompany, deliveryNo, paymentId } = req.body;
 
   try {
-    const result = await PaymentRequest.update(
+    const result = await Payment.update(
       {
         deliveryCompany,
         deliveryNo,
@@ -142,7 +169,7 @@ router.patch(
 
     try {
       if (paymentId) {
-        const exPayment = await PaymentRequest.findOne({
+        const exPayment = await Payment.findOne({
           where: {
             id: parseInt(paymentId),
           },
@@ -157,7 +184,7 @@ router.patch(
         }
       }
 
-      const result = await PaymentRequest.update(
+      const result = await Payment.update(
         {
           isCompleted: true,
           completedAt: new Date(),
@@ -176,41 +203,6 @@ router.patch(
     }
   }
 );
-
-router.patch("/delivery/:paymentId", isAdminCheck, async (req, res, next) => {
-  const { paymentId } = req.params;
-  const { deliveryNo, deliveryCompany } = req.body;
-
-  try {
-    if (paymentId) {
-      const exPayment = await PaymentRequest.findOne({
-        where: {
-          id: parseInt(paymentId),
-        },
-      });
-
-      if (!exPayment) {
-        return res.status(400).send("주문이 없습니다.");
-      }
-    }
-    const result = await PaymentRequest.update(
-      {
-        deliveryNo,
-        deliveryCompany,
-      },
-      {
-        where: {
-          id: parseInt(paymentId),
-        },
-      }
-    );
-
-    return res.status(200).json({ result: true });
-  } catch (e) {
-    console.error(e);
-    return res.status(400).send("잘못된 요청입니다.");
-  }
-});
 
 router.get("/detail/:paymentId", isLoggedIn, async (req, res, next) => {
   const { paymentId } = req.params;
