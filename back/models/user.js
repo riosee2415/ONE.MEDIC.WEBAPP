@@ -111,6 +111,10 @@ module.exports = class User extends Model {
           type: DataTypes.STRING(300), // 카드정보를 등록했을 때
           allowNull: true,
         },
+        cardName: {
+          type: DataTypes.STRING(300), // 카드정보를 등록했을 때
+          allowNull: true,
+        },
       },
       {
         modelName: "User",

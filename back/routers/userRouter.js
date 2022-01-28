@@ -683,12 +683,8 @@ router.get("/card/list/:userId", isLoggedIn, async (req, res, next) => {
 });
 
 router.patch("/card/create", isLoggedIn, async (req, res, next) => {
-  const { cardNo, cardDate, cardPassword, cardBirth } = req.body;
-
-  console.log(cardNo);
-  console.log(cardDate);
-  console.log(cardPassword);
-  console.log(cardBirth);
+  const { cardNo, cardDate, cardPassword, cardBirth, userCode, cardName } =
+    req.body;
 
   try {
     const exUser = User.findOne({
@@ -701,66 +697,72 @@ router.patch("/card/create", isLoggedIn, async (req, res, next) => {
       return res.status(400).send("존재하지 않는 회원입니다.");
     }
 
-    const d = new Date();
+    // const d = new Date();
 
-    let year = d.getFullYear() + "";
-    let month = d.getMonth() + 1 + "";
-    let date = d.getDate() + "";
-    let hour = d.getHours() + "";
-    let min = d.getMinutes() + "";
-    let sec = d.getSeconds() + "";
-    let mSec = d.getMilliseconds() + "";
+    // let year = d.getFullYear() + "";
+    // let month = d.getMonth() + 1 + "";
+    // let date = d.getDate() + "";
+    // let hour = d.getHours() + "";
+    // let min = d.getMinutes() + "";
+    // let sec = d.getSeconds() + "";
+    // let mSec = d.getMilliseconds() + "";
 
-    month = month < 10 ? "0" + month : month;
-    date = date < 10 ? "0" + date : date;
-    hour = hour < 10 ? "0" + hour : hour;
-    min = min < 10 ? "0" + min : min;
-    sec = sec < 10 ? "0" + sec : sec;
-    mSec = mSec < 10 ? "0" + mSec : mSec;
+    // month = month < 10 ? "0" + month : month;
+    // date = date < 10 ? "0" + date : date;
+    // hour = hour < 10 ? "0" + hour : hour;
+    // min = min < 10 ? "0" + min : min;
+    // sec = sec < 10 ? "0" + sec : sec;
+    // mSec = mSec < 10 ? "0" + mSec : mSec;
 
-    let orderPK = "USER_C" + year + month + date + hour + min + sec + mSec;
+    // let orderPK = "USER_C" + year + month + date + hour + min + sec + mSec;
 
-    const getToken = await axios({
-      url: "https://api.iamport.kr/users/getToken",
-      method: "post", // POST method
-      headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-      data: {
-        imp_key: process.env.IMP_KEY, // REST API 키
-        imp_secret: process.env.IMP_SECRET,
-      },
-    });
+    // const getToken = await axios({
+    //   url: "https://api.iamport.kr/users/getToken",
+    //   method: "post", // POST method
+    //   headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+    //   data: {
+    //     imp_key: process.env.IMP_KEY, // REST API 키
+    //     imp_secret: process.env.IMP_SECRET,
+    //   },
+    // });
 
-    const { access_token } = getToken.data.response; // 인증 토큰
+    // const { access_token } = getToken.data.response; // 인증 토큰
 
-    const issueBilling = await axios({
-      url: `https://api.iamport.kr/subscribe/customers/${orderPK}`,
-      method: "post",
-      headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
-      data: {
-        card_number: cardNo, // 카드 번호
-        expiry: cardDate, // 카드 유효기간
-        birth: cardBirth, // 생년월일
-        pwd_2digit: cardPassword, // 카드 비밀번호 앞 두자리
-      },
-    });
+    // const issueBilling = await axios({
+    //   url: `https://api.iamport.kr/subscribe/customers/${orderPK}`,
+    //   method: "post",
+    //   headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
+    //   data: {
+    //     card_number: cardNo, // 카드 번호
+    //     expiry: cardDate, // 카드 유효기간
+    //     birth: cardBirth, // 생년월일
+    //     pwd_2digit: cardPassword, // 카드 비밀번호 앞 두자리
+    //   },
+    // });
 
-    const { code, message } = issueBilling.data;
+    // const { code, message } = issueBilling.data;
 
-    if (code === 0) {
-      const result = await User.update({
+    // if (code === 0) {
+    const result = await User.update(
+      {
         cardNo,
         cardDate,
         cardBirth,
         cardPassword,
-        userCode: orderPK,
-        UserId: parseInt(req.user.id),
-      });
-      return res.status(200).json({ result: true });
-    } else {
-      console.log(message);
-      // 빌링키 발급 실패
-      return res.status(401).send("카드정보를 등록할 수 없습니다.");
-    }
+        userCode,
+        cardName,
+      },
+      {
+        where: {
+          id: parseInt(req.user.id),
+        },
+      }
+    );
+    return res.status(200).json({ result: true });
+    // } else {
+    //   // 빌링키 발급 실패
+    //   return res.status(401).send(message);
+    // }
   } catch (e) {
     console.error(e);
     return res.status(401).send("카드정보를 등록할 수 없습니다.");
@@ -798,6 +800,37 @@ router.delete("/card/delete/:cardId", isLoggedIn, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
+router.post("/test", async (req, res, next) => {
+  const { imp_uid } = req.body; // request의 body에서 imp_uid 추출
+  try {
+    // 인증 토큰 발급 받기
+    const getToken = await axios({
+      url: "https://api.iamport.kr/users/getToken",
+      method: "post", // POST method
+      headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+      data: {
+        imp_key: process.env.IMP_KEY, // REST API 키
+        imp_secret: process.env.IMP_SECRET, // REST API Secret
+      },
+    });
+    const { access_token } = getToken.data.response; // 인증 토큰
+
+    // imp_uid로 인증 정보 조회
+    const getCertifications = await axios({
+      url: `https://api.iamport.kr/certifications/${imp_uid}`, // imp_uid 전달
+      method: "get", // GET method
+      headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
+    });
+    const certificationsInfo = getCertifications.data; // 조회한 인증 정보
+
+    console.log(certificationsInfo);
+
+    return res.status(200).json(certificationsInfo);
+  } catch (e) {
+    console.error(e);
   }
 });
 

@@ -67,7 +67,8 @@ const Index = ({}) => {
 
   const { me } = useSelector((state) => state.user);
 
-  const { paymentDetail } = useSelector((state) => state.paymentRequest);
+  const { paymentDetail, st_paymentIsPaymentDone, st_paymentIsPaymentError } =
+    useSelector((state) => state.paymentRequest);
 
   const { userDiscount } = useSelector((state) => state.discount);
 
@@ -132,6 +133,19 @@ const Index = ({}) => {
     }
   }, [paymentDetail]);
 
+  useEffect(() => {
+    if (st_paymentIsPaymentDone) {
+      message.success("결제되었습니다.");
+      return router.push("/");
+    }
+  }, [st_paymentIsPaymentDone]);
+
+  useEffect(() => {
+    if (st_paymentIsPaymentError) {
+      return message.success("결제되었습니다.");
+    }
+  }, [st_paymentIsPaymentError]);
+
   ////// TOGGLE //////
 
   ////// HANDLER //////
@@ -151,64 +165,77 @@ const Index = ({}) => {
       return LoadNotification("안내", "결제 수단을 선택해주세요.");
     }
 
-    const d = new Date();
-
-    let year = d.getFullYear() + "";
-    let month = d.getMonth() + 1 + "";
-    let date = d.getDate() + "";
-    let hour = d.getHours() + "";
-    let min = d.getMinutes() + "";
-    let sec = d.getSeconds() + "";
-    let mSec = d.getMilliseconds() + "";
-
-    month = month < 10 ? "0" + month : month;
-    date = date < 10 ? "0" + date : date;
-    hour = hour < 10 ? "0" + hour : hour;
-    min = min < 10 ? "0" + min : min;
-    sec = sec < 10 ? "0" + sec : sec;
-    mSec = mSec < 10 ? "0" + mSec : mSec;
-
-    let orderPK = "ORD" + year + month + date + hour + min + sec + mSec;
-
-    const IMP = window.IMP;
-
-    if (me && paymentDetail) {
-      IMP.request_pay(
-        {
-          pg: paymentType === "phone" ? "danal" : "danal_tpay",
-          pay_method: paymentType,
-          merchant_uid: orderPK,
-          name: me.username,
-          amount: productPayment - discount + 5000,
-          amount: 150,
-          buyer_name: me.username,
-          buyer_tel: me.mobile.replace(
-            /^(\d{2,3})(\d{3,4})(\d{4})$/,
-            `$1-$2-$3`
-          ),
-          buyer_email: me.email,
-          buyer_addr: paymentDetail.receiveAddress,
-          buyer_postcode: paymentDetail.receiveAddress.substring(
-            paymentDetail.receiveAddress.length - 6,
-            paymentDetail.receiveAddress.length - 1
-          ),
+    if (paymentType === "simpleCard") {
+      dispatch({
+        type: PAYMENT_ISPAYMENT_REQUEST,
+        data: {
+          paymentId: router.query.id,
+          isCard: "1",
+          totalPrice: productPayment - discount + 5000,
         },
-        async (rsp) => {
-          if (rsp.success) {
-            dispatch({
-              type: PAYMENT_ISPAYMENT_REQUEST,
-              data: {
-                paymentId: router.query.id,
-              },
-            });
-            message.success("결제되었습니다.");
-            return router.push("/");
-          } else {
-            console.log(rsp);
-            return console.log("결제실패");
+      });
+    } else {
+      const d = new Date();
+
+      let year = d.getFullYear() + "";
+      let month = d.getMonth() + 1 + "";
+      let date = d.getDate() + "";
+      let hour = d.getHours() + "";
+      let min = d.getMinutes() + "";
+      let sec = d.getSeconds() + "";
+      let mSec = d.getMilliseconds() + "";
+
+      month = month < 10 ? "0" + month : month;
+      date = date < 10 ? "0" + date : date;
+      hour = hour < 10 ? "0" + hour : hour;
+      min = min < 10 ? "0" + min : min;
+      sec = sec < 10 ? "0" + sec : sec;
+      mSec = mSec < 10 ? "0" + mSec : mSec;
+
+      let orderPK = "ORD" + year + month + date + hour + min + sec + mSec;
+
+      const IMP = window.IMP;
+
+      if (me && paymentDetail) {
+        IMP.request_pay(
+          {
+            pg: paymentType === "phone" ? "danal" : "danal_tpay",
+            pay_method: paymentType,
+            merchant_uid: orderPK,
+            name: me.username,
+            amount: productPayment - discount + 5000,
+            amount: 150,
+            buyer_name: me.username,
+            buyer_tel: me.mobile.replace(
+              /^(\d{2,3})(\d{3,4})(\d{4})$/,
+              `$1-$2-$3`
+            ),
+            buyer_email: me.email,
+            buyer_addr: paymentDetail.receiveAddress,
+            buyer_postcode: paymentDetail.receiveAddress.substring(
+              paymentDetail.receiveAddress.length - 6,
+              paymentDetail.receiveAddress.length - 1
+            ),
+          },
+          async (rsp) => {
+            if (rsp.success) {
+              dispatch({
+                type: PAYMENT_ISPAYMENT_REQUEST,
+                data: {
+                  paymentId: router.query.id,
+                  isCard: "0",
+                  totalPrice: productPayment - discount + 5000,
+                },
+              });
+              message.success("결제되었습니다.");
+              return router.push("/");
+            } else {
+              console.log(rsp);
+              return console.log("결제실패");
+            }
           }
-        }
-      );
+        );
+      }
     }
   }, [isAgree2, productPayment, discount, router.query, paymentType, me]);
 
@@ -598,12 +625,12 @@ const Index = ({}) => {
                   <Wrapper margin={`20px 0 0 0`}>
                     <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
                       <CommonButton
-                        kindOf={`white`}
+                        kindOf={paymentType !== "simpleCard" && `white`}
                         width={`calc(50% - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
-                        // onClick={() => paymentSelectHadnler("")}
+                        onClick={() => paymentSelectHadnler("simpleCard")}
                       >
                         <Text fontSize={`16px`}>카드 간편 결제</Text>
                       </CommonButton>
