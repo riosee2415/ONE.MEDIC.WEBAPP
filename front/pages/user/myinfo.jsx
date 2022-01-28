@@ -221,37 +221,38 @@ const Question = () => {
                 </Text>
 
                 <MyinfoBtn onClick={() => moveLinkHandler(`./payment`)}>
-                  {cardInfo ? "수정" : "추가"}
+                  {cardInfo && (cardInfo.length === 0 ? "수정" : "추가")}
                 </MyinfoBtn>
               </Wrapper>
-              {cardInfo ? (
-                cardInfo.map((data) => {
-                  return (
-                    <Wrapper al={`flex-start`}>
-                      <Wrapper dr={`row`}>
-                        <Text width={`25%`}>카드이름</Text>
-                        <Text width={`75%`} fontWeight={`bold`}>
-                          {data.cardName}
-                        </Text>
+              {cardInfo &&
+                (cardInfo.length === 0 ? (
+                  <Text>결제정보를 추가해주세요.</Text>
+                ) : (
+                  cardInfo.map((data) => {
+                    return (
+                      <Wrapper al={`flex-start`}>
+                        <Wrapper dr={`row`}>
+                          <Text width={`25%`}>카드이름</Text>
+                          <Text width={`75%`} fontWeight={`bold`}>
+                            {data.cardName}
+                          </Text>
+                        </Wrapper>
+                        <Wrapper dr={`row`} padding={`18px 0`}>
+                          <Text width={`25%`}>카드번호</Text>
+                          <Text width={`75%`} fontWeight={`bold`}>
+                            {data.cardNo}
+                          </Text>
+                        </Wrapper>
+                        <Wrapper dr={`row`}>
+                          <Text width={`25%`}>유효일</Text>
+                          <Text width={`75%`} fontWeight={`bold`}>
+                            {data.cardDate}
+                          </Text>
+                        </Wrapper>
                       </Wrapper>
-                      <Wrapper dr={`row`} padding={`18px 0`}>
-                        <Text width={`25%`}>카드번호</Text>
-                        <Text width={`75%`} fontWeight={`bold`}>
-                          {data.cardNo}
-                        </Text>
-                      </Wrapper>
-                      <Wrapper dr={`row`}>
-                        <Text width={`25%`}>유효일</Text>
-                        <Text width={`75%`} fontWeight={`bold`}>
-                          {data.cardDate}
-                        </Text>
-                      </Wrapper>
-                    </Wrapper>
-                  );
-                })
-              ) : (
-                <Text>결제정보를 추가해주세요.</Text>
-              )}
+                    );
+                  })
+                ))}
             </Wrapper>
             <Wrapper
               radius={`20px`}
