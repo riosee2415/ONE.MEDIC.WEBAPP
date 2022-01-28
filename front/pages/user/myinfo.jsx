@@ -221,7 +221,7 @@ const Question = () => {
                 </Text>
 
                 <MyinfoBtn onClick={() => moveLinkHandler(`./payment`)}>
-                  {cardInfo && (cardInfo.length === 0 ? "수정" : "추가")}
+                  {cardInfo && (cardInfo.length === 0 ? "추가" : "수정")}
                 </MyinfoBtn>
               </Wrapper>
               {cardInfo &&
