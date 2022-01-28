@@ -95,6 +95,8 @@ const Prescription = ({}) => {
     (state) => state.seo
   );
 
+  const { userMaterials } = useSelector((state) => state.material);
+
   ////// HOOKS //////
   const router = useRouter();
 
@@ -298,110 +300,37 @@ const Prescription = ({}) => {
                   />
                 </Wrapper>
                 <Wrapper>
-                  <ListWrapper
-                    onClick={(e) => listHandler(toggleArr, 0)}
-                    borderBottom={
-                      toggleArr[0] ? `null` : `1px solid ${Theme.grey2_C}`
-                    }
-                  >
-                    <Wrapper
-                      dr={`row`}
-                      width={`auto`}
-                      fontSize={width < 600 ? `16px` : `18px`}
-                      color={`${Theme.black_C}`}
-                    >
-                      {/* {toggleArr[0] ? (
-                        <UpOutlined
-                          style={{
-                            padding: "0 12px 0 0",
-                            color: `${Theme.grey3_C}`,
-                          }}
-                        />
-                      ) : (
-                        <DownOutlined
-                          style={{
-                            padding: "0 12px 0 0",
-                            color: `${Theme.grey3_C}`,
-                          }}
-                        />
-                      )} */}
-
-                      <Text fontWeight={`800`}>녹용</Text>
-                    </Wrapper>
-
-                    <Text
-                      color={`${Theme.black_C}`}
-                      fontSize={width < 600 ? `16px` : `18px`}
-                    >
-                      6&nbsp;g
-                    </Text>
-
-                    <Text
-                      color={`${Theme.black_C}`}
-                      fontSize={width < 600 ? `16px` : `18px`}
-                    >
-                      57,880
-                    </Text>
-                  </ListWrapper>
-
-                  {/* {toggleArr[0] && (
-                    <Wrapper bgColor={Theme.lightGrey_C} padding={`10px 0px`}>
-                      <Wrapper
-                        dr={`row`}
-                        ju={`space-between`}
-                        margin={`0 0 5px 0`}
-                        padding={`0 10px 0 30px`}
+                  {userMaterials.map((data) => {
+                    return (
+                      <ListWrapper
+                        onClick={(e) => listHandler(toggleArr, 0)}
+                        borderBottom={`1px solid ${Theme.grey2_C}`}
                       >
-                        <Wrapper dr={`row`} width={`auto`}>
-                          <RadioBox
-                            onChange={(e) => radioBoxHandler(e, 0)}
-                            checked={isChecked[0]}
-                          >
-                            <Text color={Theme.black_C} fontSize={`16px`}>
-                              뉴질랜드&nbsp;
-                              <SpanText
-                                fontSize={`14px`}
-                                color={`${Theme.grey_C}`}
-                              >
-                                (중대)
-                              </SpanText>
-                            </Text>
-                          </RadioBox>
+                        <Wrapper
+                          dr={`row`}
+                          width={`auto`}
+                          fontSize={width < 600 ? `16px` : `18px`}
+                          color={`${Theme.black_C}`}
+                        >
+                          <Text fontWeight={`800`}>{data.name}</Text>
                         </Wrapper>
 
-                        <Wrapper width={`auto`} color={Theme.black_C}>
-                          <Text fontSize={`16px`}>19,280</Text>
-                        </Wrapper>
-                      </Wrapper>
-                      <Wrapper
-                        dr={`row`}
-                        ju={`space-between`}
-                        bgColor={Theme.lightGrey_C}
-                        padding={`0 10px 0 30px`}
-                      >
-                        <Wrapper dr={`row`} width={`auto`}>
-                          <RadioBox
-                            onChange={(e) => radioBoxHandler(e, 1)}
-                            checked={isChecked[1]}
-                          >
-                            <Text color={Theme.black_C} fontSize={`16px`}>
-                              러시아&nbsp;
-                              <SpanText
-                                fontSize={`14px`}
-                                color={`${Theme.grey_C}`}
-                              >
-                                (중대)
-                              </SpanText>
-                            </Text>
-                          </RadioBox>
-                        </Wrapper>
+                        <Text
+                          color={`${Theme.black_C}`}
+                          fontSize={width < 600 ? `16px` : `18px`}
+                        >
+                          6&nbsp;g
+                        </Text>
 
-                        <Wrapper width={`auto`} color={Theme.black_C}>
-                          <Text fontSize={`16px`}>19,280</Text>
-                        </Wrapper>
-                      </Wrapper>
-                    </Wrapper>
-                  )} */}
+                        <Text
+                          color={`${Theme.black_C}`}
+                          fontSize={width < 600 ? `16px` : `18px`}
+                        >
+                          {data.viewPrice}
+                        </Text>
+                      </ListWrapper>
+                    );
+                  })}
                 </Wrapper>
               </Wrapper>
             </Wrapper>

@@ -160,7 +160,7 @@ const Question = () => {
                 </Text>
               </Wrapper>
             </Wrapper>
-            <Wrapper
+            {/* <Wrapper
               radius={`20px`}
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
@@ -172,8 +172,8 @@ const Question = () => {
                   탕전정보
                 </Text>
                 <MyinfoBtn>설정</MyinfoBtn>
-              </Wrapper>
-              {/* {me.map((data) => {
+              </Wrapper> */}
+            {/* {me.map((data) => {
                 return (
                   <>
                     <Wrapper dr={`row`}>
@@ -203,7 +203,7 @@ const Question = () => {
                   </>
                 );
               })} */}
-            </Wrapper>
+            {/* </Wrapper> */}
             <Wrapper
               radius={`20px`}
               shadow={Theme.shadow_C}

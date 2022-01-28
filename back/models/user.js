@@ -90,6 +90,27 @@ module.exports = class User extends Model {
           type: DataTypes.INTEGER,
           allowNull: true,
         },
+
+        cardNo: {
+          type: DataTypes.STRING(150), // 카드 번호
+          allowNull: true,
+        },
+        cardDate: {
+          type: DataTypes.STRING(100), // 카드 기간 YY/MM
+          allowNull: true,
+        },
+        cardPassword: {
+          type: DataTypes.STRING(10), // 카드 비밀번호 앞 2자리
+          allowNull: true,
+        },
+        cardBirth: {
+          type: DataTypes.STRING(100), // 주민등록번호 앞 6자리 혹은 사업자번호
+          allowNull: true,
+        },
+        userCode: {
+          type: DataTypes.STRING(300), // 카드정보를 등록했을 때
+          allowNull: true,
+        },
       },
       {
         modelName: "User",
@@ -105,6 +126,5 @@ module.exports = class User extends Model {
     db.User.hasMany(db.Payment);
     db.User.hasMany(db.UserAddress);
     db.User.hasMany(db.PrescriptionPaymentRequest);
-    db.User.hasMany(db.UserCard);
   }
 };

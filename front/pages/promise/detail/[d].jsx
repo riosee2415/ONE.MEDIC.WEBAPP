@@ -89,8 +89,6 @@ const PromiseDetail = () => {
   const [topSlider, setTopSlider] = useState(null);
   const [temporaryDatum, setTemporaryDatum] = useState([]);
 
-  const temporayArr = temporaryDatum ? temporaryDatum : [];
-
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -105,11 +103,9 @@ const PromiseDetail = () => {
         total += temporaryDatum[i].payment;
       }
 
-      console.log(total);
-
       setTotalPayment(total);
     }
-  }, [{ ...temporaryDatum }, { ...temporayArr }]);
+  }, [temporaryDatum]);
 
   useEffect(() => {
     if (router.query) {
@@ -204,6 +200,10 @@ const PromiseDetail = () => {
       return message.error("단위을 선택해주세요.");
     }
 
+    let temporayArr = temporaryDatum.map((data) => {
+      return data;
+    });
+
     temporayArr.push({
       payment:
         product &&
@@ -218,22 +218,18 @@ const PromiseDetail = () => {
     });
 
     await setTemporaryDatum(temporayArr);
-  }, [
-    type.value,
-    pack.value,
-    unit.value,
-    otherInput.value,
-    { ...temporayArr },
-    temporaryDatum,
-  ]);
+  }, [type.value, pack.value, unit.value, otherInput.value, temporaryDatum]);
 
   const deletePaymentArrHadnler = useCallback(
     async (index) => {
+      let temporayArr = temporaryDatum.map((data) => {
+        return data;
+      });
       temporayArr.splice(index, index + 1);
 
       await setTemporaryDatum(temporayArr);
     },
-    [{ ...temporayArr }, temporaryDatum]
+    [temporaryDatum]
   );
 
   const createPaymentRequestHandler = useCallback(() => {
@@ -526,7 +522,13 @@ const PromiseDetail = () => {
                 fontSize={width < 800 ? `15px` : `20px`}
               >
                 <Text fontWeight={`bold`}>총 주문금액&nbsp;:&nbsp;</Text>
-                <Text fontWeight={`bold`}>{totalPayment}</Text>
+                <Text fontWeight={`bold`}>
+                  {String(totalPayment).replace(
+                    /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                    ","
+                  )}
+                  &nbsp;원
+                </Text>
               </Wrapper>
               <CommonButton
                 shadow={`0`}

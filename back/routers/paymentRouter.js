@@ -4,6 +4,7 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const isNanCheck = require("../middlewares/isNanCheck");
 const models = require("../models");
 const { PaymentRequest, User, Payment } = require("../models");
+const axios = require("axios");
 
 const router = express.Router();
 
@@ -87,7 +88,8 @@ router.get("/list/request/:paymentId", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { userId, productName, paymentRequestDatum } = req.body;
+  const { userId, productName, paymentRequestDatum, isCard, totalPrice } =
+    req.body;
 
   if (isNanCheck(userId)) {
     return res
@@ -100,15 +102,82 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
   }
 
   try {
-    if (userId) {
-      const exUser = await User.findOne({
-        where: {
-          id: parseInt(userId),
+    const currentUser = await User.findOne({
+      where: {
+        id: parseInt(userId),
+      },
+    });
+
+    if (!currentUser) {
+      return res.status(400).send("회원이 없습니다.");
+    }
+
+    if (isCard === "1") {
+      const getToken = await axios({
+        url: "https://api.iamport.kr/users/getToken",
+        method: "post", // POST method
+        headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+        data: {
+          imp_key: process.env.IMP_KEY, // REST API 키
+          imp_secret: process.env.IMP_SECRET, // REST API Secret
+        },
+      });
+      const { access_token } = getToken.data.response; // 인증 토큰
+
+      d = new Date();
+      year = d.getFullYear() + "";
+      month = d.getMonth() + 1 + "";
+      date = d.getDate() + "";
+      hour = d.getHours() + "";
+      min = d.getMinutes() + "";
+      sec = d.getSeconds() + "";
+      mSec = d.getMilliseconds() + "";
+      month = month < 10 ? "0" + month : month;
+      date = date < 10 ? "0" + date : date;
+      hour = hour < 10 ? "0" + hour : hour;
+      min = min < 10 ? "0" + min : min;
+      sec = sec < 10 ? "0" + sec : sec;
+      mSec = mSec < 10 ? "0" + mSec : mSec;
+      let orderPK = "ORD" + year + month + date + hour + min + sec + mSec;
+
+      const paymentResult = await axios({
+        url: `https://api.iamport.kr/subscribe/payments/again`,
+        method: "post",
+        headers: { Authorization: access_token }, // 인증 토큰을 Authorization header에 추가
+        data: {
+          customer_uid: currentUser.userCode,
+          merchant_uid: orderPK, // 새로 생성한 결제(재결제)용 주문 번호
+          amount: totalPrice,
+          name: "간편 카드 결제",
+          buyer_name: currentUser.nickname,
         },
       });
 
-      if (!exUser) {
-        return res.status(400).send("회원이 없습니다.");
+      const { code, message } = paymentResult.data;
+
+      if (code === 0) {
+        const result = await Payment.create({
+          productName,
+          UserId: parseInt(userId),
+        });
+
+        await Promise.all(
+          paymentRequestDatum.map(
+            async (data) =>
+              await PaymentRequest.create({
+                payment: data.payment,
+                packVolumn: data.packVolumn,
+                typeVolumn: data.typeVolumn,
+                unitVolumn: data.unitVolumn,
+                otherRequest: data.otherRequest,
+                PaymentId: result.id,
+              })
+          )
+        );
+
+        return res.status(200).json({ result: true, paymentId: result.id });
+      } else {
+        return res.status(401).send("카드 결제를 진행할 수 없습니다.");
       }
     }
 

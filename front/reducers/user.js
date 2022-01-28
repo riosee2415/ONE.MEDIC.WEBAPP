@@ -4,6 +4,7 @@ export const initailState = {
   me: null,
   currentAdminMenu: [],
   users: null,
+  cardInfo: null,
 
   companyUserLists: null,
 
@@ -67,6 +68,10 @@ export const initailState = {
   st_companyOperatorLoading: false, // 회사 운영레벨 변경
   st_companyOperatorDone: false,
   st_companyOperatorError: null,
+  //
+  st_cardPatchLoading: false, // 카드 생성
+  st_cardPatchDone: false,
+  st_cardPatchError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -116,6 +121,10 @@ export const COMPANY_APPROVAL_FAILURE = "COMPANY_APPROVAL_FAILURE";
 export const COMPANY_OPERATOR_REQUEST = "COMPANY_OPERATOR_REQUEST";
 export const COMPANY_OPERATOR_SUCCESS = "COMPANY_OPERATOR_SUCCESS";
 export const COMPANY_OPERATOR_FAILURE = "COMPANY_OPERATOR_FAILURE";
+
+export const CARD_PATCH_REQUEST = "CARD_PATCH_REQUEST";
+export const CARD_PATCH_SUCCESS = "CARD_PATCH_SUCCESS";
+export const CARD_PATCH_FAILURE = "CARD_PATCH_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -375,6 +384,26 @@ const reducer = (state = initailState, action) =>
         draft.st_logoutLoading = false;
         draft.st_logoutDone = false;
         draft.st_logoutError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case CARD_PATCH_REQUEST: {
+        draft.st_cardPatchLoading = true;
+        draft.st_cardPatchDone = null;
+        draft.st_cardPatchError = false;
+        break;
+      }
+      case CARD_PATCH_SUCCESS: {
+        draft.st_cardPatchLoading = false;
+        draft.st_cardPatchDone = true;
+        draft.st_cardPatchError = null;
+        break;
+      }
+      case CARD_PATCH_FAILURE: {
+        draft.st_cardPatchLoading = false;
+        draft.st_cardPatchDone = false;
+        draft.st_cardPatchError = action.error;
         break;
       }
       //////////////////////////////////////////////

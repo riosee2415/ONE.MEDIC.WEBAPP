@@ -11,18 +11,36 @@ import {
 import { withResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
 import Theme from "./Theme";
-import { Drawer, message } from "antd";
+import { Drawer, message, Empty, Form } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT_REQUEST } from "../reducers/user";
+import { MATERIAL_LIST_REQUEST, MATERIAL_USER_ADD } from "../reducers/material";
+import useInput from "../hooks/useInput";
+
+const CustomForm = styled(Form)`
+  width: 100%;
+  margin: 10px 0 0;
+
+  & .ant-form-item {
+    width: 100%;
+  }
+`;
 
 const Dot = styled(Wrapper)`
   width: 4.5px;
   height: 4.5px;
   background: ${(props) => props.theme.white_C};
   border-radius: 100%;
+`;
+
+const ListWrapper = styled(Wrapper)`
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px 5px;
+  cursor: pointer;
 `;
 
 const DotWrapper = styled(Wrapper)`
@@ -49,12 +67,16 @@ const AppHeader = ({ children, width }) => {
     (state) => state.user
   );
 
+  const { materials } = useSelector((state) => state.material);
+
   const [headerScroll, setHeaderScroll] = useState(false);
   const [pageY, setPageY] = useState(0);
+
+  const [userMaterials, setUserMaterials] = useState([]);
+
   // const documentRef = useRef(document);
 
   const [drawar, setDrawar] = useState(false);
-  const [subMenu, setSubMenu] = useState(``);
 
   const dispatch = useDispatch();
 
@@ -85,6 +107,27 @@ const AppHeader = ({ children, width }) => {
     });
   }, []);
 
+  const searchMaterialHandler = useCallback((data) => {
+    dispatch({
+      type: MATERIAL_LIST_REQUEST,
+      data: {
+        name: data.searchName,
+      },
+    });
+  }, []);
+
+  const materialAddHandler = useCallback(
+    (data) => {
+      let seleteMaterialArr = userMaterials.map((data) => {
+        return data;
+      });
+      seleteMaterialArr.push(data);
+
+      setUserMaterials(seleteMaterialArr);
+    },
+    [userMaterials]
+  );
+
   ////////////// - USE EFFECT- //////////////
   useEffect(() => {
     document.addEventListener("scroll", handleScroll);
@@ -104,6 +147,24 @@ const AppHeader = ({ children, width }) => {
       return message.success("로그아웃 되었습니다.");
     }
   }, [st_logoutDone]);
+
+  useEffect(() => {
+    dispatch({
+      type: MATERIAL_LIST_REQUEST,
+      data: {
+        name: "",
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (userMaterials) {
+      dispatch({
+        type: MATERIAL_USER_ADD,
+        data: userMaterials,
+      });
+    }
+  }, [userMaterials]);
 
   const headerView = [
     {
@@ -143,8 +204,12 @@ const AppHeader = ({ children, width }) => {
       title: "문의하기",
     },
     {
-      router: "/payment",
+      router: "/user/payment",
       title: "결제정보",
+    },
+    {
+      router: "/user/myinfo",
+      title: "계정관리",
     },
   ];
   return (
@@ -215,7 +280,7 @@ const AppHeader = ({ children, width }) => {
               closable={false}
             >
               <Wrapper>
-                <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
+                <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.black_C}>
                   <Wrapper height={`64px`} dr={`row`} ju={`space-between`}>
                     <Wrapper width={`auto`} position={`relative`}>
                       <Wrapper
@@ -226,31 +291,123 @@ const AppHeader = ({ children, width }) => {
                         color={Theme.basicTheme_C}
                         zIndex={`10`}
                         fontSize={`25px`}
-                        margin={`-13px 0 0`}
+                        margin={`-18px 0 0`}
                       >
                         <SearchOutlined />
                       </Wrapper>
-                      <TextInput
-                        radius={`10px`}
-                        height={`45px`}
-                        width={`300px`}
-                        type={`text`}
-                        placeholder={`약재 또는 처방 검색`}
-                        padding={`0 0 0 45px`}
-                      />
+                      <CustomForm onFinish={searchMaterialHandler}>
+                        <Form.Item name="searchName">
+                          <TextInput
+                            radius={`10px`}
+                            height={`45px`}
+                            width={`300px`}
+                            type={`text`}
+                            placeholder={`약재 또는 처방 검색`}
+                            padding={`0 0 0 45px`}
+                          />
+                        </Form.Item>
+                      </CustomForm>
                     </Wrapper>
                     <Wrapper
                       width={`auto`}
                       bgColor={Theme.basicTheme_C}
+                      color={Theme.white_C}
                       fontSize={`18px`}
                       zIndex={`10`}
                       onClick={drawarToggle}
                       cursor={`pointer`}
+                      margin={`-10px 0 0`}
                     >
                       취소
                     </Wrapper>
                   </Wrapper>
                 </RsWrapper>
+              </Wrapper>
+              <Wrapper padding={`0 38px`}>
+                {/*      
+                {materials &&
+                  (materials.length === 0 ? (
+                    <Empty />
+                  ) : (
+                    materials.map((data, idx) => {
+                      return (
+                        <ListWrapper
+                          borderBottom={`1px solid ${Theme.grey2_C}`}
+                          color={Theme.black_C}
+                        >
+                          <Text fontSize={width < 600 ? `16px` : `18px`}>
+                            {idx + 1}번
+                          </Text>
+
+                          <Text
+                            fontSize={width < 600 ? `16px` : `18px`}
+                            fontWeight={`800`}
+                          >
+                            {data.name}
+                          </Text>
+
+                          <Text fontSize={width < 600 ? `16px` : `18px`}>
+                            6&nbsp;g
+                          </Text>
+
+                          <Text fontSize={width < 600 ? `16px` : `18px`}>
+                            {data.viewPrice}
+                          </Text>
+                        </ListWrapper>
+                      );
+                    })
+                  ))} */}
+
+                <Wrapper
+                  padding={width < 800 ? `15px 10px` : `15px 38px`}
+                  minHeight={`calc(100vh - 170px)`}
+                  ju={`flex-start`}
+                >
+                  <Wrapper
+                    padding={`20px`}
+                    shadow={Theme.shadow_C}
+                    radius={`20px`}
+                  >
+                    <Wrapper
+                      dr={`row`}
+                      ju={`flex-start`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      padding={`0 5px 10px`}
+                    >
+                      <Text
+                        color={Theme.grey_C}
+                        fontSize={`16px`}
+                        fontWeight={`bold`}
+                      >
+                        약재
+                      </Text>
+                    </Wrapper>
+                    <Wrapper>
+                      {materials &&
+                        (materials.length === 0 ? (
+                          <Empty />
+                        ) : (
+                          materials.map((data) => {
+                            return (
+                              <ListWrapper
+                                borderBottom={`1px solid ${Theme.grey2_C}`}
+                                onClick={() => materialAddHandler(data)}
+                              >
+                                <Wrapper
+                                  dr={`row`}
+                                  width={`auto`}
+                                  fontSize={width < 600 ? `16px` : `18px`}
+                                  color={`${Theme.black_C}`}
+                                >
+                                  <Text fontWeight={`800`}>{data.name}</Text>
+                                </Wrapper>
+                              </ListWrapper>
+                            );
+                          })
+                        ))}
+                    </Wrapper>
+                  </Wrapper>
+                </Wrapper>
               </Wrapper>
             </Drawer>
           )}
@@ -318,8 +475,16 @@ const AppHeader = ({ children, width }) => {
                         fontSize={`14px`}
                         color={Theme.grey2_C}
                       >
-                        <Text margin={`0 10px 0 0`}>계정관리</Text>
-                        <Text onClick={logoutHandler}>로그아웃</Text>
+                        <Text
+                          margin={`0 10px 0 0`}
+                          cursor={`pointer`}
+                          onClick={() => moveLinkHandler("/user/myinfo")}
+                        >
+                          계정관리
+                        </Text>
+                        <Text cursor={`pointer`} onClick={logoutHandler}>
+                          로그아웃
+                        </Text>
                       </Wrapper>
                     </Wrapper>
                   ) : (
@@ -427,30 +592,6 @@ const AppHeader = ({ children, width }) => {
                             </Wrapper>
                           </ATag>
                         </Link>
-                        {/* <Link href={`/cart`}>
-                          <ATag al={`flex-start`} onClick={drawarToggle}>
-                            <Wrapper
-                              dr={`row`}
-                              ju={`flex-start`}
-                              padding={`0 0 20px`}
-                              margin={`0 0 20px`}
-                              borderBottom={`1px solid ${Theme.grey2_C}`}
-                            >
-                              <Image
-                                alt="icon"
-                                width={`26px`}
-                                height={`26px`}
-                                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/4.cart.png`}
-                              />
-                              <Text
-                                fontSize={width < 800 ? `16px` : `18px`}
-                                margin={`0 0 0 30px`}
-                              >
-                                장바구니
-                              </Text>
-                            </Wrapper>
-                          </ATag>
-                        </Link> */}
                       </>
                     )}
                     <Link href={`/notice`}>

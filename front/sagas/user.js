@@ -49,6 +49,10 @@ import {
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
   /////////////////////////////
+  CARD_PATCH_REQUEST,
+  CARD_PATCH_SUCCESS,
+  CARD_PATCH_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -375,6 +379,33 @@ function* logout(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function cardCreateAPI(data) {
+  return axios.patch(`/api/user/card/create`, data);
+}
+
+function* cardCreate(action) {
+  try {
+    const result = yield call(cardCreateAPI, action.data);
+
+    yield put({
+      type: CARD_PATCH_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: CARD_PATCH_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -425,6 +456,10 @@ function* watchUserLogout() {
   yield takeLatest(LOGOUT_REQUEST, logout);
 }
 
+function* watchUserCardCreate() {
+  yield takeLatest(CARD_PATCH_REQUEST, cardCreate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -440,6 +475,7 @@ export default function* userSaga() {
     fork(watchCompanyApproval),
     fork(watchCompanyOperator),
     fork(watchUserLogout),
+    fork(watchUserCardCreate),
     //
   ]);
 }

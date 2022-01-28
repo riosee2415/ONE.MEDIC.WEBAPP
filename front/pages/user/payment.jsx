@@ -20,11 +20,21 @@ import {
 import Link from "next/link";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { message, notification } from "antd";
+import { Form, message, notification } from "antd";
 import useOnlyNumberInput from "../../hooks/useOnlyNumberInput";
 import useWidth from "../../hooks/useWidth";
 import { useRouter } from "next/router";
 import Modal from "antd/lib/modal/Modal";
+import { CARD_PATCH_REQUEST } from "../../reducers/user";
+
+const CustomForm = styled(Form)`
+  width: 100%;
+
+  & .ant-form-item:nth-child(1),
+  & .ant-form-item:nth-child(3) {
+    width: 100%;
+  }
+`;
 
 const PaymentInput = styled(TextInput)`
   height: 43px;
@@ -89,6 +99,8 @@ const Question = () => {
     (state) => state.seo
   );
 
+  const { me } = useSelector((state) => state.user);
+
   const [isTerms, setIsTerms] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -102,47 +114,40 @@ const Question = () => {
   ////// HOOKS //////
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (!me) {
+      message.error("로그인 후 이용해주세요.");
+      return router.push("/login");
+    }
+  }, []);
   ////// TOGGLE //////
   ////// HANDLER //////
   const moveLinkHandler = useCallback((link) => {
     router.push(link);
   }, []);
 
-  const onSubmit = useCallback(() => {
-    if (!cardNomInput.value || cardNomInput.value.trim() === "") {
-      return LoadNotification("안내", "카드번호를 입력해주세요.");
-    }
+  const onSubmit = useCallback(
+    (data) => {
+      if (isTerms === false) {
+        return LoadNotification("안내", "정기과금 이용약관을 동의해주세요.");
+      }
 
-    if (!monInput.value || monInput.value.trim() === "") {
-      return LoadNotification("안내", "월을 입력해주세요.");
-    }
+      console.log(data);
 
-    if (!yearInput.value || yearInput.value.trim() === "") {
-      return LoadNotification("안내", "년을 입력해주세요.");
-    }
-
-    if (!passwordInput.value || passwordInput.value.trim() === "") {
-      return LoadNotification("안내", "비밀번호 앞2자리를 입력해주세요.");
-    }
-
-    if (!birthInput.value || birthInput.value.trim() === "") {
-      return LoadNotification("안내", "생년월일을 입력해주세요.");
-    }
-
-    if (isTerms === false) {
-      return LoadNotification("안내", "정기과금 이용약관을 동의해주세요.");
-    }
-
-    message.success("카드정보가 등록되었습니다.");
-    moveLinkHandler(`./myinfo`);
-  }, [
-    cardNomInput.value,
-    monInput.value,
-    yearInput.value,
-    passwordInput.value,
-    birthInput.value,
-    isTerms,
-  ]);
+      dispatch({
+        type: CARD_PATCH_REQUEST,
+        data: {
+          cardNo: data.cardNo,
+          cardDate: `${data.month}/${data.year}`,
+          // cardDate: `${data.year}-${data.month}`,
+          cardPassword: data.password,
+          cardBirth: data.birth,
+        },
+      });
+    },
+    [isTerms]
+  );
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -211,117 +216,139 @@ const Question = () => {
             al={`flex-start`}
             ju={`flex-start`}
           >
-            <Wrapper
-              radius={`20px`}
-              shadow={Theme.shadow_C}
-              padding={`22px 34px 23px 31px`}
-              al={`flex-start`}
-              margin={`16px 0`}
-            >
-              <Text fontSize={`22px`} padding={`0 0 23px`}>
-                결제카드
-              </Text>
-              <Wrapper dr={`row`} al={`flex-start`}>
-                <Wrapper width={`22px`} margin={`12px 12px 0 0`}>
-                  <Image
-                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/pay_icon/card.png`}
-                  />
-                </Wrapper>
-                <Wrapper width={`calc(100% - 34px)`}>
-                  <PaymentInput
-                    width={`100%`}
-                    margin={`0 0 30px`}
-                    placeholder="카드번호"
-                    maxLength="16"
-                    {...cardNomInput}
-                  />
-                  <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 30px`}>
-                    <PaymentInput
-                      width={`23%`}
-                      placeholder="월"
-                      maxLength="2"
-                      {...monInput}
-                    />
-                    <PaymentInput
-                      width={`23%`}
-                      margin={`0 20px`}
-                      placeholder="년: 2자리"
-                      maxLength="2"
-                      {...yearInput}
-                    />
-                    <PaymentInput
-                      width={`calc(54% - 40px)`}
-                      placeholder="비밀번호: 앞 2자리"
-                      type="password"
-                      maxLength="2"
-                      {...passwordInput}
+            <CustomForm onFinish={onSubmit}>
+              <Wrapper
+                radius={`20px`}
+                shadow={Theme.shadow_C}
+                padding={`22px 34px 23px 31px`}
+                al={`flex-start`}
+                margin={`16px 0`}
+              >
+                <Text fontSize={`22px`} padding={`0 0 23px`}>
+                  결제카드
+                </Text>
+                <Wrapper dr={`row`} al={`flex-start`}>
+                  <Wrapper width={`22px`} margin={`12px 12px 0 0`}>
+                    <Image
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/pay_icon/card.png`}
                     />
                   </Wrapper>
-                  <PaymentInput
-                    width={`100%`}
-                    margin={`0 0 30px`}
-                    placeholder="생년월일: 주민등록번호 앞 6자리"
-                    maxLength="6"
-                    {...birthInput}
-                  />
-                </Wrapper>
-              </Wrapper>
-              <Wrapper
-                width={`auto`}
-                dr={`row`}
-                margin={`0 0 22px`}
-                al={`flex-start`}
-              >
-                <Wrapper width={`auto`} padding={`0 12px 0 0`}>
-                  <CommonCheckBox
-                    checked={isTerms}
-                    onChange={TermsHandler}
-                    id="check"
-                  />
-                </Wrapper>
-                <Wrapper width={`auto`} al={`flex-start`}>
-                  <CustomLabel for="check">
-                    <Wrapper
-                      dr={`row`}
-                      ju={`flex-start`}
-                      width={`auto`}
-                      fontSize={width < 500 ? `12px` : `14px`}
-                      padding={`5px 0`}
-                    >
-                      <Text
-                        borderBottom={`1px solid ${Theme.black_C}`}
-                        lineHeight={`1`}
-                      >
-                        정기과금 이용약관
-                      </Text>
-                      <Text lineHeight={`1`}>
-                        을 확인하였으며 이에 동의합니다.
-                      </Text>
-                    </Wrapper>
-                  </CustomLabel>
+                  <Wrapper width={`calc(100% - 34px)`}>
+                    <Form.Item name="cardNo">
+                      <PaymentInput
+                        width={`100%`}
+                        margin={`0 0 30px`}
+                        placeholder="카드번호"
+                        maxLength="16"
+                        type={`number`}
+                      />
+                    </Form.Item>
 
-                  <CommonButton
-                    width={`52px`}
-                    height={`25px`}
-                    padding={`2px 0 0`}
-                    fontSize={`12px`}
-                    shadow={`none`}
-                    onClick={showModal}
+                    <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 30px`}>
+                      <Form.Item style={{ width: `23%` }} name="month">
+                        <PaymentInput
+                          width={`100%`}
+                          placeholder="월"
+                          maxLength="2"
+                          type={`number`}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        style={{
+                          width: `23%`,
+                          marginRight: `20px`,
+                          marginLeft: `20px`,
+                        }}
+                        name="year"
+                      >
+                        <PaymentInput
+                          width={`100%`}
+                          placeholder="년: 2자리"
+                          maxLength="2"
+                          type={`number`}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        style={{ width: `calc(54% - 40px)` }}
+                        name="password"
+                      >
+                        <PaymentInput
+                          width={`100%`}
+                          placeholder="비밀번호: 앞 2자리"
+                          type="password"
+                          maxLength="2"
+                          type={`number`}
+                        />
+                      </Form.Item>
+                    </Wrapper>
+                    <Form.Item name="birth">
+                      <PaymentInput
+                        width={`100%`}
+                        margin={`0 0 30px`}
+                        placeholder="생년월일: 주민등록번호 앞 6자리"
+                        maxLength="6"
+                        type={`number`}
+                      />
+                    </Form.Item>
+                  </Wrapper>
+                </Wrapper>
+                <Wrapper
+                  width={`auto`}
+                  dr={`row`}
+                  margin={`0 0 22px`}
+                  al={`flex-start`}
+                >
+                  <Wrapper width={`auto`} padding={`0 12px 0 0`}>
+                    <CommonCheckBox
+                      checked={isTerms}
+                      onChange={TermsHandler}
+                      id="check"
+                    />
+                  </Wrapper>
+                  <Wrapper width={`auto`} al={`flex-start`}>
+                    <CustomLabel for="check">
+                      <Wrapper
+                        dr={`row`}
+                        ju={`flex-start`}
+                        width={`auto`}
+                        fontSize={width < 500 ? `12px` : `14px`}
+                        padding={`5px 0`}
+                      >
+                        <Text
+                          borderBottom={`1px solid ${Theme.black_C}`}
+                          lineHeight={`1`}
+                        >
+                          정기과금 이용약관
+                        </Text>
+                        <Text lineHeight={`1`}>
+                          을 확인하였으며 이에 동의합니다.
+                        </Text>
+                      </Wrapper>
+                    </CustomLabel>
+
+                    <CommonButton
+                      width={`52px`}
+                      height={`25px`}
+                      padding={`2px 0 0`}
+                      fontSize={`12px`}
+                      shadow={`none`}
+                      onClick={showModal}
+                    >
+                      약관보기
+                    </CommonButton>
+                  </Wrapper>
+                </Wrapper>
+                <Wrapper dr={`row`} ju={`flex-end`}>
+                  <PaymentBtn
+                    kindOf={`white`}
+                    onClick={() => moveLinkHandler(`./myinfo`)}
                   >
-                    약관보기
-                  </CommonButton>
+                    취소
+                  </PaymentBtn>
+                  <PaymentBtn htmlType="submit">저장</PaymentBtn>
                 </Wrapper>
               </Wrapper>
-              <Wrapper dr={`row`} ju={`flex-end`}>
-                <PaymentBtn
-                  kindOf={`white`}
-                  onClick={() => moveLinkHandler(`./myinfo`)}
-                >
-                  취소
-                </PaymentBtn>
-                <PaymentBtn onClick={onSubmit}>저장</PaymentBtn>
-              </Wrapper>
-            </Wrapper>
+            </CustomForm>
 
             <TermsModal
               title="약관"

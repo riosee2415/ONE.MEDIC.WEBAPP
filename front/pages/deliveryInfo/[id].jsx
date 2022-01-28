@@ -42,6 +42,12 @@ import {
 } from "../../reducers/address";
 import useInput from "../../hooks/useInput";
 
+const CustomModal = styled(Modal)`
+  & .ant-modal-content {
+    border-radius: 20px;
+  }
+`;
+
 const CustomSelect = styled(Select)`
   width: 100%;
   & .ant-select-selection-item {
@@ -837,7 +843,7 @@ const Index = ({}) => {
 
           {/* SEARCH ADDRESS MODAL */}
 
-          <Modal
+          <CustomModal
             width={`424px`}
             style={{ top: 200, borderRadius: 30 }}
             visible={addressListModal}
@@ -923,7 +929,7 @@ const Index = ({}) => {
                 </CommonButton>
               </Wrapper>
             </Wrapper>
-          </Modal>
+          </CustomModal>
         </WholeWrapper>
       </ClientLayout>
     </>
