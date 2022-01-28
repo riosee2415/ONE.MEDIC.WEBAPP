@@ -546,7 +546,7 @@ router.get(
 
       return res.status(200).json({ result: true });
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return res.status(401).send("잘못된 요청 입니다.");
     }
   }),

@@ -162,12 +162,12 @@ const Home = ({}) => {
                   <Text color={Theme.grey_C} fontWeight={`bold`}>
                     주문목록
                   </Text>
-                  <Text
+                  {/* <Text
                     color={Theme.subTheme2_C}
                     onClick={() => moveLinkHandler("/prescription")}
                   >
                     처방하기
-                  </Text>
+                  </Text> */}
                 </Wrapper>
 
                 <Wrapper

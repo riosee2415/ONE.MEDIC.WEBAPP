@@ -544,7 +544,7 @@ const AppHeader = ({ children, width }) => {
                         </Wrapper>
                       </ATag>
                     </Link>
-                    <Link href={`/prescription`}>
+                    {/* <Link href={`/prescription`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper
                           dr={`row`}
@@ -567,7 +567,7 @@ const AppHeader = ({ children, width }) => {
                           </Text>
                         </Wrapper>
                       </ATag>
-                    </Link>
+                    </Link> */}
                     {me && (
                       <>
                         <Link href={`/`}>

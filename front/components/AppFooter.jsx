@@ -11,23 +11,25 @@ const AppFooter = () => {
         bgColor={Theme.lightGrey2_C}
         padding={`25px 0`}
       >
-        <Wrapper fontWeight={`bold`}>모던랩한의원</Wrapper>
+        <Wrapper fontWeight={`bold`}>미올한방병원</Wrapper>
         <Wrapper dr={`row`} fontSize={`12px`} margin={`15px 0`}>
           <Text color={Theme.grey_C}>대표</Text>
-          <Text margin={`0 10px`}>김형규</Text>|
+          <Text margin={`0 10px`}>이철희</Text>|
           <Text margin={`0 10px`} color={Theme.grey_C}>
             사업자등록번호
           </Text>
-          <Text>251-24-01092</Text>
+          <Text>347-49-00591</Text>
         </Wrapper>
-        <Wrapper fontSize={`12px`}>서울 성동구 성수이로6길 13</Wrapper>
+        <Wrapper fontSize={`12px`}>
+          서울특별시 은평구 통이로 636, 4층, 5층(녹번동, 은평 미드스퀘어)
+        </Wrapper>
         <Wrapper dr={`row`} fontSize={`12px`} margin={`15px 0 0`}>
           <Text color={Theme.grey_C}>대표번호</Text>
           <Text margin={`0 10px`}>02-466-1575</Text>|
           <Text margin={`0 10px`} color={Theme.grey_C}>
             문의
           </Text>
-          <Text>support@modernlab.io</Text>
+          <Text>mapo6892@naver.com</Text>
         </Wrapper>
       </RsWrapper>
     </WholeWrapper>

@@ -336,7 +336,7 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
         data: {
           customer_uid: currentUser.userCode,
           merchant_uid: orderPK, // 새로 생성한 결제(재결제)용 주문 번호
-          amount: 150,
+          amount: totalPrice,
           name: "간편 카드 결제",
           buyer_name: currentUser.nickname,
           buyer_tel: currentUser.mobile.replace(
