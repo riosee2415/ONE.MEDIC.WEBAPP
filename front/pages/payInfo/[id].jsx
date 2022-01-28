@@ -204,7 +204,6 @@ const Index = ({}) => {
             merchant_uid: orderPK,
             name: me.username,
             amount: productPayment - discount + 5000,
-            amount: 150,
             buyer_name: me.username,
             buyer_tel: me.mobile.replace(
               /^(\d{2,3})(\d{3,4})(\d{4})$/,
