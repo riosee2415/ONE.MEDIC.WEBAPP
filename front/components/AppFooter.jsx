@@ -29,7 +29,7 @@ const AppFooter = () => {
           <Text margin={`0 10px`} color={Theme.grey_C}>
             문의
           </Text>
-          <Text>mapo6892@naver.com</Text>
+          <Text>support@modernlab.io</Text>
         </Wrapper>
       </RsWrapper>
     </WholeWrapper>
