@@ -40,6 +40,10 @@ export const initialState = {
   st_paymentIsPaymentLoading: false,
   st_paymentIsPaymentDone: false,
   st_paymentIsPaymentError: null,
+  //
+  st_paymentAdminDeliveryLoading: false,
+  st_paymentAdminDeliveryDone: false,
+  st_paymentAdminDeliveryError: null,
 };
 
 export const PAYMENTREQUEST_LIST_REQUEST = "PAYMENTREQUEST_LIST_REQUEST";
@@ -75,6 +79,10 @@ export const PAYMENT_DELIVERY_FAILURE = "PAYMENT_DELIVERY_FAILURE";
 export const PAYMENT_ISPAYMENT_REQUEST = "PAYMENT_ISPAYMENT_REQUEST";
 export const PAYMENT_ISPAYMENT_SUCCESS = "PAYMENT_ISPAYMENT_SUCCESS";
 export const PAYMENT_ISPAYMENT_FAILURE = "PAYMENT_ISPAYMENT_FAILURE";
+
+export const PAYMENT_ADMIN_DELIVERY_REQUEST = "PAYMENT_ADMIN_DELIVERY_REQUEST";
+export const PAYMENT_ADMIN_DELIVERY_SUCCESS = "PAYMENT_ADMIN_DELIVERY_SUCCESS";
+export const PAYMENT_ADMIN_DELIVERY_FAILURE = "PAYMENT_ADMIN_DELIVERY_FAILURE";
 
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 
@@ -205,6 +213,23 @@ const reducer = (state = initialState, action) =>
         draft.st_paymentIsPaymentLoading = false;
         draft.st_paymentIsPaymentDone = false;
         draft.st_paymentIsPaymentError = action.error;
+        break;
+
+      ////////////////////
+      case PAYMENT_ADMIN_DELIVERY_REQUEST:
+        draft.st_paymentAdminDeliveryLoading = true;
+        draft.st_paymentAdminDeliveryDone = false;
+        draft.st_paymentAdminDeliveryError = null;
+        break;
+      case PAYMENT_ADMIN_DELIVERY_SUCCESS:
+        draft.st_paymentAdminDeliveryLoading = false;
+        draft.st_paymentAdminDeliveryDone = true;
+        draft.st_paymentAdminDeliveryError = null;
+        break;
+      case PAYMENT_ADMIN_DELIVERY_FAILURE:
+        draft.st_paymentAdminDeliveryLoading = false;
+        draft.st_paymentAdminDeliveryDone = false;
+        draft.st_paymentAdminDeliveryError = action.error;
         break;
 
       ////////////////////

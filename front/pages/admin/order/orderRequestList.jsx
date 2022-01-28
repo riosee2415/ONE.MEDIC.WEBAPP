@@ -26,7 +26,7 @@ import {
   USER_DETAIL_MODAL_TOGGLE,
   PAYMENTREQUEST_COMPLETE_REQUEST,
   DELIVERY_MODAL_TOGGLE,
-  PAYMENTREQUEST_DELIVERY_REQUEST,
+  PAYMENT_ADMIN_DELIVERY_REQUEST,
 } from "../../../reducers/paymentRequest";
 import {
   AdminContent,
@@ -55,8 +55,8 @@ const OrderRequestList = () => {
     st_paymentRequestCompleteDone,
     st_paymentRequestCompleteError,
     //
-    st_paymentRequestDeliveryDone,
-    st_paymentRequestDeliveryError,
+    st_paymentAdminDeliveryDone,
+    st_paymentAdminDeliveryError,
   } = useSelector((state) => state.paymentRequest);
 
   const router = useRouter();
@@ -125,7 +125,7 @@ const OrderRequestList = () => {
   }, [st_paymentRequestCompleteError]);
 
   useEffect(() => {
-    if (st_paymentRequestDeliveryDone) {
+    if (st_paymentAdminDeliveryDone) {
       dispatch({
         type: PAYMENTREQUEST_LIST_REQUEST,
         data: {
@@ -142,12 +142,12 @@ const OrderRequestList = () => {
 
       return message.success("배송정보가 등록되었습니다.");
     }
-  }, [st_paymentRequestDeliveryDone]);
+  }, [st_paymentAdminDeliveryDone]);
   useEffect(() => {
-    if (st_paymentRequestDeliveryError) {
-      return message.error(st_paymentRequestDeliveryError);
+    if (st_paymentAdminDeliveryError) {
+      return message.error(st_paymentAdminDeliveryError);
     }
-  }, [st_paymentRequestDeliveryError]);
+  }, [st_paymentAdminDeliveryError]);
 
   ////// TOGGLE //////
 
@@ -234,7 +234,7 @@ const OrderRequestList = () => {
   const onDeliverySubmit = useCallback(
     (data) => {
       dispatch({
-        type: PAYMENTREQUEST_DELIVERY_REQUEST,
+        type: PAYMENT_ADMIN_DELIVERY_REQUEST,
         data: {
           paymentId: deliveryData.id,
           deliveryNo: data.deliveryNo,
@@ -435,7 +435,7 @@ const OrderRequestList = () => {
             isComplete === 2 || isComplete === 3 ? completeColumns : columns
           }
           size="small"
-          dataSource={paymentRequest ? paymentRequest.result : []}
+          dataSource={paymentRequest ? paymentRequest : []}
         />
       </AdminContent>
 

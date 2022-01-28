@@ -221,6 +221,7 @@ const AppHeader = ({ children, width }) => {
             fontWeight={`bold`}
             dr={`row`}
             ju={`flex-start`}
+            cursor={`pointer`}
           >
             <Link href={`/login`}>
               <a>
@@ -244,6 +245,7 @@ const AppHeader = ({ children, width }) => {
             fontWeight={`bold`}
             dr={`row`}
             ju={`flex-start`}
+            cursor={`pointer`}
           >
             <Link href={`/`}>
               <a>
@@ -501,12 +503,16 @@ const AppHeader = ({ children, width }) => {
                         color={Theme.grey2_C}
                       >
                         <Text
+                          cursor={`pointer`}
                           margin={`0 10px 0 0`}
                           onClick={() => moveLinkHandler("/login")}
                         >
                           로그인
                         </Text>
-                        <Text onClick={() => moveLinkHandler("/join")}>
+                        <Text
+                          cursor={`pointer`}
+                          onClick={() => moveLinkHandler("/join")}
+                        >
                           회원가입
                         </Text>
                       </Wrapper>

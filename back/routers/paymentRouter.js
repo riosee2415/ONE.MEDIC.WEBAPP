@@ -51,9 +51,10 @@ router.get("/list", async (req, res, next) => {
       FROM  payment p
       JOIN  users u
         ON  u.id = p.UserId
-     WHERE  isPayment = TRUE
+     WHERE  isPayment = true
      ${condition}
-     ${completedCondition};
+     ${completedCondition}
+     ORDER  BY  p.createdAt DESC;
     `;
 
     const result = await models.sequelize.query(selectQuery);

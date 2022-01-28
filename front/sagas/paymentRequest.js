@@ -28,6 +28,10 @@ import {
   PAYMENT_ISPAYMENT_REQUEST,
   PAYMENT_ISPAYMENT_SUCCESS,
   PAYMENT_ISPAYMENT_FAILURE,
+  //
+  PAYMENT_ADMIN_DELIVERY_REQUEST,
+  PAYMENT_ADMIN_DELIVERY_SUCCESS,
+  PAYMENT_ADMIN_DELIVERY_FAILURE,
 } from "../reducers/paymentRequest";
 
 // SAGA AREA ********************************************************************************************************
@@ -77,6 +81,33 @@ function* paymentRequestComplete(action) {
     console.error(err);
     yield put({
       type: PAYMENTREQUEST_COMPLETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function paymentRequestAdminDeliveryAPI(data) {
+  return axios.patch(`/api/payment/delivery/update`, data);
+}
+
+function* paymentRequestAdminDelivery(action) {
+  try {
+    const result = yield call(paymentRequestAdminDeliveryAPI, action.data);
+
+    yield put({
+      type: PAYMENT_ADMIN_DELIVERY_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PAYMENT_ADMIN_DELIVERY_FAILURE,
       error: err.response.data,
     });
   }
@@ -246,6 +277,10 @@ function* watchPaymentIsPayment() {
   yield takeLatest(PAYMENT_ISPAYMENT_REQUEST, paymentIsPayment);
 }
 
+function* watchPaymentAdminDelivery() {
+  yield takeLatest(PAYMENT_ADMIN_DELIVERY_REQUEST, paymentRequestAdminDelivery);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* paymentRequestSaga() {
   yield all([
@@ -256,6 +291,7 @@ export default function* paymentRequestSaga() {
     fork(watchPaymentDetail),
     fork(watchPaymentDelivery),
     fork(watchPaymentIsPayment),
+    fork(watchPaymentAdminDelivery),
     //
   ]);
 }
