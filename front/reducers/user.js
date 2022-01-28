@@ -72,6 +72,10 @@ export const initailState = {
   st_cardPatchLoading: false, // 카드 생성
   st_cardPatchDone: false,
   st_cardPatchError: null,
+  //
+  st_cardGetLoading: false, // 카드 데이터 가져오기
+  st_cardGetDone: false,
+  st_cardGetError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -125,6 +129,10 @@ export const COMPANY_OPERATOR_FAILURE = "COMPANY_OPERATOR_FAILURE";
 export const CARD_PATCH_REQUEST = "CARD_PATCH_REQUEST";
 export const CARD_PATCH_SUCCESS = "CARD_PATCH_SUCCESS";
 export const CARD_PATCH_FAILURE = "CARD_PATCH_FAILURE";
+
+export const CARD_GET_REQUEST = "CARD_GET_REQUEST";
+export const CARD_GET_SUCCESS = "CARD_GET_SUCCESS";
+export const CARD_GET_FAILURE = "CARD_GET_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -404,6 +412,27 @@ const reducer = (state = initailState, action) =>
         draft.st_cardPatchLoading = false;
         draft.st_cardPatchDone = false;
         draft.st_cardPatchError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case CARD_GET_REQUEST: {
+        draft.st_cardGetLoading = true;
+        draft.st_cardGetDone = null;
+        draft.st_cardGetError = false;
+        break;
+      }
+      case CARD_GET_SUCCESS: {
+        draft.st_cardGetLoading = false;
+        draft.st_cardGetDone = true;
+        draft.st_cardGetError = null;
+        draft.cardInfo = action.data;
+        break;
+      }
+      case CARD_GET_FAILURE: {
+        draft.st_cardGetLoading = false;
+        draft.st_cardGetDone = false;
+        draft.st_cardGetError = action.error;
         break;
       }
       //////////////////////////////////////////////

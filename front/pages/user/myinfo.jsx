@@ -2,7 +2,11 @@ import React, { useState, useCallback, useEffect } from "react";
 import ClientLayout from "../../components/ClientLayout";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
-import { LOAD_MY_INFO_REQUEST, LOGIN_SUCCESS } from "../../reducers/user";
+import {
+  CARD_GET_REQUEST,
+  LOAD_MY_INFO_REQUEST,
+  LOGIN_SUCCESS,
+} from "../../reducers/user";
 import axios from "axios";
 import { END } from "redux-saga";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,7 +49,7 @@ const Question = () => {
     (state) => state.seo
   );
 
-  const { me } = useSelector((state) => state.user);
+  const { me, cardInfo } = useSelector((state) => state.user);
 
   ////// HOOKS //////
   ////// REDUX //////
@@ -215,11 +219,39 @@ const Question = () => {
                 <Text fontSize={`22px`} padding={`0 0 23px`}>
                   결제정보
                 </Text>
+
                 <MyinfoBtn onClick={() => moveLinkHandler(`./payment`)}>
-                  추가
+                  {cardInfo ? "수정" : "추가"}
                 </MyinfoBtn>
               </Wrapper>
-              <Text>결제정보를 추가해주세요.</Text>
+              {cardInfo ? (
+                cardInfo.map((data) => {
+                  return (
+                    <Wrapper al={`flex-start`}>
+                      <Wrapper dr={`row`}>
+                        <Text width={`25%`}>카드이름</Text>
+                        <Text width={`75%`} fontWeight={`bold`}>
+                          {data.cardName}
+                        </Text>
+                      </Wrapper>
+                      <Wrapper dr={`row`} padding={`18px 0`}>
+                        <Text width={`25%`}>카드번호</Text>
+                        <Text width={`75%`} fontWeight={`bold`}>
+                          {data.cardNo}
+                        </Text>
+                      </Wrapper>
+                      <Wrapper dr={`row`}>
+                        <Text width={`25%`}>유효일</Text>
+                        <Text width={`75%`} fontWeight={`bold`}>
+                          {data.cardDate}
+                        </Text>
+                      </Wrapper>
+                    </Wrapper>
+                  );
+                })
+              ) : (
+                <Text>결제정보를 추가해주세요.</Text>
+              )}
             </Wrapper>
             <Wrapper
               radius={`20px`}
@@ -281,6 +313,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: SEO_LIST_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: CARD_GET_REQUEST,
     });
 
     // 구현부 종료

@@ -647,30 +647,25 @@ router.get("/logout", function (req, res) {
   });
 });
 
-router.get("/card/list/:userId", isLoggedIn, async (req, res, next) => {
-  const { userId } = req.params;
-
+router.get("/card/detail", isLoggedIn, async (req, res, next) => {
   try {
-    if (userId) {
-      const exUser = User.findOne({
-        where: {
-          id: parseInt(userId),
-        },
-      });
+    const exUser = User.findOne({
+      where: {
+        id: parseInt(req.user.id),
+      },
+    });
 
-      if (!exUser) {
-        return res.status(400).send("회원이 없습니다.");
-      }
+    if (!exUser) {
+      return res.status(400).send("회원이 없습니다.");
     }
 
     const selectQuery = `
     SELECT  cardNo,
 		        cardDate,
-		        cardBirth,
-		        userCode
+		        cardName
       FROM  users
      WHERE  userCode IS NOT NULL
-       AND  id = ${userId};
+       AND  id = ${req.user.id};
     `;
 
     const result = await models.sequelize.query(selectQuery);
@@ -800,37 +795,6 @@ router.delete("/card/delete/:cardId", isLoggedIn, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
-  }
-});
-
-router.post("/test", async (req, res, next) => {
-  const { imp_uid } = req.body; // request의 body에서 imp_uid 추출
-  try {
-    // 인증 토큰 발급 받기
-    const getToken = await axios({
-      url: "https://api.iamport.kr/users/getToken",
-      method: "post", // POST method
-      headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-      data: {
-        imp_key: process.env.IMP_KEY, // REST API 키
-        imp_secret: process.env.IMP_SECRET, // REST API Secret
-      },
-    });
-    const { access_token } = getToken.data.response; // 인증 토큰
-
-    // imp_uid로 인증 정보 조회
-    const getCertifications = await axios({
-      url: `https://api.iamport.kr/certifications/${imp_uid}`, // imp_uid 전달
-      method: "get", // GET method
-      headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
-    });
-    const certificationsInfo = getCertifications.data; // 조회한 인증 정보
-
-    console.log(certificationsInfo);
-
-    return res.status(200).json(certificationsInfo);
-  } catch (e) {
-    console.error(e);
   }
 });
 
