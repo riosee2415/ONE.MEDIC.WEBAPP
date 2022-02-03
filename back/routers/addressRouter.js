@@ -6,24 +6,22 @@ const { Op } = require("sequelize");
 const router = express.Router();
 
 router.get("/list", isLoggedIn, async (req, res, next) => {
-  const { userId, searchAddress } = req.query;
+  const { searchAddress } = req.query;
 
   try {
-    if (userId) {
-      const exUser = User.findOne({
-        where: {
-          id: parseInt(userId),
-        },
-      });
+    const exUser = User.findOne({
+      where: {
+        id: parseInt(req.user.id),
+      },
+    });
 
-      if (!exUser) {
-        return res.status(400).send("회원이 없습니다.");
-      }
+    if (!exUser) {
+      return res.status(400).send("존재하지 않는 회웝입니다.");
     }
 
     const detail = await UserAddress.findOne({
       where: {
-        UserId: parseInt(userId),
+        UserId: parseInt(req.user.id),
         isDelete: false,
         isNormal: true,
       },
@@ -31,7 +29,7 @@ router.get("/list", isLoggedIn, async (req, res, next) => {
 
     const list = await UserAddress.findAll({
       where: {
-        UserId: parseInt(userId),
+        UserId: parseInt(req.user.id),
         isDelete: false,
         address: {
           [Op.like]: `%${searchAddress}%`,
@@ -47,7 +45,8 @@ router.get("/list", isLoggedIn, async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { postCode, address, detailAddress, userId } = req.body;
+  const { postCode, address, detailAddress, userId, username, userMobile } =
+    req.body;
 
   try {
     if (userId) {
@@ -58,7 +57,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
       });
 
       if (!exUser) {
-        return res.status(400).send("회원이 없습니다.");
+        return res.status(400).send("존재하지 않는 회원입니다.");
       }
     }
 
@@ -66,6 +65,8 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
       postCode,
       address,
       detailAddress,
+      username,
+      userMobile,
       UserId: parseInt(userId),
     });
 
@@ -77,7 +78,8 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
 });
 
 router.patch("/update", isLoggedIn, async (req, res, next) => {
-  const { postCode, address, detailAddress, addressId } = req.body;
+  const { postCode, address, detailAddress, addressId, username, userMobile } =
+    req.body;
 
   try {
     if (addressId) {
@@ -89,7 +91,7 @@ router.patch("/update", isLoggedIn, async (req, res, next) => {
       });
 
       if (!exAddress) {
-        return res.status(400).send("주소가 없습니다.");
+        return res.status(400).send("존재하지 않는 주소입니다.");
       }
     }
 
@@ -98,6 +100,8 @@ router.patch("/update", isLoggedIn, async (req, res, next) => {
         postCode,
         address,
         detailAddress,
+        username,
+        userMobile,
       },
       {
         where: {
@@ -126,7 +130,7 @@ router.delete("/delete/:addressId", isLoggedIn, async (req, res, next) => {
       });
 
       if (!exAddress) {
-        return res.status(400).send("주소가 없습니다.");
+        return res.status(400).send("존재하지 않는 주소입니다.");
       }
     }
 
@@ -161,7 +165,7 @@ router.patch("/isNormal", isLoggedIn, async (req, res, next) => {
       });
 
       if (!exAddress) {
-        return res.status(400).send("주소가 없습니다.");
+        return res.status(400).send("존재하지 않는 주소입니다.");
       }
 
       if (isNormal) {
