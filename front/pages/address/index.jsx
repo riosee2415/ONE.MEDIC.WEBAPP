@@ -267,78 +267,71 @@ const Address = ({}) => {
               minHeight={`calc(100vh - 185px - 75px)`}
               ju={`flex-start`}
             >
-              <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
-              >
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper dr={`row`} width={`auto`}>
-                    <CommonCheckBox style={{ alignItems: "center" }}>
+              {addressList &&
+                (addressList.lenght === 0 ? (
+                  <Empty />
+                ) : (
+                  addressList.map((data) => {
+                    return (
                       <Wrapper
-                        width={`auto`}
+                        radius={`20px`}
+                        shadow={Theme.shadow_C}
+                        padding={`15px`}
                         al={`flex-start`}
-                        margin={`0 0 0 15px`}
+                        margin={`0 0 15px`}
                       >
-                        <Text fontSize={`18px`} fontWeight={`bold`}>
-                          고객명
-                        </Text>
-                        <Text color={Theme.grey_C}>
-                          서울 성동구 성수이로6길 13
-                        </Text>
-                        <Text>010-0000-0000</Text>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`15px 0`}
+                        >
+                          <Wrapper dr={`row`} ju={`flex-start`}>
+                            <CommonCheckBox style={{ alignItems: "center" }}>
+                              <Wrapper al={`flex-start`} margin={`0 0 0 15px`}>
+                                <Text fontSize={`18px`} fontWeight={`bold`}>
+                                  {data.username}
+                                </Text>
+                                <Wrapper dr={`row`} ju={`space-between`}>
+                                  <Text color={Theme.grey_C}>
+                                    {data.address}&nbsp;({data.postCode})
+                                  </Text>
+                                  {data.isNormal && (
+                                    <Wrapper
+                                      width={`75px`}
+                                      height={`33px`}
+                                      radius={`8px`}
+                                      border={`1px solid ${Theme.basicTheme_C}`}
+                                      color={Theme.subTheme2_C}
+                                      bgColor={Theme.subTheme4_C}
+                                      fontSize={`16px`}
+                                    >
+                                      기본주소
+                                    </Wrapper>
+                                  )}
+                                </Wrapper>
+                                <Text>{data.userMobile}</Text>
+                              </Wrapper>
+                            </CommonCheckBox>
+                          </Wrapper>
+                        </Wrapper>
+                        <Wrapper
+                          dr={`row`}
+                          color={Theme.grey_C}
+                          borderTop={`1px solid ${Theme.grey2_C}`}
+                          padding={`10px 0 0`}
+                        >
+                          <Wrapper width={`calc(100% / 2)`}>수정</Wrapper>
+                          <Wrapper
+                            width={`calc(100% / 2)`}
+                            borderLeft={`1px solid ${Theme.grey2_C}`}
+                          >
+                            삭제
+                          </Wrapper>
+                        </Wrapper>
                       </Wrapper>
-                    </CommonCheckBox>
-                  </Wrapper>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
-                >
-                  <Wrapper width={`calc(100% / 2)`}>수정</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 2)`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
-                  >
-                    삭제
-                  </Wrapper>
-                </Wrapper>
-              </Wrapper>
-            </Wrapper>
-            <Wrapper
-              height={`50px`}
-              position={`sticky`}
-              bottom={`0`}
-              left={`0`}
-              dr={`row`}
-              zIndex={`10`}
-              bgColor={Theme.white_C}
-            >
-              <Wrapper
-                height={`100%`}
-                dr={`row`}
-                width={
-                  width < 800 ? `calc(100% - 130px)` : `calc(100% - 170px)`
-                }
-                ju={`flex-start`}
-                padding={width < 800 ? `0 10px` : `0 38px`}
-                fontSize={width < 800 ? `15px` : `20px`}
-              >
-                <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                <Text fontWeight={`bold`}> 432,000</Text>
-              </Wrapper>
-              <CommonButton
-                width={width < 800 ? `130px` : `170px`}
-                height={`100%`}
-                radius={`0`}
-                cursor={`pointer`}
-              >
-                주문하기
-              </CommonButton>
+                    );
+                  })
+                ))}
             </Wrapper>
 
             <CustomModal
