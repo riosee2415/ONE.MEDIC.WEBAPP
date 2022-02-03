@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   KAKAO_LOGIN_REQUEST,
@@ -24,11 +24,17 @@ import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
-import { Checkbox, Empty, message } from "antd";
+import { Checkbox, Empty, Form, Input, message, Modal } from "antd";
 import { useRef } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { ADDRESS_LIST_REQUEST } from "../../reducers/address";
+import {
+  ADDRESS_CREATE_MODAL_TOGGLE,
+  SEARCH_ADDRESS_MODAL_TOGGLE,
+  ADDRESS_LIST_REQUEST,
+  ADDRESS_CREATE_REQUEST,
+} from "../../reducers/address";
+import DaumPostcode from "react-daum-postcode";
 
 const TagBtn = styled(Wrapper)`
   width: 75px;
@@ -40,6 +46,16 @@ const TagBtn = styled(Wrapper)`
   border: 1px solid ${(props) => props.theme.basicTheme_C};
 `;
 
+const CustomModal = styled(Modal)`
+  & .ant-modal-content {
+    border-radius: 20px;
+  }
+`;
+
+const style = {
+  overflow: "hidden",
+};
+
 const Address = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
@@ -48,9 +64,19 @@ const Address = ({}) => {
   );
 
   const { me } = useSelector((state) => state.user);
-  const { addressList } = useSelector((state) => state.address);
+  const {
+    addressList,
+    createModal,
+    searchAddressModal,
+    st_addressCreateDone,
+    st_addressCreateError,
+  } = useSelector((state) => state.address);
 
   ////// HOOKS //////
+
+  const [cForm] = Form.useForm();
+  const cFormRef = useRef();
+
   ////// REDUX //////
   const dispatch = useDispatch();
   const router = useRouter();
@@ -64,8 +90,7 @@ const Address = ({}) => {
       dispatch({
         type: ADDRESS_LIST_REQUEST,
         data: {
-          userId: me.id,
-          type: "",
+          searchAddress: "",
         },
       });
     } else {
@@ -74,8 +99,58 @@ const Address = ({}) => {
     }
   }, [router.query, me]);
 
+  useEffect(() => {
+    if (st_addressCreateDone) {
+      addressCreateModalToggle(true);
+
+      return message.success("주소가 추가되었습니다.");
+    }
+  }, [st_addressCreateDone]);
+
+  useEffect(() => {
+    if (st_addressCreateError) {
+      return message.error(st_addressCreateError);
+    }
+  }, [st_addressCreateError]);
+
   ////// TOGGLE //////
+  const addressCreateModalToggle = useCallback(
+    (isClose) => {
+      if (isClose) {
+        cForm.resetFields();
+      }
+      dispatch({
+        type: ADDRESS_CREATE_MODAL_TOGGLE,
+      });
+    },
+    [createModal]
+  );
+
+  const deliveryModalToggle = useCallback(() => {
+    dispatch({
+      type: SEARCH_ADDRESS_MODAL_TOGGLE,
+    });
+  }, [searchAddressModal]);
+
   ////// HANDLER //////
+
+  const addressCreateSubmitHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: ADDRESS_CREATE_REQUEST,
+        data: {
+          postCode: data.address.split("(")[1].substring(0, 5),
+          address: data.address.split("(")[0],
+          detailAddress: data.detailAddress,
+          userId: me.id,
+          username: data.username,
+          userMobile: data.userMobile,
+        },
+      });
+    },
+    [me]
+  );
+
   ////// DATAVIEW //////
 
   const getEditContent = (contentValue) => {
@@ -175,8 +250,15 @@ const Address = ({}) => {
                 주소록
               </Text>
               <Wrapper dr={`row`} width={`auto`}>
-                <Text margin={`0 20px 0 0`}>기본주소로 설정</Text>
-                <Text>주소 추가</Text>
+                <Text cursor={`pointer`} margin={`0 20px 0 0`}>
+                  기본주소로 설정
+                </Text>
+                <Text
+                  cursor={`pointer`}
+                  onClick={() => addressCreateModalToggle(false)}
+                >
+                  주소 추가
+                </Text>
               </Wrapper>
             </Wrapper>
 
@@ -258,6 +340,75 @@ const Address = ({}) => {
                 주문하기
               </CommonButton>
             </Wrapper>
+
+            <CustomModal
+              visible={createModal}
+              footer={null}
+              width={`450px`}
+              onCancel={() => addressCreateModalToggle(true)}
+            >
+              <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+                <Text fontSize={`20px`} fontWeight={`bold`}>
+                  주소 추가
+                </Text>
+              </Wrapper>
+              <Form
+                form={cForm}
+                ref={cFormRef}
+                onFinish={addressCreateSubmitHandler}
+              >
+                <Text>고객명</Text>
+                <Form.Item name="username">
+                  <Input placeholder="고객명을 입력해주세요." />
+                </Form.Item>
+                <Text>전화번호</Text>
+                <Form.Item name="userMobile">
+                  <Input placeholder="전화번호를 입력해주세요." type="number" />
+                </Form.Item>
+                <Text>주소</Text>
+                <Form.Item name="address">
+                  <Input
+                    placeholder="주소를 입력해주세요."
+                    readOnly
+                    onClick={deliveryModalToggle}
+                  />
+                </Form.Item>
+                <Text>상세주소</Text>
+                <Form.Item name="detailAddress">
+                  <Input placeholder="상세주소를 입력해주세요." />
+                </Form.Item>
+                <Wrapper
+                  al={`flex-end`}
+                  padding={`20px 0 0`}
+                  borderTop={`1px solid ${Theme.grey2_C}`}
+                >
+                  <CommonButton htmlType="submit">주소 추가</CommonButton>
+                </Wrapper>
+              </Form>
+            </CustomModal>
+
+            <Modal
+              width={`500px`}
+              style={{ top: 200 }}
+              footer={null}
+              visible={searchAddressModal}
+              onCancel={deliveryModalToggle}
+            >
+              <DaumPostcode
+                onComplete={(data) => {
+                  cFormRef.current.setFieldsValue({
+                    address: `${data.address}(${data.zonecode})`,
+                  });
+                  deliveryModalToggle();
+                }}
+                width={width < 600 ? `100%` : `600px`}
+                height={`500px`}
+                style={style}
+                animation={true}
+                popupKey="postCode_2"
+                autoClose={false}
+              />
+            </Modal>
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
@@ -282,6 +433,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: SEO_LIST_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: ADDRESS_LIST_REQUEST,
+      data: {
+        searchAddress: "",
+      },
     });
 
     // 구현부 종료

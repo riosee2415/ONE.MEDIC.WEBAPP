@@ -5,14 +5,15 @@ import {
   ADDRESS_LIST_SUCCESS,
   ADDRESS_LIST_FAILURE,
   //
+  ADDRESS_CREATE_REQUEST,
+  ADDRESS_CREATE_SUCCESS,
+  ADDRESS_CREATE_FAILURE,
 } from "../reducers/address";
 
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
 function addressGetAPI(data) {
-  return axios.get(
-    `/api/address/list?userId=${data.userId}&searchAddress=${data.searchAddress}`
-  );
+  return axios.get(`/api/address/list?searchAddress=${data.searchAddress}`);
 }
 
 function* addressGet(action) {
@@ -36,16 +37,48 @@ function* addressGet(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function addressCreateAPI(data) {
+  return axios.post(`/api/address/create`, data);
+}
+
+function* addressCreate(action) {
+  try {
+    const result = yield call(addressCreateAPI, action.data);
+
+    yield put({
+      type: ADDRESS_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: ADDRESS_CREATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchAddressGet() {
   yield takeLatest(ADDRESS_LIST_REQUEST, addressGet);
 }
 
+function* watchAddressCreate() {
+  yield takeLatest(ADDRESS_CREATE_REQUEST, addressCreate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* bannerSaga() {
   yield all([
     fork(watchAddressGet),
+    fork(watchAddressCreate),
     //
   ]);
 }

@@ -183,7 +183,6 @@ const Index = ({}) => {
       dispatch({
         type: ADDRESS_LIST_REQUEST,
         data: {
-          userId: me.id,
           searchAddress: searchInput.value,
         },
       });
@@ -209,8 +208,6 @@ const Index = ({}) => {
       dispatch({
         type: ADDRESS_LIST_REQUEST,
         data: {
-          userId: me.id,
-          type,
           searchAddress: "",
         },
       });
@@ -257,6 +254,15 @@ const Index = ({}) => {
     });
     dispatch({
       type: ADDRESS_LIST_MODAL_TOGGLE,
+    });
+  }, []);
+
+  const receiveMeAddressHandler = useCallback(() => {
+    formRef.current.setFieldsValue({
+      ruser: addressDetail.username,
+      rmobile: addressDetail.userMobile,
+      raddress: addressDetail.address,
+      rdetailAddress: addressDetail.detailAddress,
     });
   }, []);
 
