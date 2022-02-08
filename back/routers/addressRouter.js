@@ -1,7 +1,7 @@
 const express = require("express");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const { UserAddress, User } = require("../models");
-const { Op } = require("sequelize");
+const models = require("../models");
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get("/list", isLoggedIn, async (req, res, next) => {
   const { searchAddress } = req.query;
 
   try {
-    const exUser = User.findOne({
+    const exUser = await User.findOne({
       where: {
         id: parseInt(req.user.id),
       },
@@ -27,17 +27,24 @@ router.get("/list", isLoggedIn, async (req, res, next) => {
       },
     });
 
-    const list = await UserAddress.findAll({
-      where: {
-        UserId: parseInt(req.user.id),
-        isDelete: false,
-        address: {
-          [Op.like]: `%${searchAddress}%`,
-        },
-      },
-    });
+    const selectQuery = `
+    SELECT  ua.id,
+        		ua.postCode,
+        		ua.address ,
+        		ua.detailAddress ,
+        		ua.username ,
+        		ua.userMobile,
+            ua.isNormal
+      FROM  userAddress ua
+     WHERE  ua.username LIKE '%${searchAddress}%'
+       AND  isDelete = false
+       AND  UserId = ${req.user.id}
+     ORDER  BY ua.isNormal = true DESC;
+    `;
 
-    return res.status(200).json({ list, detail });
+    const lists = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json({ list: lists[0], detail });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
@@ -50,7 +57,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
 
   try {
     if (userId) {
-      const exUser = User.findOne({
+      const exUser = await User.findOne({
         where: {
           id: parseInt(userId),
         },
@@ -83,7 +90,7 @@ router.patch("/update", isLoggedIn, async (req, res, next) => {
 
   try {
     if (addressId) {
-      const exAddress = UserAddress.findOne({
+      const exAddress = await UserAddress.findOne({
         where: {
           id: parseInt(addressId),
           isDelete: false,
@@ -118,11 +125,11 @@ router.patch("/update", isLoggedIn, async (req, res, next) => {
 });
 
 router.delete("/delete/:addressId", isLoggedIn, async (req, res, next) => {
-  const { addressId } = req.body;
+  const { addressId } = req.params;
 
   try {
     if (addressId) {
-      const exAddress = UserAddress.findOne({
+      const exAddress = await UserAddress.findOne({
         where: {
           id: parseInt(addressId),
           isDelete: false,
@@ -153,11 +160,11 @@ router.delete("/delete/:addressId", isLoggedIn, async (req, res, next) => {
 });
 
 router.patch("/isNormal", isLoggedIn, async (req, res, next) => {
-  const { addressId, isNormal } = req.body;
+  const { addressId } = req.body;
 
   try {
     if (addressId) {
-      const exAddress = UserAddress.findOne({
+      const exAddress = await UserAddress.findOne({
         where: {
           id: parseInt(addressId),
           isDelete: false,
@@ -168,24 +175,30 @@ router.patch("/isNormal", isLoggedIn, async (req, res, next) => {
         return res.status(400).send("존재하지 않는 주소입니다.");
       }
 
-      if (isNormal) {
-        const exAddressCheck = UserAddress.findOne({
-          where: {
-            id: parseInt(addressId),
-            isDelete: false,
-            isNormal: true,
-          },
-        });
+      const exAddressCheck = await UserAddress.findOne({
+        where: {
+          isDelete: false,
+          isNormal: true,
+        },
+      });
 
-        if (exAddressCheck) {
-          return res.status(400).send("기본배송지가 있습니다.");
-        }
+      if (exAddressCheck) {
+        const checkOffAddress = await UserAddress.update(
+          {
+            isNormal: false,
+          },
+          {
+            where: {
+              id: parseInt(exAddressCheck.id),
+            },
+          }
+        );
       }
     }
 
     const result = await UserAddress.update(
       {
-        isNormal,
+        isNormal: true,
       },
       {
         where: {
