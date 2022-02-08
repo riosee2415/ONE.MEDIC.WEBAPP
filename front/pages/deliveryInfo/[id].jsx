@@ -267,6 +267,10 @@ const Index = ({}) => {
   }, []);
 
   const normalAddressHandler = useCallback(() => {
+    if (!addressDetail) {
+      return message.error("기본주소가 없습니다. 기본주소를 추가해주세요.");
+    }
+
     formRef.current.setFieldsValue({
       suser: addressDetail.username,
       smobile: addressDetail.userMobile,
@@ -850,7 +854,7 @@ const Index = ({}) => {
           {/* SEARCH ADDRESS MODAL */}
 
           <CustomModal
-            width={`424px`}
+            width={width < 700 ? `424px` : `500px`}
             style={{ top: 200, borderRadius: 30 }}
             visible={addressListModal}
             footer={null}
@@ -893,14 +897,14 @@ const Index = ({}) => {
                           dr={`row`}
                           padding={`17px 0 15px`}
                         >
-                          <Wrapper width={`30%`}>
+                          <Wrapper width={`25%`}>
                             <Text>{data.username}</Text>
                             <Text color={Theme.subTheme2_C}>
                               {data.isNormal && "기본주소"}
                             </Text>
                           </Wrapper>
                           <Wrapper
-                            width={`40%`}
+                            width={`45%`}
                             al={`flex-start`}
                             fontSize={`14px`}
                           >

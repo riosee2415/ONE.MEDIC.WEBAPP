@@ -23,6 +23,7 @@ import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { message, notification } from "antd";
 import { useRouter } from "next/router";
+import { ADDRESS_LIST_REQUEST } from "../../reducers/address";
 
 const MyinfoBtn = styled(CommonButton)`
   width: 85px;
@@ -50,6 +51,8 @@ const Question = () => {
   );
 
   const { me, cardInfo } = useSelector((state) => state.user);
+
+  const { addressList, addressDetail } = useSelector((state) => state.address);
 
   ////// HOOKS //////
   ////// REDUX //////
@@ -244,7 +247,7 @@ const Question = () => {
                           </Text>
                         </Wrapper>
                         <Wrapper dr={`row`}>
-                          <Text width={`25%`}>유효일</Text>
+                          <Text width={`25%`}>카드만료일</Text>
                           <Text width={`75%`} fontWeight={`bold`}>
                             {data.cardDate}
                           </Text>
@@ -270,10 +273,50 @@ const Question = () => {
                     moveLinkHandler(`/address`);
                   }}
                 >
-                  설정
+                  추가
                 </MyinfoBtn>
               </Wrapper>
-              <Text>기본주소를 추가해주세요.</Text>
+              {addressDetail ? (
+                <Wrapper al={`flex-start`}>
+                  <Wrapper
+                    radius={`20px`}
+                    al={`flex-start`}
+                    margin={`0 0 15px`}
+                  >
+                    <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+                      <Wrapper dr={`row`} ju={`flex-start`}>
+                        <Wrapper al={`flex-start`} margin={`0 0 0 15px`}>
+                          <Text fontSize={`18px`} fontWeight={`bold`}>
+                            {addressDetail.username}
+                          </Text>
+                          <Wrapper dr={`row`} ju={`space-between`}>
+                            <Text color={Theme.grey_C}>
+                              {addressDetail.address}&nbsp;(
+                              {addressDetail.postCode})
+                            </Text>
+                            {addressDetail.isNormal && (
+                              <Wrapper
+                                width={`75px`}
+                                height={`33px`}
+                                radius={`8px`}
+                                border={`1px solid ${Theme.basicTheme_C}`}
+                                color={Theme.subTheme2_C}
+                                bgColor={Theme.subTheme4_C}
+                                fontSize={`16px`}
+                              >
+                                기본주소
+                              </Wrapper>
+                            )}
+                          </Wrapper>
+                          <Text>{addressDetail.userMobile}</Text>
+                        </Wrapper>
+                      </Wrapper>
+                    </Wrapper>
+                  </Wrapper>
+                </Wrapper>
+              ) : (
+                <Text>기본주소를 추가해주세요.</Text>
+              )}
             </Wrapper>
             {/* <Wrapper
               radius={`20px`}
@@ -318,6 +361,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: CARD_GET_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: ADDRESS_LIST_REQUEST,
+      data: {
+        searchAddress: "",
+      },
     });
 
     // 구현부 종료
