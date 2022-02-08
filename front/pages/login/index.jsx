@@ -170,7 +170,12 @@ const Login = () => {
                     <Text margin={`0 20px 0 0`}>회원가입</Text>
                   </a>
                 </Link>
-                |<Text margin={`0 0 0 20px`}>비밀번호찾기</Text>
+                |
+                <Link href={`/`}>
+                  <a>
+                    <Text margin={`0 0 0 20px`}>비밀번호찾기</Text>
+                  </a>
+                </Link>
               </Wrapper>
             </Wrapper>
           </RsWrapper>
