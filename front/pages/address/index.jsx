@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   KAKAO_LOGIN_REQUEST,
@@ -29,10 +29,14 @@ import { useRef } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import {
-  ADDRESS_CREATE_MODAL_TOGGLE,
+  ADDRESS_MODAL_TOGGLE,
   SEARCH_ADDRESS_MODAL_TOGGLE,
   ADDRESS_LIST_REQUEST,
   ADDRESS_CREATE_REQUEST,
+  ADDRESS_ISNORMAL_REQUEST,
+  ADDRESS_UPDATE_REQUEST,
+  ADDRESS_DELETE_MODAL_TOGGLE,
+  ADDRESS_DELETE_REQUEST,
 } from "../../reducers/address";
 import DaumPostcode from "react-daum-postcode";
 
@@ -52,6 +56,14 @@ const CustomModal = styled(Modal)`
   }
 `;
 
+const CustomForm = styled(Form)`
+  width: 100%;
+
+  & .ant-form-item {
+    margin: 0;
+  }
+`;
+
 const style = {
   overflow: "hidden",
 };
@@ -66,10 +78,19 @@ const Address = ({}) => {
   const { me } = useSelector((state) => state.user);
   const {
     addressList,
-    createModal,
+    //
+    addressModal,
     searchAddressModal,
+    addressDeleteModal,
+    //
     st_addressCreateDone,
     st_addressCreateError,
+    st_addressUpdateDone,
+    st_addressUpdateError,
+    st_addressDeleteDone,
+    st_addressDeleteError,
+    st_addressIsNormalDone,
+    st_addressIsNormalError,
   } = useSelector((state) => state.address);
 
   ////// HOOKS //////
@@ -77,9 +98,14 @@ const Address = ({}) => {
   const [cForm] = Form.useForm();
   const cFormRef = useRef();
 
+  const [isNormalCheck, setIsNormalCheck] = useState(null);
+  const [updateAddressData, setUpdateAddressData] = useState(null);
+  const [deleteAddressData, setDeleteAddressData] = useState(null);
+
   ////// REDUX //////
   const dispatch = useDispatch();
   const router = useRouter();
+
   ////// USEEFFECT //////
   useEffect(() => {
     dispatch({ type: LOAD_MY_INFO_REQUEST });
@@ -101,7 +127,14 @@ const Address = ({}) => {
 
   useEffect(() => {
     if (st_addressCreateDone) {
-      addressCreateModalToggle(true);
+      dispatch({
+        type: ADDRESS_LIST_REQUEST,
+        data: {
+          searchAddress: "",
+        },
+      });
+
+      addressModalToggle(null);
 
       return message.success("주소가 추가되었습니다.");
     }
@@ -113,17 +146,103 @@ const Address = ({}) => {
     }
   }, [st_addressCreateError]);
 
+  useEffect(() => {
+    if (st_addressUpdateDone) {
+      dispatch({
+        type: ADDRESS_LIST_REQUEST,
+        data: {
+          searchAddress: "",
+        },
+      });
+
+      addressModalToggle(null);
+
+      return message.success("주소가 수정되었습니다.");
+    }
+  }, [st_addressUpdateDone]);
+
+  useEffect(() => {
+    if (st_addressUpdateError) {
+      return message.error(st_addressUpdateError);
+    }
+  }, [st_addressUpdateError]);
+
+  useEffect(() => {
+    if (st_addressDeleteDone) {
+      dispatch({
+        type: ADDRESS_LIST_REQUEST,
+        data: {
+          searchAddress: "",
+        },
+      });
+
+      addressDeleteModalToggle(null);
+
+      return message.success("주소가 삭제되었습니다.");
+    }
+  }, [st_addressDeleteDone]);
+
+  useEffect(() => {
+    if (st_addressDeleteError) {
+      return message.error(st_addressDeleteError);
+    }
+  }, [st_addressDeleteError]);
+
+  useEffect(() => {
+    if (st_addressIsNormalDone) {
+      dispatch({
+        type: ADDRESS_LIST_REQUEST,
+        data: {
+          searchAddress: "",
+        },
+      });
+
+      setIsNormalCheck(null);
+
+      return message.success("기본주소가 설정되었습니다.");
+    }
+  }, [st_addressIsNormalDone]);
+
+  useEffect(() => {
+    if (st_addressIsNormalError) {
+      return message.error(st_addressIsNormalError);
+    }
+  }, [st_addressIsNormalError]);
+
+  useEffect(() => {
+    if (updateAddressData) {
+      onFill(updateAddressData);
+    }
+  }, [updateAddressData]);
+
   ////// TOGGLE //////
-  const addressCreateModalToggle = useCallback(
-    (isClose) => {
-      if (isClose) {
+  const addressModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setUpdateAddressData(data);
+      } else {
         cForm.resetFields();
+        setUpdateAddressData(null);
       }
       dispatch({
-        type: ADDRESS_CREATE_MODAL_TOGGLE,
+        type: ADDRESS_MODAL_TOGGLE,
       });
     },
-    [createModal]
+    [addressModal, updateAddressData]
+  );
+
+  const addressDeleteModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setDeleteAddressData(data);
+      } else {
+        setDeleteAddressData(null);
+      }
+      dispatch({
+        type: ADDRESS_DELETE_MODAL_TOGGLE,
+      });
+    },
+    [addressDeleteModal, deleteAddressData]
   );
 
   const deliveryModalToggle = useCallback(() => {
@@ -133,6 +252,24 @@ const Address = ({}) => {
   }, [searchAddressModal]);
 
   ////// HANDLER //////
+
+  const onFill = useCallback((data) => {
+    cFormRef.current.setFieldsValue({
+      username: data.username,
+      userMobile: data.userMobile,
+      address: `${data.address}(${data.postCode})`,
+      detailAddress: data.detailAddress,
+    });
+  }, []);
+
+  const addressSearchHandler = useCallback((data) => {
+    dispatch({
+      type: ADDRESS_LIST_REQUEST,
+      data: {
+        searchAddress: data.address,
+      },
+    });
+  }, []);
 
   const addressCreateSubmitHandler = useCallback(
     (data) => {
@@ -150,6 +287,52 @@ const Address = ({}) => {
     },
     [me]
   );
+
+  const addressCheckBoxHandler = useCallback(
+    (data) => {
+      setIsNormalCheck(data);
+    },
+    [isNormalCheck]
+  );
+
+  const addressIsNormalHandler = useCallback(() => {
+    if (!isNormalCheck) {
+      return message.error("기본주소로 설정할 주소를 선택해주세요.");
+    }
+    dispatch({
+      type: ADDRESS_ISNORMAL_REQUEST,
+      data: {
+        addressId: isNormalCheck,
+        isNormal: true,
+      },
+    });
+  }, [isNormalCheck]);
+
+  const addressUpdateHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: ADDRESS_UPDATE_REQUEST,
+        data: {
+          postCode: data.address.split("(")[1].substring(0, 5),
+          address: data.address.split("(")[0],
+          detailAddress: data.detailAddress,
+          username: data.username,
+          userMobile: data.userMobile,
+          addressId: updateAddressData.id,
+        },
+      });
+    },
+    [updateAddressData]
+  );
+
+  const addressDeleteHandler = useCallback(() => {
+    dispatch({
+      type: ADDRESS_DELETE_REQUEST,
+      data: {
+        addressId: deleteAddressData.id,
+      },
+    });
+  }, [deleteAddressData]);
 
   ////// DATAVIEW //////
 
@@ -211,26 +394,30 @@ const Address = ({}) => {
           >
             <Wrapper padding={width < 800 ? `0 10px` : `0 38px`}>
               <Wrapper position={`relative`} margin={`15px 0`}>
-                <Wrapper
-                  position={`absolute`}
-                  top={`50%`}
-                  left={`10px`}
-                  width={`auto`}
-                  color={Theme.basicTheme_C}
-                  zIndex={`10`}
-                  fontSize={`25px`}
-                  margin={`-13px 0 0`}
-                >
-                  <SearchOutlined />
-                </Wrapper>
-                <TextInput
-                  radius={`20px`}
-                  height={`45px`}
-                  width={`100%`}
-                  type={`text`}
-                  placeholder={`주소록에서 검색`}
-                  padding={`0 0 0 45px`}
-                />
+                <CustomForm onFinish={addressSearchHandler}>
+                  <Wrapper
+                    position={`absolute`}
+                    top={`50%`}
+                    left={`10px`}
+                    width={`auto`}
+                    color={Theme.basicTheme_C}
+                    zIndex={`10`}
+                    fontSize={`25px`}
+                    margin={`-13px 0 0`}
+                  >
+                    <SearchOutlined />
+                  </Wrapper>
+                  <Form.Item name="address">
+                    <TextInput
+                      radius={`20px`}
+                      height={`45px`}
+                      width={`100%`}
+                      type={`text`}
+                      placeholder={`주소록에서 검색`}
+                      padding={`0 0 0 45px`}
+                    />
+                  </Form.Item>
+                </CustomForm>
               </Wrapper>
             </Wrapper>
 
@@ -250,12 +437,16 @@ const Address = ({}) => {
                 주소록
               </Text>
               <Wrapper dr={`row`} width={`auto`}>
-                <Text cursor={`pointer`} margin={`0 20px 0 0`}>
+                <Text
+                  cursor={`pointer`}
+                  margin={`0 20px 0 0`}
+                  onClick={addressIsNormalHandler}
+                >
                   기본주소로 설정
                 </Text>
                 <Text
                   cursor={`pointer`}
-                  onClick={() => addressCreateModalToggle(false)}
+                  onClick={() => addressModalToggle(false)}
                 >
                   주소 추가
                 </Text>
@@ -286,7 +477,7 @@ const Address = ({}) => {
                           margin={`15px 0`}
                         >
                           <Wrapper dr={`row`} ju={`flex-start`}>
-                            <CommonCheckBox style={{ alignItems: "center" }}>
+                            {data.isNormal ? (
                               <Wrapper al={`flex-start`} margin={`0 0 0 15px`}>
                                 <Text fontSize={`18px`} fontWeight={`bold`}>
                                   {data.username}
@@ -311,7 +502,32 @@ const Address = ({}) => {
                                 </Wrapper>
                                 <Text>{data.userMobile}</Text>
                               </Wrapper>
-                            </CommonCheckBox>
+                            ) : (
+                              <CommonCheckBox
+                                onChange={() =>
+                                  addressCheckBoxHandler(
+                                    isNormalCheck === data.id ? null : data.id
+                                  )
+                                }
+                                checked={isNormalCheck === data.id}
+                                style={{ alignItems: "center" }}
+                              >
+                                <Wrapper
+                                  al={`flex-start`}
+                                  margin={`0 0 0 15px`}
+                                >
+                                  <Text fontSize={`18px`} fontWeight={`bold`}>
+                                    {data.username}
+                                  </Text>
+                                  <Wrapper dr={`row`} ju={`space-between`}>
+                                    <Text color={Theme.grey_C}>
+                                      {data.address}&nbsp;({data.postCode})
+                                    </Text>
+                                  </Wrapper>
+                                  <Text>{data.userMobile}</Text>
+                                </Wrapper>
+                              </CommonCheckBox>
+                            )}
                           </Wrapper>
                         </Wrapper>
                         <Wrapper
@@ -320,10 +536,18 @@ const Address = ({}) => {
                           borderTop={`1px solid ${Theme.grey2_C}`}
                           padding={`10px 0 0`}
                         >
-                          <Wrapper width={`calc(100% / 2)`}>수정</Wrapper>
                           <Wrapper
                             width={`calc(100% / 2)`}
+                            cursor={`pointer`}
+                            onClick={() => addressModalToggle(data)}
+                          >
+                            수정
+                          </Wrapper>
+                          <Wrapper
+                            width={`calc(100% / 2)`}
+                            cursor={`pointer`}
                             borderLeft={`1px solid ${Theme.grey2_C}`}
+                            onClick={() => addressDeleteModalToggle(data)}
                           >
                             삭제
                           </Wrapper>
@@ -335,31 +559,48 @@ const Address = ({}) => {
             </Wrapper>
 
             <CustomModal
-              visible={createModal}
+              visible={addressModal}
               footer={null}
               width={`450px`}
-              onCancel={() => addressCreateModalToggle(true)}
+              onCancel={() => addressModalToggle(null)}
             >
               <Wrapper al={`flex-start`} margin={`0 0 30px`}>
                 <Text fontSize={`20px`} fontWeight={`bold`}>
-                  주소 추가
+                  {updateAddressData ? "주소 수정" : "주소 추가"}
                 </Text>
               </Wrapper>
               <Form
                 form={cForm}
                 ref={cFormRef}
-                onFinish={addressCreateSubmitHandler}
+                onFinish={
+                  updateAddressData
+                    ? addressUpdateHandler
+                    : addressCreateSubmitHandler
+                }
               >
                 <Text>고객명</Text>
-                <Form.Item name="username">
+                <Form.Item
+                  name="username"
+                  rules={[
+                    { required: true, message: "고객명을 입랙해주세요." },
+                  ]}
+                >
                   <Input placeholder="고객명을 입력해주세요." />
                 </Form.Item>
                 <Text>전화번호</Text>
-                <Form.Item name="userMobile">
+                <Form.Item
+                  name="userMobile"
+                  rules={[
+                    { required: true, message: "전화번호를 입랙해주세요." },
+                  ]}
+                >
                   <Input placeholder="전화번호를 입력해주세요." type="number" />
                 </Form.Item>
                 <Text>주소</Text>
-                <Form.Item name="address">
+                <Form.Item
+                  name="address"
+                  rules={[{ required: true, message: "주소를 입랙해주세요." }]}
+                >
                   <Input
                     placeholder="주소를 입력해주세요."
                     readOnly
@@ -367,7 +608,12 @@ const Address = ({}) => {
                   />
                 </Form.Item>
                 <Text>상세주소</Text>
-                <Form.Item name="detailAddress">
+                <Form.Item
+                  name="detailAddress"
+                  rules={[
+                    { required: true, message: "상세주소를 입랙해주세요." },
+                  ]}
+                >
                   <Input placeholder="상세주소를 입력해주세요." />
                 </Form.Item>
                 <Wrapper
@@ -375,7 +621,9 @@ const Address = ({}) => {
                   padding={`20px 0 0`}
                   borderTop={`1px solid ${Theme.grey2_C}`}
                 >
-                  <CommonButton htmlType="submit">주소 추가</CommonButton>
+                  <CommonButton htmlType="submit">
+                    {updateAddressData ? "주소 수정" : "주소 추가"}
+                  </CommonButton>
                 </Wrapper>
               </Form>
             </CustomModal>
@@ -402,6 +650,27 @@ const Address = ({}) => {
                 autoClose={false}
               />
             </Modal>
+
+            <CustomModal
+              visible={addressDeleteModal}
+              footer={null}
+              onCancel={() => addressDeleteModalToggle(null)}
+            >
+              <Wrapper al={`flex-start`}>
+                <Text fontSize={`20px`} fontWeight={`bold`}>
+                  주소 삭제
+                </Text>
+              </Wrapper>
+              <Wrapper margin={`15px 0 10px`} fontSize={`17px`}>
+                <Text>삭제 된 데이터는 다시 복구할 수 없습니다.</Text>
+                <Text>정말 삭제하시겠습니까?</Text>
+              </Wrapper>
+              <Wrapper al={`flex-end`}>
+                <CommonButton onClick={addressDeleteHandler}>
+                  삭제하기
+                </CommonButton>
+              </Wrapper>
+            </CustomModal>
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
