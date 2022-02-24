@@ -142,7 +142,7 @@ const Index = ({}) => {
 
   useEffect(() => {
     if (st_paymentIsPaymentError) {
-      return message.success("결제되었습니다.");
+      return message.error(st_paymentIsPaymentError);
     }
   }, [st_paymentIsPaymentError]);
 
@@ -202,7 +202,7 @@ const Index = ({}) => {
             pg: paymentType === "phone" ? "danal" : "danal_tpay",
             pay_method: paymentType,
             merchant_uid: orderPK,
-            name: me.username,
+            name: paymentDetail.productName,
             amount: productPayment - discount + 5000,
             buyer_name: me.username,
             buyer_tel: me.mobile.replace(
@@ -226,8 +226,6 @@ const Index = ({}) => {
                   totalPrice: productPayment - discount + 5000,
                 },
               });
-              message.success("결제되었습니다.");
-              return router.push("/");
             } else {
               console.log(rsp);
               return console.log("결제실패");
