@@ -224,6 +224,7 @@ const Index = ({}) => {
   const deliveryUpdateHandler = useCallback(
     (data) => {
       if (router.query.type === "payment") {
+        console.log(router.query.type);
         dispatch({
           type: PAYMENT_DELIVERY_REQUEST,
           data: {
