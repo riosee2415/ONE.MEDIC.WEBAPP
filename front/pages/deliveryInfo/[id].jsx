@@ -224,11 +224,10 @@ const Index = ({}) => {
   const deliveryUpdateHandler = useCallback(
     (data) => {
       if (router.query.type === "payment") {
-        console.log(router.query.type);
         dispatch({
           type: PAYMENT_DELIVERY_REQUEST,
           data: {
-            paymentId: router.query.id,
+            id: parseInt(router.query.id),
             receiveUser: data.ruser,
             receiveMobile: data.rmobile,
             receiveAddress: data.raddress,
@@ -243,7 +242,7 @@ const Index = ({}) => {
         });
       }
     },
-    [router.query]
+    [router.query.id, router.query.type]
   );
 
   const selectAddressHandler = useCallback((data) => {

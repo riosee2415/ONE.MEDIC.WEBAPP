@@ -228,7 +228,7 @@ router.get("/detail/:paymentId", isLoggedIn, async (req, res, next) => {
 
 router.patch("/address/update", async (req, res, next) => {
   const {
-    paymentId,
+    id,
     receiveUser,
     receiveMobile,
     receiveAddress,
@@ -241,17 +241,11 @@ router.patch("/address/update", async (req, res, next) => {
     deliveryRequest,
   } = req.body;
 
-  if (isNanCheck(paymentId)) {
-    return res
-      .status(403)
-      .send("올바르지 않은 요청 입니다. 다시 시도해주세요.");
-  }
-
   try {
-    if (paymentId) {
-      const exPayment = await PaymentRequest.findOne({
+    if (id) {
+      const exPayment = await Payment.findOne({
         where: {
-          id: parseInt(paymentId),
+          id: parseInt(id),
         },
       });
 
@@ -274,7 +268,7 @@ router.patch("/address/update", async (req, res, next) => {
       },
       {
         where: {
-          id: parseInt(paymentId),
+          id: parseInt(id),
         },
       }
     );
