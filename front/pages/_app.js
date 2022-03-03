@@ -7,8 +7,44 @@ import Theme from "../components/Theme";
 import GlobalStyles from "../components/GlobalStyles";
 import wrapper from "../store/configureStore";
 import WidthProvider from "../components/WidthProvider";
+import { useRouter } from "next/dist/client/router";
+import { useDispatch } from "react-redux";
+import { ACCEPT_LOG_CREATE_REQUEST } from "../reducers/accept";
 
 const Fourleaf = ({ Component }) => {
+  const router = useRouter();
+
+  const dispatch = useDispatch();
+
+  const getIpClient = useCallback(async () => {
+    const isCheck = sessionStorage.getItem("QSIDSPDSDQDAQSTEFA");
+
+    if (!isCheck && router.pathname.indexOf("admin") === -1) {
+      try {
+        const ipData = await fetch("https://geolocation-db.com/json/");
+        const locationIp = await ipData.json();
+
+        sessionStorage.setItem(
+          "QSIDSPDSDQDAQSTEFA",
+          "ISDGSAWDCASDHERGEKIJCSDMK"
+        );
+
+        dispatch({
+          type: ACCEPT_LOG_CREATE_REQUEST,
+          data: {
+            ip: locationIp.IPv4,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    getIpClient();
+  }, []);
+
   return (
     <ThemeProvider theme={Theme}>
       <GlobalStyles />
