@@ -23,7 +23,7 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { NOTICE_LIST_REQUEST } from "../../reducers/notice";
 import { useRouter } from "next/router";
-import { notification } from "antd";
+import { notification, Empty } from "antd";
 
 const DownArrow = styled(DownOutlined)`
   color: ${Theme.grey_C};

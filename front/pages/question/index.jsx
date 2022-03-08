@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { Checkbox, message, notification } from "antd";
+import { Checkbox, message, notification, Empty } from "antd";
 import { QUESTION_CREATE_REQUEST } from "../../reducers/question";
 import useInput from "../../hooks/useInput";
 import Modal from "antd/lib/modal/Modal";
