@@ -3,6 +3,7 @@ import produce from "../util/produce";
 export const initialState = {
   paymentRequest: null,
   paymentDetail: null,
+  paymentUserList: null,
 
   paymentId: null,
 
@@ -16,6 +17,10 @@ export const initialState = {
   st_paymentRequestListLoading: false,
   st_paymentRequestListDone: false,
   st_paymentRequestListError: null,
+  //
+  st_paymentRequestUserListLoading: false,
+  st_paymentRequestUserListDone: false,
+  st_paymentRequestUserListError: null,
   //
   st_paymentRequestCompleteLoading: false,
   st_paymentRequestCompleteDone: false,
@@ -49,6 +54,13 @@ export const initialState = {
 export const PAYMENTREQUEST_LIST_REQUEST = "PAYMENTREQUEST_LIST_REQUEST";
 export const PAYMENTREQUEST_LIST_SUCCESS = "PAYMENTREQUEST_LIST_SUCCESS";
 export const PAYMENTREQUEST_LIST_FAILURE = "PAYMENTREQUEST_LIST_FAILURE";
+
+export const PAYMENTREQUEST_USER_LIST_REQUEST =
+  "PAYMENTREQUEST_USER_LIST_REQUEST";
+export const PAYMENTREQUEST_USER_LIST_SUCCESS =
+  "PAYMENTREQUEST_USER_LIST_SUCCESS";
+export const PAYMENTREQUEST_USER_LIST_FAILURE =
+  "PAYMENTREQUEST_USER_LIST_FAILURE";
 
 export const PAYMENTREQUEST_COMPLETE_REQUEST =
   "PAYMENTREQUEST_COMPLETE_REQUEST";
@@ -113,6 +125,23 @@ const reducer = (state = initialState, action) =>
         draft.st_paymentRequestListLoading = false;
         draft.st_paymentRequestListDone = false;
         draft.st_paymentRequestListError = action.error;
+        break;
+
+      ////////////////////
+      case PAYMENTREQUEST_USER_LIST_REQUEST:
+        draft.st_paymentRequestUserListLoading = true;
+        draft.st_paymentRequestUserListDone = false;
+        draft.st_paymentRequestUserListError = null;
+        break;
+      case PAYMENTREQUEST_USER_LIST_SUCCESS:
+        draft.st_paymentRequestUserListLoading = false;
+        draft.st_paymentRequestUserListDone = true;
+        draft.paymentUserList = action.data.list;
+        break;
+      case PAYMENTREQUEST_USER_LIST_FAILURE:
+        draft.st_paymentRequestUserListLoading = false;
+        draft.st_paymentRequestUserListDone = false;
+        draft.st_paymentRequestUserListError = action.error;
         break;
 
       ////////////////////

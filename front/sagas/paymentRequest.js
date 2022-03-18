@@ -5,6 +5,10 @@ import {
   PAYMENTREQUEST_LIST_SUCCESS,
   PAYMENTREQUEST_LIST_FAILURE,
   //
+  PAYMENTREQUEST_USER_LIST_REQUEST,
+  PAYMENTREQUEST_USER_LIST_SUCCESS,
+  PAYMENTREQUEST_USER_LIST_FAILURE,
+  //
   PAYMENTREQUEST_COMPLETE_REQUEST,
   PAYMENTREQUEST_COMPLETE_SUCCESS,
   PAYMENTREQUEST_COMPLETE_FAILURE,
@@ -54,6 +58,35 @@ function* paymentRequestList(action) {
     console.error(err);
     yield put({
       type: PAYMENTREQUEST_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function paymentRequestUserListAPI(data) {
+  return axios.get(
+    `/api/payment/user/list?startDate=${data.startDate}&endDate=${data.endDate}&productName=${data.productName}`
+  );
+}
+
+function* paymentRequestUserList(action) {
+  try {
+    const result = yield call(paymentRequestUserListAPI, action.data);
+
+    yield put({
+      type: PAYMENTREQUEST_USER_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PAYMENTREQUEST_USER_LIST_FAILURE,
       error: err.response.data,
     });
   }
@@ -253,6 +286,10 @@ function* watchPaymentRequestList() {
   yield takeLatest(PAYMENTREQUEST_LIST_REQUEST, paymentRequestList);
 }
 
+function* watchPaymentRequestUserList() {
+  yield takeLatest(PAYMENTREQUEST_USER_LIST_REQUEST, paymentRequestUserList);
+}
+
 function* watchPaymentRequestComplete() {
   yield takeLatest(PAYMENTREQUEST_COMPLETE_REQUEST, paymentRequestComplete);
 }
@@ -285,6 +322,7 @@ function* watchPaymentAdminDelivery() {
 export default function* paymentRequestSaga() {
   yield all([
     fork(watchPaymentRequestList),
+    fork(watchPaymentRequestUserList),
     fork(watchPaymentRequestComplete),
     fork(watchPaymentRequestDelivery),
     fork(watchPaymentCreate),

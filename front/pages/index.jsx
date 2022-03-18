@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
 import ClientLayout from "../components/ClientLayout";
@@ -21,7 +21,8 @@ import Head from "next/head";
 import { SearchOutlined } from "@ant-design/icons";
 import { DatePicker, Empty, Space } from "antd";
 import { useRouter } from "next/router";
-import { PAYMENTREQUEST_LIST_REQUEST } from "../reducers/paymentRequest";
+import { PAYMENTREQUEST_USER_LIST_REQUEST } from "../reducers/paymentRequest";
+import useInput from "../hooks/useInput";
 
 const TagBtn = styled(Wrapper)`
   width: 75px;
@@ -45,8 +46,15 @@ const Home = ({}) => {
 
   const { me } = useSelector((state) => state.user);
 
-  const { paymentRequest } = useSelector((state) => state.paymentRequest);
+  const { paymentUserList } = useSelector((state) => state.paymentRequest);
   ////// HOOKS //////
+
+  const dispatch = useDispatch();
+
+  const productName = useInput("");
+
+  const [searchDate, setSearchDate] = useState(["", ""]);
+
   ////// REDUX //////
   ////// USEEFFECT //////
   ////// TOGGLE //////
@@ -55,6 +63,26 @@ const Home = ({}) => {
   const moveLinkHandler = useCallback((link) => {
     router.push(link);
   }, []);
+
+  const searchHandler = useCallback(
+    (data) => {
+      if (data) {
+        setSearchDate([
+          data[0].format("YYYY_MM_DD"),
+          data[1].format("YYYY_MM_DD"),
+        ]);
+      }
+      dispatch({
+        type: PAYMENTREQUEST_USER_LIST_REQUEST,
+        data: {
+          startDate: data ? data[0].format("YYYY_MM_DD") : searchDate[0],
+          endDate: data ? data[1].format("YYYY_MM_DD") : searchDate[1],
+          productName: productName.value,
+        },
+      });
+    },
+    [productName.value, searchDate]
+  );
 
   ////// DATAVIEW //////
 
@@ -125,10 +153,12 @@ const Home = ({}) => {
                   zIndex={`10`}
                   fontSize={`25px`}
                   margin={`-13px 0 0`}
+                  onClick={() => searchHandler()}
                 >
                   <SearchOutlined />
                 </Wrapper>
                 <TextInput
+                  {...productName}
                   radius={`20px`}
                   height={`45px`}
                   width={`100%`}
@@ -146,6 +176,7 @@ const Home = ({}) => {
                   boxShadow:
                     "5px 5px 15px rgba(77, 92, 123, 0.2), inset -5px -5px 15px rgba(77, 92, 123, 0.05)",
                 }}
+                onChange={searchHandler}
               />
             </Wrapper>
             {me && (
@@ -177,11 +208,11 @@ const Home = ({}) => {
                   minHeight={`calc(100vh - 149px - 170px)`}
                   ju={`flex-start`}
                 >
-                  {paymentRequest &&
-                    (paymentRequest.length === 0 ? (
+                  {paymentUserList &&
+                    (paymentUserList.length === 0 ? (
                       <Empty />
                     ) : (
-                      paymentRequest.map((data) => {
+                      paymentUserList.map((data) => {
                         return (
                           <Wrapper
                             radius={`20px`}
@@ -261,10 +292,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
     });
 
     context.store.dispatch({
-      type: PAYMENTREQUEST_LIST_REQUEST,
+      type: PAYMENTREQUEST_USER_LIST_REQUEST,
       data: {
-        isComplete: 3,
-        type: 3,
+        startDate: "",
+        endDate: "",
+        productName: "",
       },
     });
     // 구현부 종료

@@ -66,6 +66,65 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
+router.get("/user/list", isLoggedIn, async (req, res, next) => {
+  const { startDate, endDate, productName } = req.query;
+
+  try {
+    const _startDate = startDate || null;
+    const _endDate = endDate || null;
+    const _productName = productName || "";
+
+    const selectQuery = `
+      SELECT  p.id,
+              p.productName,
+              p.completedAt,
+              p.deliveryNo,
+              p.receiveUser,
+              p.receiveMobile,
+              p.receiveAddress,
+              p.receiveDetailAddress,
+              p.sendUser,
+              p.sendMobile,
+              p.sendAddress,
+              p.sendDetailAddress,
+              p.deliveryCompany,
+              DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
+              DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+              p.createdAt,
+              u.username,
+              u.email,
+              u.mobile,
+              u.nickname,
+              u.companyName,
+              u.companyNo
+        FROM  payment p
+        JOIN  users u
+          ON  u.id = p.UserId
+       WHERE  1 = 1
+         ${
+           _startDate
+             ? `AND  DATE_FORMAT(p.createdAt, '%Y-%m-%d') >= DATE_FORMAT('${_startDate}', '%Y-%m-%d') `
+             : ``
+         }
+         ${
+           _endDate
+             ? `AND  DATE_FORMAT(p.createdAt, '%Y-%m-%d') <= DATE_FORMAT('${_endDate}', '%Y-%m-%d') `
+             : ``
+         }
+         AND  p.productName LIKE '%${_productName}%'
+         AND  u.id = ${req.user.id}
+       ORDER  BY  p.createdAt DESC
+    `;
+
+    const reuslt = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json({ list: reuslt[0] });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
 router.get("/list/request/:paymentId", async (req, res, next) => {
   const { paymentId } = req.params;
 
