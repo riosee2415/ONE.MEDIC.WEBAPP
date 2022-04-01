@@ -21,7 +21,7 @@ const AppFooter = () => {
           <Text>347-49-00591</Text>
         </Wrapper>
         <Wrapper fontSize={`12px`}>
-          서울특별시 은평구 통이로 636, 4층, 5층(녹번동, 은평 미드스퀘어)
+          서울특별시 은평구 통일로 636, 4층, 5층(녹번동, 은평 미드스퀘어)
         </Wrapper>
         <Wrapper dr={`row`} fontSize={`12px`} margin={`15px 0 0`}>
           <Text color={Theme.grey_C}>대표번호</Text>

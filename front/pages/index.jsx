@@ -1,28 +1,33 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
-import ClientLayout from "../components/ClientLayout";
+
+import Head from "next/head";
+import { useRouter } from "next/router";
+
 import axios from "axios";
-import wrapper from "../store/configureStore";
 import { END } from "redux-saga";
+
+import { DatePicker, Empty, message } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import styled from "styled-components";
+
+import wrapper from "../store/configureStore";
+import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
+import { SEO_LIST_REQUEST } from "../reducers/seo";
+import { PAYMENTREQUEST_USER_LIST_REQUEST } from "../reducers/paymentRequest";
+
+import useInput from "../hooks/useInput";
+import useWidth from "../hooks/useWidth";
+
+import ClientLayout from "../components/ClientLayout";
 import {
   Text,
   WholeWrapper,
   Wrapper,
   RsWrapper,
   TextInput,
-  CommonButton,
 } from "../components/commonComponents";
-import useWidth from "../hooks/useWidth";
 import Theme from "../components/Theme";
-import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../reducers/seo";
-import Head from "next/head";
-import { SearchOutlined } from "@ant-design/icons";
-import { DatePicker, Empty, Space } from "antd";
-import { useRouter } from "next/router";
-import { PAYMENTREQUEST_USER_LIST_REQUEST } from "../reducers/paymentRequest";
-import useInput from "../hooks/useInput";
 
 const TagBtn = styled(Wrapper)`
   width: 75px;
@@ -66,6 +71,10 @@ const Home = ({}) => {
 
   const searchHandler = useCallback(
     (data) => {
+      if (!me) {
+        message.error("로그인 후 이용해주세요.");
+        return moveLinkHandler(`/login`);
+      }
       if (data) {
         setSearchDate([
           data[0].format("YYYY_MM_DD"),
