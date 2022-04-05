@@ -432,13 +432,13 @@ const UserList = ({}) => {
             defaultValue="1"
             style={{ width: "100%" }}
             value={
-              inputLevel.value === "1"
+              parseInt(inputLevel.value) === 1
                 ? "일반회원"
-                : inputLevel.value === "2"
+                : parseInt(inputLevel.value) === 2
                 ? `비어있음`
-                : inputLevel.value === "3"
+                : parseInt(inputLevel.value) === 3
                 ? `운영자`
-                : inputLevel.value === "4"
+                : parseInt(inputLevel.value) === 4
                 ? `최고관리자`
                 : `개발사`
             }

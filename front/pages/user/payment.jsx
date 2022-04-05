@@ -343,7 +343,6 @@ const Question = () => {
                           placeholder="비밀번호: 앞 2자리"
                           type="password"
                           maxLength="2"
-                          type={`number`}
                         />
                       </Form.Item>
                     </Wrapper>
