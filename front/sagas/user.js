@@ -57,6 +57,14 @@ import {
   CARD_GET_SUCCESS,
   CARD_GET_FAILURE,
   /////////////////////////////
+  CHECKCODE_REQUEST,
+  CHECKCODE_SUCCESS,
+  CHECKCODE_FAILURE,
+  /////////////////////////////
+  FILE_UPLOAD_REQUEST,
+  FILE_UPLOAD_SUCCESS,
+  FILE_UPLOAD_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -437,6 +445,60 @@ function* cardGet(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function checkCodeAPI(data) {
+  return axios.post(`/api/user/checkCode`, data);
+}
+
+function* checkCode(action) {
+  try {
+    const result = yield call(checkCodeAPI, action.data);
+
+    yield put({
+      type: CHECKCODE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: CHECKCODE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function fileUploadAPI(data) {
+  return axios.post(`/api/user/file`, data);
+}
+
+function* fileUpload(action) {
+  try {
+    const result = yield call(fileUploadAPI, action.data);
+
+    yield put({
+      type: FILE_UPLOAD_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: FILE_UPLOAD_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -495,6 +557,14 @@ function* watchUserCardGet() {
   yield takeLatest(CARD_GET_REQUEST, cardGet);
 }
 
+function* watchUserCheckCode() {
+  yield takeLatest(CHECKCODE_REQUEST, checkCode);
+}
+
+function* watchUserFileUpload() {
+  yield takeLatest(FILE_UPLOAD_REQUEST, fileUpload);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -512,6 +582,8 @@ export default function* userSaga() {
     fork(watchUserLogout),
     fork(watchUserCardCreate),
     fork(watchUserCardGet),
+    fork(watchUserCheckCode),
+    fork(watchUserFileUpload),
     //
   ]);
 }

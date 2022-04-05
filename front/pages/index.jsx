@@ -219,7 +219,7 @@ const Home = ({}) => {
                 >
                   {paymentUserList &&
                     (paymentUserList.length === 0 ? (
-                      <Empty />
+                      <Empty description="주문목록이 없습니다." />
                     ) : (
                       paymentUserList.map((data) => {
                         return (

@@ -5,6 +5,7 @@ export const initailState = {
   currentAdminMenu: [],
   users: null,
   cardInfo: null,
+  filePath: null,
 
   companyUserLists: null,
 
@@ -76,6 +77,14 @@ export const initailState = {
   st_cardGetLoading: false, // 카드 데이터 가져오기
   st_cardGetDone: false,
   st_cardGetError: null,
+  //
+  st_checkCodeLoading: false, // 이메일 인증번호 보내기
+  st_checkCodeDone: false,
+  st_checkCodeError: false,
+  //
+  st_fileUploadLoading: false, // 첨부파일
+  st_fileUploadDone: false,
+  st_fileUploadError: false,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -133,6 +142,14 @@ export const CARD_PATCH_FAILURE = "CARD_PATCH_FAILURE";
 export const CARD_GET_REQUEST = "CARD_GET_REQUEST";
 export const CARD_GET_SUCCESS = "CARD_GET_SUCCESS";
 export const CARD_GET_FAILURE = "CARD_GET_FAILURE";
+
+export const CHECKCODE_REQUEST = "CHECKCODE_REQUEST";
+export const CHECKCODE_SUCCESS = "CHECKCODE_SUCCESS";
+export const CHECKCODE_FAILURE = "CHECKCODE_FAILURE";
+
+export const FILE_UPLOAD_REQUEST = "FILE_UPLOAD_REQUEST";
+export const FILE_UPLOAD_SUCCESS = "FILE_UPLOAD_SUCCESS";
+export const FILE_UPLOAD_FAILURE = "FILE_UPLOAD_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -433,6 +450,47 @@ const reducer = (state = initailState, action) =>
         draft.st_cardGetLoading = false;
         draft.st_cardGetDone = false;
         draft.st_cardGetError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case CHECKCODE_REQUEST: {
+        draft.st_checkCodeLoading = true;
+        draft.st_checkCodeDone = null;
+        draft.st_checkCodeError = false;
+        break;
+      }
+      case CHECKCODE_SUCCESS: {
+        draft.st_checkCodeLoading = false;
+        draft.st_checkCodeDone = true;
+        draft.st_checkCodeError = null;
+        break;
+      }
+      case CHECKCODE_FAILURE: {
+        draft.st_checkCodeLoading = false;
+        draft.st_checkCodeDone = false;
+        draft.st_checkCodeError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case FILE_UPLOAD_REQUEST: {
+        draft.st_fileUploadLoading = true;
+        draft.st_fileUploadDone = null;
+        draft.st_fileUploadError = false;
+        break;
+      }
+      case FILE_UPLOAD_SUCCESS: {
+        draft.st_fileUploadLoading = false;
+        draft.st_fileUploadDone = true;
+        draft.st_fileUploadError = null;
+        draft.filePath = action.data.path;
+        break;
+      }
+      case FILE_UPLOAD_FAILURE: {
+        draft.st_fileUploadLoading = false;
+        draft.st_fileUploadDone = false;
+        draft.st_fileUploadError = action.error;
         break;
       }
       //////////////////////////////////////////////
