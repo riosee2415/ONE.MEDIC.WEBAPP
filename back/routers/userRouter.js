@@ -1,4 +1,7 @@
 const express = require("express");
+const fs = require("fs");
+const multer = require("multer");
+const path = require("path");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const { User } = require("../models");
@@ -9,8 +12,50 @@ const generateUUID = require("../utils/generateUUID");
 const sendSecretMail = require("../utils/mailSender");
 const models = require("../models");
 const axios = require("axios");
+const AWS = require("aws-sdk");
+const multerS3 = require("multer-s3");
 
 const router = express.Router();
+
+try {
+  fs.accessSync("uploads");
+} catch (error) {
+  console.log(
+    "uploads 폴더가 존재하지 않습니다. 새로 uploads 폴더를 생성합니다."
+  );
+  fs.mkdirSync("uploads");
+}
+
+AWS.config.update({
+  accessKeyId: process.env.S3_ACCESS_KEY_Id,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: "ap-northeast-2",
+});
+
+const upload = multer({
+  storage: multerS3({
+    s3: new AWS.S3(),
+    bucket: process.env.S3_BUCKET_NAME,
+    key(req, file, cb) {
+      cb(
+        null,
+        `${
+          process.env.S3_STORAGE_FOLDER_NAME
+        }/original/${Date.now()}_${path.basename(file.originalname)}`
+      );
+    },
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});
+
+router.post("/file", upload.single("file"), async (req, res, next) => {
+  try {
+    return res.status(200).json({ path: req.file.location });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("첨부파일을 업로드 할 수 없습니다.");
+  }
+});
 
 router.get(
   ["/list", "/list/:listType"],
@@ -199,7 +244,8 @@ router.post("/signin/admin", (req, res, next) => {
 });
 
 router.post("/signup", async (req, res, next) => {
-  const { email, username, nickname, mobile, password, terms } = req.body;
+  const { email, username, nickname, mobile, password, terms, companyFile } =
+    req.body;
 
   if (!terms) {
     return res.status(401).send("이용약관에 동의해주세요.");
@@ -222,6 +268,7 @@ router.post("/signup", async (req, res, next) => {
       nickname,
       mobile,
       terms,
+      companyFile,
       password: hashedPassword,
     });
 
@@ -284,6 +331,43 @@ router.post("/findemail", async (req, res, next) => {
   } catch (error) {
     console.error(error);
     return res.status(401).send("아이디를 찾을 수 없습니다.");
+  }
+});
+
+router.post("/checkCode", async (req, res, next) => {
+  const { email, checkCode } = req.body;
+
+  try {
+    const exUser = await User.findOne({
+      where: { email: email },
+    });
+
+    if (exUser) {
+      return res.status(401).send("이미 가입된 이메일 입니다.");
+    }
+
+    await sendSecretMail(
+      email,
+      `🔐 [보안 인증코드 입니다.] 미올한방병원 에서 회원가입을 위한 보안인증 코드를 발송했습니다.`,
+      `
+      <div>
+        <h3>미올한방병원</h3>
+        <hr />
+        <p>보안 인증코드를 발송해드립니다. 미올한방병원 홈페이지의 인증코드 입력란에 정확히 입력해주시기 바랍니다.</p>
+        <p>인증코드는 [<strong>${checkCode}</strong>] 입니다. </p>
+
+        <br /><hr />
+        <article>
+          발송해드린 인증코드는 외부로 유출하시거나, 유출 될 경우 개인정보 침해의 위험이 있으니, 필히 본인만 사용하며 타인에게 양도하거나 알려주지 마십시오.
+        </article>
+      </div>
+      `
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).send("인증번호를 보낼 수 없습니다.");
   }
 });
 
