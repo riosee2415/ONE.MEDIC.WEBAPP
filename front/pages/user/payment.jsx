@@ -129,7 +129,7 @@ const Question = () => {
     if (st_cardPatchError) {
       return message.error(st_cardPatchError);
     }
-  }, []);
+  }, [st_cardPatchError]);
 
   ////// TOGGLE //////
   ////// HANDLER //////
@@ -207,6 +207,7 @@ const Question = () => {
               },
             });
           } else {
+            console.log(rsp);
             return message.error(rsp.message);
           }
         }

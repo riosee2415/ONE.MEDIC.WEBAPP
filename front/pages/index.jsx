@@ -255,17 +255,26 @@ const Home = ({}) => {
                               borderTop={`1px solid ${Theme.grey2_C}`}
                               padding={`10px 0 0`}
                             >
-                              <Wrapper width={`calc(100% / 3)`}>
+                              <Wrapper
+                                width={`calc(100% / 3)`}
+                                cursor={`pointer`}
+                              >
                                 배송조회
                               </Wrapper>
                               <Wrapper
                                 width={`calc(100% / 3)`}
                                 borderRight={`1px solid ${Theme.grey2_C}`}
                                 borderLeft={`1px solid ${Theme.grey2_C}`}
+                                cursor={`pointer`}
                               >
                                 주문내역
                               </Wrapper>
-                              <Wrapper width={`calc(100% / 3)`}>재처방</Wrapper>
+                              <Wrapper
+                                width={`calc(100% / 3)`}
+                                cursor={`pointer`}
+                              >
+                                재처방
+                              </Wrapper>
                             </Wrapper>
                           </Wrapper>
                         );
