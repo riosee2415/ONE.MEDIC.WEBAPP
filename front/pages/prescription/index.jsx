@@ -23,13 +23,21 @@ import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
-import { Empty, Modal, Select, Radio } from "antd";
+import { Empty, Modal, Select, Radio, Form } from "antd";
 import { useRouter } from "next/router";
 import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import react, { useState } from "react";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
+`;
+
+const CustomForm = styled(Form)`
+  width: 100%;
+
+  & .ant-form-item {
+    width: 100%;
+  }
 `;
 
 const ListWrapper = styled(Wrapper)`
@@ -107,8 +115,34 @@ const Prescription = ({}) => {
 
   const [toggleArr, setToggleArr] = useState([false, false]);
   const [isChecked, setIsChecked] = useState([false, false]);
+
+  const [chubSelectArr, setChubSelectArr] = useState(null);
+  const [packSelectArr, setPackSelectArr] = useState(null);
+  const [volumnSelectArr, setVolumnSelectArr] = useState(null);
+
+  const [chubSelect, setChubSelect] = useState("20");
+  const [packSelect, setPackSelect] = useState("32");
+  const [volumnSelect, setVolumnSelect] = useState("120");
+
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    let chubArr = [];
+    let packArr = [];
+    let volumnArr = ["60", "70", "80", "90", "100", "110", "120"];
+
+    for (let i = 1; i < 51; i++) {
+      chubArr.push(String(i));
+    }
+    for (let i = 1; i < 121; i++) {
+      packArr.push(String(i));
+    }
+
+    setChubSelectArr(chubArr);
+    setPackSelectArr(packArr);
+    setVolumnSelectArr(volumnArr);
+  }, [router.query]);
 
   ////// TOGGLE //////
 
@@ -144,6 +178,17 @@ const Prescription = ({}) => {
 
     setIsChecked(save);
   }, []);
+
+  const selectHandler = useCallback(
+    (data) => {
+      setChubSelect(data.chub ? data.chub : chubSelect);
+      setPackSelect(data.pack ? data.pack : packSelect);
+      setVolumnSelect(data.volumn ? data.volumn : volumnSelect);
+
+      setIsModalVisible1(!isModalVisible1);
+    },
+    [chubSelect, packSelect, volumnSelect, isModalVisible1]
+  );
   ////// DATAVIEW //////
 
   return (
@@ -277,7 +322,7 @@ const Prescription = ({}) => {
                 </Wrapper>
                 <Wrapper argin={`10px 0 0`} al={`flex-start`}>
                   <Text fontSize={width < 800 ? `16px` : `18px`}>
-                    20첩 / 32팩 / 120ml
+                    {chubSelect}첩 / {packSelect}팩 / {volumnSelect}ml
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -377,88 +422,98 @@ const Prescription = ({}) => {
           footer={null}
           width={350}
         >
-          <Wrapper padding={`50px 30px`}>
-            <Wrapper al={`flex-start`}>
-              <Text
-                color={Theme.grey_C}
-                fontWeight={`800`}
-                padding={`10px 0 10px 0 `}
-              >
-                첩수
-              </Text>
-              <ComboBox defaultValue="lucy">
-                <Option value="jack">Jack</Option>
-                <Option value="lucy">Lucy</Option>
-                <Option value="disabled" disabled>
-                  Disabled
-                </Option>
-              </ComboBox>
-            </Wrapper>
-
-            <Wrapper al={`flex-start`}>
-              <Text
-                color={Theme.grey_C}
-                fontWeight={`800`}
-                padding={`10px 0 10px 0 `}
-              >
-                팩수
-              </Text>
-              <ComboBox defaultValue="lucy">
-                <Option value="jack">Jack</Option>
-                <Option value="lucy">Lucy</Option>
-                <Option value="disabled" disabled>
-                  Disabled
-                </Option>
-              </ComboBox>
-            </Wrapper>
-
-            <Wrapper al={`flex-start`}>
-              <Text
-                color={Theme.grey_C}
-                fontWeight={`800`}
-                padding={`10px 0 10px 0 `}
-              >
-                팩용량
-              </Text>
-              <ComboBox defaultValue="lucy">
-                <Option value="jack">Jack</Option>
-                <Option value="lucy">Lucy</Option>
-                <Option value="disabled" disabled>
-                  Disabled
-                </Option>
-              </ComboBox>
-            </Wrapper>
-
-            <Wrapper margin={`20px 0 0 0`}>
-              <Wrapper dr={`row`} ju={`space-between`}>
-                <Text fontWeight={`600`} color={Theme.grey_C}>
-                  총 용량
+          <CustomForm onFinish={selectHandler}>
+            <Wrapper padding={`50px 30px`}>
+              <Wrapper al={`flex-start`}>
+                <Text
+                  color={Theme.grey_C}
+                  fontWeight={`800`}
+                  padding={`10px 0 10px 0 `}
+                >
+                  첩수
                 </Text>
-                <Text fontSize={`18px`}>
-                  10,488.0
-                  <SpanText fontSize={`16px`} color={Theme.grey_C}>
-                    g
-                  </SpanText>
-                </Text>
+                <Form.Item name="chub">
+                  <ComboBox defaultValue="20">
+                    {chubSelectArr &&
+                      chubSelectArr.map((data) => (
+                        <Option value={data}>{data}</Option>
+                      ))}
+                  </ComboBox>
+                </Form.Item>
               </Wrapper>
-              <Wrapper dr={`row`} ju={`space-between`}>
-                <Text fontWeight={`600`} color={Theme.grey_C}>
-                  약제비
+
+              <Wrapper al={`flex-start`}>
+                <Text
+                  color={Theme.grey_C}
+                  fontWeight={`800`}
+                  padding={`10px 0 10px 0 `}
+                >
+                  팩수
                 </Text>
-                <Text fontSize={`18px`}>
-                  223,920
-                  <SpanText fontSize={`16px`} color={Theme.grey_C}>
-                    원
-                  </SpanText>
+                <Form.Item name="pack">
+                  <ComboBox defaultValue="32">
+                    {packSelectArr &&
+                      packSelectArr.map((data) => (
+                        <Option value={data}>{data}</Option>
+                      ))}
+                  </ComboBox>
+                </Form.Item>
+              </Wrapper>
+
+              <Wrapper al={`flex-start`}>
+                <Text
+                  color={Theme.grey_C}
+                  fontWeight={`800`}
+                  padding={`10px 0 10px 0 `}
+                >
+                  팩용량
                 </Text>
+                <Form.Item name="volumn">
+                  <ComboBox defaultValue="120">
+                    {volumnSelectArr &&
+                      volumnSelectArr.map((data) => (
+                        <Option value={data}>{data}</Option>
+                      ))}
+                  </ComboBox>
+                </Form.Item>
+              </Wrapper>
+
+              <Wrapper margin={`20px 0 0 0`}>
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Text fontWeight={`600`} color={Theme.grey_C}>
+                    총 용량
+                  </Text>
+                  <Text fontSize={`18px`}>
+                    10,488.0
+                    <SpanText fontSize={`16px`} color={Theme.grey_C}>
+                      g
+                    </SpanText>
+                  </Text>
+                </Wrapper>
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Text fontWeight={`600`} color={Theme.grey_C}>
+                    약제비
+                  </Text>
+                  <Text fontSize={`18px`}>
+                    223,920
+                    <SpanText fontSize={`16px`} color={Theme.grey_C}>
+                      원
+                    </SpanText>
+                  </Text>
+                </Wrapper>
+              </Wrapper>
+              <Wrapper al={`flex-end`} margin={`10px 0 0 0`}>
+                <CommonButton
+                  width={`90px`}
+                  height={`40px`}
+                  fontWeight={`800`}
+                  htmlType="submit"
+                >
+                  완료
+                </CommonButton>
               </Wrapper>
             </Wrapper>
-            <Wrapper al={`flex-end`} margin={`10px 0 0 0`}>
-              <CommonButton width={`90px`} height={`40px`} fontWeight={`800`}>
-                완료
-              </CommonButton>
-            </Wrapper>
-          </Wrapper>
+          </CustomForm>
         </SelectModal>
 
         {/*  Delete Modal */}
