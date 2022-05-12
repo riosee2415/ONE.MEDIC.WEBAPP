@@ -216,6 +216,10 @@ const AppHeader = ({ children, width }) => {
       title: "계정관리",
     },
     {
+      router: "/orderList",
+      title: "주문내역",
+    },
+    {
       router: "/cart",
       title: "장바구니",
     },
