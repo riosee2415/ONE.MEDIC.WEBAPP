@@ -88,6 +88,7 @@ const PromiseDetail = () => {
   const [totalPayment, setTotalPayment] = useState(null);
   const [topSlider, setTopSlider] = useState(null);
   const [temporaryDatum, setTemporaryDatum] = useState([]);
+  const [temporaryId, setTemporaryId] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -200,11 +201,12 @@ const PromiseDetail = () => {
       return message.error("단위을 선택해주세요.");
     }
 
-    let temporayArr = temporaryDatum.map((data) => {
-      return data;
-    });
+    let temporayArr = temporaryDatum.map((data) => data);
+
+    setTemporaryId(temporaryId + 1);
 
     temporayArr.push({
+      id: temporaryId,
       payment:
         product &&
         product.price +
@@ -218,16 +220,20 @@ const PromiseDetail = () => {
     });
 
     await setTemporaryDatum(temporayArr);
-  }, [type.value, pack.value, unit.value, otherInput.value, temporaryDatum]);
+  }, [
+    type.value,
+    pack.value,
+    unit.value,
+    otherInput.value,
+    temporaryDatum,
+    temporaryId,
+  ]);
 
   const deletePaymentArrHadnler = useCallback(
-    async (index) => {
-      let temporayArr = temporaryDatum.map((data) => {
-        return data;
-      });
-      temporayArr.splice(index, index + 1);
+    async (id) => {
+      let temporayArr = temporaryDatum.map((data) => data);
 
-      await setTemporaryDatum(temporayArr);
+      await setTemporaryDatum(temporayArr.filter((data) => data.id !== id));
     },
     [temporaryDatum]
   );
@@ -247,9 +253,10 @@ const PromiseDetail = () => {
         userId: me.id,
         productName: product.title,
         paymentRequestDatum: temporaryDatum,
+        totalPrice: totalPayment,
       },
     });
-  }, [temporaryDatum, me, product]);
+  }, [temporaryDatum, me, product, totalPayment]);
 
   ////// DATAVIEW //////
 
@@ -465,7 +472,7 @@ const PromiseDetail = () => {
                         </Text>
                         <Image
                           cursor={`pointer`}
-                          onClick={() => deletePaymentArrHadnler(idx)}
+                          onClick={() => deletePaymentArrHadnler(data.id)}
                           alt="close"
                           src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/header_icon/close-grey.png`}
                           width={`16px`}
