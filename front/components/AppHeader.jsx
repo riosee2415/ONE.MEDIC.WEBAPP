@@ -192,6 +192,10 @@ const AppHeader = ({ children, width }) => {
       title: "배송정보",
     },
     {
+      router: "/deliveryList",
+      title: "배송조회",
+    },
+    {
       router: "/payInfo/[id]",
       title: "결제정보",
     },
@@ -210,6 +214,10 @@ const AppHeader = ({ children, width }) => {
     {
       router: "/user/myinfo",
       title: "계정관리",
+    },
+    {
+      router: "/cart",
+      title: "장바구니",
     },
   ];
   return (
