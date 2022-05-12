@@ -139,16 +139,9 @@ router.get("/signin", async (req, res, next) => {
     if (req.user) {
       const fullUserWithoutPassword = await User.findOne({
         where: { id: req.user.id },
-        attributes: [
-          "id",
-          "nickname",
-          "email",
-          "level",
-          "username",
-          "mobile",
-          "licenseNo",
-          "operatorLevel",
-        ],
+        attributes: {
+          exclude: ["password", "secret"],
+        },
       });
 
       console.log("🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀🍀");
@@ -184,16 +177,9 @@ router.post("/signin", (req, res, next) => {
 
       const fullUserWithoutPassword = await User.findOne({
         where: { id: user.id },
-        attributes: [
-          "id",
-          "nickname",
-          "email",
-          "level",
-          "username",
-          "mobile",
-          "licenseNo",
-          "operatorLevel",
-        ],
+        attributes: {
+          exclude: ["password", "secret"],
+        },
       });
 
       return res.status(200).json(fullUserWithoutPassword);
@@ -226,16 +212,9 @@ router.post("/signin/admin", (req, res, next) => {
 
       const fullUserWithoutPassword = await User.findOne({
         where: { id: user.id },
-        attributes: [
-          "id",
-          "nickname",
-          "email",
-          "level",
-          "username",
-          "mobile",
-          "licenseNo",
-          "operatorLevel",
-        ],
+        attributes: {
+          exclude: ["password", "secret"],
+        },
       });
 
       return res.status(200).json(fullUserWithoutPassword);

@@ -341,7 +341,7 @@ router.patch("/address/update", async (req, res, next) => {
 
 router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
   const { paymentId } = req.params;
-  const { isCard, totalPrice } = req.body;
+  const { isCard, totalPrice, payInfo } = req.body;
 
   try {
     const currentUser = await User.findOne({
@@ -354,6 +354,19 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
         id: parseInt(paymentId),
       },
     });
+
+    const _payinfo = payInfo;
+
+    if (_payinfo) {
+      await User.update(
+        {
+          payInfo: _payinfo,
+        },
+        {
+          where: { id: req.user.id },
+        }
+      );
+    }
 
     if (isCard === "1") {
       const getToken = await axios({
