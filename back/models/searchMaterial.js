@@ -5,7 +5,7 @@ module.exports = class SearchMaterial extends Model {
   static init(sequelize) {
     return super.init(
       {
-        quantity: {
+        qnt: {
           type: DataTypes.INTEGER,
           defaultValue: 1,
           allowNull: false, //필수

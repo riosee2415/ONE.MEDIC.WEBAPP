@@ -24,7 +24,6 @@ module.exports = class UseMaterial extends Model {
     );
   }
   static associate(db) {
-    db.UseMaterial.belongsTo(db.PrescriptionPaymentRequest);
     db.UseMaterial.belongsTo(db.Materials);
   }
 };

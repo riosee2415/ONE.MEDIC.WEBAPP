@@ -12,7 +12,7 @@ module.exports = class PrescriptionPaymentRequest extends Model {
         },
 
         refuseContent: {
-          type: DataTypes.STRING(1000),
+          type: DataTypes.TEXT,
           allowNull: true,
         },
 
@@ -92,6 +92,11 @@ module.exports = class PrescriptionPaymentRequest extends Model {
           type: DataTypes.STRING(300),
           allowNull: true,
         },
+
+        totalPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+        },
       },
       {
         modelName: "PrescriptionPaymentRequest",
@@ -102,5 +107,7 @@ module.exports = class PrescriptionPaymentRequest extends Model {
       }
     );
   }
-  static associate(db) {}
+  static associate(db) {
+    db.PrescriptionPaymentRequest.hasMany(db.UseMaterial);
+  }
 };

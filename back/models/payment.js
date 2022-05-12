@@ -86,6 +86,11 @@ module.exports = class Payment extends Model {
           type: DataTypes.STRING(300),
           allowNull: true,
         },
+
+        totalPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+        },
       },
       {
         modelName: "Payment",
