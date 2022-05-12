@@ -220,6 +220,10 @@ const AppHeader = ({ children, width }) => {
       title: "주문내역",
     },
     {
+      router: "/prescription-history",
+      title: "처방내역확인",
+    },
+    {
       router: "/cart",
       title: "장바구니",
     },
