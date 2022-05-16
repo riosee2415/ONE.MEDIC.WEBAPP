@@ -62,6 +62,14 @@ const Home = ({}) => {
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+  }, [me]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
 

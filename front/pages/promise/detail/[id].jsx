@@ -113,26 +113,26 @@ const PromiseDetail = () => {
       dispatch({
         type: PRODUCT_UNIT_LIST_REQUEST,
         data: {
-          id: router.query.d,
+          id: router.query.id,
         },
       });
       dispatch({
         type: PRODUCT_PACK_LIST_REQUEST,
         data: {
-          id: router.query.d,
+          id: router.query.id,
         },
       });
       dispatch({
         type: PRODUCT_TYPE_LIST_REQUEST,
         data: {
-          id: router.query.d,
+          id: router.query.id,
         },
       });
 
       dispatch({
         type: PRODUCT_DETAIL_REQUEST,
         data: {
-          id: router.query.d,
+          id: router.query.id,
         },
       });
     }
@@ -205,17 +205,21 @@ const PromiseDetail = () => {
 
     setTemporaryId(temporaryId + 1);
 
+    console.log(type.value);
+    console.log(pack.value);
+    console.log(unit.value);
+
     temporayArr.push({
       id: temporaryId,
       payment:
         product &&
         product.price +
-          type.value.originAddPrice +
-          pack.value.originAddPrice +
-          unit.value.originAddPrice,
-      packVolumn: type.value.name,
-      typeVolumn: pack.value.name,
-      unitVolumn: unit.value.name,
+          (type.value.originAddPrice ? type.value.originAddPrice : 0) +
+          (pack.value.originAddPrice ? pack.value.originAddPrice : 0) +
+          (unit.value.originAddPrice ? unit.value.originAddPrice : 0),
+      packVolumn: type.value.name ? type.value.name : type.value,
+      typeVolumn: pack.value.name ? pack.value.name : pack.value,
+      unitVolumn: unit.value.name ? unit.value.name : unit.value,
       otherRequest: otherInput.value,
     });
 
