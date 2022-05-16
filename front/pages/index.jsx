@@ -270,6 +270,9 @@ const Home = ({}) => {
                                 borderRight={`1px solid ${Theme.grey2_C}`}
                                 borderLeft={`1px solid ${Theme.grey2_C}`}
                                 cursor={`pointer`}
+                                onClick={() =>
+                                  moveLinkHandler(`/orderList/${data.id}`)
+                                }
                               >
                                 주문내역
                               </Wrapper>

@@ -216,7 +216,7 @@ const AppHeader = ({ children, width }) => {
       title: "계정관리",
     },
     {
-      router: "/orderList",
+      router: "/orderList/[id]",
       title: "주문내역",
     },
     {
