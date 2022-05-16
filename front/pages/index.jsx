@@ -95,10 +95,6 @@ const Home = ({}) => {
 
   ////// DATAVIEW //////
 
-  const getEditContent = (contentValue) => {
-    console.log(contentValue);
-  };
-
   return (
     <>
       <Head>
