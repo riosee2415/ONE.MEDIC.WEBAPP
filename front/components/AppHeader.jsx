@@ -118,9 +118,7 @@ const AppHeader = ({ children, width }) => {
 
   const materialAddHandler = useCallback(
     (data) => {
-      let seleteMaterialArr = userMaterials.map((data) => {
-        return data;
-      });
+      let seleteMaterialArr = userMaterials.map((data) => data);
       seleteMaterialArr.push(data);
 
       setUserMaterials(seleteMaterialArr);
@@ -403,7 +401,9 @@ const AppHeader = ({ children, width }) => {
                     <Wrapper>
                       {materials &&
                         (materials.length === 0 ? (
-                          <Empty />
+                          <Wrapper margin={`20px 0`} color={Theme.black_C}>
+                            <Empty description="약재가 없습니다." />
+                          </Wrapper>
                         ) : (
                           materials.map((data) => {
                             return (
@@ -566,7 +566,8 @@ const AppHeader = ({ children, width }) => {
                         </Wrapper>
                       </ATag>
                     </Link>
-                    {/* <Link href={`/prescription`}>
+                    {/* ====== 탕전처방 ====== */}
+                    <Link href={`/prescription`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper
                           dr={`row`}
@@ -589,7 +590,8 @@ const AppHeader = ({ children, width }) => {
                           </Text>
                         </Wrapper>
                       </ATag>
-                    </Link> */}
+                    </Link>
+                    {/* ====== 탕전처방 ====== */}
                     {me && (
                       <>
                         <Link href={`/`}>
