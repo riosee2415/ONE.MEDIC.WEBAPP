@@ -7,6 +7,7 @@ module.exports = class UseMaterial extends Model {
       {
         qnt: {
           type: DataTypes.INTEGER,
+          defaultValue: 1,
           allowNull: false, // 필수
         },
         unit: {

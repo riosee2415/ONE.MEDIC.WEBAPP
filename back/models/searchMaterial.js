@@ -10,6 +10,15 @@ module.exports = class SearchMaterial extends Model {
           defaultValue: 1,
           allowNull: false, //필수
         },
+        unit: {
+          type: DataTypes.STRING(10),
+          allowNull: false, // 필수
+        },
+        isDelete: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false,
+          allowNull: false, // 필수
+        },
       },
       {
         modelName: "SearchMaterial",

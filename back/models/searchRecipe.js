@@ -9,6 +9,11 @@ module.exports = class SearchRecipe extends Model {
           type: DataTypes.STRING(100),
           allowNull: false, // 필수
         },
+        isDelete: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false,
+          allowNull: false,
+        },
       },
       {
         modelName: "SearchRecipe",
