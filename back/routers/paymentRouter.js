@@ -113,6 +113,7 @@ router.get("/user/list", isLoggedIn, async (req, res, next) => {
          }
          AND  p.productName LIKE '%${_productName}%'
          AND  u.id = ${req.user.id}
+         AND  isPayment = TRUE
        ORDER  BY  p.createdAt DESC
     `;
 

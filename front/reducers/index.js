@@ -16,6 +16,7 @@ import material from "./material";
 import paymentRequest from "./paymentRequest";
 import address from "./address";
 import prescriptionPaymentRequest from "./prescriptionPaymentRequest";
+import search from "./search";
 
 const rootReducer = (state, action) => {
   switch (action.type) {
@@ -41,6 +42,7 @@ const rootReducer = (state, action) => {
           paymentRequest,
           prescriptionPaymentRequest,
           address,
+          search,
         });
         return combinedReducer(state, action);
       }

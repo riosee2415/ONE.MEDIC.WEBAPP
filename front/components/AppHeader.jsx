@@ -261,18 +261,6 @@ const AppHeader = ({ children, width }) => {
             ju={`flex-start`}
             cursor={`pointer`}
           >
-            <Link href={`/`}>
-              <a>
-                <Wrapper
-                  width={`auto`}
-                  color={Theme.grey2_C}
-                  fontSize={`20px`}
-                  margin={`0 10px 0 0`}
-                >
-                  <LeftOutlined />
-                </Wrapper>
-              </a>
-            </Link>
             로그인
           </Wrapper>
         </RsWrapper>
