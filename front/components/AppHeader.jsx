@@ -180,7 +180,7 @@ const AppHeader = ({ children, width }) => {
       title: "약속처방",
     },
     {
-      router: "/promise/detail/[d]",
+      router: "/promise/detail/[id]",
       title: "약속처방",
     },
     {
