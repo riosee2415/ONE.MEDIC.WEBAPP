@@ -39,7 +39,7 @@ router.post("/recipe/create", isAdminCheck, async (req, res, next) => {
   const { name } = req.body;
 
   try {
-    const exRecipe = SearchRecipe.findOne({
+    const exRecipe = await SearchRecipe.findOne({
       where: {
         name,
         isDelete: false,

@@ -59,7 +59,6 @@ const AdminMenu = () => {
         onClick={clickAction}
         style={{ width: `100%` }}
         defaultOpenKeys={currentAdminMenu}
-        selectedKeys={[current]}
         mode="inline"
         selectedKeys={router.pathname}
         disabled={false}
@@ -194,6 +193,9 @@ const AdminMenu = () => {
           </Menu.Item>
           <Menu.Item key="/admin/product/material">
             <MenuName>탕전처방 재료 관리</MenuName>
+          </Menu.Item>
+          <Menu.Item key="/admin/product/recipe">
+            <MenuName>탕전처방 레시피 관리</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/product/stockHistory">
             <MenuName>재료 사용현황</MenuName>
