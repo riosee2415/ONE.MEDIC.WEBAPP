@@ -76,7 +76,7 @@ router.patch("/recipe/update", isAdminCheck, async (req, res, next) => {
       return res.status(400).send("존재하지 않는 레시피입니다.");
     }
 
-    await SearchRecipe.udpate(
+    await SearchRecipe.update(
       {
         name,
       },
@@ -112,7 +112,7 @@ router.delete(
         return res.status(400).send("존재하지 않는 레시피 입니다.");
       }
 
-      await SearchRecipe.udpate(
+      await SearchRecipe.update(
         {
           isDelete: true,
         },
@@ -141,7 +141,7 @@ router.get("/material/list", async (req, res, next) => {
   try {
     const exRecipe = await SearchRecipe.findOne({
       where: {
-        id: parseInt(searchId),
+        id: parseInt(recipeId),
         isDelete: false,
       },
     });
@@ -155,6 +155,11 @@ router.get("/material/list", async (req, res, next) => {
         SearchRecipeId: parseInt(recipeId),
         isDelete: false,
       },
+      include: [
+        {
+          model: Materials,
+        },
+      ],
     });
 
     return res.status(200).json(result);
@@ -165,7 +170,7 @@ router.get("/material/list", async (req, res, next) => {
 });
 
 router.post("/material/create", async (req, res, next) => {
-  const { qnt, unit, materialId } = req.body;
+  const { qnt, unit, materialId, searchRecipeId } = req.body;
 
   try {
     const exMaterial = await Materials.findOne({
@@ -179,15 +184,25 @@ router.post("/material/create", async (req, res, next) => {
       return res.status(400).send("존재하지 않는 재료입니다.");
     }
 
-    const result = await SearchMaterial.create({
+    const exSearchMaterial = await SearchMaterial.findOne({
       where: {
-        qnt,
-        unit,
         MaterialId: materialId,
+        SearchRecipeId: searchRecipeId,
       },
     });
 
-    return res.status(200).json(result);
+    if (exSearchMaterial) {
+      return res.status(400).send("이미 존재하는 재료입니다.");
+    }
+
+    await SearchMaterial.create({
+      qnt: parseInt(qnt),
+      unit,
+      MaterialId: materialId,
+      SearchRecipeId: searchRecipeId,
+    });
+
+    return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
     return res.status(400).send("재료를 생성할 수 없습니다.");
@@ -195,7 +210,7 @@ router.post("/material/create", async (req, res, next) => {
 });
 
 router.delete("/material/delete/:materialId", async (req, res, next) => {
-  const { materialId } = req.body;
+  const { materialId } = req.params;
 
   try {
     const exMaterial = await SearchMaterial.findOne({
