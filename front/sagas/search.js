@@ -1,6 +1,10 @@
 import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import axios from "axios";
 import {
+  SEARCH_LIST_REQUEST,
+  SEARCH_LIST_SUCCESS,
+  SEARCH_LIST_FAILURE,
+  //
   SEARCH_RECIPE_LIST_REQUEST,
   SEARCH_RECIPE_LIST_SUCCESS,
   SEARCH_RECIPE_LIST_FAILURE,
@@ -29,6 +33,35 @@ import {
   SEARCH_MATERIAL_DELETE_SUCCESS,
   SEARCH_MATERIAL_DELETE_FAILURE,
 } from "../reducers/search";
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+
+async function searchListAPI(data) {
+  return await axios.get(`/api/search/list/?search=${data.search}`);
+}
+
+function* searchList(action) {
+  try {
+    const result = yield call(searchListAPI, action.data);
+
+    yield put({
+      type: SEARCH_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: SEARCH_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
 
 // ******************************************************************************************************************
 // SAGA AREA ********************************************************************************************************
@@ -234,6 +267,10 @@ function* materialDelete(action) {
 // ******************************************************************************************************************
 
 //////////////////////////////////////////////////////////////
+function* watchSearchList() {
+  yield takeLatest(SEARCH_LIST_REQUEST, searchList);
+}
+
 function* watchSearchRecipeList() {
   yield takeLatest(SEARCH_RECIPE_LIST_REQUEST, recipeList);
 }
@@ -265,6 +302,7 @@ function* watchSearchMaterialDelete() {
 //////////////////////////////////////////////////////////////
 export default function* searchSaga() {
   yield all([
+    fork(watchSearchList),
     fork(watchSearchRecipeList),
     fork(watchSearchRecipeCreate),
     fork(watchSearchRecipeUpdate),

@@ -14,6 +14,10 @@ module.exports = class SearchMaterial extends Model {
           type: DataTypes.STRING(10),
           allowNull: false, // 필수
         },
+        price: {
+          type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+        },
         isDelete: {
           type: DataTypes.BOOLEAN,
           defaultValue: false,

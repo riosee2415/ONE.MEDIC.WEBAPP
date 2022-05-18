@@ -27,6 +27,7 @@ import { Empty, Modal, Select, Radio, Form } from "antd";
 import { useRouter } from "next/router";
 import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import react, { useState } from "react";
+import { SEARCH_LIST_REQUEST } from "../../reducers/search";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -346,6 +347,7 @@ const Prescription = ({}) => {
                 </Wrapper>
                 <Wrapper>
                   {userMaterials.map((data) => {
+                    console.log(data);
                     return (
                       <ListWrapper
                         onClick={(e) => listHandler(toggleArr, 0)}
@@ -364,15 +366,15 @@ const Prescription = ({}) => {
                           color={`${Theme.black_C}`}
                           fontSize={width < 600 ? `16px` : `18px`}
                         >
-                          6&nbsp;g
+                          {data.qnt}&nbsp;{data.unit}
                         </Text>
 
-                        <Text
+                        {/* <Text
                           color={`${Theme.black_C}`}
                           fontSize={width < 600 ? `16px` : `18px`}
                         >
                           {data.viewPrice}
-                        </Text>
+                        </Text> */}
                       </ListWrapper>
                     );
                   })}
@@ -574,6 +576,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: SEO_LIST_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: SEARCH_LIST_REQUEST,
+      data: {
+        search: "",
+      },
     });
 
     // 구현부 종료

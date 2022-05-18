@@ -9,6 +9,11 @@ export const initailState = {
   recipeModal: false,
   materialModal: false,
 
+  // SEARCH LIST
+  st_searchListLoading: false,
+  st_searchListDone: false,
+  st_searchListError: false,
+
   // RECIPE LIST
   st_searchRecipeListLoading: false,
   st_searchRecipeListDone: false,
@@ -45,6 +50,10 @@ export const initailState = {
   st_searchMaterialDeleteError: false,
 };
 
+export const SEARCH_LIST_REQUEST = "SEARCH_LIST_REQUEST";
+export const SEARCH_LIST_SUCCESS = "SEARCH_LIST_SUCCESS";
+export const SEARCH_LIST_FAILURE = "SEARCH_LIST_FAILURE";
+
 export const SEARCH_RECIPE_LIST_REQUEST = "SEARCH_RECIPE_LIST_REQUEST";
 export const SEARCH_RECIPE_LIST_SUCCESS = "SEARCH_RECIPE_LIST_SUCCESS";
 export const SEARCH_RECIPE_LIST_FAILURE = "SEARCH_RECIPE_LIST_FAILURE";
@@ -80,6 +89,26 @@ export const SEARCH_MATERIAL_MODAL_TOGGLE = "SEARCH_MATERIAL_MODAL_TOGGLE";
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
+      /////////////////////////////////////////////////////// SEARCH LIST
+      case SEARCH_LIST_REQUEST: {
+        draft.st_searchListLoading = true;
+        draft.st_searchListDone = null;
+        draft.st_searchListError = false;
+        break;
+      }
+      case SEARCH_LIST_SUCCESS: {
+        draft.st_searchListLoading = false;
+        draft.st_searchListDone = true;
+        draft.searchRecipe = action.data.searchRecipe;
+        draft.searchMaterial = action.data.searchMaterial;
+        break;
+      }
+      case SEARCH_LIST_FAILURE: {
+        draft.st_searchListLoading = false;
+        draft.st_searchListDone = false;
+        draft.st_searchListError = action.error;
+        break;
+      }
       /////////////////////////////////////////////////////// RECIPE LIST
       case SEARCH_RECIPE_LIST_REQUEST: {
         draft.st_searchRecipeListLoading = true;

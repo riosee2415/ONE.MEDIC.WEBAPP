@@ -6,6 +6,45 @@ const isAdminCheck = require("../middlewares/isAdminCheck");
 
 const router = express.Router();
 
+router.get("/list", async (req, res, next) => {
+  const { search } = req.query;
+
+  try {
+    const searchRecipe = await SearchRecipe.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${search}%`,
+        },
+        isDelete: false,
+      },
+      include: [
+        {
+          model: SearchMaterial,
+          include: [
+            {
+              model: Materials,
+            },
+          ],
+        },
+      ],
+    });
+
+    const searchMaterial = await Materials.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${search}%`,
+        },
+
+        isDelete: false,
+      },
+    });
+
+    return res.status(200).json({ searchRecipe, searchMaterial });
+  } catch (e) {
+    console.error(e);
+  }
+});
+
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// RECIPE //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -169,8 +208,8 @@ router.get("/material/list", async (req, res, next) => {
   }
 });
 
-router.post("/material/create", async (req, res, next) => {
-  const { qnt, unit, materialId, searchRecipeId } = req.body;
+router.post("/material/create", isAdminCheck, async (req, res, next) => {
+  const { qnt, unit, price, materialId, searchRecipeId } = req.body;
 
   try {
     const exMaterial = await Materials.findOne({
@@ -198,6 +237,7 @@ router.post("/material/create", async (req, res, next) => {
     await SearchMaterial.create({
       qnt: parseInt(qnt),
       unit,
+      price: parseInt(price),
       MaterialId: materialId,
       SearchRecipeId: searchRecipeId,
     });
@@ -209,36 +249,40 @@ router.post("/material/create", async (req, res, next) => {
   }
 });
 
-router.delete("/material/delete/:materialId", async (req, res, next) => {
-  const { materialId } = req.params;
+router.delete(
+  "/material/delete/:materialId",
+  isAdminCheck,
+  async (req, res, next) => {
+    const { materialId } = req.params;
 
-  try {
-    const exMaterial = await SearchMaterial.findOne({
-      where: {
-        id: materialId,
-      },
-    });
-
-    if (!exMaterial) {
-      return res.status(400).send("존재하지 않는 재료입니다.");
-    }
-
-    const result = await SearchMaterial.update(
-      {
-        isDelete: true,
-      },
-      {
+    try {
+      const exMaterial = await SearchMaterial.findOne({
         where: {
-          id: parseInt(materialId),
+          id: materialId,
         },
-      }
-    );
+      });
 
-    return res.status(200).json(result);
-  } catch (e) {
-    console.error(e);
-    return res.status(400).send("재료를 생성할 수 없습니다.");
+      if (!exMaterial) {
+        return res.status(400).send("존재하지 않는 재료입니다.");
+      }
+
+      const result = await SearchMaterial.update(
+        {
+          isDelete: true,
+        },
+        {
+          where: {
+            id: parseInt(materialId),
+          },
+        }
+      );
+
+      return res.status(200).json(result);
+    } catch (e) {
+      console.error(e);
+      return res.status(400).send("재료를 생성할 수 없습니다.");
+    }
   }
-});
+);
 
 module.exports = router;

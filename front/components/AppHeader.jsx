@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT_REQUEST } from "../reducers/user";
 import { MATERIAL_LIST_REQUEST, MATERIAL_USER_ADD } from "../reducers/material";
 import useInput from "../hooks/useInput";
+import { SEARCH_LIST_REQUEST } from "../reducers/search";
 
 const CustomForm = styled(Form)`
   width: 100%;
@@ -67,7 +68,7 @@ const AppHeader = ({ children, width }) => {
     (state) => state.user
   );
 
-  const { materials } = useSelector((state) => state.material);
+  const { searchRecipe, searchMaterial } = useSelector((state) => state.search);
 
   const [headerScroll, setHeaderScroll] = useState(false);
   const [pageY, setPageY] = useState(0);
@@ -109,21 +110,41 @@ const AppHeader = ({ children, width }) => {
 
   const searchMaterialHandler = useCallback((data) => {
     dispatch({
-      type: MATERIAL_LIST_REQUEST,
+      type: SEARCH_LIST_REQUEST,
       data: {
-        name: data.searchName,
+        search: data.searchName,
       },
     });
   }, []);
 
   const materialAddHandler = useCallback(
     (data) => {
+      console.log(data);
       let seleteMaterialArr = userMaterials.map((data) => data);
-      seleteMaterialArr.push(data);
+      // data.SearchMaterials
+      //   ? data.SearchMaterials.map((value) =>
+      //       seleteMaterialArr.find((item) => item.id === value.MaterialId)
+      //         ? (
+
+      //         )
+      //         : seleteMaterialArr.push({
+      //             id: value.MaterialId,
+      //             name: value.Material.name,
+      //             qnt: value.qnt,
+      //             unit: value.unit,
+      //           })
+      //     )
+      //   : seleteMaterialArr.push({
+      //       id: data.id,
+      //       name: data.name,
+      //       qnt: 0,
+      //       unit: data.unit,
+      //     });
 
       setUserMaterials(seleteMaterialArr);
+      setDrawar(false);
     },
-    [userMaterials]
+    [userMaterials, drawar]
   );
 
   ////////////// - USE EFFECT- //////////////
@@ -328,40 +349,6 @@ const AppHeader = ({ children, width }) => {
                 </RsWrapper>
               </Wrapper>
               <Wrapper padding={`0 38px`}>
-                {/*      
-                {materials &&
-                  (materials.length === 0 ? (
-                    <Empty />
-                  ) : (
-                    materials.map((data, idx) => {
-                      return (
-                        <ListWrapper
-                          borderBottom={`1px solid ${Theme.grey2_C}`}
-                          color={Theme.black_C}
-                        >
-                          <Text fontSize={width < 600 ? `16px` : `18px`}>
-                            {idx + 1}번
-                          </Text>
-
-                          <Text
-                            fontSize={width < 600 ? `16px` : `18px`}
-                            fontWeight={`800`}
-                          >
-                            {data.name}
-                          </Text>
-
-                          <Text fontSize={width < 600 ? `16px` : `18px`}>
-                            6&nbsp;g
-                          </Text>
-
-                          <Text fontSize={width < 600 ? `16px` : `18px`}>
-                            {data.viewPrice}
-                          </Text>
-                        </ListWrapper>
-                      );
-                    })
-                  ))} */}
-
                 <Wrapper
                   padding={width < 800 ? `15px 10px` : `15px 38px`}
                   minHeight={`calc(100vh - 170px)`}
@@ -387,13 +374,60 @@ const AppHeader = ({ children, width }) => {
                       </Text>
                     </Wrapper>
                     <Wrapper>
-                      {materials &&
-                        (materials.length === 0 ? (
+                      {searchMaterial &&
+                        (searchMaterial.length === 0 ? (
                           <Wrapper margin={`20px 0`} color={Theme.black_C}>
                             <Empty description="약재가 없습니다." />
                           </Wrapper>
                         ) : (
-                          materials.map((data) => {
+                          searchMaterial.map((data) => {
+                            return (
+                              <ListWrapper
+                                borderBottom={`1px solid ${Theme.grey2_C}`}
+                                onClick={() => materialAddHandler(data)}
+                              >
+                                <Wrapper
+                                  dr={`row`}
+                                  width={`auto`}
+                                  fontSize={width < 600 ? `16px` : `18px`}
+                                  color={`${Theme.black_C}`}
+                                >
+                                  <Text fontWeight={`800`}>{data.name}</Text>
+                                </Wrapper>
+                              </ListWrapper>
+                            );
+                          })
+                        ))}
+                    </Wrapper>
+                  </Wrapper>
+
+                  <Wrapper
+                    padding={`20px`}
+                    shadow={Theme.shadow_C}
+                    radius={`20px`}
+                  >
+                    <Wrapper
+                      dr={`row`}
+                      ju={`flex-start`}
+                      borderBottom={`1px solid ${Theme.grey2_C}`}
+                      padding={`0 5px 10px`}
+                    >
+                      <Text
+                        color={Theme.grey_C}
+                        fontSize={`16px`}
+                        fontWeight={`bold`}
+                      >
+                        레시피
+                      </Text>
+                    </Wrapper>
+                    <Wrapper>
+                      {searchRecipe &&
+                        (searchRecipe.length === 0 ? (
+                          <Wrapper margin={`20px 0`} color={Theme.black_C}>
+                            <Empty description="레시피가 없습니다." />
+                          </Wrapper>
+                        ) : (
+                          searchRecipe.map((data) => {
                             return (
                               <ListWrapper
                                 borderBottom={`1px solid ${Theme.grey2_C}`}
