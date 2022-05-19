@@ -119,27 +119,24 @@ const AppHeader = ({ children, width }) => {
 
   const materialAddHandler = useCallback(
     (data) => {
-      console.log(data);
       let seleteMaterialArr = userMaterials.map((data) => data);
-      // data.SearchMaterials
-      //   ? data.SearchMaterials.map((value) =>
-      //       seleteMaterialArr.find((item) => item.id === value.MaterialId)
-      //         ? (
-
-      //         )
-      //         : seleteMaterialArr.push({
-      //             id: value.MaterialId,
-      //             name: value.Material.name,
-      //             qnt: value.qnt,
-      //             unit: value.unit,
-      //           })
-      //     )
-      //   : seleteMaterialArr.push({
-      //       id: data.id,
-      //       name: data.name,
-      //       qnt: 0,
-      //       unit: data.unit,
-      //     });
+      data.SearchMaterials
+        ? data.SearchMaterials.map(
+            (value) =>
+              !seleteMaterialArr.find((item) => item.id === value.MaterialId) &&
+              seleteMaterialArr.push({
+                id: value.MaterialId,
+                name: value.Material.name,
+                qnt: value.qnt,
+                unit: value.unit,
+              })
+          )
+        : seleteMaterialArr.push({
+            id: data.id,
+            name: data.name,
+            qnt: 0,
+            unit: data.unit,
+          });
 
       setUserMaterials(seleteMaterialArr);
       setDrawar(false);
