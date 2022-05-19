@@ -28,6 +28,14 @@ import {
   UNIT_MODAL_TOGGLE,
 } from "../../../reducers/material";
 
+import { numberWithCommas } from "../../../components/commonUtils";
+import {
+  PP_CREATE_REQUEST,
+  PP_GET_REQUEST,
+  PP_MODAL_TOGGLE,
+  PP_UPDATE_REQUEST,
+} from "../../../reducers/prescriptionPrice";
+
 const Material = () => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
@@ -47,6 +55,17 @@ const Material = () => {
     st_materialDeleteDone,
     st_materialDeleteError,
   } = useSelector((state) => state.material);
+  const {
+    price,
+    priceModal,
+    //
+    st_ppGetError,
+    //
+    st_ppUpdateLoading,
+    st_ppUpdateDone,
+    st_ppUpdateError,
+    //
+  } = useSelector((state) => state.prescriptionPrice);
 
   const router = useRouter();
 
@@ -69,6 +88,7 @@ const Material = () => {
 
   const [updateData, setUpdateData] = useState(null);
 
+  const [priceForm] = Form.useForm();
   const [form] = Form.useForm();
   const formRef = useRef();
 
@@ -155,6 +175,30 @@ const Material = () => {
     }
   }, [st_materialDeleteError]);
 
+  useEffect(() => {
+    if (st_ppUpdateDone) {
+      dispatch({
+        type: PP_GET_REQUEST,
+      });
+
+      priceModalToggle(null);
+
+      return message.success("가격이 수정되었습니다.");
+    }
+  }, [st_ppUpdateDone]);
+
+  useEffect(() => {
+    if (st_ppUpdateError) {
+      return message.error(st_ppUpdateError);
+    }
+  }, [st_ppUpdateError]);
+
+  useEffect(() => {
+    if (st_ppGetError) {
+      return message.error(st_ppGetError);
+    }
+  }, [st_ppGetError]);
+
   ////// TOGGLE //////
 
   const unitModalToggle = useCallback(() => {
@@ -189,6 +233,16 @@ const Material = () => {
     },
     [cuModal, updateData, form]
   );
+
+  const priceModalToggle = useCallback(() => {
+    priceForm.setFieldsValue({
+      price: price && price.length === 0 ? 0 : price[0].price,
+    });
+
+    dispatch({
+      type: PP_MODAL_TOGGLE,
+    });
+  }, [priceModal, price]);
 
   ////// HANDLER //////
 
@@ -246,6 +300,19 @@ const Material = () => {
       },
     });
   }, []);
+
+  const prcieHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: PP_UPDATE_REQUEST,
+        data: {
+          id: price && price.length > 0 && price[0].id,
+          price: data.price,
+        },
+      });
+    },
+    [price]
+  );
 
   ////// DATAVIEW //////
 
@@ -324,7 +391,13 @@ const Material = () => {
         </SearchForm>
         <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
           <Wrapper width={`30%`} al={`flex-start`}>
-            <Text>1팩 가격 : 원</Text>
+            <Text>
+              1팩 가격 :&nbsp;
+              {numberWithCommas(
+                String(price && (price.length === 0 ? 0 : price[0].price))
+              )}
+              원
+            </Text>
           </Wrapper>
           <Wrapper width={`70%`} dr={`row`} ju={`flex-end`}>
             <ModalBtn
@@ -334,11 +407,15 @@ const Material = () => {
             >
               전체조회
             </ModalBtn>
-            <ModalBtn size="small" onClick={unitModalToggle}>
-              가격관리
-            </ModalBtn>
             <ModalBtn size="small" type="danger" onClick={unitModalToggle}>
               주의사항
+            </ModalBtn>
+            <ModalBtn
+              size="small"
+              onClick={priceModalToggle}
+              loading={st_ppUpdateLoading}
+            >
+              팩가격관리
             </ModalBtn>
             <ModalBtn
               size="small"
@@ -365,6 +442,10 @@ const Material = () => {
         footer={null}
       >
         <GuideUl>
+          <GuideLi isImpo={true}>팩가격은 1팩이 기준입니다.</GuideLi>
+          <GuideLi isImpo={true}>
+            재료의 가격은 처방할때 보여지는 1[단위]의 가격입니다.
+          </GuideLi>
           <GuideLi isImpo={true}>
             삭제된 재료는 다시 복구할 수 없습니다. 신중한 작업을 필요로 합니다.
           </GuideLi>
@@ -438,6 +519,37 @@ const Material = () => {
           </Wrapper>
         </Form>
       </Modal>
+      <Modal
+        title="가격관리"
+        visible={priceModal}
+        onCancel={priceModalToggle}
+        footer={null}
+      >
+        <Form form={priceForm} onFinish={prcieHandler}>
+          <Wrapper margin={`0 0 0 10px`}>
+            <GuideUl>
+              <GuideLi isImpo={true}>가격은 숫자만 입력해주세요.</GuideLi>
+              <GuideLi isImpo={true}>
+                1팩의 기준으로 가격을 입력해주시기바랍니다.
+              </GuideLi>
+            </GuideUl>
+          </Wrapper>
+          <Form.Item
+            label="가격"
+            name="price"
+            rules={[
+              { required: true, message: "가격을 입력해주시기 바랍니다." },
+            ]}
+          >
+            <Input size="small" type="number" />
+          </Form.Item>
+          <Wrapper al={`flex-end`}>
+            <ModalBtn size="small" type="primary">
+              가격 수정
+            </ModalBtn>
+          </Wrapper>
+        </Form>
+      </Modal>
     </AdminLayout>
   );
 };
@@ -462,6 +574,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
       data: {
         name: "",
       },
+    });
+
+    context.store.dispatch({
+      type: PP_GET_REQUEST,
     });
 
     // 구현부 종료

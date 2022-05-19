@@ -42,12 +42,12 @@ const reducer = (state = initialState, action) =>
         draft.st_ppGetError = null;
         break;
       case PP_GET_SUCCESS:
-        draft.st_ppGetLoading = true;
-        draft.st_ppGetDone = false;
+        draft.st_ppGetLoading = false;
+        draft.st_ppGetDone = true;
         draft.price = action.data;
         break;
       case PP_GET_FAILURE:
-        draft.st_ppGetLoading = true;
+        draft.st_ppGetLoading = false;
         draft.st_ppGetDone = false;
         draft.st_ppGetError = action.error;
         break;
@@ -59,11 +59,11 @@ const reducer = (state = initialState, action) =>
         draft.st_ppCreateError = null;
         break;
       case PP_CREATE_SUCCESS:
-        draft.st_ppCreateLoading = true;
-        draft.st_ppCreateDone = false;
+        draft.st_ppCreateLoading = false;
+        draft.st_ppCreateDone = true;
         break;
       case PP_CREATE_FAILURE:
-        draft.st_ppCreateLoading = true;
+        draft.st_ppCreateLoading = false;
         draft.st_ppCreateDone = false;
         draft.st_ppCreateError = action.error;
         break;
@@ -75,11 +75,11 @@ const reducer = (state = initialState, action) =>
         draft.st_ppUpdateError = null;
         break;
       case PP_UPDATE_SUCCESS:
-        draft.st_ppUpdateLoading = true;
-        draft.st_ppUpdateDone = false;
+        draft.st_ppUpdateLoading = false;
+        draft.st_ppUpdateDone = true;
         break;
       case PP_UPDATE_FAILURE:
-        draft.st_ppUpdateLoading = true;
+        draft.st_ppUpdateLoading = false;
         draft.st_ppUpdateDone = false;
         draft.st_ppUpdateError = action.error;
         break;

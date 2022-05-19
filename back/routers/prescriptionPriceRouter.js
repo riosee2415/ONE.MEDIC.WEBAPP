@@ -17,7 +17,7 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
-router.post("create", async (req, res, next) => {
+router.post("/create", async (req, res, next) => {
   const { price } = req.body;
 
   try {
@@ -38,8 +38,12 @@ router.post("create", async (req, res, next) => {
   }
 });
 
-router.patch("update", async (req, res, next) => {
+router.patch("/update", async (req, res, next) => {
   const { id, price } = req.body;
+  console.log("✅✅✅✅✅✅✅✅");
+  console.log(id);
+  console.log(price);
+  console.log("✅✅✅✅✅✅✅✅");
 
   try {
     const exPrice = await PrescriptionPrice.findOne({
@@ -62,6 +66,8 @@ router.patch("update", async (req, res, next) => {
         },
       }
     );
+
+    return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
     return res.status(400).send("가격을 수정할 수 없습니다.");

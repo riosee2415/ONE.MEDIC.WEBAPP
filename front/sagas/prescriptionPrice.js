@@ -79,13 +79,13 @@ function* ppUpdate(action) {
     const result = yield call(ppUpdateAPI, action.data);
 
     yield put({
-      type: PP_CREATE_SUCCESS,
+      type: PP_UPDATE_SUCCESS,
       data: result.data,
     });
   } catch (err) {
     console.error(err);
     yield put({
-      type: PP_CREATE_FAILURE,
+      type: PP_UPDATE_FAILURE,
       error: err.response.data,
     });
   }
@@ -104,7 +104,7 @@ function* watchPpCreate() {
 }
 
 function* watchPpUpdate() {
-  yield takeLatest(PP_CREATE_REQUEST, ppUpdate);
+  yield takeLatest(PP_UPDATE_REQUEST, ppUpdate);
 }
 
 //////////////////////////////////////////////////////////////
