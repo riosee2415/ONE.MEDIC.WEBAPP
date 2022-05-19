@@ -15,6 +15,8 @@ import {
   SearchFormItem,
   GuideUl,
   GuideLi,
+  ModalBtn,
+  Text,
 } from "../../../components/commonComponents";
 import PageHeader from "../../../components/admin/PageHeader";
 import {
@@ -303,20 +305,15 @@ const Material = () => {
   return (
     <AdminLayout>
       <PageHeader
-        breadcrumbs={["상품 관리", "탕전처방 재료 관리"]}
-        title={`탕전처방 재료 관리`}
-        subTitle={`탕전처방에서 판매되는 재료을 관리하는 전산시스템 입니다.`}
+        breadcrumbs={["상품 관리", "탕전처방 재료/가격 관리"]}
+        title={`탕전처방 재료/가격 관리`}
+        subTitle={`탕전처방에서 판매되는 재료/가격을 관리하는 전산시스템 입니다.`}
       />
 
       <AdminContent>
         <SearchForm layout="inline" onFinish={searchMaterialHandler}>
           <SearchFormItem label="재료명" name="name">
-            <Input
-              type="text"
-              size="small"
-              style={{ width: "220px" }}
-              onKeyPress={(e) => e.key === "Enter" && searchMaterialHandler}
-            />
+            <Input type="text" size="small" style={{ width: "220px" }} />
           </SearchFormItem>
 
           <SearchFormItem>
@@ -326,24 +323,31 @@ const Material = () => {
           </SearchFormItem>
         </SearchForm>
         <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
-          <Button size="small" type="dashed" onClick={getAllMaterialHandler}>
-            전체조회
-          </Button>
-          <Button
-            size="small"
-            style={{ margin: `0 5px` }}
-            type="danger"
-            onClick={unitModalToggle}
-          >
-            주의사항
-          </Button>
-          <Button
-            size="small"
-            type="primary"
-            onClick={() => createModalToggle(true)}
-          >
-            + 추가
-          </Button>
+          <Wrapper width={`30%`} al={`flex-start`}>
+            <Text>1팩 가격 : 원</Text>
+          </Wrapper>
+          <Wrapper width={`70%`} dr={`row`} ju={`flex-end`}>
+            <ModalBtn
+              size="small"
+              type="dashed"
+              onClick={getAllMaterialHandler}
+            >
+              전체조회
+            </ModalBtn>
+            <ModalBtn size="small" onClick={unitModalToggle}>
+              가격관리
+            </ModalBtn>
+            <ModalBtn size="small" type="danger" onClick={unitModalToggle}>
+              주의사항
+            </ModalBtn>
+            <ModalBtn
+              size="small"
+              type="primary"
+              onClick={() => createModalToggle(true)}
+            >
+              + 추가
+            </ModalBtn>
+          </Wrapper>
         </Wrapper>
         <Table
           size="small"
@@ -403,28 +407,28 @@ const Material = () => {
             name="name"
             rules={[{ required: true, message: "이름을 입력해주세요." }]}
           >
-            <Input />
+            <Input size="small" />
           </Form.Item>
           <Form.Item
             label="가격"
             name="price"
             rules={[{ required: true, message: "가격을 입력해주세요." }]}
           >
-            <Input type="number" />
+            <Input size="small" type="number" />
           </Form.Item>
           <Form.Item
             label="재고"
             name="stock"
             rules={[{ required: true, message: "재고을 입력해주세요." }]}
           >
-            <Input type="number" />
+            <Input size="small" type="number" />
           </Form.Item>
           <Form.Item
             label="단위"
             name="unit"
             rules={[{ required: true, message: "단위을 입력해주세요." }]}
           >
-            <Input />
+            <Input size="small" />
           </Form.Item>
 
           <Wrapper al={`flex-end`}>
