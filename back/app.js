@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(helmet());
   app.use(
     cors({
-      origin: [process.env.DEPLOY_DOMAIN, "*"],
+      origin: ["https://modernlab.co.kr", "https://www.modernlab.co.kr", "*"],
       credentials: true,
     })
   );
@@ -61,7 +61,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(morgan(`dev`));
   app.use(
     cors({
-      origin: ["https://modernlab.co.kr", "https://www.modernlab.co.kr", "*"],
+      origin: ["http://localhost:3000", "*"],
       credentials: true,
     })
   );
