@@ -326,7 +326,7 @@ const UserDeliAddress = ({}) => {
         data: {
           qnt: data.qnt,
           unit: data.unit,
-          materialId: data.materialId,
+          materialId: JSON.parse(data.materialId).id,
           searchRecipeId: materialData.id,
         },
       });

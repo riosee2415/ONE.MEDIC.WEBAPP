@@ -376,12 +376,15 @@ const Prescription = ({}) => {
                           {data.qnt}&nbsp;{data.unit}
                         </Text>
 
-                        {/* <Text
+                        <Text
                           color={`${Theme.black_C}`}
                           fontSize={width < 600 ? `16px` : `18px`}
                         >
-                          {data.viewPrice}
-                        </Text> */}
+                          {data.qnt === 0
+                            ? 0
+                            : numberWithCommas(String(data.price))}
+                          원
+                        </Text>
                       </ListWrapper>
                     );
                   })}

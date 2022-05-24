@@ -120,23 +120,46 @@ const AppHeader = ({ children, width }) => {
   const materialAddHandler = useCallback(
     (data) => {
       let seleteMaterialArr = userMaterials.map((data) => data);
-      data.SearchMaterials
-        ? data.SearchMaterials.map(
-            (value) =>
-              !seleteMaterialArr.find((item) => item.id === value.MaterialId) &&
+
+      let checkArr = [];
+
+      for (let i = 0; i < seleteMaterialArr.length; i++) {
+        if (data.SearchMaterials) {
+          for (let v = 0; v < data.SearchMaterials.length; v++) {
+            if (
+              seleteMaterialArr[i].id === data.SearchMaterials[v].MaterialId
+            ) {
+              checkArr.push("true");
+            }
+          }
+        } else {
+          if (seleteMaterialArr[i].id === data.id) {
+            checkArr.push("true");
+          }
+        }
+      }
+
+      if (checkArr.length === 0) {
+        data.SearchMaterials
+          ? data.SearchMaterials.map((value) =>
               seleteMaterialArr.push({
                 id: value.MaterialId,
                 name: value.Material.name,
                 qnt: value.qnt,
                 unit: value.unit,
+                price: value.Material.price * value.qnt,
               })
-          )
-        : seleteMaterialArr.push({
-            id: data.id,
-            name: data.name,
-            qnt: 0,
-            unit: data.unit,
-          });
+            )
+          : seleteMaterialArr.push({
+              id: data.id,
+              name: data.name,
+              qnt: 0,
+              unit: data.unit,
+              price: data.price,
+            });
+      } else {
+        return message.error("이미 있는 재료입니다.");
+      }
 
       setUserMaterials(seleteMaterialArr);
       setDrawar(false);
