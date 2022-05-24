@@ -343,6 +343,14 @@ const UserDeliAddress = ({}) => {
     });
   }, []);
 
+  const materialSelectHandler = useCallback((data) => {
+    const objectData = JSON.parse(data);
+
+    materialForm.setFieldsValue({
+      unit: objectData.unit,
+    });
+  }, []);
+
   ////// DATAVIEW //////
 
   ////// DATA COLUMNS //////
@@ -524,9 +532,9 @@ const UserDeliAddress = ({}) => {
       >
         <GuideUl>
           <GuideLi isImpo={true}>사용재고는 숫자만 입력해주세요.</GuideLi>
-          <GuideLi isImpo={true}>
+          {/* <GuideLi isImpo={true}>
             단위는 g, kg, ml 등과 유사한 단위를 입력해주세요.
-          </GuideLi>
+          </GuideLi> */}
         </GuideUl>
         <Form
           labelCol={{ span: 3 }}
@@ -539,10 +547,12 @@ const UserDeliAddress = ({}) => {
             name="materialId"
             rules={[{ required: true, message: "재료를 선택해주세요." }]}
           >
-            <Select>
+            <Select onChange={materialSelectHandler}>
               {materials &&
                 materials.map((data) => (
-                  <Select.Option value={data.id}>{data.name}</Select.Option>
+                  <Select.Option value={JSON.stringify(data)}>
+                    {data.name}
+                  </Select.Option>
                 ))}
             </Select>
           </Form.Item>
@@ -558,7 +568,7 @@ const UserDeliAddress = ({}) => {
             name="unit"
             rules={[{ required: true, message: "단위를 입력해주세요." }]}
           >
-            <Input />
+            <Input readOnly />
           </Form.Item>
 
           <Wrapper al={`flex-end`} margin={`0 0 50px`}>

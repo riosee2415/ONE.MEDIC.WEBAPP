@@ -192,7 +192,7 @@ const AdminMenu = () => {
             <MenuName>약속처방 상품 관리</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/product/material">
-            <MenuName>탕전처방 재료 관리</MenuName>
+            <MenuName>탕전처방 재료/가격 관리</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/product/recipe">
             <MenuName>탕전처방 레시피 관리</MenuName>

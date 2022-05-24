@@ -1,14 +1,13 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../reducers/user";
-import ClientLayout from "../../components/ClientLayout";
+import Head from "next/head";
+import { useRouter } from "next/router";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
 import { END } from "redux-saga";
+import ClientLayout from "../../components/ClientLayout";
+import { Empty, Modal, Select, Radio, Form } from "antd";
+import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import {
   Text,
   WholeWrapper,
@@ -21,13 +20,12 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
+import { numberWithCommas } from "../../components/commonUtils";
+
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
-import Head from "next/head";
-import { Empty, Modal, Select, Radio, Form } from "antd";
-import { useRouter } from "next/router";
-import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
-import react, { useState } from "react";
 import { SEARCH_LIST_REQUEST } from "../../reducers/search";
+import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -103,8 +101,8 @@ const Prescription = ({}) => {
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
     (state) => state.seo
   );
-
   const { userMaterials } = useSelector((state) => state.material);
+  const { price } = useSelector((state) => state.prescriptionPrice);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -125,6 +123,9 @@ const Prescription = ({}) => {
   const [packSelect, setPackSelect] = useState("32");
   const [volumnSelect, setVolumnSelect] = useState("120");
 
+  const [materialTotalPrice, setMaterialTotalPrice] = useState(0);
+  const [packTotalPrice, setPackTotalPrice] = useState(0);
+
   ////// REDUX //////
   ////// USEEFFECT //////
 
@@ -144,6 +145,12 @@ const Prescription = ({}) => {
     setPackSelectArr(packArr);
     setVolumnSelectArr(volumnArr);
   }, [router.query]);
+
+  useEffect(() => {
+    if (price) {
+      setPackTotalPrice(parseInt(packSelect) * price[0].price);
+    }
+  }, [price, packSelect]);
 
   ////// TOGGLE //////
 
@@ -401,7 +408,12 @@ const Prescription = ({}) => {
                 fontSize={width < 800 ? `15px` : `20px`}
               >
                 <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                <Text fontWeight={`bold`}> 432,000</Text>
+                <Text fontWeight={`bold`}>
+                  {numberWithCommas(
+                    String(materialTotalPrice + packTotalPrice)
+                  )}
+                  원
+                </Text>
               </Wrapper>
               <CommonButton
                 shadow={`0`}
@@ -583,6 +595,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
       data: {
         search: "",
       },
+    });
+
+    context.store.dispatch({
+      type: PP_GET_REQUEST,
     });
 
     // 구현부 종료
