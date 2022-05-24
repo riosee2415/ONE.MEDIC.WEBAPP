@@ -6,7 +6,7 @@ import axios from "axios";
 import wrapper from "../../store/configureStore";
 import { END } from "redux-saga";
 import ClientLayout from "../../components/ClientLayout";
-import { Empty, Modal, Select, Radio, Form } from "antd";
+import { Empty, Modal, Select, Radio, Form, message } from "antd";
 import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import {
   Text,
@@ -26,6 +26,7 @@ import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import { SEARCH_LIST_REQUEST } from "../../reducers/search";
 import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
+import { MATERIAL_USER_ADD } from "../../reducers/material";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -108,12 +109,11 @@ const Prescription = ({}) => {
   ////// HOOKS //////
   const router = useRouter();
 
-  const dispacth = useDispatch();
+  const dispatch = useDispatch();
 
   const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [isModalVisible2, setIsModalVisible2] = useState(false);
 
-  const [toggleArr, setToggleArr] = useState([false, false]);
   const [isChecked, setIsChecked] = useState([false, false]);
 
   const [chubSelectArr, setChubSelectArr] = useState(null);
@@ -128,6 +128,7 @@ const Prescription = ({}) => {
   const [packTotalPrice, setPackTotalPrice] = useState(0);
 
   const [selectMaterial, setSelectMaterial] = useState(0);
+  const [materialArr, setMaterialArr] = useState(null);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -155,15 +156,24 @@ const Prescription = ({}) => {
     }
   }, [price, packSelect]);
 
+  useEffect(() => {
+    if (userMaterials) {
+      setMaterialArr(userMaterials.map((data) => data));
+    }
+  }, [userMaterials]);
+
   ////// TOGGLE //////
 
-  const ModalToggleHandler1 = useCallback(() => {
+  const modalToggleHandler1 = useCallback(() => {
     setIsModalVisible1(!isModalVisible1);
   }, [isModalVisible1]);
 
-  const ModalToggleHandler2 = useCallback(() => {
+  const modalToggleHandler2 = useCallback(() => {
+    if (!selectMaterial) {
+      return message.error("재료를 선택해주세요.");
+    }
     setIsModalVisible2(!isModalVisible2);
-  }, [isModalVisible2]);
+  }, [isModalVisible2, selectMaterial]);
   ////// HANDLER //////
 
   const listHandler = useCallback(
@@ -173,21 +183,25 @@ const Prescription = ({}) => {
     [selectMaterial]
   );
 
-  const okModalDeleteHandler = useCallback(() => {}, []);
-
-  const okModalKindofHandler = useCallback(() => {}, []);
-
   const deleteHandler = useCallback(() => {
-    ModalToggleHandler2();
+    modalToggleHandler2();
   }, [isModalVisible1, isModalVisible2]);
 
-  const radioBoxHandler = useCallback((e, idx2) => {
-    let save = isChecked.map((data, idx) => {
-      return idx === idx2 ? !data : data;
+  const deleteMaterialHandler = useCallback(() => {
+    if (!selectMaterial) {
+      return message.error("재료를 선택해주세요.");
+    }
+
+    dispatch({
+      type: MATERIAL_USER_ADD,
+      data: materialArr.filter((data) => data.id !== selectMaterial.id),
     });
 
-    setIsChecked(save);
-  }, []);
+    setMaterialArr(materialArr.filter((data) => data.id !== selectMaterial.id));
+
+    setSelectMaterial(null);
+    setIsModalVisible2(false);
+  }, [materialArr, selectMaterial, isModalVisible2]);
 
   const selectHandler = useCallback(
     (data) => {
@@ -323,7 +337,7 @@ const Prescription = ({}) => {
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text color={Theme.grey_C}>종류</Text>
                   <Image
-                    onClick={() => ModalToggleHandler1()}
+                    onClick={() => modalToggleHandler1()}
                     cursor={`pointer`}
                     alt="icon"
                     src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/pencil.png`}
@@ -346,13 +360,23 @@ const Prescription = ({}) => {
                   <Text color={Theme.grey_C} fontSize={`16px`}>
                     구성약재
                   </Text>
-                  <Image
-                    onClick={() => ModalToggleHandler2()}
-                    cursor={`pointer`}
-                    alt="icon"
-                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/garbage.png`}
-                    width={`16px`}
-                  />
+                  <Wrapper dr={`row`} width={`auto`}>
+                    <Image
+                      // onClick={deleteMaterialHandler}
+                      cursor={`pointer`}
+                      alt="icon"
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/bowl.png`}
+                      width={`16px`}
+                      margin={`0 10px 0 0`}
+                    />
+                    <Image
+                      onClick={modalToggleHandler2}
+                      cursor={`pointer`}
+                      alt="delete-icon"
+                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/garbage.png`}
+                      width={`16px`}
+                    />
+                  </Wrapper>
                 </Wrapper>
                 <Wrapper>
                   {userMaterials.map((data) => {
@@ -360,7 +384,9 @@ const Prescription = ({}) => {
                       <ListWrapper
                         onClick={() => listHandler(data)}
                         bgColor={
-                          selectMaterial.id === data.id && Theme.lightGrey_C
+                          selectMaterial &&
+                          selectMaterial.id === data.id &&
+                          Theme.lightGrey_C
                         }
                       >
                         <Wrapper
@@ -443,11 +469,10 @@ const Prescription = ({}) => {
           </RsWrapper>
         </WholeWrapper>
 
-        {/*  KindOf Modal */}
+        {/* KindOf Modal */}
         <SelectModal
           visible={isModalVisible1}
-          onOk={() => okModalDeleteHandler()}
-          onCancel={() => ModalToggleHandler1()}
+          onCancel={() => modalToggleHandler1()}
           footer={null}
           width={350}
         >
@@ -545,12 +570,47 @@ const Prescription = ({}) => {
           </CustomForm>
         </SelectModal>
 
-        {/*  Delete Modal */}
+        {/* Update Modal */}
+        {/* <DeleteModal
+          width={380}
+          visible={true}
+          // onCancel={() => modalToggleHandler2()}
+          footer={null}
+        >
+          <Wrapper>
+            <Wrapper ju={`flex-start`} padding={`30px 0 10px 0`}>
+              <Text color={Theme.grey_C} fontSize={`18px`}>
+                약제 수정
+              </Text>
+              <Wrapper dr={`row`} padding={`10px 0 0 60px`}>
+                <CustomCommonButton
+                  onClick={() => deleteHandler()}
+                  kindOf={`white`}
+                  width={`90px`}
+                  height={`40px`}
+                  margin={`0 5px 0 0`}
+                  border={`1px solid ${Theme.white_C}`}
+                  shadow={`0px`}
+                >
+                  아니요
+                </CustomCommonButton>
+                <CommonButton
+                  width={`90px`}
+                  height={`40px`}
+                  onClick={deleteMaterialHandler}
+                >
+                  네
+                </CommonButton>
+              </Wrapper>
+            </Wrapper>
+          </Wrapper>
+        </DeleteModal> */}
+
+        {/* Delete Modal */}
         <DeleteModal
           width={380}
           visible={isModalVisible2}
-          onOk={() => okModalKindofHandler()}
-          onCancel={() => ModalToggleHandler2()}
+          onCancel={() => modalToggleHandler2()}
           footer={null}
         >
           <Wrapper>
@@ -573,7 +633,7 @@ const Prescription = ({}) => {
                 <CommonButton
                   width={`90px`}
                   height={`40px`}
-                  onClick={() => deleteHandler()}
+                  onClick={deleteMaterialHandler}
                 >
                   네
                 </CommonButton>

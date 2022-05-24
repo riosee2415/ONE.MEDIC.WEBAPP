@@ -69,11 +69,12 @@ const AppHeader = ({ children, width }) => {
   );
 
   const { searchRecipe, searchMaterial } = useSelector((state) => state.search);
+  const { userMaterials } = useSelector((state) => state.material);
 
   const [headerScroll, setHeaderScroll] = useState(false);
   const [pageY, setPageY] = useState(0);
 
-  const [userMaterials, setUserMaterials] = useState([]);
+  const [userMaterialsArr, setUserMaterialsArr] = useState([]);
 
   // const documentRef = useRef(document);
 
@@ -161,10 +162,10 @@ const AppHeader = ({ children, width }) => {
         return message.error("이미 있는 재료입니다.");
       }
 
-      setUserMaterials(seleteMaterialArr);
+      setUserMaterialsArr(seleteMaterialArr);
       setDrawar(false);
     },
-    [userMaterials, drawar]
+    [userMaterialsArr, userMaterials, drawar]
   );
 
   ////////////// - USE EFFECT- //////////////
@@ -197,13 +198,13 @@ const AppHeader = ({ children, width }) => {
   }, []);
 
   useEffect(() => {
-    if (userMaterials) {
+    if (userMaterialsArr) {
       dispatch({
         type: MATERIAL_USER_ADD,
-        data: userMaterials,
+        data: userMaterialsArr,
       });
     }
-  }, [userMaterials]);
+  }, [userMaterialsArr]);
 
   const headerView = [
     {
