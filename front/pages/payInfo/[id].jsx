@@ -731,6 +731,33 @@ const Index = ({}) => {
                   </Text>
                 </Wrapper>
               </Wrapper>
+
+              <Wrapper
+                dr={`row`}
+                ju={`flex-start`}
+                al={`flex-start`}
+                margin={`40px 0 0`}
+              >
+                <Wrapper dr={`row`} ju={`flex-start`} margin={`0 0 20px`}>
+                  <Text
+                    cursor={`pointer`}
+                    onClick={() => setIsAgree2((prev) => !prev)}
+                    margin={`0 0 0 30px`}
+                    fontSize={`20px`}
+                  >
+                    환불 안내
+                  </Text>
+                </Wrapper>
+                <Wrapper al={`flex-start`} padding={`0 0 0 32px`}>
+                  <Text fontSize={`16px`} margin={`0 0 13px`}>
+                    휴대폰 결제의 경우 당월은 결제 취만 가능합니다.
+                  </Text>
+                  <Text fontSize={`16px`} margin={`0 0 13px`}>
+                    익월 이후 환불요청은 구매자 명의로 된 계좌로만 환불이
+                    가능합니다.
+                  </Text>
+                </Wrapper>
+              </Wrapper>
             </Wrapper>
 
             <Wrapper
