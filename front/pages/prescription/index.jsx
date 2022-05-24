@@ -42,6 +42,7 @@ const CustomForm = styled(Form)`
 const ListWrapper = styled(Wrapper)`
   flex-direction: row;
   justify-content: space-between;
+  border-bottom: 1px solid ${Theme.grey2_C};
   padding: 10px 5px;
   cursor: pointer;
 `;
@@ -126,6 +127,8 @@ const Prescription = ({}) => {
   const [materialTotalPrice, setMaterialTotalPrice] = useState(0);
   const [packTotalPrice, setPackTotalPrice] = useState(0);
 
+  const [selectMaterial, setSelectMaterial] = useState(0);
+
   ////// REDUX //////
   ////// USEEFFECT //////
 
@@ -163,13 +166,12 @@ const Prescription = ({}) => {
   }, [isModalVisible2]);
   ////// HANDLER //////
 
-  const listHandler = useCallback((bool, idx2) => {
-    let save = toggleArr.map((data, idx) => {
-      return idx === idx2 ? !data : data;
-    });
-
-    setToggleArr(save);
-  }, []);
+  const listHandler = useCallback(
+    (data) => {
+      setSelectMaterial(data);
+    },
+    [selectMaterial]
+  );
 
   const okModalDeleteHandler = useCallback(() => {}, []);
 
@@ -354,37 +356,47 @@ const Prescription = ({}) => {
                 </Wrapper>
                 <Wrapper>
                   {userMaterials.map((data) => {
-                    console.log(data);
                     return (
                       <ListWrapper
-                        onClick={(e) => listHandler(toggleArr, 0)}
-                        borderBottom={`1px solid ${Theme.grey2_C}`}
+                        onClick={() => listHandler(data)}
+                        bgColor={
+                          selectMaterial.id === data.id && Theme.lightGrey_C
+                        }
                       >
                         <Wrapper
                           dr={`row`}
-                          width={`auto`}
-                          fontSize={width < 600 ? `16px` : `18px`}
+                          ju={`flex-start`}
+                          width={`40%`}
                           color={`${Theme.black_C}`}
                         >
-                          <Text fontWeight={`800`}>{data.name}</Text>
+                          <Text
+                            fontSize={width < 600 ? `16px` : `18px`}
+                            fontWeight={`800`}
+                          >
+                            {data.name}
+                          </Text>
                         </Wrapper>
 
-                        <Text
-                          color={`${Theme.black_C}`}
-                          fontSize={width < 600 ? `16px` : `18px`}
-                        >
-                          {data.qnt}&nbsp;{data.unit}
-                        </Text>
+                        <Wrapper width={`10%`}>
+                          <Text
+                            color={`${Theme.black_C}`}
+                            fontSize={width < 600 ? `16px` : `18px`}
+                          >
+                            {data.qnt}&nbsp;{data.unit}
+                          </Text>
+                        </Wrapper>
 
-                        <Text
-                          color={`${Theme.black_C}`}
-                          fontSize={width < 600 ? `16px` : `18px`}
-                        >
-                          {data.qnt === 0
-                            ? 0
-                            : numberWithCommas(String(data.price))}
-                          원
-                        </Text>
+                        <Wrapper width={`50%`} al={`flex-end`}>
+                          <Text
+                            color={`${Theme.black_C}`}
+                            fontSize={width < 600 ? `16px` : `18px`}
+                          >
+                            {data.qnt === 0
+                              ? 0
+                              : numberWithCommas(String(data.price))}
+                            원
+                          </Text>
+                        </Wrapper>
                       </ListWrapper>
                     );
                   })}
