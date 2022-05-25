@@ -163,6 +163,14 @@ const Prescription = ({}) => {
   useEffect(() => {
     if (userMaterials) {
       setMaterialArr(userMaterials.map((data) => data));
+
+      setMaterialTotalPrice(
+        userMaterials &&
+          userMaterials.length > 0 &&
+          userMaterials
+            .map((data) => data.price * data.qnt)
+            .reduce((a, b) => a + b)
+      );
     }
   }, [userMaterials]);
 
