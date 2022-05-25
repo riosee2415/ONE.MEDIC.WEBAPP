@@ -148,7 +148,7 @@ const AppHeader = ({ children, width }) => {
                 name: value.Material.name,
                 qnt: value.qnt,
                 unit: value.unit,
-                price: value.Material.price * value.qnt,
+                price: value.Material.price,
               })
             )
           : seleteMaterialArr.push({

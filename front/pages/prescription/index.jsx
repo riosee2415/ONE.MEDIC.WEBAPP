@@ -16,6 +16,7 @@ import {
   Image,
   CommonButton,
   SpanText,
+  TextInput,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -49,11 +50,11 @@ const ListWrapper = styled(Wrapper)`
 `;
 
 const DeleteModal = styled(Modal)`
-  .ant-modal-close-x {
+  & .ant-modal-close-x {
     display: none;
   }
 
-  .ant-modal-content {
+  & .ant-modal-content {
     border-radius: 20px;
   }
 `;
@@ -113,6 +114,7 @@ const Prescription = ({}) => {
 
   const [isModalVisible1, setIsModalVisible1] = useState(false);
   const [isModalVisible2, setIsModalVisible2] = useState(false);
+  const [isModalVisible3, setIsModalVisible3] = useState(false);
 
   const [isChecked, setIsChecked] = useState([false, false]);
 
@@ -129,6 +131,8 @@ const Prescription = ({}) => {
 
   const [selectMaterial, setSelectMaterial] = useState(0);
   const [materialArr, setMaterialArr] = useState(null);
+
+  const [qntForm] = Form.useForm();
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -174,6 +178,17 @@ const Prescription = ({}) => {
     }
     setIsModalVisible2(!isModalVisible2);
   }, [isModalVisible2, selectMaterial]);
+
+  const modalToggleHandler3 = useCallback(() => {
+    if (!selectMaterial) {
+      return message.error("재료를 선택해주세요.");
+    }
+
+    qntForm.setFieldsValue({
+      qnt: selectMaterial.qnt,
+    });
+    setIsModalVisible3(!isModalVisible3);
+  }, [isModalVisible3, selectMaterial]);
   ////// HANDLER //////
 
   const listHandler = useCallback(
@@ -213,6 +228,35 @@ const Prescription = ({}) => {
     },
     [chubSelect, packSelect, volumnSelect, isModalVisible1]
   );
+
+  const updateQntHandler = useCallback(
+    (data) => {
+      const updateArr = userMaterials.map((item) => {
+        if (item.id === selectMaterial.id) {
+          return {
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            qnt: parseInt(data.qnt),
+            unit: item.unit,
+          };
+        } else {
+          return item;
+        }
+      });
+
+      dispatch({
+        type: MATERIAL_USER_ADD,
+        data: updateArr,
+      });
+
+      setSelectMaterial(null);
+      setIsModalVisible3(false);
+    },
+    [userMaterials, selectMaterial, isModalVisible3]
+  );
+
+  console.log(userMaterials);
   ////// DATAVIEW //////
 
   return (
@@ -362,7 +406,7 @@ const Prescription = ({}) => {
                   </Text>
                   <Wrapper dr={`row`} width={`auto`}>
                     <Image
-                      // onClick={deleteMaterialHandler}
+                      onClick={modalToggleHandler3}
                       cursor={`pointer`}
                       alt="icon"
                       src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/bowl.png`}
@@ -417,10 +461,7 @@ const Prescription = ({}) => {
                             color={`${Theme.black_C}`}
                             fontSize={width < 600 ? `16px` : `18px`}
                           >
-                            {data.qnt === 0
-                              ? 0
-                              : numberWithCommas(String(data.price))}
-                            원
+                            {numberWithCommas(String(data.price * data.qnt))}원
                           </Text>
                         </Wrapper>
                       </ListWrapper>
@@ -571,40 +612,61 @@ const Prescription = ({}) => {
         </SelectModal>
 
         {/* Update Modal */}
-        {/* <DeleteModal
+        <DeleteModal
           width={380}
-          visible={true}
-          // onCancel={() => modalToggleHandler2()}
+          visible={isModalVisible3}
+          onCancel={() => modalToggleHandler3()}
           footer={null}
         >
           <Wrapper>
             <Wrapper ju={`flex-start`} padding={`30px 0 10px 0`}>
               <Text color={Theme.grey_C} fontSize={`18px`}>
-                약제 수정
+                해당 약재의 용량을 입력해주세요.
               </Text>
-              <Wrapper dr={`row`} padding={`10px 0 0 60px`}>
-                <CustomCommonButton
-                  onClick={() => deleteHandler()}
-                  kindOf={`white`}
-                  width={`90px`}
-                  height={`40px`}
-                  margin={`0 5px 0 0`}
-                  border={`1px solid ${Theme.white_C}`}
-                  shadow={`0px`}
-                >
-                  아니요
-                </CustomCommonButton>
-                <CommonButton
-                  width={`90px`}
-                  height={`40px`}
-                  onClick={deleteMaterialHandler}
-                >
-                  네
-                </CommonButton>
-              </Wrapper>
+              <CustomForm form={qntForm} onFinish={updateQntHandler}>
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Wrapper width={`85%`}>
+                    <Form.Item
+                      name="qnt"
+                      rules={[
+                        { required: true, message: "용량을 입력해주세요." },
+                      ]}
+                    >
+                      <TextInput
+                        margin={`20px 0`}
+                        width={`100%`}
+                        placeholder="용량을 입력해주세요."
+                      />
+                    </Form.Item>
+                  </Wrapper>
+                  <Text margin={`0 0 20px`} fontSize={`18px`}>
+                    {selectMaterial && selectMaterial.unit}
+                  </Text>
+                </Wrapper>
+                <Wrapper dr={`row`} ju={`flex-end`}>
+                  <CustomCommonButton
+                    onClick={() => modalToggleHandler3()}
+                    kindOf={`white`}
+                    width={`90px`}
+                    height={`40px`}
+                    margin={`0 5px 0 0`}
+                    border={`1px solid ${Theme.white_C}`}
+                    shadow={`0px`}
+                  >
+                    취소
+                  </CustomCommonButton>
+                  <CommonButton
+                    width={`90px`}
+                    height={`40px`}
+                    htmlType="submit"
+                  >
+                    확인
+                  </CommonButton>
+                </Wrapper>
+              </CustomForm>
             </Wrapper>
           </Wrapper>
-        </DeleteModal> */}
+        </DeleteModal>
 
         {/* Delete Modal */}
         <DeleteModal
