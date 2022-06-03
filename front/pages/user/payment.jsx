@@ -162,8 +162,6 @@ const Question = () => {
           cardDate: "20" + data.year + "-" + data.month,
           cardPassword: data.password,
           cardBirth: data.birth,
-          userCode: customerPK,
-          cardName: rsp.card_name,
         },
       });
     },

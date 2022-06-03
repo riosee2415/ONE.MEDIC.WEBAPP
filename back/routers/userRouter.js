@@ -817,6 +817,10 @@ router.patch("/card/create", isLoggedIn, async (req, res, next) => {
 
     const { access_token } = getToken.data.response; // 인증 토큰
 
+    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+    console.log(access_token);
+    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+
     const issueBilling = await axios({
       url: `https://api.iamport.kr/subscribe/customers/${orderPK}`,
       method: "post",
@@ -831,6 +835,11 @@ router.patch("/card/create", isLoggedIn, async (req, res, next) => {
 
     const { code, message } = issueBilling.data;
 
+    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+    console.log(code);
+    console.log(message);
+    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+
     if (code === 0) {
       const result = await User.update(
         {
@@ -838,8 +847,7 @@ router.patch("/card/create", isLoggedIn, async (req, res, next) => {
           cardDate,
           cardBirth,
           cardPassword,
-          userCode,
-          cardName,
+          userCode: orderPK,
         },
         {
           where: {
