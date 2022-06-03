@@ -140,78 +140,32 @@ const Question = () => {
   const onSubmit = useCallback(
     (data) => {
       if (!data.cardNo) {
-        return LoadNotification("안내", "카드번호를 입력해주세요.");
+        return message.error("카드번호를 입력해주세요.");
       }
       if (!data.year || !data.month) {
-        return LoadNotification("안내", "유효기간을 입력해주세요.");
+        return message.error("유효기간을 입력해주세요.");
       }
       if (!data.password) {
-        return LoadNotification("안내", "비밀번호 앞두라지를 입력해주세요.");
+        return message.error("비밀번호 앞두라지를 입력해주세요.");
       }
       if (!data.birth) {
-        return LoadNotification(
-          "안내",
-          "주민등록번호 앞 6자리를 입력해주세요."
-        );
+        return message.error("주민등록번호 앞 6자리를 입력해주세요.");
       }
       if (!isTerms) {
-        return LoadNotification("안내", "정기과금 이용약관을 동의해주세요.");
+        return message.error("정기과금 이용약관을 동의해주세요.");
       }
 
-      const d = new Date();
-
-      let year = d.getFullYear() + "";
-      let month = d.getMonth() + 1 + "";
-      let date = d.getDate() + "";
-      let hour = d.getHours() + "";
-      let min = d.getMinutes() + "";
-      let sec = d.getSeconds() + "";
-      let mSec = d.getMilliseconds() + "";
-
-      month = month < 10 ? "0" + month : month;
-      date = date < 10 ? "0" + date : date;
-      hour = hour < 10 ? "0" + hour : hour;
-      min = min < 10 ? "0" + min : min;
-      sec = sec < 10 ? "0" + sec : sec;
-      mSec = mSec < 10 ? "0" + mSec : mSec;
-
-      let orderPK = "ORD" + year + month + date + hour + min + sec + mSec;
-      let customerPK =
-        "CUSTOMER" + year + month + date + hour + min + sec + mSec;
-
-      const IMP = window.IMP;
-
-      IMP.request_pay(
-        {
-          pg: "danal_tpay",
-          pay_method: "card", // 'card'만 지원됩니다.
-          merchant_uid: orderPK, // 상점에서 관리하는 주문 번호
-          name: "카드인증",
-          amount: 0, // 빌링키 발급만 진행하며 결제승인을 하지 않습니다.
-          customer_uid: customerPK, // 필수 입력.
-          buyer_name: me.username,
-          buyer_email: me.email,
-          buyer_mobile: me.mobile,
+      dispatch({
+        type: CARD_PATCH_REQUEST,
+        data: {
+          cardNo: data.cardNo,
+          cardDate: "20" + data.year + "-" + data.month,
+          cardPassword: data.password,
+          cardBirth: data.birth,
+          userCode: customerPK,
+          cardName: rsp.card_name,
         },
-        (rsp) => {
-          if (rsp.success) {
-            dispatch({
-              type: CARD_PATCH_REQUEST,
-              data: {
-                cardNo: data.cardNo,
-                cardDate: "20" + data.year + "-" + data.month,
-                cardPassword: data.password,
-                cardBirth: data.birth,
-                userCode: customerPK,
-                cardName: rsp.card_name,
-              },
-            });
-          } else {
-            console.log(rsp);
-            return message.error(rsp.message);
-          }
-        }
-      );
+      });
     },
     [isTerms]
   );

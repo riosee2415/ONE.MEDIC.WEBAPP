@@ -120,6 +120,12 @@ module.exports = class User extends Model {
           type: DataTypes.STRING(50), // 결제정보
           allowNull: true,
         },
+
+        isExit: {
+          type: DataTypes.BOOLEAN, // 회원 탈퇴
+          defaultValue: false,
+          allowNull: false, // 필수
+        },
       },
       {
         modelName: "User",

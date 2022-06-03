@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { message, notification } from "antd";
+import { message, notification, Popconfirm } from "antd";
 import { useRouter } from "next/router";
 import { ADDRESS_LIST_REQUEST } from "../../reducers/address";
 
@@ -317,6 +317,26 @@ const Question = () => {
               ) : (
                 <Text>기본주소를 추가해주세요.</Text>
               )}
+            </Wrapper>
+            <Wrapper
+              radius={`20px`}
+              shadow={Theme.shadow_C}
+              padding={`22px`}
+              al={`flex-start`}
+              margin={`0 0 16px`}
+            >
+              <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
+                <Text fontSize={`22px`}>회원탈퇴</Text>
+                <Popconfirm
+                  placement="topRight"
+                  title="정말 탈퇴하시겠습니까?"
+                  okText="탈퇴"
+                  cancelText="취소"
+                  onConfirm={console.log}
+                >
+                  <MyinfoBtn>탈퇴</MyinfoBtn>
+                </Popconfirm>
+              </Wrapper>
             </Wrapper>
             {/* <Wrapper
               radius={`20px`}

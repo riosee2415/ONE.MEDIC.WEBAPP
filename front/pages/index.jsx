@@ -189,6 +189,7 @@ const Home = ({}) => {
                   boxShadow:
                     "5px 5px 15px rgba(77, 92, 123, 0.2), inset -5px -5px 15px rgba(77, 92, 123, 0.05)",
                 }}
+                placeholder={["시작일", "종료일"]}
                 onChange={searchHandler}
               />
             </Wrapper>

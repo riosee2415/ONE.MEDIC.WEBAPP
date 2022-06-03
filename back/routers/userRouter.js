@@ -95,6 +95,7 @@ router.get(
               email: {
                 [Op.like]: `%${searchEmail}%`,
               },
+              isExit: false,
             },
             attributes: {
               exclude: ["password"],
@@ -111,6 +112,7 @@ router.get(
               email: {
                 [Op.like]: `%${searchEmail}%`,
               },
+              isExit: false,
             },
             attributes: {
               exclude: ["password"],
@@ -232,7 +234,10 @@ router.post("/signup", async (req, res, next) => {
 
   try {
     const exUser = await User.findOne({
-      where: { email: email },
+      where: {
+        email,
+        isExit: false,
+      },
     });
 
     if (exUser) {
@@ -271,13 +276,18 @@ router.post("/me/update", isLoggedIn, async (req, res, next) => {
   const { id, nickname, mobile } = req.body;
 
   try {
-    const exUser = await User.findOne({ where: { id: parseInt(id) } });
+    const exUser = await User.findOne({
+      where: {
+        id: parseInt(id),
+        isExit: false,
+      },
+    });
 
     if (!exUser) {
       return res.status(401).send("존재하지 않는 사용자 입니다.");
     }
 
-    const updateUser = await User.update(
+    await User.update(
       { nickname, mobile },
       {
         where: { id: parseInt(id) },
@@ -299,6 +309,7 @@ router.post("/findemail", async (req, res, next) => {
       where: {
         nickname,
         mobile,
+        isExit: false,
       },
     });
 
@@ -318,7 +329,10 @@ router.post("/checkCode", async (req, res, next) => {
 
   try {
     const exUser = await User.findOne({
-      where: { email: email },
+      where: {
+        email,
+        isExit: false,
+      },
     });
 
     if (exUser) {
@@ -419,7 +433,10 @@ router.patch("/modifypass/update", isLoggedIn, async (req, res, next) => {
 
   try {
     const exUser = await User.findOne({
-      where: { id: req.user.dataValues.id },
+      where: {
+        id: req.user.dataValues.id,
+        isExit: false,
+      },
     });
 
     if (!exUser) {
@@ -453,7 +470,10 @@ router.patch("/level/update", isAdminCheck, async (req, res, next) => {
 
   try {
     const exUser = await User.findOne({
-      where: { id: parseInt(selectUserId) },
+      where: {
+        id: parseInt(selectUserId),
+        isExit: false,
+      },
     });
 
     if (!exUser) {
@@ -574,6 +594,7 @@ router.get(
         const exUser = await User.findOne({
           where: {
             id: parseInt(id),
+            isExit: false,
           },
         });
 
@@ -619,14 +640,17 @@ router.get(
 
     try {
       if (id) {
-        const exUser = await User.findOne({ id });
+        const exUser = await User.findOne({
+          id,
+          isExit: false,
+        });
 
         if (!exUser) {
           return res.status(401).send("존재하지 않는 회원입니다.");
         }
       }
 
-      const result = await User.update(
+      await User.update(
         {
           isRefusal: true,
           resusalReason,
@@ -649,14 +673,17 @@ router.get(
 
     try {
       if (id) {
-        const exUser = await User.findOne({ id });
+        const exUser = await User.findOne({
+          id,
+          isExit: false,
+        });
 
         if (!exUser) {
           return res.status(401).send("존재하지 않는 회원입니다.");
         }
       }
 
-      const result = await User.update(
+      await User.update(
         {
           isCompany: true,
         },
@@ -678,14 +705,16 @@ router.get(
 
     try {
       if (id) {
-        const exUser = await User.findOne({ id });
+        const exUser = await User.findOne({
+          id,
+          isExit: false,
+        });
 
         if (!exUser) {
           return res.status(401).send("존재하지 않는 회원입니다.");
         }
       }
-
-      const result = await User.update(
+      await User.update(
         {
           operatorLevel,
         },
@@ -712,9 +741,10 @@ router.get("/logout", function (req, res) {
 
 router.get("/card/detail", isLoggedIn, async (req, res, next) => {
   try {
-    const exUser = User.findOne({
+    const exUser = await User.findOne({
       where: {
         id: parseInt(req.user.id),
+        isExit: false,
       },
     });
 
@@ -745,9 +775,10 @@ router.patch("/card/create", isLoggedIn, async (req, res, next) => {
     req.body;
 
   try {
-    const exUser = User.findOne({
+    const exUser = await User.findOne({
       where: {
         id: parseInt(req.user.id),
+        isExit: false,
       },
     });
 
@@ -755,72 +786,78 @@ router.patch("/card/create", isLoggedIn, async (req, res, next) => {
       return res.status(400).send("존재하지 않는 회원입니다.");
     }
 
-    // const d = new Date();
+    const d = new Date();
 
-    // let year = d.getFullYear() + "";
-    // let month = d.getMonth() + 1 + "";
-    // let date = d.getDate() + "";
-    // let hour = d.getHours() + "";
-    // let min = d.getMinutes() + "";
-    // let sec = d.getSeconds() + "";
-    // let mSec = d.getMilliseconds() + "";
+    let year = d.getFullYear() + "";
+    let month = d.getMonth() + 1 + "";
+    let date = d.getDate() + "";
+    let hour = d.getHours() + "";
+    let min = d.getMinutes() + "";
+    let sec = d.getSeconds() + "";
+    let mSec = d.getMilliseconds() + "";
 
-    // month = month < 10 ? "0" + month : month;
-    // date = date < 10 ? "0" + date : date;
-    // hour = hour < 10 ? "0" + hour : hour;
-    // min = min < 10 ? "0" + min : min;
-    // sec = sec < 10 ? "0" + sec : sec;
-    // mSec = mSec < 10 ? "0" + mSec : mSec;
+    month = month < 10 ? "0" + month : month;
+    date = date < 10 ? "0" + date : date;
+    hour = hour < 10 ? "0" + hour : hour;
+    min = min < 10 ? "0" + min : min;
+    sec = sec < 10 ? "0" + sec : sec;
+    mSec = mSec < 10 ? "0" + mSec : mSec;
 
-    // let orderPK = "USER_C" + year + month + date + hour + min + sec + mSec;
+    let orderPK = "USER_C" + year + month + date + hour + min + sec + mSec;
 
-    // const getToken = await axios({
-    //   url: "https://api.iamport.kr/users/getToken",
-    //   method: "post", // POST method
-    //   headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
-    //   data: {
-    //     imp_key: process.env.IMP_KEY, // REST API 키
-    //     imp_secret: process.env.IMP_SECRET,
-    //   },
-    // });
-
-    // const { access_token } = getToken.data.response; // 인증 토큰
-
-    // const issueBilling = await axios({
-    //   url: `https://api.iamport.kr/subscribe/customers/${orderPK}`,
-    //   method: "post",
-    //   headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
-    //   data: {
-    //     card_number: cardNo, // 카드 번호
-    //     expiry: cardDate, // 카드 유효기간
-    //     birth: cardBirth, // 생년월일
-    //     pwd_2digit: cardPassword, // 카드 비밀번호 앞 두자리
-    //   },
-    // });
-
-    // const { code, message } = issueBilling.data;
-
-    // if (code === 0) {
-    const result = await User.update(
-      {
-        cardNo,
-        cardDate,
-        cardBirth,
-        cardPassword,
-        userCode,
-        cardName,
+    const getToken = await axios({
+      url: "https://api.iamport.kr/users/getToken",
+      method: "post", // POST method
+      headers: { "Content-Type": "application/json" }, // "Content-Type": "application/json"
+      data: {
+        imp_key: process.env.IMP_KEY, // REST API 키
+        imp_secret: process.env.IMP_SECRET,
       },
-      {
-        where: {
-          id: parseInt(req.user.id),
+    });
+
+    const { access_token } = getToken.data.response; // 인증 토큰
+
+    const issueBilling = await axios({
+      url: `https://api.iamport.kr/subscribe/customers/${orderPK}`,
+      method: "post",
+      headers: { Authorization: access_token }, // 인증 토큰 Authorization header에 추가
+      data: {
+        card_number: cardNo, // 카드 번호
+        expiry: cardDate, // 카드 유효기간
+        birth: cardBirth, // 생년월일
+        pwd_2digit: cardPassword, // 카드 비밀번호 앞 두자리
+      },
+    });
+
+    const { code, message } = issueBilling.data;
+
+    if (code === 0) {
+      const result = await User.update(
+        {
+          cardNo,
+          cardDate,
+          cardBirth,
+          cardPassword,
+          userCode,
+          cardName,
         },
+        {
+          where: {
+            id: parseInt(req.user.id),
+          },
+        }
+      );
+
+      if (result[0] > 0) {
+        return res.status(200).json({ result: true });
+      } else {
+        return res.status(200).json({ result: false });
       }
-    );
-    return res.status(200).json({ result: true });
-    // } else {
-    //   // 빌링키 발급 실패
-    //   return res.status(401).send(message);
-    // }
+    } else {
+      // 빌링키 발급 실패
+      console.error(message);
+      return res.status(401).send("카드정보를 등록할 수 없습니다.");
+    }
   } catch (e) {
     console.error(e);
     return res.status(401).send("카드정보를 등록할 수 없습니다.");
@@ -832,9 +869,10 @@ router.delete("/card/delete/:cardId", isLoggedIn, async (req, res, next) => {
 
   try {
     if (cardId) {
-      const exAddress = User.findOne({
+      const exAddress = await User.findOne({
         where: {
           id: parseInt(cardId),
+          isExit: false,
         },
       });
 
@@ -855,6 +893,35 @@ router.delete("/card/delete/:cardId", isLoggedIn, async (req, res, next) => {
     );
 
     return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
+router.patch("/exit", isLoggedIn, async (req, res, next) => {
+  const { userId } = req.body;
+
+  try {
+    const exUser = await User.findOne({
+      where: {
+        id: userId,
+        isExit: false,
+      },
+    });
+
+    if (!exUser) {
+      return res.status(400).send("존재하지 않는 회원입니다.");
+    }
+
+    await User.update(
+      {
+        isExit: true,
+      },
+      {
+        where: userId,
+      }
+    );
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
