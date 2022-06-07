@@ -908,12 +908,10 @@ router.delete("/card/delete/:cardId", isLoggedIn, async (req, res, next) => {
 });
 
 router.patch("/exit", isLoggedIn, async (req, res, next) => {
-  const { userId } = req.body;
-
   try {
     const exUser = await User.findOne({
       where: {
-        id: userId,
+        id: parseInt(req.user.id),
         isExit: false,
       },
     });
@@ -927,9 +925,13 @@ router.patch("/exit", isLoggedIn, async (req, res, next) => {
         isExit: true,
       },
       {
-        where: userId,
+        where: {
+          id: parseInt(req.user.id),
+        },
       }
     );
+
+    return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");

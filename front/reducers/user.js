@@ -85,6 +85,10 @@ export const initailState = {
   st_fileUploadLoading: false, // 첨부파일
   st_fileUploadDone: false,
   st_fileUploadError: false,
+  //
+  st_userExitLoading: false, // 회원탈퇴
+  st_userExitDone: false,
+  st_userExitError: false,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -150,6 +154,10 @@ export const CHECKCODE_FAILURE = "CHECKCODE_FAILURE";
 export const FILE_UPLOAD_REQUEST = "FILE_UPLOAD_REQUEST";
 export const FILE_UPLOAD_SUCCESS = "FILE_UPLOAD_SUCCESS";
 export const FILE_UPLOAD_FAILURE = "FILE_UPLOAD_FAILURE";
+
+export const USER_EXIT_REQUEST = "USER_EXIT_REQUEST";
+export const USER_EXIT_SUCCESS = "USER_EXIT_SUCCESS";
+export const USER_EXIT_FAILURE = "USER_EXIT_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -491,6 +499,26 @@ const reducer = (state = initailState, action) =>
         draft.st_fileUploadLoading = false;
         draft.st_fileUploadDone = false;
         draft.st_fileUploadError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case USER_EXIT_REQUEST: {
+        draft.st_userExitLoading = true;
+        draft.st_userExitDone = null;
+        draft.st_userExitError = false;
+        break;
+      }
+      case USER_EXIT_SUCCESS: {
+        draft.st_userExitLoading = false;
+        draft.st_userExitDone = true;
+        draft.st_userExitError = null;
+        break;
+      }
+      case USER_EXIT_FAILURE: {
+        draft.st_userExitLoading = false;
+        draft.st_userExitDone = false;
+        draft.st_userExitError = action.error;
         break;
       }
       //////////////////////////////////////////////

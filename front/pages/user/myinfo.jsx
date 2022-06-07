@@ -5,7 +5,8 @@ import Head from "next/head";
 import {
   CARD_GET_REQUEST,
   LOAD_MY_INFO_REQUEST,
-  LOGIN_SUCCESS,
+  LOGOUT_REQUEST,
+  USER_EXIT_REQUEST,
 } from "../../reducers/user";
 import axios from "axios";
 import { END } from "redux-saga";
@@ -50,7 +51,14 @@ const Question = () => {
     (state) => state.seo
   );
 
-  const { me, cardInfo } = useSelector((state) => state.user);
+  const {
+    me,
+    cardInfo,
+    //
+    st_userExitLoading,
+    st_userExitDone,
+    st_userExitError,
+  } = useSelector((state) => state.user);
 
   const { addressList, addressDetail } = useSelector((state) => state.address);
 
@@ -68,11 +76,36 @@ const Question = () => {
       router.push(`/login`);
     }
   }, [router.query, me]);
+
+  useEffect(() => {
+    if (st_userExitDone) {
+      router.push("/login");
+      message.success("회웥탍퇴 되었습니다.");
+
+      dispatch({
+        type: LOGOUT_REQUEST,
+      });
+    }
+  }, [st_userExitDone]);
+
+  useEffect(() => {
+    if (st_userExitError) {
+      return message.error(st_userExitError);
+    }
+  }, [st_userExitError]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
   const moveLinkHandler = useCallback((link) => {
     router.push(link);
   }, []);
+
+  const userExitHandler = useCallback(() => {
+    dispatch({
+      type: USER_EXIT_REQUEST,
+    });
+  }, []);
+
   ////// DATAVIEW //////
 
   const tangjeonTestData = [
@@ -332,9 +365,9 @@ const Question = () => {
                   title="정말 탈퇴하시겠습니까?"
                   okText="탈퇴"
                   cancelText="취소"
-                  onConfirm={console.log}
+                  onConfirm={userExitHandler}
                 >
-                  <MyinfoBtn>탈퇴</MyinfoBtn>
+                  <MyinfoBtn loading={st_userExitLoading}>탈퇴</MyinfoBtn>
                 </Popconfirm>
               </Wrapper>
             </Wrapper>

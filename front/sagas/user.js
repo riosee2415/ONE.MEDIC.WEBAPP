@@ -65,6 +65,10 @@ import {
   FILE_UPLOAD_SUCCESS,
   FILE_UPLOAD_FAILURE,
   /////////////////////////////
+  USER_EXIT_REQUEST,
+  USER_EXIT_SUCCESS,
+  USER_EXIT_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -499,6 +503,34 @@ function* fileUpload(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function userExitAPI(data) {
+  return await axios.patch(`/api/user/exit`, data);
+}
+
+function* userExit(action) {
+  try {
+    const result = yield call(userExitAPI, action.data);
+
+    yield put({
+      type: USER_EXIT_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: USER_EXIT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -565,6 +597,10 @@ function* watchUserFileUpload() {
   yield takeLatest(FILE_UPLOAD_REQUEST, fileUpload);
 }
 
+function* watchUserExit() {
+  yield takeLatest(USER_EXIT_REQUEST, userExit);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -584,6 +620,7 @@ export default function* userSaga() {
     fork(watchUserCardGet),
     fork(watchUserCheckCode),
     fork(watchUserFileUpload),
+    fork(watchUserExit),
     //
   ]);
 }
