@@ -41,6 +41,7 @@ import {
   ADDRESS_LIST_MODAL_TOGGLE,
 } from "../../reducers/address";
 import useInput from "../../hooks/useInput";
+import { numberWithCommas } from "../../components/commonUtils";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -153,11 +154,13 @@ const Index = ({}) => {
     }
   }, [router.query]);
 
+  console.log(paymentDetail);
+
   useEffect(() => {
     if (paymentDetail) {
       let price = 0;
-      for (let i = 0; i < paymentDetail.PaymentRequests.length; i++) {
-        price += paymentDetail.PaymentRequests[i].payment;
+      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
+        price += paymentDetail.PaymentRequest[i].payment;
       }
 
       setPayment(price);
@@ -776,10 +779,8 @@ const Index = ({}) => {
                   <Wrapper dr={`row`} width={`auto`}>
                     <Text fontWeight={`bold`}>총 주문금액 : </Text>
                     <Text fontWeight={`bold`}>
-                      {String(payment).replace(
-                        /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-                        ","
-                      )}
+                      {payment}
+                      {/* {numberWithCommas(String(payment))} */}
                     </Text>
                   </Wrapper>
                   <Wrapper width={`20px`}>

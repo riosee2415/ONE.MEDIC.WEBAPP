@@ -51,7 +51,6 @@ router.get("/list", async (req, res, next) => {
       FROM  payment p
       JOIN  users u
         ON  u.id = p.UserId
-     WHERE  isPayment = true
      ${condition}
      ${completedCondition}
      ORDER  BY  p.createdAt DESC;
@@ -113,13 +112,91 @@ router.get("/user/list", isLoggedIn, async (req, res, next) => {
          }
          AND  p.productName LIKE '%${_productName}%'
          AND  u.id = ${req.user.id}
-         AND  isPayment = TRUE
        ORDER  BY  p.createdAt DESC
     `;
 
     const reuslt = await models.sequelize.query(selectQuery);
 
     return res.status(200).json({ list: reuslt[0] });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
+router.get("/detail/:paymentId", async (req, res, next) => {
+  const { paymentId } = req.params;
+  const exSelectQuery = `
+    SELECT  p.id
+      FROM  payment p
+     WHERE  p.id = ${paymentId}
+  `;
+
+  const paymentQuery = `
+  SELECT  p.id,
+          p.productName,
+          p.completedAt,
+          p.deliveryNo,
+          p.receiveUser,
+          p.receiveMobile,
+          p.receiveAddress,
+          p.receiveDetailAddress,
+          p.sendUser,
+          p.sendMobile,
+          p.sendAddress,
+          p.sendDetailAddress,
+          p.deliveryCompany,
+          DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
+          DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+          p.createdAt,
+          u.username,
+          u.email,
+          u.mobile,
+          u.nickname,
+          u.companyName,
+          u.companyNo,
+          p.totalPrice
+    FROM  payment p
+    JOIN  users u
+      ON  u.id = p.UserId
+   WHERE  1 = 1
+     AND  p.id = ${paymentId}
+   ORDER  BY  p.createdAt DESC
+`;
+
+  const paymentRequestQuery = `
+  SELECT  id,
+          payment,
+          packVolumn,
+          typeVolumn,
+          unitVolumn,
+          otherRequest,
+          DATE_FORMAT(createdAt, '%Y년 %m월 %d일')	AS viewCreatedAt ,
+          PaymentId 
+    FROM  paymentRequest
+   WHERE  PaymentId = ${paymentId}
+  `;
+
+  try {
+    const exPayment = await models.sequelize.query(exSelectQuery);
+
+    if (exPayment[0].length === 0) {
+      return res.status(400).send("존재하지 않는 주문입니다.");
+    }
+
+    const payment = await models.sequelize.query(paymentQuery);
+    const paymentRequest = await models.sequelize.query(paymentRequestQuery);
+
+    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+    console.log(payment);
+    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+
+    const paymentLump = {
+      ...payment[0][0],
+      PaymentRequest: paymentRequest[0],
+    };
+
+    return res.status(200).json({ list: paymentLump });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
@@ -265,28 +342,6 @@ router.patch(
   }
 );
 
-router.get("/detail/:paymentId", isLoggedIn, async (req, res, next) => {
-  const { paymentId } = req.params;
-
-  try {
-    const result = await Payment.findOne({
-      where: {
-        id: parseInt(paymentId),
-      },
-      include: [
-        {
-          model: PaymentRequest,
-        },
-      ],
-    });
-
-    return res.status(200).json(result);
-  } catch (e) {
-    console.error(e);
-    return res.status(400).send("잘못된 요청입니다.");
-  }
-});
-
 router.patch("/address/update", async (req, res, next) => {
   const {
     id,
@@ -357,7 +412,7 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
       },
     });
 
-    const _payinfo = payInfo;
+    const _payinfo = payInfo ? payInfo : "";
 
     if (_payinfo) {
       await User.update(
@@ -426,6 +481,7 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
       if (code === 0) {
         const result = await Payment.update(
           {
+            payInfo: _payinfo,
             isPayment: true,
           },
           {
@@ -442,6 +498,7 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
     } else {
       const result = await Payment.update(
         {
+          payInfo: _payinfo,
           isPayment: true,
         },
         {

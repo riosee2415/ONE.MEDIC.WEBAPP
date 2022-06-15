@@ -205,10 +205,6 @@ const PromiseDetail = () => {
 
     setTemporaryId(temporaryId + 1);
 
-    console.log(type.value);
-    console.log(pack.value);
-    console.log(unit.value);
-
     temporayArr.push({
       id: temporaryId,
       payment:
@@ -255,12 +251,17 @@ const PromiseDetail = () => {
       type: PAYMENTREQUEST_CREATE_REQUEST,
       data: {
         userId: me.id,
-        productName: product.title,
+        productName:
+          temporaryDatum.length > 1
+            ? `${product.title} ${type.value.name} 외 ${
+                temporaryDatum.length - 1
+              }개`
+            : `${product.title} ${type.value.name}`,
         paymentRequestDatum: temporaryDatum,
         totalPrice: totalPayment,
       },
     });
-  }, [temporaryDatum, me, product, totalPayment]);
+  }, [temporaryDatum, me, product, totalPayment, type.value]);
 
   ////// DATAVIEW //////
 

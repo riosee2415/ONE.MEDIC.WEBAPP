@@ -23,6 +23,8 @@ import Theme from "../../components/Theme";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
+import { numberWithCommas } from "../../components/commonUtils";
 
 const Index = ({}) => {
   const width = useWidth();
@@ -34,12 +36,24 @@ const Index = ({}) => {
   const [openHistory, setOpenHistory] = useState(false);
 
   ////// HOOKS //////
+  const { paymentDetail } = useSelector((state) => state.paymentRequest);
+  console.log(paymentDetail);
   const router = useRouter();
-
-  const dispacth = useDispatch();
+  const dispatch = useDispatch();
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (router.query) {
+      dispatch({
+        type: PAYMENT_DETAIL_REQUEST,
+        data: {
+          paymentId: router.query.id,
+        },
+      });
+    }
+  }, [router.query]);
 
   ////// TOGGLE //////
   const historyToggle = useCallback(() => {
@@ -124,7 +138,7 @@ const Index = ({}) => {
                     보내는 사람
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    청구경희한의원
+                    {paymentDetail && paymentDetail.sendUser}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -142,7 +156,7 @@ const Index = ({}) => {
                     받는 사람
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    청구경희한의원
+                    {paymentDetail && paymentDetail.receiveUser}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -160,7 +174,7 @@ const Index = ({}) => {
                     연락처
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    01012341234
+                    {paymentDetail && paymentDetail.mobile}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -182,8 +196,10 @@ const Index = ({}) => {
                     fontSize={`18px`}
                     fontWeight={`700`}
                   >
-                    경기 수원시 팔달구 권선로 751 (인계동, 동양파라곤 2단지)
-                    <Text margin={`10px 0 0`}>202동 701호</Text>
+                    {paymentDetail && paymentDetail.receiveAddress}
+                    <Text margin={`10px 0 0`}>
+                      {paymentDetail && paymentDetail.receiveDetailAddress}
+                    </Text>
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -201,7 +217,7 @@ const Index = ({}) => {
                     결제방법
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    월말결제
+                    신용카드
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -219,7 +235,7 @@ const Index = ({}) => {
                     결제일시
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    2022/05/11 13:07:51
+                    {paymentDetail && paymentDetail.orderAt}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -238,8 +254,14 @@ const Index = ({}) => {
                   </Text>
                   <Wrapper width={`calc(100% - 100px)`} fontSize={`18px`}>
                     <Wrapper dr={`row`} ju={`space-between`}>
-                      <Text fontWeight={`700`}>월말결제</Text>
-                      <Text fontWeight={`700`}>184,000</Text>
+                      <Text fontWeight={`700`}>신용카드</Text>
+                      <Text fontWeight={`700`}>
+                        {numberWithCommas(
+                          String(
+                            paymentDetail && paymentDetail.totalPrice - 5000
+                          )
+                        )}
+                      </Text>
                     </Wrapper>
                     <Wrapper dr={`row`} ju={`space-between`}>
                       <Text fontWeight={`700`}>배송비</Text>
@@ -254,7 +276,10 @@ const Index = ({}) => {
                   al={`flex-end`}
                   padding={`15px 0 0`}
                 >
-                  189,000원
+                  {numberWithCommas(
+                    String(paymentDetail && paymentDetail.totalPrice)
+                  )}
+                  원
                 </Wrapper>
               </Wrapper>
 
@@ -268,9 +293,11 @@ const Index = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text fontSize={`22px`} fontWeight={`700`}>
-                    공진단
+                    {paymentDetail && paymentDetail.productName}
                   </Text>
-                  <Text fontSize={`18px`}>홍길동</Text>
+                  <Text fontSize={`18px`}>
+                    {paymentDetail && paymentDetail.username}
+                  </Text>
                 </Wrapper>
                 {openHistory ? (
                   <>

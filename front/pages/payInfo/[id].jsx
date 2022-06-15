@@ -125,8 +125,8 @@ const Index = ({}) => {
   useEffect(() => {
     if (paymentDetail) {
       let total = 0;
-      for (let i = 0; i < paymentDetail.PaymentRequests.length; i++) {
-        total += paymentDetail.PaymentRequests[i].payment;
+      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
+        total += paymentDetail.PaymentRequest[i].payment;
       }
 
       setProductPayment(total);
@@ -441,6 +441,7 @@ const Index = ({}) => {
                     {me && me.username}
                   </Text>
                 </Wrapper>
+                {console.log(paymentDetail)}
 
                 <Wrapper
                   borderBottom={`1px solid ${Theme.grey_C}`}
