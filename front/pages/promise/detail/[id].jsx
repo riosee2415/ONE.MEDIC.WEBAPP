@@ -253,15 +253,15 @@ const PromiseDetail = () => {
         userId: me.id,
         productName:
           temporaryDatum.length > 1
-            ? `${product.title} ${type.value.name} 외 ${
+            ? `${product.title} ${unit.value.name} 외 ${
                 temporaryDatum.length - 1
               }개`
-            : `${product.title} ${type.value.name}`,
+            : `${product.title} ${unit.value.name}`,
         paymentRequestDatum: temporaryDatum,
         totalPrice: totalPayment,
       },
     });
-  }, [temporaryDatum, me, product, totalPayment, type.value]);
+  }, [temporaryDatum, me, product, totalPayment, unit.value]);
 
   ////// DATAVIEW //////
 
