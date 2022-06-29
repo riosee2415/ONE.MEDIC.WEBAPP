@@ -1,6 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 재료
 module.exports = class Materials extends Model {
   static init(sequelize) {
     return super.init(

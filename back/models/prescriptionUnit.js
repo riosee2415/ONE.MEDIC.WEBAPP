@@ -1,6 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 약속처방 단위
 module.exports = class PrescriptionUnit extends Model {
   static init(sequelize) {
     return super.init(

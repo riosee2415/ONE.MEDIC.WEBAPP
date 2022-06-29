@@ -116,8 +116,6 @@ const Prescription = ({}) => {
   const [isModalVisible2, setIsModalVisible2] = useState(false);
   const [isModalVisible3, setIsModalVisible3] = useState(false);
 
-  const [isChecked, setIsChecked] = useState([false, false]);
-
   const [chubSelectArr, setChubSelectArr] = useState(null);
   const [packSelectArr, setPackSelectArr] = useState(null);
   const [volumnSelectArr, setVolumnSelectArr] = useState(null);
@@ -127,6 +125,7 @@ const Prescription = ({}) => {
   const [volumnSelect, setVolumnSelect] = useState("120");
 
   const [materialTotalPrice, setMaterialTotalPrice] = useState(0);
+  const [materialTotalUnit, setMaterialTotalUnit] = useState(0);
   const [packTotalPrice, setPackTotalPrice] = useState(0);
 
   const [selectMaterial, setSelectMaterial] = useState(0);
@@ -137,6 +136,7 @@ const Prescription = ({}) => {
   ////// REDUX //////
   ////// USEEFFECT //////
 
+  // 첩, 팩, 용량 select
   useEffect(() => {
     let chubArr = [];
     let packArr = [];
@@ -154,12 +154,15 @@ const Prescription = ({}) => {
     setVolumnSelectArr(volumnArr);
   }, [router.query]);
 
+  // 팩 가격
   useEffect(() => {
     if (price) {
       setPackTotalPrice(parseInt(packSelect) * price[0].price);
     }
   }, [price, packSelect]);
 
+  // 약재 선택시 실행되는 effect
+  // 선택된 전체 약재 가격 & 선택된 전체 약재 용량
   useEffect(() => {
     if (userMaterials) {
       setMaterialArr(userMaterials.map((data) => data));
@@ -171,15 +174,23 @@ const Prescription = ({}) => {
             .map((data) => data.price * data.qnt)
             .reduce((a, b) => a + b)
       );
+
+      setMaterialTotalUnit(
+        userMaterials &&
+          userMaterials.length > 0 &&
+          userMaterials.map((data) => data.qnt).reduce((a, b) => a + b)
+      );
     }
   }, [userMaterials]);
 
   ////// TOGGLE //////
 
+  // 종류 변경 모달
   const modalToggleHandler1 = useCallback(() => {
     setIsModalVisible1(!isModalVisible1);
   }, [isModalVisible1]);
 
+  // 약재 삭제 모달
   const modalToggleHandler2 = useCallback(() => {
     if (!selectMaterial) {
       return message.error("재료를 선택해주세요.");
@@ -187,6 +198,7 @@ const Prescription = ({}) => {
     setIsModalVisible2(!isModalVisible2);
   }, [isModalVisible2, selectMaterial]);
 
+  // 약재 용량 수정 모달
   const modalToggleHandler3 = useCallback(() => {
     if (!selectMaterial) {
       return message.error("재료를 선택해주세요.");
@@ -199,17 +211,15 @@ const Prescription = ({}) => {
   }, [isModalVisible3, selectMaterial]);
   ////// HANDLER //////
 
-  const listHandler = useCallback(
+  // 약재 선택
+  const selectMaterialHandler = useCallback(
     (data) => {
       setSelectMaterial(data);
     },
     [selectMaterial]
   );
 
-  const deleteHandler = useCallback(() => {
-    modalToggleHandler2();
-  }, [isModalVisible1, isModalVisible2]);
-
+  // 약재 삭제
   const deleteMaterialHandler = useCallback(() => {
     if (!selectMaterial) {
       return message.error("재료를 선택해주세요.");
@@ -226,6 +236,7 @@ const Prescription = ({}) => {
     setIsModalVisible2(false);
   }, [materialArr, selectMaterial, isModalVisible2]);
 
+  // 종류 선택
   const selectHandler = useCallback(
     (data) => {
       setChubSelect(data.chub ? data.chub : chubSelect);
@@ -237,6 +248,7 @@ const Prescription = ({}) => {
     [chubSelect, packSelect, volumnSelect, isModalVisible1]
   );
 
+  // 약재 용량 수정
   const updateQntHandler = useCallback(
     (data) => {
       const updateArr = userMaterials.map((item) => {
@@ -264,7 +276,6 @@ const Prescription = ({}) => {
     [userMaterials, selectMaterial, isModalVisible3]
   );
 
-  console.log(userMaterials);
   ////// DATAVIEW //////
 
   return (
@@ -335,22 +346,11 @@ const Prescription = ({}) => {
                   처방정보
                 </Text>
               </Wrapper>
+
               <RightOutlined
                 style={{ color: Theme.grey2_C, margin: "0 20px" }}
               />
-              {/* <Wrapper width={`auto`}>
-                <Image
-                  alt="icon"
-                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/2.cart_g.png`}
-                  width={`22px`}
-                />
-                <Text fontSize={`12px`} margin={`5px 0 0`} color={Theme.grey_C}>
-                  장바구니
-                </Text>
-              </Wrapper>
-              <RightOutlined
-                style={{ color: Theme.grey2_C, margin: "0 20px" }}
-              /> */}
+
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
@@ -361,9 +361,11 @@ const Prescription = ({}) => {
                   배송정보
                 </Text>
               </Wrapper>
+
               <RightOutlined
                 style={{ color: Theme.grey2_C, margin: "0 20px" }}
               />
+
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
@@ -434,7 +436,7 @@ const Prescription = ({}) => {
                   {userMaterials.map((data) => {
                     return (
                       <ListWrapper
-                        onClick={() => listHandler(data)}
+                        onClick={() => selectMaterialHandler(data)}
                         bgColor={
                           selectMaterial &&
                           selectMaterial.id === data.id &&
@@ -587,7 +589,7 @@ const Prescription = ({}) => {
                     총 용량
                   </Text>
                   <Text fontSize={`18px`}>
-                    10,488.0
+                    {numberWithCommas(String(materialTotalUnit))}
                     <SpanText fontSize={`16px`} color={Theme.grey_C}>
                       g
                     </SpanText>
@@ -598,7 +600,9 @@ const Prescription = ({}) => {
                     약제비
                   </Text>
                   <Text fontSize={`18px`}>
-                    223,920
+                    {numberWithCommas(
+                      String(materialTotalPrice + packTotalPrice)
+                    )}
                     <SpanText fontSize={`16px`} color={Theme.grey_C}>
                       원
                     </SpanText>
@@ -690,7 +694,7 @@ const Prescription = ({}) => {
               </Text>
               <Wrapper dr={`row`} padding={`10px 0 0 60px`}>
                 <CustomCommonButton
-                  onClick={() => deleteHandler()}
+                  onClick={() => modalToggleHandler2()}
                   kindOf={`white`}
                   width={`90px`}
                   height={`40px`}

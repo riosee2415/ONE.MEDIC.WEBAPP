@@ -1,6 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 약속처방 포장
 module.exports = class PrescriptionPack extends Model {
   static init(sequelize) {
     return super.init(

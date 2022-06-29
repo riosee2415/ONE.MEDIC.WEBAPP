@@ -1,17 +1,26 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 사용 재료
 module.exports = class UseMaterial extends Model {
   static init(sequelize) {
     return super.init(
       {
-        qnt: {
+        name: {
+          type: DataTypes.STRING(150),
+          allowNull: false, // 필수
+        },
+        buyPrice: {
           type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+        },
+        qnt: {
+          type: DataTypes.INTEGER, // 수량
           defaultValue: 1,
           allowNull: false, // 필수
         },
         unit: {
-          type: DataTypes.STRING(10),
+          type: DataTypes.STRING(10), // 단위
           allowNull: false, // 필수
         },
       },
