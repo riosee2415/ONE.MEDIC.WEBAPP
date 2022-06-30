@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get("/list", async (req, res, next) => {
   try {
-    const result = await PrescriptionPrice.findAll();
+    const result = await PrescriptionPrice.findOne();
 
     return res.status(200).json(result);
   } catch (e) {

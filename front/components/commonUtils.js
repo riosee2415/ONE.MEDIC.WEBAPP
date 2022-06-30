@@ -3,7 +3,7 @@
 // import "firebase/storage";
 
 export const numberWithCommas = (x) => {
-  return Number(x.replaceAll(",", "")).toLocaleString();
+  return x.toLocaleString("ko-KR");
 };
 
 export const emptyCheck = (value) => {

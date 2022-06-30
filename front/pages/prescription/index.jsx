@@ -154,15 +154,19 @@ const Prescription = ({}) => {
     setVolumnSelectArr(volumnArr);
   }, [router.query]);
 
+  console.log(price.price);
+  console.log(packSelect);
+
   // 팩 가격
   useEffect(() => {
     if (price) {
-      setPackTotalPrice(parseInt(packSelect) * price[0].price);
+      setPackTotalPrice(parseInt(packSelect) * price.price);
     }
   }, [price, packSelect]);
 
   // 약재 선택시 실행되는 effect
   // 선택된 전체 약재 가격 & 선택된 전체 약재 용량
+
   useEffect(() => {
     if (userMaterials) {
       setMaterialArr(userMaterials.map((data) => data));
@@ -382,6 +386,7 @@ const Prescription = ({}) => {
               minHeight={`calc(100vh - 170px)`}
               ju={`flex-start`}
             >
+              {/* CHUB / PACK / VOLUMN SELECT AREA */}
               <Wrapper
                 padding={`20px`}
                 shadow={Theme.shadow_C}
@@ -404,6 +409,9 @@ const Prescription = ({}) => {
                   </Text>
                 </Wrapper>
               </Wrapper>
+              {/* CHUB / PACK / VOLUMN SELECT AREA END */}
+
+              {/* SELECT MATERIAL VIEW AREA */}
               <Wrapper padding={`20px`} shadow={Theme.shadow_C} radius={`20px`}>
                 <Wrapper
                   dr={`row`}
@@ -471,7 +479,7 @@ const Prescription = ({}) => {
                             color={`${Theme.black_C}`}
                             fontSize={width < 600 ? `16px` : `18px`}
                           >
-                            {numberWithCommas(String(data.price * data.qnt))}원
+                            {numberWithCommas(data.price * data.qnt)}원
                           </Text>
                         </Wrapper>
                       </ListWrapper>
@@ -479,7 +487,10 @@ const Prescription = ({}) => {
                   })}
                 </Wrapper>
               </Wrapper>
+              {/* SELECT MATERIAL VIEW AREA END */}
             </Wrapper>
+
+            {/* FOOTER AREA */}
             <Wrapper
               height={`50px`}
               position={`sticky`}
@@ -500,12 +511,16 @@ const Prescription = ({}) => {
                 fontSize={width < 800 ? `15px` : `20px`}
               >
                 <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                <Text fontWeight={`bold`}>
-                  {numberWithCommas(
-                    String(materialTotalPrice + packTotalPrice)
-                  )}
-                  원
-                </Text>
+                {packTotalPrice &&
+                  (materialTotalPrice ? (
+                    <Text fontWeight={`bold`}>
+                      {numberWithCommas(materialTotalPrice + packTotalPrice)}원
+                    </Text>
+                  ) : (
+                    <Text fontWeight={`bold`}>
+                      {numberWithCommas(packTotalPrice)}원
+                    </Text>
+                  ))}
               </Wrapper>
               <CommonButton
                 shadow={`0`}
@@ -517,10 +532,11 @@ const Prescription = ({}) => {
                 주문하기
               </CommonButton>
             </Wrapper>
+            {/* FOOTER AREA END */}
           </RsWrapper>
         </WholeWrapper>
 
-        {/* KindOf Modal */}
+        {/* CHUB / PACK / VOLUMN UPDATE Modal */}
         <SelectModal
           visible={isModalVisible1}
           onCancel={() => modalToggleHandler1()}
@@ -588,25 +604,27 @@ const Prescription = ({}) => {
                   <Text fontWeight={`600`} color={Theme.grey_C}>
                     총 용량
                   </Text>
-                  <Text fontSize={`18px`}>
-                    {numberWithCommas(String(materialTotalUnit))}
-                    <SpanText fontSize={`16px`} color={Theme.grey_C}>
-                      g
-                    </SpanText>
-                  </Text>
+                  {materialTotalUnit && (
+                    <Text fontSize={`18px`}>
+                      {numberWithCommas(materialTotalUnit)}
+                      <SpanText fontSize={`16px`} color={Theme.grey_C}>
+                        g
+                      </SpanText>
+                    </Text>
+                  )}
                 </Wrapper>
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text fontWeight={`600`} color={Theme.grey_C}>
                     약제비
                   </Text>
-                  <Text fontSize={`18px`}>
-                    {numberWithCommas(
-                      String(materialTotalPrice + packTotalPrice)
-                    )}
-                    <SpanText fontSize={`16px`} color={Theme.grey_C}>
-                      원
-                    </SpanText>
-                  </Text>
+                  {materialTotalPrice && packTotalPrice && (
+                    <Text fontSize={`18px`}>
+                      {numberWithCommas(materialTotalPrice + packTotalPrice)}
+                      <SpanText fontSize={`16px`} color={Theme.grey_C}>
+                        원
+                      </SpanText>
+                    </Text>
+                  )}
                 </Wrapper>
               </Wrapper>
               <Wrapper al={`flex-end`} margin={`10px 0 0 0`}>
@@ -623,7 +641,7 @@ const Prescription = ({}) => {
           </CustomForm>
         </SelectModal>
 
-        {/* Update Modal */}
+        {/* MATERIAL UPDATE MODAL */}
         <DeleteModal
           width={380}
           visible={isModalVisible3}
@@ -680,7 +698,7 @@ const Prescription = ({}) => {
           </Wrapper>
         </DeleteModal>
 
-        {/* Delete Modal */}
+        {/* DELETE MODAL */}
         <DeleteModal
           width={380}
           visible={isModalVisible2}

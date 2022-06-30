@@ -778,10 +778,12 @@ const Index = ({}) => {
                 >
                   <Wrapper dr={`row`} width={`auto`}>
                     <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                    <Text fontWeight={`bold`}>
-                      {payment}
-                      {/* {numberWithCommas(String(payment))} */}
-                    </Text>
+                    {payment && (
+                      <Text fontWeight={`bold`}>
+                        {numberWithCommas(payment)}
+                        {/* {numberWithCommas(String(payment))} */}
+                      </Text>
+                    )}
                   </Wrapper>
                   <Wrapper width={`20px`}>
                     <Image

@@ -236,7 +236,7 @@ const Material = () => {
 
   const priceModalToggle = useCallback(() => {
     priceForm.setFieldsValue({
-      price: price && price.length === 0 ? 0 : price[0].price,
+      price: price ? price.price : 0,
     });
 
     dispatch({
@@ -391,13 +391,12 @@ const Material = () => {
         </SearchForm>
         <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
           <Wrapper width={`30%`} al={`flex-start`}>
-            <Text>
-              1팩 가격 :&nbsp;
-              {numberWithCommas(
-                String(price && (price.length === 0 ? 0 : price[0].price))
-              )}
-              원
-            </Text>
+            {price && (
+              <Text>
+                1팩 가격 :&nbsp;
+                {numberWithCommas(price.price)}원
+              </Text>
+            )}
           </Wrapper>
           <Wrapper width={`70%`} dr={`row`} ju={`flex-end`}>
             <ModalBtn

@@ -255,13 +255,11 @@ const Index = ({}) => {
                   <Wrapper width={`calc(100% - 100px)`} fontSize={`18px`}>
                     <Wrapper dr={`row`} ju={`space-between`}>
                       <Text fontWeight={`700`}>신용카드</Text>
-                      <Text fontWeight={`700`}>
-                        {numberWithCommas(
-                          String(
-                            paymentDetail && paymentDetail.totalPrice - 5000
-                          )
-                        )}
-                      </Text>
+                      {paymentDetail && (
+                        <Text fontWeight={`700`}>
+                          {numberWithCommas(paymentDetail.totalPrice - 5000)}
+                        </Text>
+                      )}
                     </Wrapper>
                     <Wrapper dr={`row`} ju={`space-between`}>
                       <Text fontWeight={`700`}>배송비</Text>
@@ -269,18 +267,17 @@ const Index = ({}) => {
                     </Wrapper>
                   </Wrapper>
                 </Wrapper>
-                <Wrapper
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  fontSize={`18px`}
-                  fontWeight={`700`}
-                  al={`flex-end`}
-                  padding={`15px 0 0`}
-                >
-                  {numberWithCommas(
-                    String(paymentDetail && paymentDetail.totalPrice)
-                  )}
-                  원
-                </Wrapper>
+                {paymentDetail && (
+                  <Wrapper
+                    borderTop={`1px solid ${Theme.grey2_C}`}
+                    fontSize={`18px`}
+                    fontWeight={`700`}
+                    al={`flex-end`}
+                    padding={`15px 0 0`}
+                  >
+                    {numberWithCommas(paymentDetail.totalPrice)}원
+                  </Wrapper>
+                )}
               </Wrapper>
 
               <Wrapper
