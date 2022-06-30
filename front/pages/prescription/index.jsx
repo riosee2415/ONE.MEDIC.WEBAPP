@@ -154,9 +154,6 @@ const Prescription = ({}) => {
     setVolumnSelectArr(volumnArr);
   }, [router.query]);
 
-  console.log(price.price);
-  console.log(packSelect);
-
   // 팩 가격
   useEffect(() => {
     if (price) {
@@ -444,6 +441,7 @@ const Prescription = ({}) => {
                   {userMaterials.map((data) => {
                     return (
                       <ListWrapper
+                        key={data.id}
                         onClick={() => selectMaterialHandler(data)}
                         bgColor={
                           selectMaterial &&
