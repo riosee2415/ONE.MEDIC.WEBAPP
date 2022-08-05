@@ -88,6 +88,12 @@ module.exports = class Payment extends Model {
           allowNull: true,
         },
 
+        deliveryStatus: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
+
         payInfo: {
           type: DataTypes.STRING(100), // 결제 수단
           allowNull: true,

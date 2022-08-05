@@ -94,6 +94,12 @@ module.exports = class PrescriptionPaymentRequest extends Model {
           allowNull: true,
         },
 
+        deliveryStatus: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
+
         totalPrice: {
           type: DataTypes.INTEGER,
           allowNull: false, // 필수
