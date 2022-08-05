@@ -61,7 +61,7 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { useMaterialData } = req.body;
+  const { useMaterialData, totalPrice } = req.body;
 
   if (!Array.isArray(useMaterialData)) {
     return res.status(400).send("잘못된 요청입니다.");
@@ -69,6 +69,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
   try {
     const pprResult = await PrescriptionPaymentRequest.create({
       UserId: req.user.id,
+      totalPrice,
     });
 
     await Promise.all(

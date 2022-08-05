@@ -300,9 +300,10 @@ const Prescription = ({}) => {
       type: PPR_CREATE_REQUEST,
       data: {
         useMaterialData: userMaterials,
+        totalPrice: materialTotalPrice + packTotalPrice,
       },
     });
-  }, [userMaterials]);
+  }, [userMaterials, materialTotalPrice, packTotalPrice]);
 
   ////// DATAVIEW //////
 
