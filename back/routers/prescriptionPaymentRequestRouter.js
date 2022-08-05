@@ -305,9 +305,12 @@ router.patch("/address/update", isLoggedIn, async (req, res, next) => {
     `;
 
   try {
+    const result = await models.sequelize.query(udpateQuery);
+
+    return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
-    res.status(400).send("배송정보를 저장할수 없습니다.");
+    return res.status(400).send("배송정보를 저장할수 없습니다.");
   }
 });
 
