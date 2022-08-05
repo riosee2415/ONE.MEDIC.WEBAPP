@@ -132,6 +132,12 @@ router.get("/detail/:paymentId", async (req, res, next) => {
      WHERE  p.id = ${paymentId}
   `;
 
+  const forDeliveryFindQuery = `
+  SELECT  *
+    FROM  payment
+   WHERE  id = ${paymentId}
+  `;
+
   const paymentQuery = `
   SELECT  p.id,
           p.productName,
@@ -183,6 +189,40 @@ router.get("/detail/:paymentId", async (req, res, next) => {
     if (exPayment[0].length === 0) {
       return res.status(400).send("존재하지 않는 주문입니다.");
     }
+
+    const findResult = await models.sequelize.query(forDeliveryFindQuery);
+
+    let newCom = "";
+
+    if (findResult[0][0].deliveryCompany === "CJ대한통운") {
+      newCom = "04";
+    } else if (findResult[0][0].deliveryCompany === "한진택배") {
+      newCom = "05";
+    } else if (findResult[0][0].deliveryCompany === "로젠택배") {
+      newCom = "06";
+    } else if (findResult[0][0].deliveryCompany === "롯데택배") {
+      newCom = "08";
+    } else if (findResult[0][0].deliveryCompany === "경동택배") {
+      newCom = "23";
+    }
+
+    const value = await axios({
+      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${findResult[0][0].deliveryNo}`,
+      method: "get",
+    });
+
+    if (!value.data.level) {
+      return res.status(401).send(`${value.data.msg}`);
+    }
+
+    const updateQuery = `
+    UPDATE  payment
+       SET  deliveryStatus = ${value.data.level},
+            updatedAt = now()
+     WHERE  id = ${paymentId}
+    `;
+
+    const deliveryResult = await models.sequelize.query(updateQuery);
 
     const payment = await models.sequelize.query(paymentQuery);
     const paymentRequest = await models.sequelize.query(paymentRequestQuery);
@@ -280,10 +320,34 @@ router.patch("/delivery/update", async (req, res, next) => {
   const { deliveryCompany, deliveryNo, paymentId } = req.body;
 
   try {
+    let newCom = "";
+
+    if (deliveryCompany === "CJ대한통운") {
+      newCom = "04";
+    } else if (deliveryCompany === "한진택배") {
+      newCom = "05";
+    } else if (deliveryCompany === "로젠택배") {
+      newCom = "06";
+    } else if (deliveryCompany === "롯데택배") {
+      newCom = "08";
+    } else if (deliveryCompany === "경동택배") {
+      newCom = "23";
+    }
+
+    const value = await axios({
+      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${deliveryNo}`,
+      method: "get",
+    });
+
+    if (!value.data.level) {
+      return res.status(401).send(`${value.data.msg}`);
+    }
+
     const result = await Payment.update(
       {
         deliveryCompany,
         deliveryNo,
+        deliveryStatus: value.data.level,
       },
       {
         where: {
@@ -516,4 +580,61 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.post("/allDeliveryUpdate", isAdminCheck, async (req, res, next) => {
+  const allPaymentQuery = `
+  SELECT  *
+    FROM  payment
+   WHERE  deliveryStatus != 6
+     AND	deliveryNo IS NOT NULL
+     AND	deliveryCompany IS NOT NULL
+  `;
+  try {
+    const payments = await models.sequelize.query(allPaymentQuery);
+
+    if (payments[0].length === 0) {
+      return res.status(401).send("조회할 데이터가 존재하지 않습니다.");
+    }
+
+    Promise.all(
+      payments[0].map(async (item) => {
+        let newCom = "";
+
+        if (item.deliveryCompany === "CJ대한통운") {
+          newCom = "04";
+        } else if (item.deliveryCompany === "한진택배") {
+          newCom = "05";
+        } else if (item.deliveryCompany === "로젠택배") {
+          newCom = "06";
+        } else if (item.deliveryCompany === "롯데택배") {
+          newCom = "08";
+        } else if (item.deliveryCompany === "경동택배") {
+          newCom = "23";
+        }
+
+        const value = await axios({
+          url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${item.deliveryNo}`,
+          method: "get",
+        });
+
+        if (!value.data.level) {
+          return res.status(401).send(`${value.data.msg}`);
+        }
+
+        const updateQuery = `
+        UPDATE  payment
+           SET  deliveryStatus = ${value.data.level},
+                updatedAt = now()
+         WHERE  id = ${item.id}
+        `;
+
+        const updateResult = await models.sequelize.query(updateQuery);
+      })
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("배송정보를 조회할 수 없습니다.");
+  }
+});
 module.exports = router;
