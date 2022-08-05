@@ -2,6 +2,7 @@ import produce from "../util/produce";
 
 export const initialState = {
   pprs: null,
+  pprId: null,
 
   unitModal: false,
   refuseModal: false,
@@ -13,6 +14,10 @@ export const initialState = {
   st_pprListLoading: false,
   st_pprListDone: false,
   st_pprListError: null,
+  //
+  st_pprCreateLoading: false, // 생성하기
+  st_pprCreateDone: false,
+  st_pprCreateError: null,
   //
   st_pprCompleteLoading: false,
   st_pprCompleteDone: false,
@@ -30,6 +35,10 @@ export const initialState = {
 export const PPR_LIST_REQUEST = "PPR_LIST_REQUEST";
 export const PPR_LIST_SUCCESS = "PPR_LIST_SUCCESS";
 export const PPR_LIST_FAILURE = "PPR_LIST_FAILURE";
+
+export const PPR_CREATE_REQUEST = "PPR_CREATE_REQUEST";
+export const PPR_CREATE_SUCCESS = "PPR_CREATE_SUCCESS";
+export const PPR_CREATE_FAILURE = "PPR_CREATE_FAILURE";
 
 export const PPR_COMPLETE_REQUEST = "PPR_COMPLETE_REQUEST";
 export const PPR_COMPLETE_SUCCESS = "PPR_COMPLETE_SUCCESS";
@@ -64,15 +73,33 @@ const reducer = (state = initialState, action) =>
         draft.st_pprListError = null;
         break;
       case PPR_LIST_SUCCESS:
-        draft.st_pprListLoading = true;
-        draft.st_pprListDone = false;
+        draft.st_pprListLoading = false;
+        draft.st_pprListDone = true;
         draft.st_pprListError = null;
         draft.pprs = action.data;
         break;
       case PPR_LIST_FAILURE:
-        draft.st_pprListLoading = true;
+        draft.st_pprListLoading = false;
         draft.st_pprListDone = false;
         draft.st_pprListError = action.error;
+        break;
+
+      ////////////////////
+      case PPR_CREATE_REQUEST:
+        draft.st_pprCreateLoading = true;
+        draft.st_pprCreateDone = false;
+        draft.st_pprCreateError = null;
+        break;
+      case PPR_CREATE_SUCCESS:
+        draft.st_pprCreateLoading = false;
+        draft.st_pprCreateDone = true;
+        draft.st_pprCreateError = null;
+        draft.pprId = action.data.pprId;
+        break;
+      case PPR_CREATE_FAILURE:
+        draft.st_pprCreateLoading = false;
+        draft.st_pprCreateDone = false;
+        draft.st_pprCreateError = action.error;
         break;
 
       ////////////////////

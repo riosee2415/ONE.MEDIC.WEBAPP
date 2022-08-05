@@ -96,13 +96,13 @@ module.exports = class PrescriptionPaymentRequest extends Model {
 
         deliveryStatus: {
           type: DataTypes.INTEGER,
-          allowNull: false,
+          allowNull: false, // 필수
           defaultValue: 0,
         },
 
         totalPrice: {
           type: DataTypes.INTEGER,
-          allowNull: false, // 필수
+          allowNull: true,
         },
       },
       {

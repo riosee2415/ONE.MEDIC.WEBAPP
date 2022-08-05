@@ -75,8 +75,10 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
       useMaterialData.map(
         async (data) =>
           await UseMaterial.create({
+            name: data.name,
             qnt: parseInt(data.qnt),
             unit: data.unit,
+            buyPrice: parseInt(data.price),
             MaterialId: parseInt(data.id),
             PrescriptionPaymentRequestId: parseInt(pprResult.id),
           })

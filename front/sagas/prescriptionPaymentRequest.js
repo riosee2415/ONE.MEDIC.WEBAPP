@@ -5,6 +5,10 @@ import {
   PPR_LIST_SUCCESS,
   PPR_LIST_FAILURE,
   //
+  PPR_CREATE_REQUEST,
+  PPR_CREATE_SUCCESS,
+  PPR_CREATE_FAILURE,
+  //
   PPR_COMPLETE_REQUEST,
   PPR_COMPLETE_SUCCESS,
   PPR_COMPLETE_FAILURE,
@@ -38,6 +42,33 @@ function* pprList(action) {
     console.error(err);
     yield put({
       type: PPR_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function pprCreateAPI(data) {
+  return await axios.post(`/api/prescriptionPayment/create`, data);
+}
+function* pprCreate(action) {
+  try {
+    const result = yield call(pprCreateAPI, action.data);
+
+    yield put({
+      type: PPR_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PPR_CREATE_FAILURE,
       error: err.response.data,
     });
   }
@@ -140,6 +171,10 @@ function* watchPprList() {
   yield takeLatest(PPR_LIST_REQUEST, pprList);
 }
 
+function* watchPprCreate() {
+  yield takeLatest(PPR_CREATE_REQUEST, pprCreate);
+}
+
 function* watchPprIsComplete() {
   yield takeLatest(PPR_COMPLETE_REQUEST, pprIsComplete);
 }
@@ -156,6 +191,7 @@ function* watchPprDelivery() {
 export default function* pprSaga() {
   yield all([
     fork(watchPprList),
+    fork(watchPprCreate),
     fork(watchPprIsComplete),
     fork(watchPprIsRefuse),
     fork(watchPprDelivery),

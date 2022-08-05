@@ -28,6 +28,7 @@ import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import { SEARCH_LIST_REQUEST } from "../../reducers/search";
 import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
 import { MATERIAL_USER_ADD } from "../../reducers/material";
+import { PPR_CREATE_REQUEST } from "../../reducers/prescriptionPaymentRequest";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -106,6 +107,9 @@ const Prescription = ({}) => {
   );
   const { userMaterials } = useSelector((state) => state.material);
   const { price } = useSelector((state) => state.prescriptionPrice);
+  const { pprId, st_pprCreateDone, st_pprCreateError } = useSelector(
+    (state) => state.prescriptionPaymentRequest
+  );
 
   ////// HOOKS //////
   const router = useRouter();
@@ -183,6 +187,19 @@ const Prescription = ({}) => {
       );
     }
   }, [userMaterials]);
+
+  // 주문하기
+
+  useEffect(() => {
+    if (st_pprCreateDone && pprId) {
+      router.push(`/deliveryInfo/${pprId}?type=ppr`);
+    }
+  }, [st_pprCreateDone, pprId]);
+  useEffect(() => {
+    if (st_pprCreateError) {
+      return message.error(st_pprCreateError);
+    }
+  }, [st_pprCreateError]);
 
   ////// TOGGLE //////
 
@@ -276,6 +293,16 @@ const Prescription = ({}) => {
     },
     [userMaterials, selectMaterial, isModalVisible3]
   );
+
+  // 주문하기
+  const paymentCreateHandler = useCallback(() => {
+    dispatch({
+      type: PPR_CREATE_REQUEST,
+      data: {
+        useMaterialData: userMaterials,
+      },
+    });
+  }, [userMaterials]);
 
   ////// DATAVIEW //////
 
@@ -526,6 +553,7 @@ const Prescription = ({}) => {
                 height={`100%`}
                 radius={`0`}
                 cursor={`pointer`}
+                onClick={paymentCreateHandler}
               >
                 주문하기
               </CommonButton>
