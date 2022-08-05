@@ -301,7 +301,7 @@ router.patch("/address/update", isLoggedIn, async (req, res, next) => {
 		        sendDetailAddress = ${sendDetailAddress},
 		        deliveryMessage = ${deliveryMessage},
 		        deliveryRequest = ${deliveryRequest}
-     WHERE  id = ${id};
+     WHERE  id = ${id}
     `;
 
   try {
