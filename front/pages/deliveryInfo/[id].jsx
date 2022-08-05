@@ -42,6 +42,7 @@ import {
 } from "../../reducers/address";
 import useInput from "../../hooks/useInput";
 import { numberWithCommas } from "../../components/commonUtils";
+import { PPR_DETAIL_REQUEST } from "../../reducers/prescriptionPaymentRequest";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -123,6 +124,12 @@ const Index = ({}) => {
     st_paymentDeliveryError,
   } = useSelector((state) => state.paymentRequest);
 
+  const {
+    pprDetail,
+    //
+    st_pprDetailError,
+  } = useSelector((state) => state.prescriptionPaymentRequest);
+
   ////// HOOKS //////
   const router = useRouter();
 
@@ -153,15 +160,13 @@ const Index = ({}) => {
       });
     } else {
       dispatch({
-        type: PAYMENT_DETAIL_REQUEST,
+        type: PPR_DETAIL_REQUEST,
         data: {
-          paymentId: router.query.id,
+          pprId: router.query.id,
         },
       });
     }
   }, [router.query]);
-
-  console.log(paymentDetail);
 
   useEffect(() => {
     if (paymentDetail) {
@@ -173,6 +178,12 @@ const Index = ({}) => {
       setPayment(price);
     }
   }, [paymentDetail]);
+
+  useEffect(() => {
+    if (pprDetail) {
+      setPayment(pprDetail.totalPrice);
+    }
+  }, [pprDetail]);
 
   useEffect(() => {
     if (st_paymentDeliveryDone) {
@@ -198,6 +209,12 @@ const Index = ({}) => {
       });
     }
   }, [searchInput.value]);
+
+  useEffect(() => {
+    if (st_pprDetailError) {
+      return message.error(st_pprDetailError);
+    }
+  }, [st_pprDetailError]);
 
   ////// TOGGLE //////
 

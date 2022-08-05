@@ -102,7 +102,7 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
 		      um.qnt,
 		      um.unit,
 		      um.PrescriptionPaymentRequestId,
-		      um.MaterialId,
+		      um.MaterialId
     FROM  useMaterial um
    WHERE  1 = 1
      AND  um.PrescriptionPaymentRequestId = ${pprId}
