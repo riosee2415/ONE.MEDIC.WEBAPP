@@ -5,6 +5,10 @@ import {
   PPR_LIST_SUCCESS,
   PPR_LIST_FAILURE,
   //
+  PPR_DETAIL_REQUEST,
+  PPR_DETAIL_SUCCESS,
+  PPR_DETAIL_FAILURE,
+  //
   PPR_CREATE_REQUEST,
   PPR_CREATE_SUCCESS,
   PPR_CREATE_FAILURE,
@@ -42,6 +46,33 @@ function* pprList(action) {
     console.error(err);
     yield put({
       type: PPR_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function pprDetailAPI(data) {
+  return await axios.post(`/api/prescriptionPayment/detail`, data);
+}
+function* pprDetail(action) {
+  try {
+    const result = yield call(pprDetailAPI, action.data);
+
+    yield put({
+      type: PPR_DETAIL_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PPR_DETAIL_FAILURE,
       error: err.response.data,
     });
   }
@@ -171,6 +202,10 @@ function* watchPprList() {
   yield takeLatest(PPR_LIST_REQUEST, pprList);
 }
 
+function* watchPprDetail() {
+  yield takeLatest(PPR_DETAIL_REQUEST, pprDetail);
+}
+
 function* watchPprCreate() {
   yield takeLatest(PPR_CREATE_REQUEST, pprCreate);
 }
@@ -191,6 +226,7 @@ function* watchPprDelivery() {
 export default function* pprSaga() {
   yield all([
     fork(watchPprList),
+    fork(watchPprDetail),
     fork(watchPprCreate),
     fork(watchPprIsComplete),
     fork(watchPprIsRefuse),

@@ -2,6 +2,7 @@ import produce from "../util/produce";
 
 export const initialState = {
   pprs: null,
+  pprDetail: null,
   pprId: null,
 
   unitModal: false,
@@ -14,6 +15,10 @@ export const initialState = {
   st_pprListLoading: false,
   st_pprListDone: false,
   st_pprListError: null,
+  //
+  st_pprDetailLoading: false, // 상세정보
+  st_pprDetailDone: false,
+  st_pprDetailError: null,
   //
   st_pprCreateLoading: false, // 생성하기
   st_pprCreateDone: false,
@@ -39,6 +44,10 @@ export const PPR_LIST_FAILURE = "PPR_LIST_FAILURE";
 export const PPR_CREATE_REQUEST = "PPR_CREATE_REQUEST";
 export const PPR_CREATE_SUCCESS = "PPR_CREATE_SUCCESS";
 export const PPR_CREATE_FAILURE = "PPR_CREATE_FAILURE";
+
+export const PPR_DETAIL_REQUEST = "PPR_DETAIL_REQUEST";
+export const PPR_DETAIL_SUCCESS = "PPR_DETAIL_SUCCESS";
+export const PPR_DETAIL_FAILURE = "PPR_DETAIL_FAILURE";
 
 export const PPR_COMPLETE_REQUEST = "PPR_COMPLETE_REQUEST";
 export const PPR_COMPLETE_SUCCESS = "PPR_COMPLETE_SUCCESS";
@@ -100,6 +109,24 @@ const reducer = (state = initialState, action) =>
         draft.st_pprCreateLoading = false;
         draft.st_pprCreateDone = false;
         draft.st_pprCreateError = action.error;
+        break;
+
+      ////////////////////
+      case PPR_DETAIL_REQUEST:
+        draft.st_pprDetailLoading = true;
+        draft.st_pprDetailDone = false;
+        draft.st_pprDetailError = null;
+        break;
+      case PPR_DETAIL_SUCCESS:
+        draft.st_pprDetailLoading = false;
+        draft.st_pprDetailDone = true;
+        draft.st_pprDetailError = null;
+        draft.pprDetail = action.data;
+        break;
+      case PPR_DETAIL_FAILURE:
+        draft.st_pprDetailLoading = false;
+        draft.st_pprDetailDone = false;
+        draft.st_pprDetailError = action.error;
         break;
 
       ////////////////////

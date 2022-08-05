@@ -60,6 +60,65 @@ router.get("/list", async (req, res, next) => {
   }
 });
 
+router.post("/detail", isLoggedIn, async (req, res, next) => {
+  const { pprId } = req.body;
+
+  const pprQuery = `
+  SELECT  ppr.id,
+          ppr.completedAt,
+          ppr.deliveryNo,
+          ppr.receiveUser,
+          ppr.receiveMobile,
+          ppr.receiveAddress,
+          ppr.receiveDetailAddress,
+          ppr.sendUser,
+          ppr.sendMobile,
+          ppr.sendAddress,
+          ppr.sendDetailAddress,
+          ppr.deliveryCompany,
+          DATE_FORMAT(ppr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
+          DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+          ppr.createdAt,
+          u.username,
+          u.email,
+          u.mobile,
+          u.nickname,
+          u.companyName,
+          u.companyNo,
+          ppr.totalPrice,
+          FORMAT(ppr.totalPrice, 0)			                  					AS viewTotalPrice
+    FROM  prescriptionPaymentRequest                                ppr
+    JOIN  users                                                     u
+      ON  u.id = ppr.UserId
+   WHERE  1 = 1
+     AND  ppr.id = ${pprId}
+   ORDER  BY  ppr.createdAt DESC
+  `;
+
+  const materialQuery = `
+  SELECT  um.id,
+		      um.name,
+		      um.buyPrice,
+		      um.qnt,
+		      um.unit,
+		      um.PrescriptionPaymentRequestId,
+		      um.MaterialId,
+    FROM  useMaterial um
+   WHERE  1 = 1
+     AND  um.PrescriptionPaymentRequestId = ${pprId}
+  `;
+
+  try {
+    const pprDatum = await models.sequelize.query(pprQuery);
+    const materialDatum = await models.sequelize.query(materialQuery);
+
+    return res.status(200).json({ ...pprDatum[0][0], materialDatum });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("주문 상세정보를 불러올 수 없습니다.");
+  }
+});
+
 router.post("/create", isLoggedIn, async (req, res, next) => {
   const { useMaterialData, totalPrice } = req.body;
 

@@ -144,7 +144,14 @@ const Index = ({}) => {
   }, []);
 
   useEffect(() => {
-    if (router.query) {
+    if (router.query.type === "payment") {
+      dispatch({
+        type: PAYMENT_DETAIL_REQUEST,
+        data: {
+          paymentId: router.query.id,
+        },
+      });
+    } else {
       dispatch({
         type: PAYMENT_DETAIL_REQUEST,
         data: {
