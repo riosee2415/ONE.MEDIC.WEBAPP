@@ -133,7 +133,9 @@ router.get("/detail/:paymentId", async (req, res, next) => {
   `;
 
   const forDeliveryFindQuery = `
-  SELECT  *
+  SELECT  id,
+          deliveryCompany,
+          deliveryNo
     FROM  payment
    WHERE  id = ${paymentId}
   `;
@@ -192,37 +194,39 @@ router.get("/detail/:paymentId", async (req, res, next) => {
 
     const findResult = await models.sequelize.query(forDeliveryFindQuery);
 
-    let newCom = "";
+    if (findResult[0][0].deliveryNo !== null) {
+      let newCom = "";
 
-    if (findResult[0][0].deliveryCompany === "CJ대한통운") {
-      newCom = "04";
-    } else if (findResult[0][0].deliveryCompany === "한진택배") {
-      newCom = "05";
-    } else if (findResult[0][0].deliveryCompany === "로젠택배") {
-      newCom = "06";
-    } else if (findResult[0][0].deliveryCompany === "롯데택배") {
-      newCom = "08";
-    } else if (findResult[0][0].deliveryCompany === "경동택배") {
-      newCom = "23";
+      if (findResult[0][0].deliveryCompany === "CJ대한통운") {
+        newCom = "04";
+      } else if (findResult[0][0].deliveryCompany === "한진택배") {
+        newCom = "05";
+      } else if (findResult[0][0].deliveryCompany === "로젠택배") {
+        newCom = "06";
+      } else if (findResult[0][0].deliveryCompany === "롯데택배") {
+        newCom = "08";
+      } else if (findResult[0][0].deliveryCompany === "경동택배") {
+        newCom = "23";
+      }
+
+      const value = await axios({
+        url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${findResult[0][0].deliveryNo}`,
+        method: "get",
+      });
+
+      if (!value.data.level) {
+        return res.status(401).send(`${value.data.msg}`);
+      }
+
+      const updateQuery = `
+      UPDATE  payment
+         SET  deliveryStatus = ${value.data.level},
+              updatedAt = now()
+       WHERE  id = ${paymentId}
+      `;
+
+      const deliveryResult = await models.sequelize.query(updateQuery);
     }
-
-    const value = await axios({
-      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${findResult[0][0].deliveryNo}`,
-      method: "get",
-    });
-
-    if (!value.data.level) {
-      return res.status(401).send(`${value.data.msg}`);
-    }
-
-    const updateQuery = `
-    UPDATE  payment
-       SET  deliveryStatus = ${value.data.level},
-            updatedAt = now()
-     WHERE  id = ${paymentId}
-    `;
-
-    const deliveryResult = await models.sequelize.query(updateQuery);
 
     const payment = await models.sequelize.query(paymentQuery);
     const paymentRequest = await models.sequelize.query(paymentRequestQuery);
@@ -578,7 +582,9 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
 
 router.post("/allDeliveryUpdate", isAdminCheck, async (req, res, next) => {
   const allPaymentQuery = `
-  SELECT  *
+  SELECT  id,
+          deliveryNo,
+          deliveryCompany
     FROM  payment
    WHERE  deliveryStatus != 6
      AND	deliveryNo IS NOT NULL

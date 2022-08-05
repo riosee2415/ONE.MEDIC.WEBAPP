@@ -65,7 +65,9 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
   const { pprId } = req.body;
 
   const findPprDataQuery = `
-  SELECT  *
+  SELECT  id,
+          deliveryNo,
+          deliveryCompany
     FROM  prescriptionPaymentRequest
    WHERE  id = ${pprId}
   `;
@@ -118,37 +120,39 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
   try {
     const findResult = await models.sequelize.query(findPprDataQuery);
 
-    let newCom = "";
+    if (findResult[0][0].deliveryNo !== null) {
+      let newCom = "";
 
-    if (findResult[0][0].deliveryCompany === "CJ대한통운") {
-      newCom = "04";
-    } else if (findResult[0][0].deliveryCompany === "한진택배") {
-      newCom = "05";
-    } else if (findResult[0][0].deliveryCompany === "로젠택배") {
-      newCom = "06";
-    } else if (findResult[0][0].deliveryCompany === "롯데택배") {
-      newCom = "08";
-    } else if (findResult[0][0].deliveryCompany === "경동택배") {
-      newCom = "23";
+      if (findResult[0][0].deliveryCompany === "CJ대한통운") {
+        newCom = "04";
+      } else if (findResult[0][0].deliveryCompany === "한진택배") {
+        newCom = "05";
+      } else if (findResult[0][0].deliveryCompany === "로젠택배") {
+        newCom = "06";
+      } else if (findResult[0][0].deliveryCompany === "롯데택배") {
+        newCom = "08";
+      } else if (findResult[0][0].deliveryCompany === "경동택배") {
+        newCom = "23";
+      }
+
+      const value = await axios({
+        url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${findResult[0][0].deliveryNo}`,
+        method: "get",
+      });
+
+      if (!value.data.level) {
+        return res.status(401).send(`${value.data.msg}`);
+      }
+
+      const updateQuery = `
+      UPDATE  prescriptionPaymentRequest
+         SET  deliveryStatus = ${value.data.level},
+              updatedAt = now()
+       WHERE  id = ${pprId}
+      `;
+
+      const deliveryResult = await models.sequelize.query(updateQuery);
     }
-
-    const value = await axios({
-      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${findResult[0][0].deliveryNo}`,
-      method: "get",
-    });
-
-    if (!value.data.level) {
-      return res.status(401).send(`${value.data.msg}`);
-    }
-
-    const updateQuery = `
-    UPDATE  prescriptionPaymentRequest
-       SET  deliveryStatus = ${value.data.level},
-            updatedAt = now()
-     WHERE  id = ${pprId}
-    `;
-
-    const deliveryResult = await models.sequelize.query(updateQuery);
 
     const pprDatum = await models.sequelize.query(pprQuery);
     const materialDatum = await models.sequelize.query(materialQuery);
@@ -404,7 +408,9 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
 
 router.post("/allDeliveryUpdate", isAdminCheck, async (req, res, next) => {
   const allPrePaymentQuery = `
-  SELECT  *
+  SELECT  id,
+          deliveryNo,
+          deliveryCompany
     FROM  prescriptionPaymentRequest
    WHERE  deliveryStatus != 6
      AND	deliveryNo IS NOT NULL
