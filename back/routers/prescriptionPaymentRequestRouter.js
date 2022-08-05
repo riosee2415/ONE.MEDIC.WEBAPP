@@ -3,6 +3,7 @@ const isAdminCheck = require("../middlewares/isAdminCheck");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const isNanCheck = require("../middlewares/isNanCheck");
 const models = require("../models");
+const axios = require("axios");
 const { PrescriptionPaymentRequest, UseMaterial, User } = require("../models");
 
 const router = express.Router();
@@ -63,6 +64,12 @@ router.get("/list", async (req, res, next) => {
 router.post("/detail", isLoggedIn, async (req, res, next) => {
   const { pprId } = req.body;
 
+  const findPprDataQuery = `
+  SELECT  *
+    FROM  prescriptionPaymentRequest
+   WHERE  id = ${pprId}
+  `;
+
   const pprQuery = `
   SELECT  ppr.id,
           ppr.completedAt,
@@ -109,6 +116,40 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
   `;
 
   try {
+    const findResult = await models.sequelize.query(findPprDataQuery);
+
+    let newCom = "";
+
+    if (findResult[0][0].deliveryCompany === "CJ대한통운") {
+      newCom = "04";
+    } else if (findResult[0][0].deliveryCompany === "한진택배") {
+      newCom = "05";
+    } else if (findResult[0][0].deliveryCompany === "로젠택배") {
+      newCom = "06";
+    } else if (findResult[0][0].deliveryCompany === "롯데택배") {
+      newCom = "08";
+    } else if (findResult[0][0].deliveryCompany === "경동택배") {
+      newCom = "23";
+    }
+
+    const value = await axios({
+      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${findResult[0][0].deliveryNo}`,
+      method: "get",
+    });
+
+    if (!value.data.level) {
+      return res.status(401).send(`${value.data.msg}`);
+    }
+
+    const updateQuery = `
+    UPDATE  prescriptionPaymentRequest
+       SET  deliveryStatus = ${value.data.level},
+            updatedAt = now()
+     WHERE  id = ${pprId}
+    `;
+
+    const deliveryResult = await models.sequelize.query(updateQuery);
+
     const pprDatum = await models.sequelize.query(pprQuery);
     const materialDatum = await models.sequelize.query(materialQuery);
 
@@ -256,10 +297,34 @@ router.patch("/delivery/:pprId", isAdminCheck, async (req, res, next) => {
       }
     }
 
+    let newCom = "";
+
+    if (deliveryCompany === "CJ대한통운") {
+      newCom = "04";
+    } else if (deliveryCompany === "한진택배") {
+      newCom = "05";
+    } else if (deliveryCompany === "로젠택배") {
+      newCom = "06";
+    } else if (deliveryCompany === "롯데택배") {
+      newCom = "08";
+    } else if (deliveryCompany === "경동택배") {
+      newCom = "23";
+    }
+
+    const value = await axios({
+      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${deliveryNo}`,
+      method: "get",
+    });
+
+    if (!value.data.level) {
+      return res.status(401).send(`${value.data.msg}`);
+    }
+
     const result = await PrescriptionPaymentRequest.update(
       {
         deliveryNo,
         deliveryCompany,
+        deliveryStatus: value.data.level,
       },
       {
         where: {
@@ -294,6 +359,64 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
+router.post("/allDeliveryUpdate", isAdminCheck, async (req, res, next) => {
+  const allPrePaymentQuery = `
+  SELECT  *
+    FROM  prescriptionPaymentRequest
+   WHERE  deliveryStatus != 6
+     AND	deliveryNo IS NOT NULL
+     AND	deliveryCompany IS NOT NULL
+  `;
+  try {
+    const pprePayments = await models.sequelize.query(allPrePaymentQuery);
+
+    if (pprePayments[0].length === 0) {
+      return res.status(401).send("조회할 데이터가 존재하지 않습니다.");
+    }
+
+    Promise.all(
+      pprePayments[0].map(async (item) => {
+        let newCom = "";
+
+        if (item.deliveryCompany === "CJ대한통운") {
+          newCom = "04";
+        } else if (item.deliveryCompany === "한진택배") {
+          newCom = "05";
+        } else if (item.deliveryCompany === "로젠택배") {
+          newCom = "06";
+        } else if (item.deliveryCompany === "롯데택배") {
+          newCom = "08";
+        } else if (item.deliveryCompany === "경동택배") {
+          newCom = "23";
+        }
+
+        const value = await axios({
+          url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${item.deliveryNo}`,
+          method: "get",
+        });
+
+        if (!value.data.level) {
+          return res.status(401).send(`${value.data.msg}`);
+        }
+
+        const updateQuery = `
+        UPDATE  prescriptionPaymentRequest
+           SET  deliveryStatus = ${value.data.level},
+                updatedAt = now()
+         WHERE  id = ${item.id}
+        `;
+
+        const updateResult = await models.sequelize.query(updateQuery);
+      })
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("배송정보를 조회할 수 없습니다.");
   }
 });
 
