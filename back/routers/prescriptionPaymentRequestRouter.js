@@ -61,32 +61,14 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { userId, useMaterialData } = req.body;
-
-  if (isNanCheck(userId)) {
-    return res
-      .status(403)
-      .send("올바르지 않은 요청 입니다. 다시 시도해주세요.");
-  }
+  const { useMaterialData } = req.body;
 
   if (!Array.isArray(useMaterialData)) {
     return res.status(400).send("잘못된 요청입니다.");
   }
   try {
-    if (userId) {
-      const exUser = await User.findOne({
-        where: {
-          id: parseInt(userId),
-        },
-      });
-
-      if (!exUser) {
-        return res.status(400).send("회원이 없습니다.");
-      }
-    }
-
     const pprResult = await PrescriptionPaymentRequest.create({
-      UserId: parseInt(userId),
+      UserId: req.user.id,
     });
 
     await Promise.all(
@@ -95,13 +77,13 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
           await UseMaterial.create({
             qnt: parseInt(data.qnt),
             unit: data.unit,
-            MaterialId: parseInt(data.materialId),
+            MaterialId: parseInt(data.id),
             PrescriptionPaymentRequestId: parseInt(pprResult.id),
           })
       )
     );
 
-    return res.status(200).json({ result: true });
+    return res.status(200).json({ result: true, pprId: pprResult.id });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
