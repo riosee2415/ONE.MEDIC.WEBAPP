@@ -233,6 +233,43 @@ router.patch("/isRefuse/:pprId", isAdminCheck, async (req, res, next) => {
   }
 });
 
+router.patch("/address/update", isLoggedIn, async (req, res, next) => {
+  const {
+    id,
+    receiveUser,
+    receiveMobile,
+    receiveAddress,
+    receiveDetailAddress,
+    sendUser,
+    sendMobile,
+    sendAddress,
+    sendDetailAddress,
+    deliveryMessage,
+    deliveryRequest,
+  } = req.body;
+
+  const udpateQuery = `
+    UPDATE  prescriptionPaymentRequest 
+       SET  receiveUser = ${receiveUser},
+		        receiveMobile = ${receiveMobile},
+		        receiveAddress = ${receiveAddress},
+		        receiveDetailAddress = ${receiveDetailAddress},
+		        sendUser = ${sendUser},
+		        sendMobile = ${sendMobile},
+		        sendAddress = ${sendAddress},
+		        sendDetailAddress = ${sendDetailAddress},
+		        deliveryMessage = ${deliveryMessage},
+		        deliveryRequest = ${deliveryRequest}
+     WHERE  id = ${id};
+    `;
+
+  try {
+  } catch (e) {
+    console.error(e);
+    res.status(400).send("배송정보를 저장할수 없습니다.");
+  }
+});
+
 router.patch("/delivery/:pprId", isAdminCheck, async (req, res, next) => {
   const { pprId } = req.params;
   const { deliveryNo, deliveryCompany } = req.body;

@@ -227,10 +227,6 @@ router.get("/detail/:paymentId", async (req, res, next) => {
     const payment = await models.sequelize.query(paymentQuery);
     const paymentRequest = await models.sequelize.query(paymentRequestQuery);
 
-    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
-    console.log(payment);
-    console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
-
     const paymentLump = {
       ...payment[0][0],
       PaymentRequest: paymentRequest[0],
