@@ -24,6 +24,14 @@ import {
   PPR_DELIVERY_REQUEST,
   PPR_DELIVERY_SUCCESS,
   PPR_DELIVERY_FAILURE,
+  //
+  PPR_ISPAYMENT_REQUEST,
+  PPR_ISPAYMENT_SUCCESS,
+  PPR_ISPAYMENT_FAILURE,
+  //
+  PPR_ADDRESS_UPDATE_REQUEST,
+  PPR_ADDRESS_UPDATE_SUCCESS,
+  PPR_ADDRESS_UPDATE_FAILURE,
 } from "../reducers/prescriptionPaymentRequest";
 
 // ******************************************************************************************************************
@@ -198,6 +206,63 @@ function* pprDelivery(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function pprIsPaymentAPI(data) {
+  return await axios.patch(
+    `/api/prescriptionPayment/isPayment/${data.pprId}`,
+    data
+  );
+}
+function* pprIsPayment(action) {
+  try {
+    const result = yield call(pprIsPaymentAPI, action.data);
+
+    yield put({
+      type: PPR_ISPAYMENT_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PPR_ISPAYMENT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function pprAddressUpdateAPI(data) {
+  return await axios.patch(`/api/prescriptionPayment/address/update`, data);
+}
+function* pprAddressUpdate(action) {
+  try {
+    const result = yield call(pprAddressUpdateAPI, action.data);
+
+    yield put({
+      type: PPR_ADDRESS_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: PPR_ADDRESS_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 function* watchPprList() {
   yield takeLatest(PPR_LIST_REQUEST, pprList);
 }
@@ -222,6 +287,14 @@ function* watchPprDelivery() {
   yield takeLatest(PPR_DELIVERY_REQUEST, pprDelivery);
 }
 
+function* watchPprIsPayment() {
+  yield takeLatest(PPR_ISPAYMENT_REQUEST, pprIsPayment);
+}
+
+function* watchPprAddressUpdate() {
+  yield takeLatest(PPR_ADDRESS_UPDATE_REQUEST, pprAddressUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* pprSaga() {
   yield all([
@@ -231,6 +304,8 @@ export default function* pprSaga() {
     fork(watchPprIsComplete),
     fork(watchPprIsRefuse),
     fork(watchPprDelivery),
+    fork(watchPprIsPayment),
+    fork(watchPprAddressUpdate),
     //
   ]);
 }

@@ -35,6 +35,14 @@ export const initialState = {
   st_pprDeliveryLoading: false,
   st_pprDeliveryDone: false,
   st_pprDeliveryError: null,
+  //
+  st_pprIsPayMentLoading: false, // 결제완료
+  st_pprIsPayMentDone: false,
+  st_pprIsPayMentError: null,
+  //
+  st_pprAddressUpdateLoading: false, // 주소 업데이트
+  st_pprAddressUpdateDone: false,
+  st_pprAddressUpdateError: null,
 };
 
 export const PPR_LIST_REQUEST = "PPR_LIST_REQUEST";
@@ -60,6 +68,14 @@ export const PPR_REFUSE_FAILURE = "PPR_REFUSE_FAILURE";
 export const PPR_DELIVERY_REQUEST = "PPR_DELIVERY_REQUEST";
 export const PPR_DELIVERY_SUCCESS = "PPR_DELIVERY_SUCCESS";
 export const PPR_DELIVERY_FAILURE = "PPR_DELIVERY_FAILURE";
+
+export const PPR_ISPAYMENT_REQUEST = "PPR_ISPAYMENT_REQUEST";
+export const PPR_ISPAYMENT_SUCCESS = "PPR_ISPAYMENT_SUCCESS";
+export const PPR_ISPAYMENT_FAILURE = "PPR_ISPAYMENT_FAILURE";
+
+export const PPR_ADDRESS_UPDATE_REQUEST = "PPR_ADDRESS_UPDATE_REQUEST";
+export const PPR_ADDRESS_UPDATE_SUCCESS = "PPR_ADDRESS_UPDATE_SUCCESS";
+export const PPR_ADDRESS_UPDATE_FAILURE = "PPR_ADDRESS_UPDATE_FAILURE";
 
 export const UNIT_MODAL_TOGGLE = "UNIT_MODAL_TOGGLE";
 
@@ -181,6 +197,42 @@ const reducer = (state = initialState, action) =>
         draft.st_pprDeliveryLoading = false;
         draft.st_pprDeliveryDone = false;
         draft.st_pprDeliveryError = action.error;
+        break;
+
+      ////////////////////
+
+      case PPR_ISPAYMENT_REQUEST:
+        draft.st_pprIsPayMentLoading = true;
+        draft.st_pprIsPayMentDone = false;
+        draft.st_pprIsPayMentError = false;
+        break;
+      case PPR_ISPAYMENT_SUCCESS:
+        draft.st_pprIsPayMentLoading = false;
+        draft.st_pprIsPayMentDone = true;
+        draft.st_pprIsPayMentError = null;
+        break;
+      case PPR_ISPAYMENT_FAILURE:
+        draft.st_pprIsPayMentLoading = false;
+        draft.st_pprIsPayMentDone = false;
+        draft.st_pprIsPayMentError = action.error;
+        break;
+
+      ////////////////////
+
+      case PPR_ADDRESS_UPDATE_REQUEST:
+        draft.st_pprAddressUpdateLoading = true;
+        draft.st_pprAddressUpdateDone = false;
+        draft.st_pprAddressUpdateError = false;
+        break;
+      case PPR_ADDRESS_UPDATE_SUCCESS:
+        draft.st_pprAddressUpdateLoading = false;
+        draft.st_pprAddressUpdateDone = true;
+        draft.st_pprAddressUpdateError = null;
+        break;
+      case PPR_ADDRESS_UPDATE_FAILURE:
+        draft.st_pprAddressUpdateLoading = false;
+        draft.st_pprAddressUpdateDone = false;
+        draft.st_pprAddressUpdateError = action.error;
         break;
 
       ////////////////////

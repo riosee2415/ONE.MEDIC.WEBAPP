@@ -42,7 +42,10 @@ import {
 } from "../../reducers/address";
 import useInput from "../../hooks/useInput";
 import { numberWithCommas } from "../../components/commonUtils";
-import { PPR_DETAIL_REQUEST } from "../../reducers/prescriptionPaymentRequest";
+import {
+  PPR_ADDRESS_UPDATE_REQUEST,
+  PPR_DETAIL_REQUEST,
+} from "../../reducers/prescriptionPaymentRequest";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -128,6 +131,9 @@ const Index = ({}) => {
     pprDetail,
     //
     st_pprDetailError,
+    //
+    st_pprAddressUpdateDone,
+    st_pprAddressUpdateError,
   } = useSelector((state) => state.prescriptionPaymentRequest);
 
   ////// HOOKS //////
@@ -185,6 +191,7 @@ const Index = ({}) => {
     }
   }, [pprDetail]);
 
+  // 약속처방 - 배송정보저장
   useEffect(() => {
     if (st_paymentDeliveryDone) {
       return router.push(
@@ -198,6 +205,21 @@ const Index = ({}) => {
       return message.error(st_paymentDeliveryError);
     }
   }, [st_paymentDeliveryError]);
+
+  // 탕전처방 - 배송정보 저장
+  useEffect(() => {
+    if (st_pprAddressUpdateDone) {
+      return router.push(
+        `/payInfo/${router.query.id}?type=${router.query.type}`
+      );
+    }
+  }, [st_pprAddressUpdateDone]);
+
+  useEffect(() => {
+    if (st_pprAddressUpdateError) {
+      return message.error(st_pprAddressUpdateError);
+    }
+  }, [st_pprAddressUpdateError]);
 
   useEffect(() => {
     if (searchInput && me) {
@@ -253,6 +275,23 @@ const Index = ({}) => {
       if (router.query.type === "payment") {
         dispatch({
           type: PAYMENT_DELIVERY_REQUEST,
+          data: {
+            id: parseInt(router.query.id),
+            receiveUser: data.ruser,
+            receiveMobile: data.rmobile,
+            receiveAddress: data.raddress,
+            receiveDetailAddress: data.rdetailAddress,
+            sendUser: data.suser,
+            sendMobile: data.smobile,
+            sendAddress: data.saddress,
+            sendDetailAddress: data.sdetailAddress,
+            deliveryMessage: data.deliveryMessage,
+            deliveryRequest: data.deliveryRequest,
+          },
+        });
+      } else {
+        dispatch({
+          type: PPR_ADDRESS_UPDATE_REQUEST,
           data: {
             id: parseInt(router.query.id),
             receiveUser: data.ruser,

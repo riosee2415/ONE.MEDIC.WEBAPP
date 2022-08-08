@@ -40,6 +40,11 @@ import {
   PAYMENT_ISPAYMENT_REQUEST,
 } from "../../reducers/paymentRequest";
 import { DISCOUNT_USER_REQUEST } from "../../reducers/discount";
+import {
+  PPR_DETAIL_REQUEST,
+  PPR_ISPAYMENT_REQUEST,
+} from "../../reducers/prescriptionPaymentRequest";
+import { numberWithCommas } from "../../components/commonUtils";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -71,6 +76,15 @@ const Index = ({}) => {
     useSelector((state) => state.paymentRequest);
 
   const { userDiscount } = useSelector((state) => state.discount);
+
+  const {
+    pprDetail,
+    //
+    st_pprDetailError,
+    //
+    st_pprIsPayMentDone,
+    st_pprIsPayMentError,
+  } = useSelector((state) => state.prescriptionPaymentRequest);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -112,26 +126,45 @@ const Index = ({}) => {
   }, [userDiscount, productPayment]);
 
   useEffect(() => {
-    if (router.query) {
+    if (router.query.type === "payment") {
       dispatch({
         type: PAYMENT_DETAIL_REQUEST,
         data: {
           paymentId: router.query.id,
         },
       });
+    } else if (router.query.type === "ppr") {
+      dispatch({
+        type: PPR_DETAIL_REQUEST,
+        data: {
+          pprId: router.query.id,
+        },
+      });
     }
   }, [router.query]);
 
   useEffect(() => {
-    if (paymentDetail) {
-      let total = 0;
-      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
-        total += paymentDetail.PaymentRequest[i].payment;
-      }
+    if (router.query) {
+      if (router.query.type === "payment") {
+        // 약속처방
+        if (paymentDetail) {
+          let total = 0;
+          for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
+            total += paymentDetail.PaymentRequest[i].payment;
+          }
 
-      setProductPayment(total);
+          setProductPayment(total);
+        }
+      } else {
+        // 탕전처방
+        if (pprDetail) {
+          setProductPayment(pprDetail.totalPrice);
+        }
+      }
     }
-  }, [paymentDetail]);
+  }, [paymentDetail, pprDetail, router.query]);
+
+  // 약속처방 결제
 
   useEffect(() => {
     if (st_paymentIsPaymentDone) {
@@ -145,6 +178,27 @@ const Index = ({}) => {
       return message.error(st_paymentIsPaymentError);
     }
   }, [st_paymentIsPaymentError]);
+
+  // 탕전처방 결제
+
+  useEffect(() => {
+    if (st_pprIsPayMentDone) {
+      message.success("결제되었습니다.");
+      return router.push("/");
+    }
+  }, [st_pprIsPayMentDone]);
+
+  useEffect(() => {
+    if (st_pprIsPayMentError) {
+      return message.error(st_pprIsPayMentError);
+    }
+  }, [st_pprIsPayMentError]);
+
+  useEffect(() => {
+    if (st_pprDetailError) {
+      return message.error(st_pprDetailError);
+    }
+  }, [st_pprDetailError]);
 
   ////// TOGGLE //////
 
@@ -196,45 +250,106 @@ const Index = ({}) => {
 
       const IMP = window.IMP;
 
-      if (me && paymentDetail) {
-        IMP.request_pay(
-          {
-            pg: paymentType === "phone" ? "danal" : "danal_tpay",
-            pay_method: paymentType,
-            merchant_uid: orderPK,
-            name: paymentDetail.productName,
-            amount: productPayment - discount + 5000,
-            buyer_name: me.username,
-            buyer_tel: me.mobile.replace(
-              /^(\d{2,3})(\d{3,4})(\d{4})$/,
-              `$1-$2-$3`
-            ),
-            buyer_email: me.email,
-            buyer_addr: paymentDetail.receiveAddress,
-            buyer_postcode: paymentDetail.receiveAddress.substring(
-              paymentDetail.receiveAddress.length - 6,
-              paymentDetail.receiveAddress.length - 1
-            ),
-          },
-          async (rsp) => {
-            if (rsp.success) {
-              dispatch({
-                type: PAYMENT_ISPAYMENT_REQUEST,
-                data: {
-                  paymentId: router.query.id,
-                  isCard: "0",
-                  totalPrice: productPayment - discount + 5000,
-                },
-              });
-            } else {
-              console.log(rsp);
-              return console.log("결제실패");
-            }
+      if (me) {
+        if (router.query.type === "payment") {
+          if (paymentDetail) {
+            IMP.request_pay(
+              {
+                pg: paymentType === "phone" ? "danal" : "danal_tpay",
+                pay_method: paymentType,
+                merchant_uid: orderPK,
+                name: paymentDetail.productName,
+                amount: productPayment - discount + 5000,
+                buyer_name: me.username,
+                buyer_tel: me.mobile.replace(
+                  /^(\d{2,3})(\d{3,4})(\d{4})$/,
+                  `$1-$2-$3`
+                ),
+                buyer_email: me.email,
+                buyer_addr: paymentDetail.receiveAddress,
+                buyer_postcode: paymentDetail.receiveAddress.substring(
+                  paymentDetail.receiveAddress.length - 6,
+                  paymentDetail.receiveAddress.length - 1
+                ),
+              },
+              async (rsp) => {
+                if (rsp.success) {
+                  dispatch({
+                    type: PAYMENT_ISPAYMENT_REQUEST,
+                    data: {
+                      paymentId: router.query.id,
+                      isCard: "0",
+                      totalPrice: productPayment - discount + 5000,
+                      payInfo: isAgree1,
+                      name: paymentDetail.productName,
+                    },
+                  });
+                } else {
+                  console.log(rsp);
+                  return console.log("결제실패");
+                }
+              }
+            );
           }
-        );
+        } else {
+          if (pprDetail) {
+            IMP.request_pay(
+              {
+                pg: paymentType === "phone" ? "danal" : "danal_tpay",
+                pay_method: paymentType,
+                merchant_uid: orderPK,
+                name: `${pprDetail.materialDatum[0].name}${
+                  pprDetail.materialDatum.length > 1
+                    ? `외 ${pprDetail.materialDatum.length}개`
+                    : ""
+                }`,
+                // amount: productPayment - discount + 5000,
+                amount: 150,
+                buyer_name: me.username,
+                buyer_tel: me.mobile.replace(
+                  /^(\d{2,3})(\d{3,4})(\d{4})$/,
+                  `$1-$2-$3`
+                ),
+                buyer_email: me.email,
+                buyer_addr: pprDetail.receiveAddress,
+                buyer_postcode: pprDetail.receiveAddress.substring(
+                  pprDetail.receiveAddress.length - 6,
+                  pprDetail.receiveAddress.length - 1
+                ),
+              },
+              async (rsp) => {
+                if (rsp.success) {
+                  dispatch({
+                    type: PPR_ISPAYMENT_REQUEST,
+                    data: {
+                      pprId: router.query.id,
+                      isCard: "0",
+                      totalPrice: productPayment - discount + 5000,
+                      payInfo: isAgree1,
+                    },
+                  });
+                } else {
+                  console.log(rsp);
+                  return console.log("결제실패");
+                }
+              }
+            );
+          }
+        }
       }
     }
-  }, [isAgree2, productPayment, discount, router.query, paymentType, me]);
+  }, [
+    isAgree2,
+    productPayment,
+    discount,
+    router.query,
+    paymentType,
+    me,
+    pprDetail,
+    isAgree1,
+  ]);
+
+  console.log(isAgree1);
 
   ////// DATAVIEW //////
 
@@ -377,7 +492,9 @@ const Index = ({}) => {
                     {me && me.mobile}
                   </Text>
                   <Text fontSize={`16px`} color={Theme.grey_C}>
-                    {paymentDetail && paymentDetail.receiveAddress}
+                    {router.query && router.query.type === "payment"
+                      ? paymentDetail && paymentDetail.receiveAddress
+                      : pprDetail && pprDetail.receiveAddress}
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -401,8 +518,12 @@ const Index = ({}) => {
                     color={Theme.black_C}
                     margin={`0 0 12px`}
                   >
-                    {paymentDetail && paymentDetail.deliveryMessage
-                      ? paymentDetail.deliveryMessage
+                    {router.query && router.query.type === "payment"
+                      ? paymentDetail && paymentDetail.deliveryMessage
+                        ? paymentDetail.deliveryMessage
+                        : "요청사항이 없습니다."
+                      : pprDetail && pprDetail.deliveryMessage
+                      ? pprDetail.deliveryMessage
                       : "요청사항이 없습니다."}
                   </Text>
                 </Wrapper>
@@ -431,8 +552,11 @@ const Index = ({}) => {
                   margin={`0 0 20px`}
                 >
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {paymentDetail && paymentDetail.productName}
+                    {router.query && router.query.type === "payment"
+                      ? paymentDetail && paymentDetail.productName
+                      : pprDetail && pprDetail.name}
                   </Text>
+
                   <Text
                     fontSize={`18px`}
                     color={Theme.black_C}
@@ -441,87 +565,75 @@ const Index = ({}) => {
                     {me && me.username}
                   </Text>
                 </Wrapper>
-                {console.log(paymentDetail)}
 
                 <Wrapper
                   borderBottom={`1px solid ${Theme.grey_C}`}
                   margin={`0 0 20px`}
                 >
                   {router.query &&
-                    paymentDetail &&
-                    (router.query.type === "payment" ? (
-                      <>
-                        <Wrapper
-                          dr={`row`}
-                          ju={`space-between`}
-                          margin={`0 0 20px`}
-                        >
-                          <Text color={Theme.gray_C} fontSize={`16px`}>
-                            가격
-                          </Text>
-                          <Text fontSize={`18px`} color={Theme.grey_C}>
-                            {String(productPayment).replace(
-                              /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-                              ","
-                            )}
-                          </Text>
-                        </Wrapper>
-                      </>
-                    ) : (
-                      <>
-                        <Wrapper
-                          dr={`row`}
-                          ju={`space-between`}
-                          margin={`0 0 20px`}
-                        >
-                          <Text color={Theme.gray_C} fontSize={`16px`}>
-                            약재
-                          </Text>
-                          <Text fontSize={`18px`} color={Theme.grey_C}>
-                            174,000
-                          </Text>
-                        </Wrapper>
+                    (router.query.type === "payment"
+                      ? paymentDetail && (
+                          // 약속처방
+                          <>
+                            <Wrapper
+                              dr={`row`}
+                              ju={`space-between`}
+                              margin={`0 0 20px`}
+                            >
+                              <Text color={Theme.gray_C} fontSize={`16px`}>
+                                가격
+                              </Text>
+                              <Text fontSize={`18px`} color={Theme.grey_C}>
+                                {String(productPayment).replace(
+                                  /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
+                                  ","
+                                )}
+                              </Text>
+                            </Wrapper>
+                          </>
+                        )
+                      : pprDetail && (
+                          // 탕전처방
+                          <>
+                            {pprDetail.materialDatum.map((data) => (
+                              <Wrapper
+                                dr={`row`}
+                                ju={`space-between`}
+                                margin={`0 0 20px`}
+                              >
+                                <Text color={Theme.gray_C} fontSize={`16px`}>
+                                  {data.name}
+                                </Text>
+                                <Text fontSize={`18px`} color={Theme.grey_C}>
+                                  {data.qnt}
+                                  {data.unit}
+                                </Text>
+                                <Text fontSize={`18px`} color={Theme.grey_C}>
+                                  {numberWithCommas(data.buyPrice * data.qnt)}원
+                                </Text>
+                              </Wrapper>
+                            ))}
 
-                        <Wrapper
-                          dr={`row`}
-                          ju={`space-between`}
-                          margin={`0 0 20px`}
-                        >
-                          <Text color={Theme.gray_C} fontSize={`16px`}>
-                            조제
-                          </Text>
-                          <Text fontSize={`18px`} color={Theme.grey_C}>
-                            3,000
-                          </Text>
-                        </Wrapper>
-
-                        <Wrapper
-                          dr={`row`}
-                          ju={`space-between`}
-                          margin={`0 0 20px`}
-                        >
-                          <Text color={Theme.gray_C} fontSize={`16px`}>
-                            탕전
-                          </Text>
-                          <Text fontSize={`18px`} color={Theme.grey_C}>
-                            12,000
-                          </Text>
-                        </Wrapper>
-
-                        <Wrapper
-                          dr={`row`}
-                          ju={`space-between`}
-                          margin={`0 0 20px`}
-                        >
-                          <Text color={Theme.gray_C} fontSize={`16px`}>
-                            포장
-                          </Text>
-                          <Text fontSize={`18px`} color={Theme.grey_C}>
-                            5,440
-                          </Text>
-                        </Wrapper>
-                      </>
-                    ))}
+                            <Wrapper
+                              dr={`row`}
+                              ju={`space-between`}
+                              margin={`0 0 20px`}
+                            >
+                              <Text color={Theme.gray_C} fontSize={`16px`}>
+                                탕전
+                              </Text>
+                              <Text fontSize={`18px`} color={Theme.grey_C}>
+                                {numberWithCommas(
+                                  pprDetail.totalPrice -
+                                    pprDetail.materialDatum
+                                      .map((data) => data.buyPrice * data.qnt)
+                                      .reduce((a, b) => a + b)
+                                )}
+                                원
+                              </Text>
+                            </Wrapper>
+                          </>
+                        ))}
 
                   <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
                     <Text color={Theme.gray_C} fontSize={`16px`}>
@@ -803,7 +915,7 @@ const Index = ({}) => {
                   fontSize={`18px`}
                   margin={`0 0 18px`}
                 >
-                  주문된 상품을 결제하시겠습니까?
+                  주문할 상품을 결제하시겠습니까?
                 </Text>
                 <Wrapper dr={`row`} ju={`flex-end`} margin={`30px 0 0 0`}>
                   <Wrapper

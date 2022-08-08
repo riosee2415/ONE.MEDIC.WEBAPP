@@ -153,6 +153,7 @@ const Prescription = ({}) => {
       packArr.push(String(i));
     }
 
+    sessionStorage.removeItem("recipeName");
     setChubSelectArr(chubArr);
     setPackSelectArr(packArr);
     setVolumnSelectArr(volumnArr);
@@ -296,11 +297,18 @@ const Prescription = ({}) => {
 
   // 주문하기
   const paymentCreateHandler = useCallback(() => {
+    const recipeName = sessionStorage.getItem("recipeName");
+
     dispatch({
       type: PPR_CREATE_REQUEST,
       data: {
         useMaterialData: userMaterials,
         totalPrice: materialTotalPrice + packTotalPrice,
+        name: recipeName
+          ? recipeName
+          : `${userMaterials[0].name}${
+              userMaterials.length > 1 ? `외 ${userMaterials.length - 1}개` : ""
+            }`,
       },
     });
   }, [userMaterials, materialTotalPrice, packTotalPrice]);

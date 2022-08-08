@@ -120,6 +120,8 @@ const AppHeader = ({ children, width }) => {
 
   const materialAddHandler = useCallback(
     (data) => {
+      console.log(data);
+
       let seleteMaterialArr = userMaterials.map((data) => data);
 
       let checkArr = [];
@@ -142,7 +144,8 @@ const AppHeader = ({ children, width }) => {
 
       if (checkArr.length === 0) {
         data.SearchMaterials
-          ? data.SearchMaterials.map((value) =>
+          ? (sessionStorage.setItem("recipeName", data.name),
+            data.SearchMaterials.map((value) =>
               seleteMaterialArr.push({
                 id: value.MaterialId,
                 name: value.Material.name,
@@ -150,7 +153,7 @@ const AppHeader = ({ children, width }) => {
                 unit: value.unit,
                 price: value.Material.price,
               })
-            )
+            ))
           : seleteMaterialArr.push({
               id: data.id,
               name: data.name,

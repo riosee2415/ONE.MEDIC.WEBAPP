@@ -34,6 +34,11 @@ module.exports = class PrescriptionPaymentRequest extends Model {
           defaultValue: false,
         },
 
+        name: {
+          type: DataTypes.STRING(200),
+          allowNull: false, // 필수
+        },
+
         deliveryCompany: {
           type: DataTypes.STRING(50),
           allowNull: true,
@@ -98,6 +103,11 @@ module.exports = class PrescriptionPaymentRequest extends Model {
           type: DataTypes.INTEGER,
           allowNull: false, // 필수
           defaultValue: 0,
+        },
+
+        payInfo: {
+          type: DataTypes.STRING(100), // 결제 수단
+          allowNull: true,
         },
 
         totalPrice: {
