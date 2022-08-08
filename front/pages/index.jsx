@@ -12,7 +12,10 @@ import { SearchOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 import wrapper from "../store/configureStore";
-import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
+import {
+  LOAD_MY_INFO_REQUEST,
+  USER_BOUGHT_LIST_REQUEST,
+} from "../reducers/user";
 import { SEO_LIST_REQUEST } from "../reducers/seo";
 import { PAYMENTREQUEST_USER_LIST_REQUEST } from "../reducers/paymentRequest";
 
@@ -49,7 +52,7 @@ const Home = ({}) => {
 
   const router = useRouter();
 
-  const { me } = useSelector((state) => state.user);
+  const { me, userBoughtList } = useSelector((state) => state.user);
 
   const { paymentUserList } = useSelector((state) => state.paymentRequest);
   ////// HOOKS //////
@@ -90,7 +93,7 @@ const Home = ({}) => {
         ]);
       }
       dispatch({
-        type: PAYMENTREQUEST_USER_LIST_REQUEST,
+        type: USER_BOUGHT_LIST_REQUEST,
         data: {
           startDate: data ? data[0].format("YYYY_MM_DD") : searchDate[0],
           endDate: data ? data[1].format("YYYY_MM_DD") : searchDate[1],
@@ -222,11 +225,11 @@ const Home = ({}) => {
                   minHeight={`calc(100vh - 149px - 170px)`}
                   ju={`flex-start`}
                 >
-                  {paymentUserList &&
-                    (paymentUserList.length === 0 ? (
+                  {userBoughtList &&
+                    (userBoughtList.length === 0 ? (
                       <Empty description="주문목록이 없습니다." />
                     ) : (
-                      paymentUserList.map((data) => {
+                      userBoughtList.map((data) => {
                         return (
                           <Wrapper
                             radius={`20px`}
@@ -318,7 +321,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     });
 
     context.store.dispatch({
-      type: PAYMENTREQUEST_USER_LIST_REQUEST,
+      type: USER_BOUGHT_LIST_REQUEST,
       data: {
         startDate: "",
         endDate: "",

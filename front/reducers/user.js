@@ -6,6 +6,7 @@ export const initailState = {
   users: null,
   cardInfo: null,
   filePath: null,
+  userBoughtList: null,
 
   companyUserLists: null,
 
@@ -80,15 +81,19 @@ export const initailState = {
   //
   st_checkCodeLoading: false, // 이메일 인증번호 보내기
   st_checkCodeDone: false,
-  st_checkCodeError: false,
+  st_checkCodeError: null,
   //
   st_fileUploadLoading: false, // 첨부파일
   st_fileUploadDone: false,
-  st_fileUploadError: false,
+  st_fileUploadError: null,
   //
   st_userExitLoading: false, // 회원탈퇴
   st_userExitDone: false,
-  st_userExitError: false,
+  st_userExitError: null,
+  //
+  st_userBoughtListLoading: false, // 주문내역
+  st_userBoughtListDone: false,
+  st_userBoughtListError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -158,6 +163,10 @@ export const FILE_UPLOAD_FAILURE = "FILE_UPLOAD_FAILURE";
 export const USER_EXIT_REQUEST = "USER_EXIT_REQUEST";
 export const USER_EXIT_SUCCESS = "USER_EXIT_SUCCESS";
 export const USER_EXIT_FAILURE = "USER_EXIT_FAILURE";
+
+export const USER_BOUGHT_LIST_REQUEST = "USER_BOUGHT_LIST_REQUEST";
+export const USER_BOUGHT_LIST_SUCCESS = "USER_BOUGHT_LIST_SUCCESS";
+export const USER_BOUGHT_LIST_FAILURE = "USER_BOUGHT_LIST_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -519,6 +528,27 @@ const reducer = (state = initailState, action) =>
         draft.st_userExitLoading = false;
         draft.st_userExitDone = false;
         draft.st_userExitError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case USER_BOUGHT_LIST_REQUEST: {
+        draft.st_userBoughtListLoading = true;
+        draft.st_userBoughtListDone = null;
+        draft.st_userBoughtListError = false;
+        break;
+      }
+      case USER_BOUGHT_LIST_SUCCESS: {
+        draft.st_userBoughtListLoading = false;
+        draft.st_userBoughtListDone = true;
+        draft.st_userBoughtListError = null;
+        draft.userBoughtList = action.data.list;
+        break;
+      }
+      case USER_BOUGHT_LIST_FAILURE: {
+        draft.st_userBoughtListLoading = false;
+        draft.st_userBoughtListDone = false;
+        draft.st_userBoughtListError = action.error;
         break;
       }
       //////////////////////////////////////////////

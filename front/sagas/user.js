@@ -69,6 +69,10 @@ import {
   USER_EXIT_SUCCESS,
   USER_EXIT_FAILURE,
   /////////////////////////////
+  USER_BOUGHT_LIST_REQUEST,
+  USER_BOUGHT_LIST_SUCCESS,
+  USER_BOUGHT_LIST_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -531,6 +535,34 @@ function* userExit(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function userBoughtListAPI(data) {
+  return await axios.post(`/api/user/bought/list`, data);
+}
+
+function* userBoughtList(action) {
+  try {
+    const result = yield call(userBoughtListAPI, action.data);
+
+    yield put({
+      type: USER_BOUGHT_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: USER_BOUGHT_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -601,6 +633,10 @@ function* watchUserExit() {
   yield takeLatest(USER_EXIT_REQUEST, userExit);
 }
 
+function* watchUserBoughtList() {
+  yield takeLatest(USER_BOUGHT_LIST_REQUEST, userBoughtList);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -621,6 +657,7 @@ export default function* userSaga() {
     fork(watchUserCheckCode),
     fork(watchUserFileUpload),
     fork(watchUserExit),
+    fork(watchUserBoughtList),
     //
   ]);
 }

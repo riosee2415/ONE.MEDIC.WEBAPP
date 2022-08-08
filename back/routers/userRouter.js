@@ -938,4 +938,117 @@ router.patch("/exit", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.post("/bought/list", isLoggedIn, async (req, res, next) => {
+  const { startDate, endDate, productName } = req.body;
+
+  const _startDate = startDate || null;
+  const _endDate = endDate || null;
+  const _productName = productName || "";
+
+  const selectQuery = `
+  SELECT  Z.id,
+        Z.productName,
+        Z.completedAt,
+        Z.deliveryNo,
+        Z.receiveUser,
+        Z.receiveMobile,
+        Z.receiveAddress,
+        Z.receiveDetailAddress,
+        Z.sendUser,
+        Z.sendMobile,
+        Z.sendAddress,
+        Z.sendDetailAddress,
+        Z.deliveryCompany,
+        Z.viewCompletedAt,
+        Z.orderAt,
+        Z.createdAt,
+        Z.username,
+        Z.email,
+        Z.mobile,
+        Z.nickname,
+        Z.companyName,
+        Z.companyNo,
+        Z.paymentType
+  FROM  (
+       	SELECT  p.id,
+              	p.productName,
+              	p.completedAt,
+              	p.deliveryNo,
+              	p.receiveUser,
+              	p.receiveMobile,
+              	p.receiveAddress,
+              	p.receiveDetailAddress,
+              	p.sendUser,
+              	p.sendMobile,
+              	p.sendAddress,
+              	p.sendDetailAddress,
+              	p.deliveryCompany,
+              	DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS viewCompletedAt,
+              	DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+              	p.createdAt,
+              	u.username,
+              	u.email,
+              	u.mobile,
+              	u.nickname,
+              	u.companyName,
+              	u.companyNo,
+              	"payment"												AS paymentType			
+          FROM  payment p
+          JOIN  users u
+            ON  u.id = p.UserId
+         WHERE  u.id = ${req.user.id}
+         UNION ALL
+      	SELECT  ppr.id,
+                ppr.name													AS productName,
+                ppr.completedAt,
+                ppr.deliveryNo,
+                ppr.receiveUser,
+                ppr.receiveMobile,
+                ppr.receiveAddress,
+                ppr.receiveDetailAddress,
+                ppr.sendUser,
+                ppr.sendMobile,
+                ppr.sendAddress,
+                ppr.sendDetailAddress,
+                ppr.deliveryCompany,
+                DATE_FORMAT(ppr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS viewCompletedAt,
+                DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+                ppr.createdAt,
+                u.username,
+                u.email,
+                u.mobile,
+                u.nickname,
+                u.companyName,
+                u.companyNo,
+                "ppr"												AS paymentType		
+          FROM  prescriptionPaymentRequest ppr
+          JOIN  users u
+          	ON  u.id = ppr.UserId
+         WHERE  u.id = ${req.user.id}
+      	 )				Z
+      	 WHERE  1 = 1
+           AND  Z.productName LIKE '%${_productName}%'
+           ${
+             _startDate
+               ? `AND  DATE_FORMAT(Z.createdAt, '%Y-%m-%d') >= DATE_FORMAT('${_startDate}', '%Y-%m-%d') `
+               : ``
+           }
+          ${
+            _endDate
+              ? `AND  DATE_FORMAT(Z.createdAt, '%Y-%m-%d') <= DATE_FORMAT('${_endDate}', '%Y-%m-%d') `
+              : ``
+          }
+         ORDER  BY  Z.createdAt DESC
+  `;
+
+  try {
+    const reuslt = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json({ list: reuslt[0] });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("주문목록을 불러올 수 없습니다.");
+  }
+});
+
 module.exports = router;
