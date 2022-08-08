@@ -17,7 +17,6 @@ import {
   USER_BOUGHT_LIST_REQUEST,
 } from "../reducers/user";
 import { SEO_LIST_REQUEST } from "../reducers/seo";
-import { PAYMENTREQUEST_USER_LIST_REQUEST } from "../reducers/paymentRequest";
 
 import useInput from "../hooks/useInput";
 import useWidth from "../hooks/useWidth";
@@ -276,7 +275,9 @@ const Home = ({}) => {
                                 borderLeft={`1px solid ${Theme.grey2_C}`}
                                 cursor={`pointer`}
                                 onClick={() =>
-                                  moveLinkHandler(`/orderList/${data.id}`)
+                                  moveLinkHandler(
+                                    `/orderList/${data.id}?type=${data.paymentType}`
+                                  )
                                 }
                               >
                                 주문내역

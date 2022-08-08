@@ -296,6 +296,8 @@ const Index = ({}) => {
                     {paymentDetail && paymentDetail.username}
                   </Text>
                 </Wrapper>
+
+                {console.log(paymentDetail)}
                 {openHistory ? (
                   <>
                     <Wrapper
