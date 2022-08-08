@@ -54,7 +54,6 @@ const Home = ({}) => {
 
   const { me, userBoughtList } = useSelector((state) => state.user);
 
-  const { paymentUserList } = useSelector((state) => state.paymentRequest);
   ////// HOOKS //////
 
   const dispatch = useDispatch();
@@ -73,6 +72,17 @@ const Home = ({}) => {
     }
   }, [me]);
 
+  useEffect(() => {
+    dispatch({
+      type: USER_BOUGHT_LIST_REQUEST,
+      data: {
+        startDate: searchDate[0],
+        endDate: searchDate[1],
+        productName: productName.value,
+      },
+    });
+  }, [productName.value, searchDate]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
 
@@ -86,22 +96,13 @@ const Home = ({}) => {
         message.error("로그인 후 이용해주세요.");
         return moveLinkHandler(`/login`);
       }
-      if (data) {
-        setSearchDate([
-          data[0].format("YYYY_MM_DD"),
-          data[1].format("YYYY_MM_DD"),
-        ]);
-      }
-      dispatch({
-        type: USER_BOUGHT_LIST_REQUEST,
-        data: {
-          startDate: data ? data[0].format("YYYY_MM_DD") : searchDate[0],
-          endDate: data ? data[1].format("YYYY_MM_DD") : searchDate[1],
-          productName: productName.value,
-        },
-      });
+
+      setSearchDate([
+        data ? data[0].format("YYYY_MM_DD") : null,
+        data ? data[1].format("YYYY_MM_DD") : null,
+      ]);
     },
-    [productName.value, searchDate]
+    [searchDate]
   );
 
   ////// DATAVIEW //////
@@ -169,7 +170,7 @@ const Home = ({}) => {
                   zIndex={`10`}
                   fontSize={`25px`}
                   margin={`-13px 0 0`}
-                  onClick={() => searchHandler()}
+                  onClick={() => searchHandler(searchHandler)}
                 >
                   <SearchOutlined />
                 </Wrapper>
