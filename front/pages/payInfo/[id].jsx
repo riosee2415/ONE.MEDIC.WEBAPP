@@ -110,6 +110,11 @@ const Index = ({}) => {
       router.push("/login");
       return message.error("로그인 후 이용해주세요.");
     } else {
+      if (me.payInfo && me.payInfo.trim().length > 0) {
+        setPaymentType(me.payInfo);
+        setIsAgree1(true);
+      }
+
       dispatch({
         type: DISCOUNT_USER_REQUEST,
         data: {
@@ -117,7 +122,7 @@ const Index = ({}) => {
         },
       });
     }
-  }, []);
+  }, [me]);
 
   useEffect(() => {
     if (userDiscount && productPayment) {
@@ -280,7 +285,7 @@ const Index = ({}) => {
                       paymentId: router.query.id,
                       isCard: "0",
                       totalPrice: productPayment - discount + 5000,
-                      payInfo: isAgree1,
+                      payInfo: isAgree1 ? paymentType : null,
                       name: paymentDetail.productName,
                     },
                   });
@@ -325,7 +330,7 @@ const Index = ({}) => {
                       pprId: router.query.id,
                       isCard: "0",
                       totalPrice: productPayment - discount + 5000,
-                      payInfo: isAgree1,
+                      payInfo: isAgree1 ? paymentType : null,
                     },
                   });
                 } else {
