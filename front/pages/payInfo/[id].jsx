@@ -258,89 +258,116 @@ const Index = ({}) => {
       if (me) {
         if (router.query.type === "payment") {
           if (paymentDetail) {
-            IMP.request_pay(
-              {
-                pg: paymentType === "phone" ? "danal" : "danal_tpay",
-                pay_method: paymentType,
-                merchant_uid: orderPK,
-                name: paymentDetail.productName,
-                amount: productPayment - discount + 5000,
-                buyer_name: me.username,
-                buyer_tel: me.mobile.replace(
-                  /^(\d{2,3})(\d{3,4})(\d{4})$/,
-                  `$1-$2-$3`
-                ),
-                buyer_email: me.email,
-                buyer_addr: paymentDetail.receiveAddress,
-                buyer_postcode: paymentDetail.receiveAddress.substring(
-                  paymentDetail.receiveAddress.length - 6,
-                  paymentDetail.receiveAddress.length - 1
-                ),
-              },
-              async (rsp) => {
-                if (rsp.success) {
-                  dispatch({
-                    type: PAYMENT_ISPAYMENT_REQUEST,
-                    data: {
-                      paymentId: router.query.id,
-                      isCard: "0",
-                      totalPrice: productPayment - discount + 5000,
-                      payInfo: paymentType,
-                      userPayinfo: isAgree1 ? paymentType : null,
-                      name: paymentDetail.productName,
-                    },
-                  });
-                } else {
-                  console.log(rsp);
-                  return console.log("결제실패");
+            if (paymentType !== "nobank") {
+              IMP.request_pay(
+                {
+                  pg: paymentType === "phone" ? "danal" : "danal_tpay",
+                  pay_method: paymentType,
+                  merchant_uid: orderPK,
+                  name: paymentDetail.productName,
+                  amount: productPayment - discount + 5000,
+                  buyer_name: me.username,
+                  buyer_tel: me.mobile.replace(
+                    /^(\d{2,3})(\d{3,4})(\d{4})$/,
+                    `$1-$2-$3`
+                  ),
+                  buyer_email: me.email,
+                  buyer_addr: paymentDetail.receiveAddress,
+                  buyer_postcode: paymentDetail.receiveAddress.substring(
+                    paymentDetail.receiveAddress.length - 6,
+                    paymentDetail.receiveAddress.length - 1
+                  ),
+                },
+                async (rsp) => {
+                  if (rsp.success) {
+                    dispatch({
+                      type: PAYMENT_ISPAYMENT_REQUEST,
+                      data: {
+                        paymentId: router.query.id,
+                        isCard: "0",
+                        totalPrice: productPayment - discount + 5000,
+                        payInfo: paymentType,
+                        userPayinfo: isAgree1 ? paymentType : null,
+                        name: paymentDetail.productName,
+                      },
+                    });
+                  } else {
+                    console.log(rsp);
+                    return console.log("결제실패");
+                  }
                 }
-              }
-            );
+              );
+            } else {
+              dispatch({
+                type: PAYMENT_ISPAYMENT_REQUEST,
+                data: {
+                  paymentId: router.query.id,
+                  isCard: "0",
+                  totalPrice: productPayment - discount + 5000,
+                  payInfo: paymentType,
+                  userPayinfo: isAgree1 ? paymentType : null,
+                  name: paymentDetail.productName,
+                },
+              });
+            }
           }
         } else {
           if (pprDetail) {
-            IMP.request_pay(
-              {
-                pg: paymentType === "phone" ? "danal" : "danal_tpay",
-                pay_method: paymentType,
-                merchant_uid: orderPK,
-                name: `${pprDetail.materialDatum[0].name}${
-                  pprDetail.materialDatum.length > 1
-                    ? `외 ${pprDetail.materialDatum.length}개`
-                    : ""
-                }`,
-                // amount: productPayment - discount + 5000,
-                amount: 150,
-                buyer_name: me.username,
-                buyer_tel: me.mobile.replace(
-                  /^(\d{2,3})(\d{3,4})(\d{4})$/,
-                  `$1-$2-$3`
-                ),
-                buyer_email: me.email,
-                buyer_addr: pprDetail.receiveAddress,
-                buyer_postcode: pprDetail.receiveAddress.substring(
-                  pprDetail.receiveAddress.length - 6,
-                  pprDetail.receiveAddress.length - 1
-                ),
-              },
-              async (rsp) => {
-                if (rsp.success) {
-                  dispatch({
-                    type: PPR_ISPAYMENT_REQUEST,
-                    data: {
-                      pprId: router.query.id,
-                      isCard: "0",
-                      totalPrice: productPayment - discount + 5000,
-                      payInfo: paymentType,
-                      userPayinfo: isAgree1 ? paymentType : null,
-                    },
-                  });
-                } else {
-                  console.log(rsp);
-                  return console.log("결제실패");
+            if (paymentType !== "nobank") {
+              dispatch({
+                type: PPR_ISPAYMENT_REQUEST,
+                data: {
+                  pprId: router.query.id,
+                  isCard: "0",
+                  totalPrice: productPayment - discount + 5000,
+                  payInfo: paymentType,
+                  userPayinfo: isAgree1 ? paymentType : null,
+                },
+              });
+            } else {
+              IMP.request_pay(
+                {
+                  pg: paymentType === "phone" ? "danal" : "danal_tpay",
+                  pay_method: paymentType,
+                  merchant_uid: orderPK,
+                  name: `${pprDetail.materialDatum[0].name}${
+                    pprDetail.materialDatum.length > 1
+                      ? `외 ${pprDetail.materialDatum.length}개`
+                      : ""
+                  }`,
+                  // amount: productPayment - discount + 5000,
+                  amount: 150,
+                  buyer_name: me.username,
+                  buyer_tel: me.mobile.replace(
+                    /^(\d{2,3})(\d{3,4})(\d{4})$/,
+                    `$1-$2-$3`
+                  ),
+                  buyer_email: me.email,
+                  buyer_addr: pprDetail.receiveAddress,
+                  buyer_postcode: pprDetail.receiveAddress.substring(
+                    pprDetail.receiveAddress.length - 6,
+                    pprDetail.receiveAddress.length - 1
+                  ),
+                },
+                async (rsp) => {
+                  if (rsp.success) {
+                    dispatch({
+                      type: PPR_ISPAYMENT_REQUEST,
+                      data: {
+                        pprId: router.query.id,
+                        isCard: "0",
+                        totalPrice: productPayment - discount + 5000,
+                        payInfo: paymentType,
+                        userPayinfo: isAgree1 ? paymentType : null,
+                      },
+                    });
+                  } else {
+                    console.log(rsp);
+                    return console.log("결제실패");
+                  }
                 }
-              }
-            );
+              );
+            }
           }
         }
       }
@@ -791,12 +818,12 @@ const Index = ({}) => {
                         <Text fontSize={`16px`}>휴대폰 결제</Text>
                       </CommonButton>
                       <CommonButton
-                        kindOf={`white`}
+                        kindOf={paymentType !== "nobank" && `white`}
                         width={`calc(100% / 3 - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
-                        // onClick={() => paymentSelectHadnler("")}
+                        onClick={() => paymentSelectHadnler("nobank")}
                       >
                         <Text fontSize={`16px`}>무통장입금</Text>
                       </CommonButton>

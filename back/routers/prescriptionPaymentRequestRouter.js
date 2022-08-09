@@ -94,6 +94,18 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
           ppr.deliveryCompany,
           DATE_FORMAT(ppr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
           DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+          CASE
+              WHEN	ppr.deliveryStatus = 0 AND ppr.isCompleted = 1 THEN "결제 완료"
+              WHEN	ppr.deliveryStatus = 0 AND ppr.isCompleted = 0 AND ppr.payInfo = "nobank" THEN "입금 대기"
+              WHEN	ppr.deliveryStatus = 0 AND ppr.isCompleted = 0 THEN "결제 미승인"
+              WHEN	ppr.deliveryStatus = 1 THEN "배송 준비중"
+              WHEN	ppr.deliveryStatus = 2 THEN "집화 완료"
+              WHEN	ppr.deliveryStatus = 3 THEN "배송 중"
+              WHEN	ppr.deliveryStatus = 4 THEN "지점 도착"
+              WHEN	ppr.deliveryStatus = 5 THEN "배송 출발"
+              WHEN	ppr.deliveryStatus = 6 THEN "배송 완료"
+              ELSE	ppr.deliveryStatus
+          END	                                                       AS viewDeliveryStatus,
           ppr.createdAt,
           ppr.payInfo,
           u.username,

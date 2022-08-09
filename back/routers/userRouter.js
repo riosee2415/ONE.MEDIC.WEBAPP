@@ -997,6 +997,8 @@ router.post("/bought/list", isLoggedIn, async (req, res, next) => {
           JOIN  users u
             ON  u.id = p.UserId
          WHERE  u.id = ${req.user.id}
+           AND  p.payInfo IS NOT NULL
+           AND  p.sendUser IS NOT NULL
          UNION ALL
       	SELECT  ppr.id,
                 ppr.name													AS productName,
@@ -1025,6 +1027,8 @@ router.post("/bought/list", isLoggedIn, async (req, res, next) => {
           JOIN  users u
           	ON  u.id = ppr.UserId
          WHERE  u.id = ${req.user.id}
+           AND  ppr.payInfo IS NOT NULL
+           AND  ppr.sendUser IS NOT NULL
       	 )				Z
       	 WHERE  1 = 1
            AND  Z.productName LIKE '%${_productName}%'

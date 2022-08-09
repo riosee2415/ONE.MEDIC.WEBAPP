@@ -270,6 +270,10 @@ const AppHeader = ({ children, width }) => {
       router: "/cart",
       title: "장바구니",
     },
+    {
+      router: "/deliveryList/[id]",
+      title: "배송조회",
+    },
   ];
   return (
     <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>

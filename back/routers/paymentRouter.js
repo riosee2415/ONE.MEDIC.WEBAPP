@@ -156,6 +156,18 @@ router.get("/detail/:paymentId", async (req, res, next) => {
           p.deliveryCompany,
           DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
           DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
+          CASE
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 1 THEN "결제 승인"
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 AND payInfo = "nobank" THEN "입금 대기"
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 THEN "결제 미승인"
+              WHEN	p.deliveryStatus = 1 THEN "배송 준비중"
+              WHEN	p.deliveryStatus = 2 THEN "집화 완료"
+              WHEN	p.deliveryStatus = 3 THEN "배송 중"
+              WHEN	p.deliveryStatus = 4 THEN "지점 도착"
+              WHEN	p.deliveryStatus = 5 THEN "배송 출발"
+              WHEN	p.deliveryStatus = 6 THEN "배송 완료"
+              ELSE	p.deliveryStatus
+          END	                                                    AS viewDeliveryStatus,
           p.createdAt,
           p.payInfo,
           u.username,

@@ -266,6 +266,11 @@ const Home = ({}) => {
                               <Wrapper
                                 width={`calc(100% / 3)`}
                                 cursor={`pointer`}
+                                onClick={() =>
+                                  moveLinkHandler(
+                                    `/deliveryList/${data.id}?type=${data.paymentType}`
+                                  )
+                                }
                               >
                                 배송조회
                               </Wrapper>
