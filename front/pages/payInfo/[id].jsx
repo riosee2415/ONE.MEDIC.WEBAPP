@@ -285,7 +285,8 @@ const Index = ({}) => {
                       paymentId: router.query.id,
                       isCard: "0",
                       totalPrice: productPayment - discount + 5000,
-                      payInfo: isAgree1 ? paymentType : null,
+                      payInfo: paymentType,
+                      userPayinfo: isAgree1 ? paymentType : null,
                       name: paymentDetail.productName,
                     },
                   });
@@ -330,7 +331,8 @@ const Index = ({}) => {
                       pprId: router.query.id,
                       isCard: "0",
                       totalPrice: productPayment - discount + 5000,
-                      payInfo: isAgree1 ? paymentType : null,
+                      payInfo: paymentType,
+                      userPayinfo: isAgree1 ? paymentType : null,
                     },
                   });
                 } else {
@@ -649,6 +651,7 @@ const Index = ({}) => {
                         /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
                         ","
                       )}
+                      원
                     </Text>
                   </Wrapper>
                 </Wrapper>
@@ -672,6 +675,7 @@ const Index = ({}) => {
                         /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
                         ","
                       )}
+                      원
                     </Text>
                   </Wrapper>
 
@@ -689,6 +693,7 @@ const Index = ({}) => {
                         /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
                         ","
                       )}
+                      원
                     </Text>
                   </Wrapper>
 
@@ -701,7 +706,7 @@ const Index = ({}) => {
                       color={Theme.black_C}
                       fontWeight={`700`}
                     >
-                      5,000
+                      5,000원
                     </Text>
                   </Wrapper>
                 </Wrapper>
@@ -868,7 +873,7 @@ const Index = ({}) => {
                 </Wrapper>
                 <Wrapper al={`flex-start`} padding={`0 0 0 32px`}>
                   <Text fontSize={`16px`} margin={`0 0 13px`}>
-                    휴대폰 결제의 경우 당월은 결제 취만 가능합니다.
+                    휴대폰 결제의 경우 당월은 결제 취소만 가능합니다.
                   </Text>
                   <Text fontSize={`16px`} margin={`0 0 13px`}>
                     익월 이후 환불요청은 구매자 명의로 된 계좌로만 환불이

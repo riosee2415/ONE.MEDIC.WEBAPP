@@ -4,7 +4,12 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const isNanCheck = require("../middlewares/isNanCheck");
 const models = require("../models");
 const axios = require("axios");
-const { PrescriptionPaymentRequest, UseMaterial, User } = require("../models");
+const {
+  PrescriptionPaymentRequest,
+  UseMaterial,
+  User,
+  Materials,
+} = require("../models");
 
 const router = express.Router();
 
@@ -90,6 +95,7 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
           DATE_FORMAT(ppr.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
           DATE_FORMAT(ppr.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
           ppr.createdAt,
+          ppr.payInfo,
           u.username,
           u.email,
           u.mobile,
@@ -110,6 +116,7 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
   SELECT  um.id,
 		      um.name,
 		      um.buyPrice,
+          CONCAT(FORMAT(um.buyPrice * um.qnt, 0), '원')                      AS viewBuyPrice,
 		      um.qnt,
 		      um.unit,
 		      um.PrescriptionPaymentRequestId,
@@ -395,7 +402,7 @@ router.patch("/delivery/:pprId", isAdminCheck, async (req, res, next) => {
 
 router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
   const { pprId } = req.params;
-  const { isCard, totalPrice, payInfo } = req.body;
+  const { isCard, totalPrice, payInfo, userPayinfo } = req.body;
 
   try {
     const currentUser = await User.findOne({
@@ -411,16 +418,14 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
 
     const _payinfo = payInfo ? payInfo : "";
 
-    if (_payinfo) {
-      await User.update(
-        {
-          payInfo: _payinfo,
-        },
-        {
-          where: { id: req.user.id },
-        }
-      );
-    }
+    await User.update(
+      {
+        payInfo: userPayinfo,
+      },
+      {
+        where: { id: req.user.id },
+      }
+    );
 
     if (isCard === "1") {
       const getToken = await axios({
@@ -487,6 +492,12 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
             },
           }
         );
+
+        // const materialDatum = await Materials.find()
+
+        // const materialResult = await Materials.update({
+
+        // })
 
         return res.status(200).json({ result: true, pprId: result.id });
       } else {

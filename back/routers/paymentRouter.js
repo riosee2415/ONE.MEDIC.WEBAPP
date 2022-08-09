@@ -157,6 +157,7 @@ router.get("/detail/:paymentId", async (req, res, next) => {
           DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
           DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
           p.createdAt,
+          p.payInfo,
           u.username,
           u.email,
           u.mobile,
@@ -175,6 +176,7 @@ router.get("/detail/:paymentId", async (req, res, next) => {
   const paymentRequestQuery = `
   SELECT  id,
           payment,
+          CONCAT(FORMAT(payment, 0), '원')         AS viewPayment,
           packVolumn,
           typeVolumn,
           unitVolumn,
@@ -462,7 +464,7 @@ router.patch("/address/update", async (req, res, next) => {
 
 router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
   const { paymentId } = req.params;
-  const { isCard, totalPrice, payInfo } = req.body;
+  const { isCard, totalPrice, payInfo, userPayinfo } = req.body;
 
   try {
     const currentUser = await User.findOne({
@@ -478,16 +480,14 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
 
     const _payinfo = payInfo ? payInfo : "";
 
-    if (_payinfo) {
-      await User.update(
-        {
-          payInfo: _payinfo,
-        },
-        {
-          where: { id: req.user.id },
-        }
-      );
-    }
+    await User.update(
+      {
+        payInfo: userPayinfo,
+      },
+      {
+        where: { id: req.user.id },
+      }
+    );
 
     if (isCard === "1") {
       const getToken = await axios({

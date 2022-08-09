@@ -25,6 +25,8 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
 import { numberWithCommas } from "../../components/commonUtils";
+import { PPR_DETAIL_REQUEST } from "../../reducers/prescriptionPaymentRequest";
+import { message } from "antd";
 
 const Index = ({}) => {
   const width = useWidth();
@@ -33,27 +35,55 @@ const Index = ({}) => {
     (state) => state.seo
   );
 
-  const [openHistory, setOpenHistory] = useState(false);
-
   ////// HOOKS //////
+
+  const { me } = useSelector((state) => state.user);
   const { paymentDetail } = useSelector((state) => state.paymentRequest);
-  console.log(paymentDetail);
+  const { pprDetail } = useSelector(
+    (state) => state.prescriptionPaymentRequest
+  );
+
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const [openHistory, setOpenHistory] = useState(false);
+  const [detailData, setDetailData] = useState(null);
 
   ////// REDUX //////
   ////// USEEFFECT //////
 
   useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+  }, [me]);
+
+  useEffect(() => {
     if (router.query) {
-      dispatch({
-        type: PAYMENT_DETAIL_REQUEST,
-        data: {
-          paymentId: router.query.id,
-        },
-      });
+      if (router.query.type === "payment") {
+        dispatch({
+          type: PAYMENT_DETAIL_REQUEST,
+          data: {
+            paymentId: router.query.id,
+          },
+        });
+      } else {
+        dispatch({
+          type: PPR_DETAIL_REQUEST,
+          data: {
+            pprId: router.query.id,
+          },
+        });
+      }
     }
   }, [router.query]);
+
+  useEffect(() => {
+    if (paymentDetail || pprDetail) {
+      setDetailData(paymentDetail || pprDetail);
+    }
+  }, [paymentDetail, pprDetail]);
 
   ////// TOGGLE //////
   const historyToggle = useCallback(() => {
@@ -138,7 +168,8 @@ const Index = ({}) => {
                     보내는 사람
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {paymentDetail && paymentDetail.sendUser}
+                    {console.log(detailData)}
+                    {detailData && detailData.sendUser}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -156,7 +187,7 @@ const Index = ({}) => {
                     받는 사람
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {paymentDetail && paymentDetail.receiveUser}
+                    {detailData && detailData.receiveUser}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -174,7 +205,7 @@ const Index = ({}) => {
                     연락처
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {paymentDetail && paymentDetail.mobile}
+                    {detailData && detailData.mobile}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -196,9 +227,9 @@ const Index = ({}) => {
                     fontSize={`18px`}
                     fontWeight={`700`}
                   >
-                    {paymentDetail && paymentDetail.receiveAddress}
+                    {detailData && detailData.receiveAddress}
                     <Text margin={`10px 0 0`}>
-                      {paymentDetail && paymentDetail.receiveDetailAddress}
+                      {detailData && detailData.receiveDetailAddress}
                     </Text>
                   </Text>
                 </Wrapper>
@@ -217,7 +248,18 @@ const Index = ({}) => {
                     결제방법
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    신용카드
+                    {detailData &&
+                      (detailData.payInfo === "card"
+                        ? "신용카드"
+                        : detailData.payInfo === "phone"
+                        ? "휴대폰 결제"
+                        : detailData.payInfo === "nobank"
+                        ? "무통장압금"
+                        : detailData.payInfo === "simpleCard"
+                        ? "간편 카드 결제"
+                        : detailData.payInfo === "trans"
+                        ? "계좌 간편 결제"
+                        : "신용카드")}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -235,7 +277,7 @@ const Index = ({}) => {
                     결제일시
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {paymentDetail && paymentDetail.orderAt}
+                    {detailData && detailData.orderAt}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -255,9 +297,9 @@ const Index = ({}) => {
                   <Wrapper width={`calc(100% - 100px)`} fontSize={`18px`}>
                     <Wrapper dr={`row`} ju={`space-between`}>
                       <Text fontWeight={`700`}>신용카드</Text>
-                      {paymentDetail && (
+                      {detailData && (
                         <Text fontWeight={`700`}>
-                          {numberWithCommas(paymentDetail.totalPrice - 5000)}
+                          {numberWithCommas(detailData.totalPrice - 5000)}
                         </Text>
                       )}
                     </Wrapper>
@@ -297,40 +339,88 @@ const Index = ({}) => {
                   </Text>
                 </Wrapper>
 
-                {console.log(paymentDetail)}
                 {openHistory ? (
-                  <>
-                    <Wrapper
-                      dr={`row`}
-                      ju={`space-between`}
-                      padding={`15px 0`}
-                      borderBottom={`1px solid ${Theme.grey2_C}`}
-                    >
-                      <Wrapper width={`auto`} al={`flex-start`}>
-                        <Text>원방</Text>
-                        <Text>고급포장 (10구)</Text>
+                  router.query && router.query.type === "payment" ? (
+                    <>
+                      {paymentDetail &&
+                        paymentDetail.PaymentRequest.map((data) => (
+                          <Wrapper
+                            dr={`row`}
+                            ju={`space-between`}
+                            padding={`15px 0`}
+                            borderBottom={`1px solid ${Theme.grey2_C}`}
+                          >
+                            <Wrapper width={`auto`} al={`flex-start`}>
+                              <Text>{data.packVolumn}</Text>
+                              <Text>
+                                {data.typeVolumn}&nbsp;({data.unitVolumn})
+                              </Text>
+                            </Wrapper>
+                            <Text>{data.viewPayment}</Text>
+                          </Wrapper>
+                        ))}
+                      <Wrapper
+                        fontSize={`18px`}
+                        fontWeight={`700`}
+                        al={`flex-end`}
+                        padding={`15px 0 0`}
+                      >
+                        189,000원
                       </Wrapper>
-                      <Text>1개</Text>
-                      <Text>170,000</Text>
-                    </Wrapper>
-                    <Wrapper
-                      fontSize={`18px`}
-                      fontWeight={`700`}
-                      al={`flex-end`}
-                      padding={`15px 0 0`}
-                    >
-                      189,000원
-                    </Wrapper>
-                    <Wrapper
-                      fontSize={`18px`}
-                      fontWeight={`700`}
-                      onClick={historyToggle}
-                      cursor={`pointer`}
-                      padding={`20px 0 0`}
-                    >
-                      닫기
-                    </Wrapper>
-                  </>
+                      <Wrapper
+                        fontSize={`18px`}
+                        fontWeight={`700`}
+                        onClick={historyToggle}
+                        cursor={`pointer`}
+                        padding={`20px 0 0`}
+                      >
+                        닫기
+                      </Wrapper>
+                    </>
+                  ) : (
+                    <>
+                      {pprDetail &&
+                        pprDetail.materialDatum.map((data) => (
+                          <Wrapper
+                            dr={`row`}
+                            ju={`space-between`}
+                            padding={`15px 0`}
+                            borderBottom={`1px solid ${Theme.grey2_C}`}
+                          >
+                            <Wrapper width={`auto`} al={`flex-start`}>
+                              <Text>{data.name}</Text>
+                            </Wrapper>
+                            <Text>
+                              {data.qnt}
+                              {data.unit}
+                            </Text>
+                            <Text>{data.viewBuyPrice}</Text>
+                          </Wrapper>
+                        ))}
+                      <Wrapper
+                        fontSize={`18px`}
+                        fontWeight={`700`}
+                        al={`flex-end`}
+                        padding={`15px 0 0`}
+                      >
+                        {numberWithCommas(
+                          pprDetail.materialDatum
+                            .map((data) => data.buyPrice * data.qnt)
+                            .reduce((a, b) => a + b)
+                        )}
+                        원
+                      </Wrapper>
+                      <Wrapper
+                        fontSize={`18px`}
+                        fontWeight={`700`}
+                        onClick={historyToggle}
+                        cursor={`pointer`}
+                        padding={`20px 0 0`}
+                      >
+                        닫기
+                      </Wrapper>
+                    </>
+                  )
                 ) : (
                   <Wrapper
                     fontSize={`18px`}
@@ -344,7 +434,7 @@ const Index = ({}) => {
               </Wrapper>
             </Wrapper>
 
-            <Wrapper
+            {/* <Wrapper
               position={`sticky`}
               bottom={`0`}
               left={`0`}
@@ -360,7 +450,7 @@ const Index = ({}) => {
               >
                 확인
               </CommonButton>
-            </Wrapper>
+            </Wrapper> */}
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
