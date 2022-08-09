@@ -32,7 +32,7 @@ import {
 import Theme from "../components/Theme";
 
 const TagBtn = styled(Wrapper)`
-  width: 75px;
+  width: 85px;
   height: 35px;
   font-size: 15px;
   border-radius: ${(props) => props.radius || `10px`};
@@ -103,6 +103,18 @@ const Home = ({}) => {
     },
     [searchDate]
   );
+
+  const reBoughtHandler = useCallback((data) => {
+    if (data.paymentType === "payment") {
+      sessionStorage.setItem("rePaymentData", JSON.stringify(data));
+      router.push(`/promise/detail/${data.prescriptionId}`);
+      return;
+    } else {
+      sessionStorage.setItem("rePprData", JSON.stringify(data));
+      router.push(`/prescription`);
+      return;
+    }
+  }, []);
 
   ////// DATAVIEW //////
 
@@ -229,9 +241,10 @@ const Home = ({}) => {
                     (userBoughtList.length === 0 ? (
                       <Empty description="주문목록이 없습니다." />
                     ) : (
-                      userBoughtList.map((data) => {
+                      userBoughtList.map((data, idx) => {
                         return (
                           <Wrapper
+                            key={idx}
                             radius={`20px`}
                             shadow={Theme.shadow_C}
                             padding={`15px`}
@@ -255,7 +268,7 @@ const Home = ({}) => {
                                 </Text>
                                 <Text>{data.receiveUser}</Text>
                               </Wrapper>
-                              <TagBtn>결제완료</TagBtn>
+                              <TagBtn>{data.viewDeliveryStatus}</TagBtn>
                             </Wrapper>
                             <Wrapper
                               dr={`row`}
@@ -287,9 +300,12 @@ const Home = ({}) => {
                               >
                                 주문내역
                               </Wrapper>
+
+                              {console.log(data)}
                               <Wrapper
                                 width={`calc(100% / 3)`}
                                 cursor={`pointer`}
+                                onClick={() => reBoughtHandler(data)}
                               >
                                 재처방
                               </Wrapper>

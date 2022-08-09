@@ -158,7 +158,7 @@ router.get("/detail/:paymentId", async (req, res, next) => {
           DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
           CASE
               WHEN	p.deliveryStatus = 0 AND p.isCompleted = 1 THEN "결제 승인"
-              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 AND payInfo = "nobank" THEN "입금 대기"
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 AND p.payInfo = "nobank" THEN "입금 대기"
               WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 THEN "결제 미승인"
               WHEN	p.deliveryStatus = 1 THEN "배송 준비중"
               WHEN	p.deliveryStatus = 2 THEN "집화 완료"
@@ -280,7 +280,13 @@ router.get("/list/request/:paymentId", async (req, res, next) => {
 });
 
 router.post("/create", isLoggedIn, async (req, res, next) => {
-  const { userId, productName, paymentRequestDatum, totalPrice } = req.body;
+  const {
+    userId,
+    prescriptionId,
+    productName,
+    paymentRequestDatum,
+    totalPrice,
+  } = req.body;
 
   if (isNanCheck(userId)) {
     return res
@@ -307,6 +313,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
       productName,
       UserId: parseInt(userId),
       totalPrice,
+      prescriptionId,
     });
 
     await Promise.all(
@@ -559,6 +566,7 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
           {
             payInfo: _payinfo,
             isPayment: true,
+            isNobank: true,
           },
           {
             where: {
@@ -576,6 +584,7 @@ router.patch("/isPayment/:paymentId", isLoggedIn, async (req, res, next) => {
         {
           payInfo: _payinfo,
           isPayment: true,
+          isNobank: _payinfo === "nobank" ? false : true,
         },
         {
           where: {

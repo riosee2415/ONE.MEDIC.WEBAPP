@@ -968,7 +968,9 @@ router.post("/bought/list", isLoggedIn, async (req, res, next) => {
         Z.nickname,
         Z.companyName,
         Z.companyNo,
-        Z.paymentType
+        Z.paymentType,
+        Z.viewDeliveryStatus,
+        Z.prescriptionId
   FROM  (
        	SELECT  p.id,
               	p.productName,
@@ -992,7 +994,19 @@ router.post("/bought/list", isLoggedIn, async (req, res, next) => {
               	u.nickname,
               	u.companyName,
               	u.companyNo,
-              	"payment"												AS paymentType			
+              	"payment"												                        AS paymentType,	
+                CASE
+                    WHEN	p.deliveryStatus = 0 AND p.isNobank = 1 THEN "결제 완료"
+                    WHEN	p.deliveryStatus = 0 AND p.isNobank = 0 AND p.payInfo = "nobank" THEN "입금 대기"
+                    WHEN	p.deliveryStatus = 1 THEN "배송 준비중"
+                    WHEN	p.deliveryStatus = 2 THEN "집화 완료"
+                    WHEN	p.deliveryStatus = 3 THEN "배송 중"
+                    WHEN	p.deliveryStatus = 4 THEN "지점 도착"
+                    WHEN	p.deliveryStatus = 5 THEN "배송 출발"
+                    WHEN	p.deliveryStatus = 6 THEN "배송 완료"
+                    ELSE	p.deliveryStatus
+                END	                                                    AS viewDeliveryStatus,
+                p.prescriptionId                                         
           FROM  payment p
           JOIN  users u
             ON  u.id = p.UserId
@@ -1022,7 +1036,19 @@ router.post("/bought/list", isLoggedIn, async (req, res, next) => {
                 u.nickname,
                 u.companyName,
                 u.companyNo,
-                "ppr"												AS paymentType		
+                "ppr"												                              AS paymentType,
+                CASE
+                    WHEN	ppr.deliveryStatus = 0 AND ppr.isNobank = 1 THEN "결제 완료"
+                    WHEN	ppr.deliveryStatus = 0 AND ppr.isNobank = 0 AND ppr.payInfo = "nobank" THEN "입금 대기"
+                    WHEN	ppr.deliveryStatus = 1 THEN "배송 준비중"
+                    WHEN	ppr.deliveryStatus = 2 THEN "집화 완료"
+                    WHEN	ppr.deliveryStatus = 3 THEN "배송 중"
+                    WHEN	ppr.deliveryStatus = 4 THEN "지점 도착"
+                    WHEN	ppr.deliveryStatus = 5 THEN "배송 출발"
+                    WHEN	ppr.deliveryStatus = 6 THEN "배송 완료"
+                    ELSE	ppr.deliveryStatus
+                END	                                                     AS viewDeliveryStatus,
+                0                                                        AS prescriptionId
           FROM  prescriptionPaymentRequest ppr
           JOIN  users u
           	ON  u.id = ppr.UserId

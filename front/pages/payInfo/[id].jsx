@@ -173,7 +173,7 @@ const Index = ({}) => {
 
   useEffect(() => {
     if (st_paymentIsPaymentDone) {
-      message.success("결제되었습니다.");
+      message.success("주문되었습니다.");
       return router.push("/");
     }
   }, [st_paymentIsPaymentDone]);
@@ -188,7 +188,7 @@ const Index = ({}) => {
 
   useEffect(() => {
     if (st_pprIsPayMentDone) {
-      message.success("결제되었습니다.");
+      message.success("주문되었습니다.");
       return router.push("/");
     }
   }, [st_pprIsPayMentDone]);
@@ -258,7 +258,19 @@ const Index = ({}) => {
       if (me) {
         if (router.query.type === "payment") {
           if (paymentDetail) {
-            if (paymentType !== "nobank") {
+            if (paymentType === "nobank") {
+              dispatch({
+                type: PAYMENT_ISPAYMENT_REQUEST,
+                data: {
+                  paymentId: router.query.id,
+                  isCard: "0",
+                  totalPrice: productPayment - discount + 5000,
+                  payInfo: paymentType,
+                  userPayinfo: isAgree1 ? paymentType : null,
+                  name: paymentDetail.productName,
+                },
+              });
+            } else {
               IMP.request_pay(
                 {
                   pg: paymentType === "phone" ? "danal" : "danal_tpay",
@@ -266,6 +278,7 @@ const Index = ({}) => {
                   merchant_uid: orderPK,
                   name: paymentDetail.productName,
                   amount: productPayment - discount + 5000,
+                  // amount: 150,
                   buyer_name: me.username,
                   buyer_tel: me.mobile.replace(
                     /^(\d{2,3})(\d{3,4})(\d{4})$/,
@@ -297,23 +310,11 @@ const Index = ({}) => {
                   }
                 }
               );
-            } else {
-              dispatch({
-                type: PAYMENT_ISPAYMENT_REQUEST,
-                data: {
-                  paymentId: router.query.id,
-                  isCard: "0",
-                  totalPrice: productPayment - discount + 5000,
-                  payInfo: paymentType,
-                  userPayinfo: isAgree1 ? paymentType : null,
-                  name: paymentDetail.productName,
-                },
-              });
             }
           }
         } else {
           if (pprDetail) {
-            if (paymentType !== "nobank") {
+            if (paymentType === "nobank") {
               dispatch({
                 type: PPR_ISPAYMENT_REQUEST,
                 data: {
@@ -335,8 +336,8 @@ const Index = ({}) => {
                       ? `외 ${pprDetail.materialDatum.length}개`
                       : ""
                   }`,
-                  // amount: productPayment - discount + 5000,
-                  amount: 150,
+                  amount: productPayment - discount + 5000,
+                  // amount: 150,
                   buyer_name: me.username,
                   buyer_tel: me.mobile.replace(
                     /^(\d{2,3})(\d{3,4})(\d{4})$/,
@@ -382,8 +383,6 @@ const Index = ({}) => {
     pprDetail,
     isAgree1,
   ]);
-
-  console.log(isAgree1);
 
   ////// DATAVIEW //////
 

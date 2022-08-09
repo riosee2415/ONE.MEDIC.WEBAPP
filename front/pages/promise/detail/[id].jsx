@@ -31,7 +31,10 @@ import {
   PRODUCT_UNIT_LIST_REQUEST,
   PRODUCT_DETAIL_REQUEST,
 } from "../../../reducers/prescription";
-import { PAYMENTREQUEST_CREATE_REQUEST } from "../../../reducers/paymentRequest";
+import {
+  PAYMENTREQUEST_CREATE_REQUEST,
+  PAYMENT_DETAIL_REQUEST,
+} from "../../../reducers/paymentRequest";
 import { useRouter } from "next/router";
 import { message } from "antd";
 
@@ -73,6 +76,8 @@ const PromiseDetail = () => {
 
   const {
     paymentId,
+
+    paymentDetail,
     st_paymentRequestCreateDone,
     st_paymentRequestCreateError,
   } = useSelector((state) => state.paymentRequest);
@@ -107,6 +112,42 @@ const PromiseDetail = () => {
       setTotalPayment(total);
     }
   }, [temporaryDatum]);
+
+  useEffect(() => {
+    const rePaymentData = sessionStorage.getItem("rePaymentData")
+      ? JSON.parse(sessionStorage.getItem("rePaymentData"))
+      : null;
+
+    if (rePaymentData) {
+      dispatch({
+        type: PAYMENT_DETAIL_REQUEST,
+        data: {
+          paymentId: rePaymentData.id,
+        },
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (paymentDetail) {
+      const paymentArr = [];
+
+      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
+        paymentArr.push({
+          id: paymentDetail.PaymentRequest[i].id,
+          payment: paymentDetail.PaymentRequest[i].payment,
+          packVolumn: paymentDetail.PaymentRequest[i].packVolumn,
+          typeVolumn: paymentDetail.PaymentRequest[i].typeVolumn,
+          unitVolumn: paymentDetail.PaymentRequest[i].unitVolumn,
+          otherRequest: paymentDetail.PaymentRequest[i].otherRequest,
+        });
+      }
+
+      setTemporaryDatum(paymentArr);
+
+      sessionStorage.removeItem("rePaymentData");
+    }
+  }, [paymentDetail]);
 
   useEffect(() => {
     if (router.query) {
@@ -259,6 +300,7 @@ const PromiseDetail = () => {
             : `${product.title} ${unit.value.name}`,
         paymentRequestDatum: temporaryDatum,
         totalPrice: totalPayment,
+        prescriptionId: product.id,
       },
     });
   }, [temporaryDatum, me, product, totalPayment, unit.value]);

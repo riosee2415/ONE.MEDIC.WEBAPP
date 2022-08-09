@@ -28,7 +28,10 @@ import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import { SEARCH_LIST_REQUEST } from "../../reducers/search";
 import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
 import { MATERIAL_USER_ADD } from "../../reducers/material";
-import { PPR_CREATE_REQUEST } from "../../reducers/prescriptionPaymentRequest";
+import {
+  PPR_CREATE_REQUEST,
+  PPR_DETAIL_REQUEST,
+} from "../../reducers/prescriptionPaymentRequest";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -107,9 +110,11 @@ const Prescription = ({}) => {
   );
   const { userMaterials } = useSelector((state) => state.material);
   const { price } = useSelector((state) => state.prescriptionPrice);
-  const { pprId, st_pprCreateDone, st_pprCreateError } = useSelector(
+  const { pprId, pprDetail, st_pprCreateDone, st_pprCreateError } = useSelector(
     (state) => state.prescriptionPaymentRequest
   );
+
+  console.log(pprDetail);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -157,7 +162,40 @@ const Prescription = ({}) => {
     setChubSelectArr(chubArr);
     setPackSelectArr(packArr);
     setVolumnSelectArr(volumnArr);
+
+    const rePprData = sessionStorage.getItem("rePprData")
+      ? JSON.parse(sessionStorage.getItem("rePprData"))
+      : null;
+
+    if (rePprData) {
+      dispatch({
+        type: PPR_DETAIL_REQUEST,
+        data: {
+          pprId: rePprData.id,
+        },
+      });
+    }
+    return;
   }, [router.query]);
+
+  useEffect(() => {
+    if (pprDetail) {
+      dispatch({
+        type: MATERIAL_USER_ADD,
+        data: pprDetail.materialDatum.map((data) => ({
+          id: data.MaterialId,
+          name: data.name,
+          qnt: data.qnt,
+          unit: data.unit,
+          price: data.buyPrice,
+        })),
+      });
+
+      sessionStorage.removeItem("rePprData");
+
+      return;
+    }
+  }, [pprDetail]);
 
   // 팩 가격
   useEffect(() => {
@@ -298,6 +336,12 @@ const Prescription = ({}) => {
   // 주문하기
   const paymentCreateHandler = useCallback(() => {
     const recipeName = sessionStorage.getItem("recipeName");
+
+    for (let i = 0; i < userMaterials.length; i++) {
+      if (userMaterials[i].qnt === 0) {
+        return message.error("용량이 0인 약재가 있습니다.");
+      }
+    }
 
     dispatch({
       type: PPR_CREATE_REQUEST,
@@ -474,51 +518,58 @@ const Prescription = ({}) => {
                   </Wrapper>
                 </Wrapper>
                 <Wrapper>
-                  {userMaterials.map((data) => {
-                    return (
-                      <ListWrapper
-                        key={data.id}
-                        onClick={() => selectMaterialHandler(data)}
-                        bgColor={
-                          selectMaterial &&
-                          selectMaterial.id === data.id &&
-                          Theme.lightGrey_C
-                        }
-                      >
-                        <Wrapper
-                          dr={`row`}
-                          ju={`flex-start`}
-                          width={`40%`}
-                          color={`${Theme.black_C}`}
-                        >
-                          <Text
-                            fontSize={width < 600 ? `16px` : `18px`}
-                            fontWeight={`800`}
+                  {userMaterials &&
+                    (userMaterials.length === 0 ? (
+                      <Wrapper margin={`40px 0`}>
+                        <Empty description="선택된 약제가 없습니다." />
+                      </Wrapper>
+                    ) : (
+                      userMaterials.map((data) => {
+                        return (
+                          <ListWrapper
+                            key={data.id}
+                            onClick={() => selectMaterialHandler(data)}
+                            bgColor={
+                              selectMaterial &&
+                              selectMaterial.id === data.id &&
+                              Theme.lightGrey_C
+                            }
                           >
-                            {data.name}
-                          </Text>
-                        </Wrapper>
+                            <Wrapper
+                              dr={`row`}
+                              ju={`flex-start`}
+                              width={`40%`}
+                              color={`${Theme.black_C}`}
+                            >
+                              <Text
+                                fontSize={width < 600 ? `16px` : `18px`}
+                                fontWeight={`800`}
+                              >
+                                {data.name}
+                              </Text>
+                            </Wrapper>
 
-                        <Wrapper width={`10%`}>
-                          <Text
-                            color={`${Theme.black_C}`}
-                            fontSize={width < 600 ? `16px` : `18px`}
-                          >
-                            {data.qnt}&nbsp;{data.unit}
-                          </Text>
-                        </Wrapper>
+                            <Wrapper width={`10%`}>
+                              <Text
+                                color={`${Theme.black_C}`}
+                                fontSize={width < 600 ? `16px` : `18px`}
+                              >
+                                {data.qnt}&nbsp;{data.unit}
+                              </Text>
+                            </Wrapper>
 
-                        <Wrapper width={`50%`} al={`flex-end`}>
-                          <Text
-                            color={`${Theme.black_C}`}
-                            fontSize={width < 600 ? `16px` : `18px`}
-                          >
-                            {numberWithCommas(data.price * data.qnt)}원
-                          </Text>
-                        </Wrapper>
-                      </ListWrapper>
-                    );
-                  })}
+                            <Wrapper width={`50%`} al={`flex-end`}>
+                              <Text
+                                color={`${Theme.black_C}`}
+                                fontSize={width < 600 ? `16px` : `18px`}
+                              >
+                                {numberWithCommas(data.price * data.qnt)}원
+                              </Text>
+                            </Wrapper>
+                          </ListWrapper>
+                        );
+                      })
+                    ))}
                 </Wrapper>
               </Wrapper>
               {/* SELECT MATERIAL VIEW AREA END */}

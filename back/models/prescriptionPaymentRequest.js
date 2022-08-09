@@ -114,6 +114,12 @@ module.exports = class PrescriptionPaymentRequest extends Model {
           type: DataTypes.INTEGER,
           allowNull: true,
         },
+
+        isNobank: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false, // 필수
+          defaultValue: false,
+        },
       },
       {
         modelName: "PrescriptionPaymentRequest",

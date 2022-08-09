@@ -428,6 +428,12 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
       },
     });
 
+    const currentMaterial = await UseMaterial.findAll({
+      where: {
+        PrescriptionPaymentRequestId: pprId,
+      },
+    });
+
     const _payinfo = payInfo ? payInfo : "";
 
     await User.update(
@@ -497,6 +503,7 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
           {
             payInfo: _payinfo,
             isPayment: true,
+            isNobank: true,
           },
           {
             where: {
@@ -505,11 +512,25 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
           }
         );
 
-        // const materialDatum = await Materials.find()
+        // 재료 재고 차감
+        for (let i = 0; i < currentMaterial.length; i++) {
+          const result = await Materials.findOne({
+            where: {
+              id: currentMaterial[i].MaterialId,
+            },
+          });
 
-        // const materialResult = await Materials.update({
-
-        // })
+          await Materials.update(
+            {
+              qnt: result.qnt - currentMaterial[i].qnt,
+            },
+            {
+              where: {
+                id: currentMaterial[i].MaterialId,
+              },
+            }
+          );
+        }
 
         return res.status(200).json({ result: true, pprId: result.id });
       } else {
@@ -520,6 +541,7 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
         {
           payInfo: _payinfo,
           isPayment: true,
+          isNobank: _payinfo === "nobank" ? false : true,
         },
         {
           where: {
@@ -527,6 +549,26 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
           },
         }
       );
+
+      // 재료 재고 차감
+      for (let i = 0; i < currentMaterial.length; i++) {
+        const result = await Materials.findOne({
+          where: {
+            id: currentMaterial[i].MaterialId,
+          },
+        });
+
+        await Materials.update(
+          {
+            qnt: result.qnt - currentMaterial[i].qnt,
+          },
+          {
+            where: {
+              id: currentMaterial[i].MaterialId,
+            },
+          }
+        );
+      }
 
       return res.status(200).json({ result: true });
     }
