@@ -171,9 +171,15 @@ const Login = () => {
                   </a>
                 </Link>
                 |
-                <Link href={`/`}>
+                <Link href={`/find/findId`}>
                   <a>
-                    <Text margin={`0 0 0 20px`}>비밀번호찾기</Text>
+                    <Text margin={`0 20px 0`}>아이디 찾기</Text>
+                  </a>
+                </Link>
+                |
+                <Link href={`/find/findPw`}>
+                  <a>
+                    <Text margin={`0 0 0 20px`}>비밀번호 찾기</Text>
                   </a>
                 </Link>
               </Wrapper>
