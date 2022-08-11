@@ -116,8 +116,7 @@ const Promise = ({}) => {
           >
             {products && products.length === 0 ? (
               <Wrapper margin={`80px 0`}>
-                <Empty />
-                상품이 없습니다.
+                <Empty description={"상품이 없습니다."} />
               </Wrapper>
             ) : (
               products &&
