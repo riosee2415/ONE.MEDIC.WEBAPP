@@ -365,18 +365,12 @@ router.post("/checkCode", async (req, res, next) => {
 });
 
 router.post("/modifypass", isLoggedIn, async (req, res, next) => {
-  const { email, nickname, mobile } = req.body;
+  const { email } = req.body;
 
   try {
     const cookieEmail = req.user.dataValues.email;
-    const cookieNickname = req.user.dataValues.nickname;
-    const cookieMobile = req.user.dataValues.mobile;
 
-    if (
-      email === cookieEmail &&
-      nickname === cookieNickname &&
-      mobile === cookieMobile
-    ) {
+    if (email === cookieEmail) {
       const currentUserId = req.user.dataValues.id;
 
       const UUID = generateUUID();

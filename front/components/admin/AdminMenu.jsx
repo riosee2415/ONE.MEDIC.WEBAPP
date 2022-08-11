@@ -57,7 +57,7 @@ const AdminMenu = () => {
       <Menu
         theme={mode}
         onClick={clickAction}
-        style={{ width: `100%` }}
+        style={{ width: `100%`, height: `100%` }}
         defaultOpenKeys={currentAdminMenu}
         mode="inline"
         selectedKeys={router.pathname}

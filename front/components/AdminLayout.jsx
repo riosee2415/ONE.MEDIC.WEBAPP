@@ -5,7 +5,7 @@ import AdminMenu from "./admin/AdminMenu";
 import styled from "styled-components";
 
 const AdminCol = styled(Col)`
-  height: 100vh;
+  height: auto;
 
   & .ant-menu-inline {
     height: 100%;

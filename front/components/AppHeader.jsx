@@ -274,10 +274,7 @@ const AppHeader = ({ children, width }) => {
       router: "/deliveryList/[id]",
       title: "배송조회",
     },
-    {
-      router: "/find/findId",
-      title: "아이디 찾기",
-    },
+
     {
       router: "/find/findPw",
       title: "비밀번호 찾기",
@@ -285,31 +282,7 @@ const AppHeader = ({ children, width }) => {
   ];
   return (
     <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>
-      {router.pathname === "/find/findId" ? (
-        <RsWrapper>
-          <Wrapper
-            fontSize={width < 800 ? `20px` : `26px`}
-            fontWeight={`bold`}
-            dr={`row`}
-            ju={`flex-start`}
-            cursor={`pointer`}
-          >
-            <Link href={`/login`}>
-              <a>
-                <Wrapper
-                  width={`auto`}
-                  color={Theme.grey2_C}
-                  fontSize={`20px`}
-                  margin={`0 10px 0 0`}
-                >
-                  <LeftOutlined />
-                </Wrapper>
-              </a>
-            </Link>
-            아이디 찾기
-          </Wrapper>
-        </RsWrapper>
-      ) : router.pathname === "/find/findPw" ? (
+      {router.pathname === "/find/findPw" ? (
         <RsWrapper>
           <Wrapper
             fontSize={width < 800 ? `20px` : `26px`}
