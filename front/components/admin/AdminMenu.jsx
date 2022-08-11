@@ -98,24 +98,7 @@ const AdminMenu = () => {
             <MenuName>접속자 통계</MenuName>
           </Menu.Item>
         </SubMenu>
-        <SubMenu
-          key="sub2"
-          icon={<InfoCircleOutlined />}
-          title="기초 관리"
-          onTitleClick={titleClickHandler("sub2")}
-        >
-          <Menu.Item key="/admin/info/businessInformation">
-            <MenuName>사업자정보 관리</MenuName>
-          </Menu.Item>
-          <Menu.Item key="/admin/info/popup">
-            <MenuName>팝업 관리</MenuName>
-          </Menu.Item>
 
-          {/* <SubMenu key="sub3" title="Submenu">
-            <Menu.Item key="7">Option 7</Menu.Item>
-            <Menu.Item key="8">Option 8</Menu.Item>
-          </SubMenu> */}
-        </SubMenu>
         <SubMenu
           key="sub3"
           icon={<BookOutlined />}
@@ -125,20 +108,8 @@ const AdminMenu = () => {
           <Menu.Item key="/admin/board/notice/list">
             <MenuName>공지사항 관리</MenuName>
           </Menu.Item>
-          <Menu.Item key="/admin/board/gallery/list">
-            <MenuName>갤러리 관리</MenuName>
-          </Menu.Item>
         </SubMenu>
-        <SubMenu
-          key="su43"
-          icon={<SettingOutlined />}
-          title="베너 관리"
-          onTitleClick={titleClickHandler("sub4")}
-        >
-          <Menu.Item key="/admin/banner/mainbanner">
-            <MenuName>메인베너 관리</MenuName>
-          </Menu.Item>
-        </SubMenu>
+
         <SubMenu
           key="sub5"
           icon={<UserOutlined />}
