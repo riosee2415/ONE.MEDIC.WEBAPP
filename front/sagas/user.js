@@ -77,6 +77,10 @@ import {
   MODIFYPASS_SUCCESS,
   MODIFYPASS_FAILURE,
   /////////////////////////////
+  MODIFYPASS_UPDATE_REQUEST,
+  MODIFYPASS_UPDATE_SUCCESS,
+  MODIFYPASS_UPDATE_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -594,6 +598,34 @@ function* userModifyPass(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function userModifyPassUpdateAPI(data) {
+  return await axios.patch(`/api/user/modifypass/update`, data);
+}
+
+function* userModifyPassUpdate(action) {
+  try {
+    const result = yield call(userModifyPassUpdateAPI, action.data);
+
+    yield put({
+      type: MODIFYPASS_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: MODIFYPASS_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -672,6 +704,10 @@ function* watchUserModifyPass() {
   yield takeLatest(MODIFYPASS_REQUEST, userModifyPass);
 }
 
+function* watchUserModifyPassUpdate() {
+  yield takeLatest(MODIFYPASS_UPDATE_REQUEST, userModifyPassUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -694,6 +730,7 @@ export default function* userSaga() {
     fork(watchUserExit),
     fork(watchUserBoughtList),
     fork(watchUserModifyPass),
+    fork(watchUserModifyPassUpdate),
     //
   ]);
 }

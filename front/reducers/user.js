@@ -10,6 +10,8 @@ export const initailState = {
 
   companyUserLists: null,
 
+  secretCode: null,
+
   updateModal: false,
   unitModal: false,
   detailModal: false,
@@ -94,6 +96,10 @@ export const initailState = {
   st_userBoughtListLoading: false, // 주문내역
   st_userBoughtListDone: false,
   st_userBoughtListError: null,
+  //
+  st_userModifyPassUpdateLoading: false, // 비밀번호 변경
+  st_userModifyPassUpdateDone: false,
+  st_userModifyPassUpdateError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -171,6 +177,10 @@ export const USER_BOUGHT_LIST_FAILURE = "USER_BOUGHT_LIST_FAILURE";
 export const MODIFYPASS_REQUEST = "MODIFYPASS_REQUEST";
 export const MODIFYPASS_SUCCESS = "MODIFYPASS_SUCCESS";
 export const MODIFYPASS_FAILURE = "MODIFYPASS_FAILURE";
+
+export const MODIFYPASS_UPDATE_REQUEST = "MODIFYPASS_UPDATE_REQUEST";
+export const MODIFYPASS_UPDATE_SUCCESS = "MODIFYPASS_UPDATE_SUCCESS";
+export const MODIFYPASS_UPDATE_FAILURE = "MODIFYPASS_UPDATE_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -553,6 +563,47 @@ const reducer = (state = initailState, action) =>
         draft.st_userBoughtListLoading = false;
         draft.st_userBoughtListDone = false;
         draft.st_userBoughtListError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case MODIFYPASS_REQUEST: {
+        draft.st_userModifyPassLoading = true;
+        draft.st_userModifyPassDone = null;
+        draft.st_userModifyPassError = false;
+        break;
+      }
+      case MODIFYPASS_SUCCESS: {
+        draft.st_userModifyPassLoading = false;
+        draft.st_userModifyPassDone = true;
+        draft.st_userModifyPassError = null;
+        draft.secretCode = action.data.secretCode;
+        break;
+      }
+      case MODIFYPASS_FAILURE: {
+        draft.st_userModifyPassLoading = false;
+        draft.st_userModifyPassDone = false;
+        draft.st_userModifyPassError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case MODIFYPASS_UPDATE_REQUEST: {
+        draft.st_userModifyPassUpdateLoading = true;
+        draft.st_userModifyPassUpdateDone = null;
+        draft.st_userModifyPassUpdateError = false;
+        break;
+      }
+      case MODIFYPASS_UPDATE_SUCCESS: {
+        draft.st_userModifyPassUpdateLoading = false;
+        draft.st_userModifyPassUpdateDone = true;
+        draft.st_userModifyPassUpdateError = null;
+        break;
+      }
+      case MODIFYPASS_UPDATE_FAILURE: {
+        draft.st_userModifyPassUpdateLoading = false;
+        draft.st_userModifyPassUpdateDone = false;
+        draft.st_userModifyPassUpdateError = action.error;
         break;
       }
       //////////////////////////////////////////////
