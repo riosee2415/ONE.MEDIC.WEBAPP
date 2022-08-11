@@ -101,23 +101,23 @@ const AdminHome = () => {
                   </Link>
                 </ColWrapper>
                 <ColWrapper span={6}>
-                  <Link href={`/admin/info/businessInformation`}>
+                  <Link href={`/admin/question/list`}>
                     <CommonButton width={`200px`}>
-                      사업자정보 관리 바로가기
+                      문의 리스트 바로가기
                     </CommonButton>
                   </Link>
                 </ColWrapper>
                 <ColWrapper span={6}>
-                  <Link href={`/admin/info/popup`}>
+                  <Link href={`/admin/order/orderRequestList`}>
                     <CommonButton width={`200px`}>
-                      팝업 관리 바로가기
+                      약속처방 주문 관리 바로가기
                     </CommonButton>
                   </Link>
                 </ColWrapper>
                 <ColWrapper span={6}>
-                  <Link href={`/admin/board/notice/list`}>
+                  <Link href={`/admin/order/combiOrderRequest`}>
                     <CommonButton width={`200px`}>
-                      공지사항 관리 바로가기
+                      탕전처방 주문 관리 바로가기
                     </CommonButton>
                   </Link>
                 </ColWrapper>
