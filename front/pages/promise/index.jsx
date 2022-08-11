@@ -116,8 +116,8 @@ const Promise = ({}) => {
           >
             {products && products.length === 0 ? (
               <Wrapper margin={`80px 0`}>
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                주문목록이 없습니다.
+                <Empty />
+                상품이 없습니다.
               </Wrapper>
             ) : (
               products &&
