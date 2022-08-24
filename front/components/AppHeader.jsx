@@ -647,7 +647,7 @@ const AppHeader = ({ children, width }) => {
                       </ATag>
                     </Link>
                     {/* ====== 탕전처방 ====== */}
-                    <Link href={`/prescription`}>
+                    {/* <Link href={`/prescription`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper
                           dr={`row`}
@@ -670,7 +670,7 @@ const AppHeader = ({ children, width }) => {
                           </Text>
                         </Wrapper>
                       </ATag>
-                    </Link>
+                    </Link> */}
                     {/* ====== 탕전처방 ====== */}
                     {me && (
                       <>
