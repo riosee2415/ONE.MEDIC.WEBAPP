@@ -51,8 +51,11 @@ router.get("/list", async (req, res, next) => {
       FROM  payment p
       JOIN  users u
         ON  u.id = p.UserId
-     ${condition}
-     ${completedCondition}
+     WHERE  1 = 1
+       ${condition}
+       ${completedCondition}
+       AND  p.payInfo IS NOT NULL
+       AND  p.sendUser IS NOT NULL
      ORDER  BY  p.createdAt DESC;
     `;
 
