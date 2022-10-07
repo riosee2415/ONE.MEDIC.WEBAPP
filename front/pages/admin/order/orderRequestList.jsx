@@ -7,6 +7,7 @@ import {
   Empty,
   Popconfirm,
   message,
+  Select,
 } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -942,14 +943,20 @@ const OrderRequestList = () => {
             name="deliveryNo"
             rules={[{ required: true, message: "운송장번호를 입력해주세요." }]}
           >
-            <Input />
+            <Input placeholder="운송장번호를 입력해주세요." />
           </Form.Item>
           <Form.Item
             label="배송회사"
             name="deliveryCompany"
             rules={[{ required: true, message: "배송회사를 입력해주세요." }]}
           >
-            <Input />
+            <Select placeholder={`배송회사를 선택해주세요.`}>
+              <Select.Option value={`CJ대한통운`}>CJ대한통운</Select.Option>
+              <Select.Option value={`한진택배`}>한진택배</Select.Option>
+              <Select.Option value={`로젠택배`}>로젠택배</Select.Option>
+              <Select.Option value={`롯데택배`}>롯데택배</Select.Option>
+              <Select.Option value={`경동택배`}>경동택배</Select.Option>
+            </Select>
           </Form.Item>
           <Wrapper dr={`row`} ju={`flex-end`}>
             <AdminButton size="small" onClick={() => deliveryModalToggle(null)}>

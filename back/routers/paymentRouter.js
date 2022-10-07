@@ -364,18 +364,15 @@ router.patch("/delivery/update", async (req, res, next) => {
       return res.status(401).send(`${value.data.msg}`);
     }
 
-    const result = await Payment.update(
-      {
-        deliveryCompany,
-        deliveryNo,
-        deliveryStatus: value.data.level,
-      },
-      {
-        where: {
-          id: parseInt(paymentId),
-        },
-      }
-    );
+    const updateQuery = `
+    UPDATE  payment SET 
+		        deliveryCompany='${deliveryCompany}',
+		        deliveryNo='${deliveryNo}',
+		        deliveryStatus=${value.data.level}
+     WHERE  id = ${parseInt(paymentId)};
+    `;
+
+    const result = await models.sequelize.query(updateQuery);
 
     return res.status(200).json({ result: true });
   } catch (e) {
