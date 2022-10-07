@@ -771,14 +771,14 @@ const Index = ({}) => {
                   <Wrapper margin={`20px 0 0 0`}>
                     <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
                       <CommonButton
-                        kindOf={paymentType !== "simpleCard" && `white`}
+                        kindOf={paymentType !== "card" && `white`}
                         width={`calc(50% - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
-                        onClick={() => paymentSelectHadnler("simpleCard")}
+                        onClick={() => paymentSelectHadnler("card")}
                       >
-                        <Text fontSize={`16px`}>카드 간편 결제</Text>
+                        <Text fontSize={`16px`}>신용카드</Text>
                       </CommonButton>
                       <CommonButton
                         kindOf={paymentType !== "trans" && `white`}
@@ -797,18 +797,8 @@ const Index = ({}) => {
                       margin={`0 0 30px`}
                     >
                       <CommonButton
-                        kindOf={paymentType !== "card" && `white`}
-                        width={`calc(100% / 3 - 2px)`}
-                        height={`50px`}
-                        radius={`10px`}
-                        padding={`0px`}
-                        onClick={() => paymentSelectHadnler("card")}
-                      >
-                        <Text fontSize={`16px`}>신용카드</Text>
-                      </CommonButton>
-                      <CommonButton
                         kindOf={paymentType !== "phone" && `white`}
-                        width={`calc(100% / 3 - 2px)`}
+                        width={`calc(50% - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}
@@ -818,7 +808,7 @@ const Index = ({}) => {
                       </CommonButton>
                       <CommonButton
                         kindOf={paymentType !== "nobank" && `white`}
-                        width={`calc(100% / 3 - 2px)`}
+                        width={`calc(50% - 2px)`}
                         height={`50px`}
                         radius={`10px`}
                         padding={`0px`}

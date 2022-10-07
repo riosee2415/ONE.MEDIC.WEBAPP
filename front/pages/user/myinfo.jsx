@@ -244,7 +244,7 @@ const Question = () => {
                 );
               })} */}
             {/* </Wrapper> */}
-            <Wrapper
+            {/* <Wrapper
               radius={`20px`}
               shadow={Theme.shadow_C}
               padding={`22px 27px`}
@@ -289,7 +289,7 @@ const Question = () => {
                     );
                   })
                 ))}
-            </Wrapper>
+            </Wrapper> */}
             <Wrapper
               radius={`20px`}
               shadow={Theme.shadow_C}
