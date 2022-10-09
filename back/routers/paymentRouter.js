@@ -58,7 +58,19 @@ router.get("/list", async (req, res, next) => {
               WHEN	p.payInfo = 'simpleCard' THEN "간편 카드 결제"
               WHEN	p.payInfo = 'trans' THEN "계좌 간편 결제"
               ELSE	p.payInfo
-            END	                                                    AS viewPayInfo         
+            END	                                                    AS viewPayInfo,
+            CASE
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 1 THEN "결제 승인"
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 AND p.payInfo = "nobank" THEN "입금 대기"
+              WHEN	p.deliveryStatus = 0 AND p.isCompleted = 0 THEN "결제 미승인"
+              WHEN	p.deliveryStatus = 1 THEN "배송 준비중"
+              WHEN	p.deliveryStatus = 2 THEN "집화 완료"
+              WHEN	p.deliveryStatus = 3 THEN "배송 중"
+              WHEN	p.deliveryStatus = 4 THEN "지점 도착"
+              WHEN	p.deliveryStatus = 5 THEN "배송 출발"
+              WHEN	p.deliveryStatus = 6 THEN "배송 완료"
+              ELSE	p.deliveryStatus
+          END	                                                    AS viewDeliveryStatus 
       FROM  payment p
       JOIN  users u
         ON  u.id = p.UserId
