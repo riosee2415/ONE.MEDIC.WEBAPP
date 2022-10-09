@@ -110,39 +110,52 @@ const Promise = ({}) => {
         <WholeWrapper>
           <RsWrapper
             minHeight={`calc(100vh - 64px)`}
-            ju={`flex-start`}
             position={`relative`}
             padding={`10px 0`}
+            ju={`flex-start`}
           >
-            {products && products.length === 0 ? (
-              <Wrapper margin={`80px 0`}>
-                <Empty description={"상품이 없습니다."} />
-              </Wrapper>
-            ) : (
-              products &&
-              products.map((data) => {
-                return (
-                  <Wrapper
-                    key={data.id}
-                    width={`90%`}
-                    height={`calc(100vh / 3 - 40px)`}
-                    shadow={Theme.shadow_C}
-                    radius={`15px`}
-                    cursor={`pointer`}
-                    onClick={() =>
-                      moveLinkHandler(`/promise/detail/${data.id}`)
-                    }
-                  >
-                    <Image
-                      alt="image"
-                      height={`calc(100% - 45px)`}
-                      src={data.imageURL1}
-                    />
-                    <Text fontSize={`20px`}>{data.title}</Text>
-                  </Wrapper>
-                );
-              })
-            )}
+            <Wrapper
+              padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
+              minHeight={`calc(100vh - 149px - 170px)`}
+              ju={`space-between`}
+              dr={`row`}
+            >
+              {products && products.length === 0 ? (
+                <Wrapper margin={`80px 0`}>
+                  <Empty description={"상품이 없습니다."} />
+                </Wrapper>
+              ) : (
+                products &&
+                products.map((data) => {
+                  return (
+                    <Wrapper
+                      key={data.id}
+                      width={
+                        width < 1100
+                          ? width < 700
+                            ? `100%`
+                            : `calc(100% / 2 - 20px)`
+                          : `calc(100% / 3 - 20px)`
+                      }
+                      height={`calc(100vh / 3 - 40px)`}
+                      shadow={Theme.shadow_C}
+                      radius={`15px`}
+                      cursor={`pointer`}
+                      onClick={() =>
+                        moveLinkHandler(`/promise/detail/${data.id}`)
+                      }
+                    >
+                      <Image
+                        alt="image"
+                        height={`calc(100% - 45px)`}
+                        src={data.imageURL1}
+                      />
+                      <Text fontSize={`20px`}>{data.title}</Text>
+                    </Wrapper>
+                  );
+                })
+              )}
+            </Wrapper>
           </RsWrapper>
         </WholeWrapper>
       </ClientLayout>
