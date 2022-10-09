@@ -169,7 +169,7 @@ router.get(["/list", "/list/:title"], async (req, res, next) => {
             A.imageURL4,
             DATE_FORMAT(A.createdAt, "%Y년 %m월 %d일") 	AS createdAt,
             DATE_FORMAT(A.updatedAt, "%Y년 %m월 %d일") 	AS updatedAt,
-            description
+            A.description
      FROM	prescriptions	A
     WHERE	isDelete = false
       AND   A.title LIKE '%${_title}%'

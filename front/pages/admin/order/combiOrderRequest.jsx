@@ -342,6 +342,12 @@ const UserDeliAddress = ({}) => {
       title: "주문자",
       dataIndex: "username",
     },
+
+    {
+      title: "결제방법",
+      dataIndex: "viewPayInfo",
+    },
+
     {
       title: "주문자상세",
       render: (data) => (
