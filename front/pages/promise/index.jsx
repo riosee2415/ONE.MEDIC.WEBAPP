@@ -117,8 +117,9 @@ const Promise = ({}) => {
             <Wrapper
               padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
               minHeight={`calc(100vh - 149px - 170px)`}
-              ju={`space-between`}
               dr={`row`}
+              ju={`flex-start`}
+              al={`flex-start`}
             >
               {products && products.length === 0 ? (
                 <Wrapper margin={`80px 0`}>

@@ -235,12 +235,15 @@ const Home = ({}) => {
                 <Wrapper
                   padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
                   minHeight={`calc(100vh - 149px - 170px)`}
-                  ju={`flex-start`}
                   dr={`row`}
+                  ju={`flex-start`}
+                  al={`flex-start`}
                 >
                   {userBoughtList &&
                     (userBoughtList.length === 0 ? (
-                      <Empty description="주문목록이 없습니다." />
+                      <Wrapper>
+                        <Empty description="주문목록이 없습니다." />
+                      </Wrapper>
                     ) : (
                       userBoughtList.map((data, idx) => {
                         return (

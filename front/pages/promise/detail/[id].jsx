@@ -535,6 +535,7 @@ const PromiseDetail = () => {
             <Wrapper
               dr={`row`}
               ju={`flex-start`}
+              al={`flex-start`}
               bgColor={Theme.lightGrey2_C}
               padding={width < 800 ? `15px 10px` : `15px 38px`}
             >

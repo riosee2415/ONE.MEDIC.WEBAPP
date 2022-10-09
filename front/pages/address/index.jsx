@@ -456,7 +456,9 @@ const Address = ({}) => {
             <Wrapper
               padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
               minHeight={`calc(100vh - 185px - 75px)`}
+              dr={`row`}
               ju={`flex-start`}
+              al={`flex-start`}
             >
               {addressList &&
                 (addressList.lenght === 0 ? (
@@ -465,11 +467,19 @@ const Address = ({}) => {
                   addressList.map((data) => {
                     return (
                       <Wrapper
+                        key={data.id}
+                        width={
+                          width < 1100
+                            ? width < 700
+                              ? `100%`
+                              : `calc(100% / 2 - 16px)`
+                            : `calc(100% / 3 - 16px)`
+                        }
                         radius={`20px`}
                         shadow={Theme.shadow_C}
                         padding={`15px`}
                         al={`flex-start`}
-                        margin={`0 0 15px`}
+                        margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
                       >
                         <Wrapper
                           dr={`row`}
