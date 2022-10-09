@@ -261,7 +261,11 @@ const Join = () => {
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper minHeight={`calc(100vh - 170px - 64px)`}>
-            <Wrapper padding={`100px 0`} al={`flex-start`}>
+            <Wrapper
+              width={width < 800 ? `100%` : `450px`}
+              padding={`100px 0`}
+              al={`flex-start`}
+            >
               <Text
                 fontSize={width < 800 ? `16px` : `18px`}
                 margin={`0 0 5px`}

@@ -24,7 +24,11 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 
 const CustomForm = styled(Form)`
-  width: 100%;
+  width: 450px;
+
+  @media (max-width: 700px) {
+    width: 100%;
+  }
 `;
 
 const Login = () => {

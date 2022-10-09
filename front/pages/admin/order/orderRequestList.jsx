@@ -267,6 +267,11 @@ const OrderRequestList = () => {
     },
 
     {
+      title: "결제상태",
+      dataIndex: "viewDeliveryStatus",
+    },
+
+    {
       title: "주문자상세",
       render: (data) => (
         <Button
@@ -335,6 +340,16 @@ const OrderRequestList = () => {
     {
       title: "주문자",
       dataIndex: "username",
+    },
+
+    {
+      title: "결제방법",
+      dataIndex: "viewPayInfo",
+    },
+
+    {
+      title: "결제상태",
+      dataIndex: "viewDeliveryStatus",
     },
     {
       title: "주문자상세",
