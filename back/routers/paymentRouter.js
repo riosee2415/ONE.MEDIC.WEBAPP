@@ -40,6 +40,9 @@ router.get("/list", async (req, res, next) => {
             p.sendAddress,
             p.sendDetailAddress,
             p.deliveryCompany,
+            p.payInfo,
+            p.totalPrice,
+            p.isNobank,
 		        DATE_FORMAT(p.completedAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS completedAt,
 		        DATE_FORMAT(p.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	     AS orderAt,
             u.username,
@@ -47,7 +50,15 @@ router.get("/list", async (req, res, next) => {
 		        u.mobile,
 		        u.nickname,
 		        u.companyName,
-		        u.companyNo
+		        u.companyNo,
+            CASE
+              WHEN	p.payInfo = 'card' THEN "신용카드"
+              WHEN	p.payInfo = 'phone' THEN "휴대폰 결제"
+              WHEN	p.payInfo = 'nobank' THEN "무통장압금"
+              WHEN	p.payInfo = 'simpleCard' THEN "간편 카드 결제"
+              WHEN	p.payInfo = 'trans' THEN "계좌 간편 결제"
+              ELSE	p.payInfo
+            END	                                                    AS viewPayInfo         
       FROM  payment p
       JOIN  users u
         ON  u.id = p.UserId

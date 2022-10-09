@@ -262,6 +262,29 @@ const OrderRequestList = () => {
       dataIndex: "username",
     },
     {
+      title: "결제방법",
+      render: (data) => {
+        return (
+          <>
+            {!data.isNobank ? (
+              <Popconfirm
+                title={`승인하시겠습니까?`}
+                cancelText={`취소`}
+                okText={`승인`}
+              >
+                <Button size="small" type="text">
+                  무통장입금
+                </Button>
+              </Popconfirm>
+            ) : (
+              <Text>{data.viewPayInfo}</Text>
+            )}
+          </>
+        );
+      },
+    },
+
+    {
       title: "주문자 상세정보",
       render: (data) => (
         <Button
@@ -431,6 +454,8 @@ const OrderRequestList = () => {
             <AdminButton size="small">전체 주문서 다운로드</AdminButton>
           </Wrapper>
         </Wrapper>
+
+        {console.log(paymentRequest)}
         <Table
           columns={
             isComplete === 2 || isComplete === 3 ? completeColumns : columns
