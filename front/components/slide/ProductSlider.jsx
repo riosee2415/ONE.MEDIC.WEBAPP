@@ -55,7 +55,7 @@ const ProductSlider = ({ topSlider }) => {
                 position={`relative`}
                 display={`flex !important`}
               >
-                <Image height={`210px`} src={data} />
+                <Image height={width < 1100 ? `210px` : `400px`} src={data} />
               </Wrapper>
             );
           })}

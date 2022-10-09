@@ -145,7 +145,7 @@ export const Wrapper = styled.div`
 `;
 
 export const RsWrapper = styled.article`
-  width: 100%;
+  width: 1350px;
   height: ${(props) => props.height || `100%`};
   min-height: ${(props) => props.minHeight};
   color: ${(props) => props.color};
@@ -165,6 +165,14 @@ export const RsWrapper = styled.article`
   font-size: ${(props) => props.fontSize};
   position: ${(props) => props.position};
   box-shadow: 0 -4px 10px ${(props) => props.theme.lightGrey_C};
+
+  @media (max-width: 1350px) {
+    width: 1100px;
+  }
+
+  @media (max-width: 1100px) {
+    width: 800px;
+  }
 
   @media (max-width: 800px) {
     width: 100%;
