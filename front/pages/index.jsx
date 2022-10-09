@@ -235,7 +235,7 @@ const Home = ({}) => {
                 <Wrapper
                   padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
                   minHeight={`calc(100vh - 149px - 170px)`}
-                  ju={`space-between`}
+                  ju={`flex-start`}
                   dr={`row`}
                 >
                   {userBoughtList &&
@@ -249,15 +249,15 @@ const Home = ({}) => {
                               width < 1100
                                 ? width < 700
                                   ? `100%`
-                                  : `calc(100% / 2 - 5px)`
-                                : `calc(100% / 3 - 5px)`
+                                  : `calc(100% / 2 - 16px)`
+                                : `calc(100% / 3 - 16px)`
                             }
                             key={idx}
                             radius={`20px`}
                             shadow={Theme.shadow_C}
                             padding={`15px`}
                             al={`flex-start`}
-                            margin={width < 700 ? `0 0 15px` : `0 0 15px`}
+                            margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
                           >
                             <Text fontSize={`14px`} color={Theme.grey_C}>
                               {data.orderAt}

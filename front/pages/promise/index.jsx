@@ -134,10 +134,11 @@ const Promise = ({}) => {
                         width < 1100
                           ? width < 700
                             ? `100%`
-                            : `calc(100% / 2 - 20px)`
-                          : `calc(100% / 3 - 20px)`
+                            : `calc(100% / 2 - 16px)`
+                          : `calc(100% / 3 - 16px)`
                       }
-                      height={`calc(100vh / 3 - 40px)`}
+                      height={`calc(100vh / 3 - 16px)`}
+                      margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
                       shadow={Theme.shadow_C}
                       radius={`15px`}
                       cursor={`pointer`}

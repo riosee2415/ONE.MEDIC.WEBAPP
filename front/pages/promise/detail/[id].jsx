@@ -392,7 +392,19 @@ const PromiseDetail = () => {
                         <CheckdButton
                           key={data.id}
                           shadow={`0`}
-                          width={`calc(100% / 2 - 4px)`}
+                          width={
+                            width < 700
+                              ? typeList.length === 1
+                                ? `calc(100% - 4px)`
+                                : `calc(100% / 2 - 4px)`
+                              : typeList.length >= 4
+                              ? `calc(100% / 4 - 4px)`
+                              : typeList.length === 3
+                              ? `calc(100% / 3 - 4px)`
+                              : typeList.length === 2
+                              ? `calc(100% / 2 - 4px)`
+                              : typeList.length === 1 && `calc(100% - 4px)`
+                          }
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
@@ -428,7 +440,19 @@ const PromiseDetail = () => {
                         <CheckdButton
                           key={data.id}
                           shadow={`0`}
-                          width={`calc(100% / 3 - 4px)`}
+                          width={
+                            width < 700
+                              ? packList.length === 1
+                                ? `calc(100% - 4px)`
+                                : `calc(100% / 2 - 4px)`
+                              : packList.length >= 4
+                              ? `calc(100% / 4 - 4px)`
+                              : packList.length === 3
+                              ? `calc(100% / 3 - 4px)`
+                              : packList.length === 2
+                              ? `calc(100% / 2 - 4px)`
+                              : packList.length === 1 && `calc(100% - 4px)`
+                          }
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
@@ -463,7 +487,19 @@ const PromiseDetail = () => {
                         <CheckdButton
                           key={data.id}
                           shadow={`0`}
-                          width={`calc(100% / 4 - 4px)`}
+                          width={
+                            width < 700
+                              ? unitList.length === 1
+                                ? `calc(100% - 4px)`
+                                : `calc(100% / 2 - 4px)`
+                              : unitList.length >= 4
+                              ? `calc(100% / 4 - 4px)`
+                              : unitList.length === 3
+                              ? `calc(100% / 3 - 4px)`
+                              : unitList.length === 2
+                              ? `calc(100% / 2 - 4px)`
+                              : unitList.length === 1 && `calc(100% - 4px)`
+                          }
                           height={`45px`}
                           radius={`15px`}
                           margin={`2px`}
@@ -497,6 +533,8 @@ const PromiseDetail = () => {
             </Wrapper>
 
             <Wrapper
+              dr={`row`}
+              ju={`flex-start`}
               bgColor={Theme.lightGrey2_C}
               padding={width < 800 ? `15px 10px` : `15px 38px`}
             >
@@ -504,11 +542,18 @@ const PromiseDetail = () => {
                 temporaryDatum.map((data, idx) => {
                   return (
                     <Wrapper
+                      width={
+                        width < 1100
+                          ? width < 700
+                            ? `100%`
+                            : `calc(100% / 2 - 16px)`
+                          : `calc(100% / 3 - 16px)`
+                      }
                       key={idx}
                       shadow={Theme.shadow_C}
                       padding={`25px`}
                       bgColor={Theme.white_C}
-                      margin={`0 0 15px`}
+                      margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
                       radius={`20px`}
                     >
                       <Wrapper dr={`row`} ju={`space-between`}>
