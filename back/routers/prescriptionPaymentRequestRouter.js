@@ -215,6 +215,28 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
     return res.status(400).send("잘못된 요청입니다.");
   }
   try {
+    const materialAllQuery = `
+    SELECT  id,
+            name,
+            stock
+      FROM  materials
+     WHERE  isDelete = false
+    `;
+
+    const materialSelect = await models.sequelize.query(materialAllQuery);
+
+    for (let i = 0; i < useMaterialData.length; i++) {
+      const masterialFind = materialSelect[0].find(
+        (data) => data.id === useMaterialData[i].id
+      );
+
+      if (masterialFind.stock < useMaterialData[i].qnt) {
+        return res
+          .status(400)
+          .send(`${masterialFind.name}의 재고가 부족합니다.`);
+      }
+    }
+
     const pprResult = await PrescriptionPaymentRequest.create({
       name,
       UserId: req.user.id,
