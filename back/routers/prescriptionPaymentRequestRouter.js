@@ -244,8 +244,12 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
     });
 
     await Promise.all(
-      useMaterialData.map(
-        async (data) =>
+      useMaterialData.map(async (data) => {
+        const masterialFind = materialSelect[0].find(
+          (value) => value.id === data.id
+        );
+
+        if (masterialFind) {
           await UseMaterial.create({
             name: data.name,
             qnt: parseInt(data.qnt),
@@ -253,8 +257,24 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
             buyPrice: parseInt(data.price),
             MaterialId: parseInt(data.id),
             PrescriptionPaymentRequestId: parseInt(pprResult.id),
-          })
-      )
+          });
+          console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+          console.log(masterialFind.stock);
+          console.log(data.qnt);
+          console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
+
+          await Materials.update(
+            {
+              stock: masterialFind.stock - data.qnt,
+            },
+            {
+              where: {
+                id: data.id,
+              },
+            }
+          );
+        }
+      })
     );
 
     return res.status(200).json({ result: true, pprId: pprResult.id });

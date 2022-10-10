@@ -418,7 +418,7 @@ const AppHeader = ({ children, width }) => {
                   >
                     <Wrapper
                       dr={`row`}
-                      ju={`flex-start`}
+                      ju={`space-between`}
                       borderBottom={`1px solid ${Theme.grey2_C}`}
                       padding={`0 5px 10px`}
                     >
@@ -428,6 +428,13 @@ const AppHeader = ({ children, width }) => {
                         fontWeight={`bold`}
                       >
                         약재
+                      </Text>
+                      <Text
+                        color={Theme.grey_C}
+                        fontSize={`16px`}
+                        fontWeight={`bold`}
+                      >
+                        남은재고
                       </Text>
                     </Wrapper>
                     <Wrapper>
@@ -445,11 +452,16 @@ const AppHeader = ({ children, width }) => {
                               >
                                 <Wrapper
                                   dr={`row`}
-                                  width={`auto`}
+                                  ju={`space-between`}
+                                  width={`100%`}
                                   fontSize={width < 600 ? `16px` : `18px`}
                                   color={`${Theme.black_C}`}
                                 >
                                   <Text fontWeight={`800`}>{data.name}</Text>
+                                  <Text fontWeight={`800`}>
+                                    {data.stock}
+                                    {data.unit}
+                                  </Text>
                                 </Wrapper>
                               </ListWrapper>
                             );

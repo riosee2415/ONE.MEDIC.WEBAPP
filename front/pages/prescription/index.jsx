@@ -114,7 +114,7 @@ const Prescription = ({}) => {
     (state) => state.prescriptionPaymentRequest
   );
 
-  console.log(pprDetail);
+  const { me } = useSelector((state) => state.user);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -144,6 +144,15 @@ const Prescription = ({}) => {
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  // 로그인
+
+  useEffect(() => {
+    if (!me) {
+      message.error("로그인 후 이용해주세요.");
+      return router.push("/login");
+    }
+  }, [me]);
 
   // 첩, 팩, 용량 select
   useEffect(() => {
