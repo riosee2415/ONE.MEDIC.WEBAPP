@@ -92,7 +92,7 @@ module.exports = class User extends Model {
           allowNull: true,
         },
         licenseNo: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.STRING(300),
           allowNull: true,
         },
 

@@ -12,6 +12,7 @@ import {
   USERLIST_UPDATE_REQUEST,
   DETAIL_MODAL_TOGGLE,
   UNIT_MODAL_TOGGLE,
+  LICENSENO_UPDATE_REQUEST,
 } from "../../../reducers/user";
 import {
   Table,
@@ -35,6 +36,7 @@ import {
   Wrapper,
   GuideUl,
   GuideLi,
+  ModalBtn,
 } from "../../../components/commonComponents";
 import { saveAs } from "file-saver";
 import Theme from "../../../components/Theme";
@@ -92,6 +94,9 @@ const UserList = ({}) => {
     st_userListUpdateDone,
     st_userListError,
     st_userListUpdateError,
+    //
+    st_licenseNoUpdateDone,
+    st_licenseNoUpdateError,
   } = useSelector((state) => state.user);
 
   const [updateData, setUpdateData] = useState(null);
@@ -99,6 +104,9 @@ const UserList = ({}) => {
   const [companyFile, setCompanyFile] = useState(null);
   const [isCompany, setIsCompany] = useState(false);
   const [bFile, setBFile] = useState(null); // 자격증
+
+  const [licenseModal, setLicenseModal] = useState(false); // 라이선스 모달
+  const [licenseData, setLicenseData] = useState(false); // 라이선스 모달
 
   const inputName = useInput("");
   const inputEmail = useInput("");
@@ -108,6 +116,8 @@ const UserList = ({}) => {
 
   const [dForm] = Form.useForm();
   const dFormRef = useRef();
+
+  const [licenseForm] = Form.useForm();
 
   ////// USEEFFECT //////
   useEffect(() => {
@@ -166,6 +176,33 @@ const UserList = ({}) => {
     );
   }, [inputSort.value]);
 
+  // 면허번호 등록
+
+  useEffect(() => {
+    if (st_licenseNoUpdateDone) {
+      const query = router.query;
+
+      dispatch({
+        type: USERLIST_REQUEST,
+        data: {
+          name: query.name ? query.name : ``,
+          email: query.email ? query.email : ``,
+          listType: query.sort,
+        },
+      });
+
+      licenseNoUpdateModal(false);
+
+      return message.success("면허번호가 등록되었습니다.");
+    }
+  }, [st_licenseNoUpdateDone]);
+
+  useEffect(() => {
+    if (st_licenseNoUpdateError) {
+      return message.error(st_licenseNoUpdateError);
+    }
+  }, [st_licenseNoUpdateError]);
+
   ////// TOGGLE //////
   const updateModalOpen = useCallback(
     (data) => {
@@ -212,6 +249,19 @@ const UserList = ({}) => {
       type: UNIT_MODAL_TOGGLE,
     });
   }, [unitModal]);
+
+  const licenseNoUpdateModal = useCallback(
+    (data) => {
+      if (data) {
+        setLicenseData(data);
+      } else {
+        setLicenseData(null);
+        licenseForm.resetFields();
+      }
+      setLicenseModal((prev) => !prev);
+    },
+    [licenseModal, licenseData]
+  );
 
   ////// HANDLER //////
 
@@ -280,6 +330,19 @@ const UserList = ({}) => {
     });
   }, [inputLevel]);
 
+  const licenseNoUpdateHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: LICENSENO_UPDATE_REQUEST,
+        data: {
+          id: licenseData.id,
+          licenseNo: data.licenseNo,
+        },
+      });
+    },
+    [licenseData]
+  );
+
   ////// DATAVIEW //////
 
   const columns = [
@@ -346,6 +409,18 @@ const UserList = ({}) => {
           size="small"
         >
           상세정보
+        </Button>
+      ),
+    },
+    {
+      title: "면허번호 등록",
+      render: (data) => (
+        <Button
+          type="primary"
+          onClick={() => licenseNoUpdateModal(data)}
+          size="small"
+        >
+          면허번호 등록
         </Button>
       ),
     },
@@ -564,11 +639,31 @@ const UserList = ({}) => {
       </Modal>
 
       <Modal
-        visible={false}
+        visible={licenseModal}
+        footer={null}
         onOk={() => {}}
-        onCancel={() => {}}
-        title="Ask"
-      ></Modal>
+        onCancel={() => licenseNoUpdateModal(null)}
+        title="면허번호 등록"
+      >
+        <Form form={licenseForm} onFinish={licenseNoUpdateHandler}>
+          <Form.Item
+            label={`면허번호 등록`}
+            name={`licenseNo`}
+            rules={[{ required: true, message: "면허번호를 입력해주세요." }]}
+          >
+            <Input placeholder="면허번호를 입력해주세요." />
+          </Form.Item>
+
+          <Wrapper dr={`row`} ju={`flex-end`}>
+            <Button onClick={() => licenseNoUpdateModal(null)} size="small">
+              취소
+            </Button>
+            <ModalBtn htmlType="submit" size="small" type="primary">
+              등록
+            </ModalBtn>
+          </Wrapper>
+        </Form>
+      </Modal>
     </AdminLayout>
   );
 };

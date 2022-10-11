@@ -731,6 +731,28 @@ router.get("/logout", function (req, res) {
   });
 });
 
+router.post("/licenseNo/update", isAdminCheck, async (req, res, next) => {
+  const { id, licenseNo } = req.body;
+
+  try {
+    const result = await User.update(
+      {
+        licenseNo,
+      },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
+  }
+});
+
 router.get("/card/detail", isLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({

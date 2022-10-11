@@ -114,6 +114,10 @@ export const initailState = {
   st_companyFileUploadLoading: false, // 파일 업로드
   st_companyFileUploadDone: false, // 파일 업로드
   st_companyFileUploadError: false, // 파일 업로드
+  //
+  st_licenseNoUpdateLoading: false, // 면허번호
+  st_licenseNoUpdateDone: false, // 면허번호
+  st_licenseNoUpdateError: false, // 면허번호
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -207,6 +211,10 @@ export const MODIFYPASS_UPDATE_FAILURE = "MODIFYPASS_UPDATE_FAILURE";
 export const FIND_EMAIL_REQUEST = "FIND_EMAIL_REQUEST";
 export const FIND_EMAIL_SUCCESS = "FIND_EMAIL_SUCCESS";
 export const FIND_EMAIL_FAILURE = "FIND_EMAIL_FAILURE";
+
+export const LICENSENO_UPDATE_REQUEST = "LICENSENO_UPDATE_REQUEST";
+export const LICENSENO_UPDATE_SUCCESS = "LICENSENO_UPDATE_SUCCESS";
+export const LICENSENO_UPDATE_FAILURE = "LICENSENO_UPDATE_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -711,6 +719,27 @@ const reducer = (state = initailState, action) =>
         draft.st_companyFileUploadLoading = false;
         draft.st_companyFileUploadDone = false;
         draft.st_companyFileUploadError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case LICENSENO_UPDATE_REQUEST: {
+        draft.st_licenseNoUpdateLoading = true;
+        draft.st_licenseNoUpdateDone = false;
+        draft.st_licenseNoUpdateError = null;
+        break;
+      }
+      case LICENSENO_UPDATE_SUCCESS: {
+        draft.st_licenseNoUpdateLoading = false;
+        draft.st_licenseNoUpdateDone = true;
+        draft.st_licenseNoUpdateError = null;
+        break;
+      }
+      case LICENSENO_UPDATE_FAILURE: {
+        draft.st_licenseNoUpdateLoading = false;
+        draft.st_licenseNoUpdateDone = false;
+        draft.st_licenseNoUpdateError = action.error;
         break;
       }
 

@@ -93,6 +93,10 @@ import {
   COMPANY_UPLOAD_SUCCESS,
   COMPANY_UPLOAD_FAILURE,
   /////////////////////////////
+  LICENSENO_UPDATE_REQUEST,
+  LICENSENO_UPDATE_SUCCESS,
+  LICENSENO_UPDATE_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -719,6 +723,34 @@ function* findEmail(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 // ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function licenseNoUpdateAPI(data) {
+  return await axios.post(`/api/user/licenseNo/update`, data);
+}
+
+function* licenseNoUpdate(action) {
+  try {
+    const result = yield call(licenseNoUpdateAPI, action.data);
+
+    yield put({
+      type: LICENSENO_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LICENSENO_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -813,6 +845,10 @@ function* watchCompanyUpload() {
   yield takeLatest(COMPANY_UPLOAD_REQUEST, companyUpload);
 }
 
+function* watchLicenseNoUpdate() {
+  yield takeLatest(LICENSENO_UPDATE_REQUEST, licenseNoUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -839,6 +875,7 @@ export default function* userSaga() {
     fork(watchUserModifyPassUpdate),
     fork(watchFindEmail),
     fork(watchCompanyUpload),
+    fork(watchLicenseNoUpdate),
     //
   ]);
 }
