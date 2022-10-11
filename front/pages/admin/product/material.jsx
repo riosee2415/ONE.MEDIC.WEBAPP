@@ -306,7 +306,7 @@ const Material = () => {
       dispatch({
         type: PP_UPDATE_REQUEST,
         data: {
-          id: price && price.length > 0 && price[0].id,
+          id: price && price.id,
           price: data.price,
         },
       });
@@ -543,7 +543,7 @@ const Material = () => {
             <Input size="small" type="number" />
           </Form.Item>
           <Wrapper al={`flex-end`}>
-            <ModalBtn size="small" type="primary">
+            <ModalBtn size="small" type="primary" htmlType="submit">
               가격 수정
             </ModalBtn>
           </Wrapper>

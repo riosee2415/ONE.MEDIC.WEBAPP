@@ -42,6 +42,9 @@ router.patch("/update", isAdminCheck, async (req, res, next) => {
   const { id, price } = req.body;
 
   try {
+    console.log(id);
+    console.log(price);
+
     const exPrice = await PrescriptionPrice.findOne({
       where: {
         id,
