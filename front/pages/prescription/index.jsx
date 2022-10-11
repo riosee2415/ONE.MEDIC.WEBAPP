@@ -344,6 +344,7 @@ const Prescription = ({}) => {
 
   // 주문하기
   const paymentCreateHandler = useCallback(() => {
+    sessionStorage.setItem("METAERIAL", JSON.stringify(userMaterials));
     const recipeName = sessionStorage.getItem("recipeName");
 
     for (let i = 0; i < userMaterials.length; i++) {

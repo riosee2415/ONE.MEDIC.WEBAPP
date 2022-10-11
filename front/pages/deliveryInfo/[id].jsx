@@ -146,8 +146,18 @@ const Index = ({}) => {
   const searchInput = useInput("");
 
   const [payment, setPayment] = useState(null);
+  const [oModal, setOModal] = useState(false);
+
+  const [isMeterialData, setIsMeterialData] = useState([]);
   ////// REDUX //////
   ////// USEEFFECT //////
+  useEffect(() => {
+    const result = sessionStorage.getItem("METAERIAL")
+      ? JSON.parse(sessionStorage.getItem("METAERIAL"))
+      : [];
+
+    setIsMeterialData(result);
+  }, []);
 
   useEffect(() => {
     if (!me) {
@@ -268,6 +278,10 @@ const Index = ({}) => {
       });
     }
   }, []);
+  ////// TOGGLE //////
+  const oModalToggle = useCallback(() => {
+    setOModal(!oModal);
+  }, [oModal]);
   ////// HANDLER //////
 
   const deliveryUpdateHandler = useCallback(
@@ -848,7 +862,7 @@ const Index = ({}) => {
                       </Text>
                     )}
                   </Wrapper>
-                  <Wrapper width={`20px`}>
+                  <Wrapper width={`20px`} onClick={oModalToggle}>
                     <Image
                       src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/pay_icon/delivery.png`}
                       alt={`delivery_price`}
@@ -916,6 +930,43 @@ const Index = ({}) => {
               autoClose={false}
             />
           </Modal>
+
+          {/* 주문하기 옆 모달 */}
+          <CustomModal footer={null} visible={oModal} onCancel={oModalToggle}>
+            <Wrapper
+              dr={`row`}
+              ju={`space-between`}
+              borderBottom={`1px solid ${Theme.grey_C}`}
+              padding={`10px`}
+              bgColor={Theme.grey_C}
+              color={Theme.white_C}
+              margin={`20px 0 0`}
+            >
+              <Text>구성약재</Text>
+              <Text>g</Text>
+              <Text>금액</Text>
+            </Wrapper>
+
+            <Wrapper>
+              {isMeterialData.map((data) => {
+                return (
+                  <Wrapper
+                    dr={`row`}
+                    ju={`space-between`}
+                    borderBottom={`1px solid ${Theme.lightGrey_C}`}
+                    padding={`20px 10px 5px`}
+                  >
+                    <Text>{data.name}</Text>
+                    <Text>
+                      {data.qnt}
+                      {data.unit}
+                    </Text>
+                    <Text>{data.price * data.qnt}</Text>
+                  </Wrapper>
+                );
+              })}
+            </Wrapper>
+          </CustomModal>
 
           {/* SEARCH ADDRESS MODAL */}
 
