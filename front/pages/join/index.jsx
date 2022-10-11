@@ -205,7 +205,7 @@ const Join = () => {
           mobile: data.mobile,
           password: data.pass,
           terms: terms,
-          companyFile: data.file,
+          businessFile: data.file,
         },
       });
     },
