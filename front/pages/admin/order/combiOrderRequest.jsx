@@ -42,6 +42,19 @@ import {
   REFUSE_DETAIL_MODAL_TOGGLE,
 } from "../../../reducers/prescriptionPaymentRequest";
 import { MATERIAL_DETAIL_REQUEST } from "../../../reducers/material";
+import { CSVLink } from "react-csv";
+
+const DownLoadBtn = styled(CSVLink)`
+  font-size: 13px;
+  border: 1px solid ${Theme.lightGrey_C};
+  /* height: 25px; */
+  padding: 2px 5px;
+  transition: 0.5s;
+
+  &:hover {
+    background: ${Theme.lightGrey_C};
+  }
+`;
 
 const AdminButton = styled(Button)`
   margin: 0 5px;
@@ -102,7 +115,35 @@ const UserDeliAddress = ({}) => {
   const [deliveryForm] = Form.useForm();
   const deliveryFormRef = useRef();
 
+  const [csvData, setCsvData] = useState([]);
+  const [selectCsvData, setSelectCsvData] = useState([]);
+
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (pprs) {
+      let arr = pprs ? pprs.map((data) => data) : [];
+      let result = [];
+
+      arr.map((data) => {
+        result.push({
+          no: data.id,
+          completedAt: data.completedAt,
+          name: data.name,
+          email: data.email,
+          mobile: data.mobile,
+          companyName: data.companyName,
+          companyNo: data.companyNo,
+          deliveryNo: data.deliveryNo,
+          deliveryCompany: data.deliveryCompany,
+          viewPayInfo: data.viewPayInfo,
+          viewDeliveryStatus: data.viewDeliveryStatus,
+        });
+      });
+
+      setCsvData(result);
+    }
+  }, [pprs]);
 
   useEffect(() => {
     dispatch({
@@ -252,6 +293,25 @@ const UserDeliAddress = ({}) => {
 
   ////// HANDLER //////
 
+  const selectCsvHandler = useCallback((data) => {
+    let arr = [];
+
+    arr.push({
+      no: data.id,
+      completedAt: data.completedAt,
+      name: data.name,
+      email: data.email,
+      mobile: data.mobile,
+      companyName: data.companyName,
+      companyNo: data.companyNo,
+      deliveryNo: data.deliveryNo,
+      deliveryCompany: data.deliveryCompany,
+      viewPayInfo: data.viewPayInfo,
+      viewDeliveryStatus: data.viewDeliveryStatus,
+    });
+    setSelectCsvData(arr);
+  }, []);
+
   const detailOnFill = useCallback((data) => {
     dispatch({
       type: MATERIAL_DETAIL_REQUEST,
@@ -327,6 +387,20 @@ const UserDeliAddress = ({}) => {
   ////// DATAVIEW //////
 
   ////// DATA COLUMNS //////
+
+  const headers = [
+    { label: "pk", key: "no" },
+    { label: "주문일", key: "completedAt" },
+    { label: "주문자명", key: "name" },
+    { label: "주문자이메일", key: "email" },
+    { label: "전화번호", key: "mobile" },
+    { label: "회사이름", key: "companyName" },
+    { label: "사업자번호", key: "companyNo" },
+    { label: "운송장번호", key: "deliveryNo" },
+    { label: "배송회사", key: "deliveryCompany" },
+    { label: "결제방법", key: "viewPayInfo" },
+    { label: "배송상태", key: "viewDeliveryStatus" },
+  ];
 
   const columns = [
     {
@@ -419,7 +493,17 @@ const UserDeliAddress = ({}) => {
     },
     {
       title: "주문서 다운로드",
-      render: (data) => <Button size="small">주문서 다운로드</Button>,
+      render: (data) =>
+        selectCsvData && (
+          <DownLoadBtn
+            filename={`탕전처방 주문서`}
+            headers={headers}
+            data={selectCsvData}
+            onClick={() => selectCsvHandler(data)}
+          >
+            주문서 다운로드
+          </DownLoadBtn>
+        ),
     },
   ];
 
@@ -487,7 +571,17 @@ const UserDeliAddress = ({}) => {
     },
     {
       title: "주문서 다운로드",
-      render: (data) => <Button size="small">주문서 다운로드</Button>,
+      render: (data) =>
+        selectCsvData && (
+          <DownLoadBtn
+            filename={`탕전처방 주문서`}
+            headers={headers}
+            data={selectCsvData}
+            onClick={() => selectCsvHandler(data)}
+          >
+            주문서 다운로드
+          </DownLoadBtn>
+        ),
     },
   ];
 
@@ -543,7 +637,17 @@ const UserDeliAddress = ({}) => {
     },
     {
       title: "주문서 다운로드",
-      render: (data) => <Button size="small">주문서 다운로드</Button>,
+      render: (data) =>
+        selectCsvData && (
+          <DownLoadBtn
+            filename={`탕전처방 주문서`}
+            headers={headers}
+            data={selectCsvData}
+            onClick={() => selectCsvHandler(data)}
+          >
+            주문서 다운로드
+          </DownLoadBtn>
+        ),
     },
   ];
 
@@ -605,10 +709,19 @@ const UserDeliAddress = ({}) => {
         </Button>
       ),
     },
-
     {
       title: "주문서 다운로드",
-      render: (data) => <Button size="small">주문서 다운로드</Button>,
+      render: (data) =>
+        selectCsvData && (
+          <DownLoadBtn
+            filename={`탕전처방 주문서`}
+            headers={headers}
+            data={selectCsvData}
+            onClick={() => selectCsvHandler(data)}
+          >
+            주문서 다운로드
+          </DownLoadBtn>
+        ),
     },
   ];
 
@@ -688,7 +801,15 @@ const UserDeliAddress = ({}) => {
             <AdminButton type="danger" size="small" onClick={unitModalToggle}>
               주의사항
             </AdminButton>
-            <AdminButton size="small">전체 주문서 다운로드</AdminButton>
+            {csvData && (
+              <DownLoadBtn
+                headers={headers}
+                data={csvData}
+                filename={`전체 주문서 다운로드`}
+              >
+                전체 주문서 다운로드
+              </DownLoadBtn>
+            )}
           </Wrapper>
         </Wrapper>
 
