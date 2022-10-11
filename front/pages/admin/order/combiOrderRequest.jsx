@@ -127,8 +127,7 @@ const UserDeliAddress = ({}) => {
 
       arr.map((data) => {
         result.push({
-          no: data.id,
-          completedAt: data.completedAt,
+          orderAt: data.orderAt,
           name: data.name,
           email: data.email,
           mobile: data.mobile,
@@ -297,8 +296,7 @@ const UserDeliAddress = ({}) => {
     let arr = [];
 
     arr.push({
-      no: data.id,
-      completedAt: data.completedAt,
+      orderAt: data.orderAt,
       name: data.name,
       email: data.email,
       mobile: data.mobile,
@@ -389,8 +387,7 @@ const UserDeliAddress = ({}) => {
   ////// DATA COLUMNS //////
 
   const headers = [
-    { label: "pk", key: "no" },
-    { label: "주문일", key: "completedAt" },
+    { label: "주문일", key: "orderAt" },
     { label: "주문자명", key: "name" },
     { label: "주문자이메일", key: "email" },
     { label: "전화번호", key: "mobile" },
