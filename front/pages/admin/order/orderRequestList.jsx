@@ -28,6 +28,7 @@ import {
   PAYMENTREQUEST_COMPLETE_REQUEST,
   DELIVERY_MODAL_TOGGLE,
   PAYMENT_ADMIN_DELIVERY_REQUEST,
+  PAYMENT_DETAIL_REQUEST,
 } from "../../../reducers/paymentRequest";
 import {
   AdminContent,
@@ -37,7 +38,19 @@ import {
   Wrapper,
 } from "../../../components/commonComponents";
 import Theme from "../../../components/Theme";
-import { MATERIAL_DETAIL_REQUEST } from "../../../reducers/material";
+import { CSVLink } from "react-csv";
+
+const DownLoadBtn = styled(CSVLink)`
+  font-size: 13px;
+  border: 1px solid ${Theme.lightGrey_C};
+  /* height: 25px; */
+  padding: 2px 5px;
+  transition: 0.5s;
+
+  &:hover {
+    background: ${Theme.lightGrey_C};
+  }
+`;
 
 const AdminButton = styled(Button)`
   margin: 0 5px;
@@ -48,6 +61,7 @@ const OrderRequestList = () => {
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
   const {
     paymentRequest,
+    paymentDetail,
     detailModal,
     unitModal,
     userDetailModal,
@@ -88,7 +102,34 @@ const OrderRequestList = () => {
   const [deliveryForm] = Form.useForm();
   const deliveryFormRef = useRef();
 
+  const [csvData, setCsvData] = useState([]);
+  const [selectCsvData, setSelectCsvData] = useState([]);
+
   ////// USEEFFECT //////
+
+  useEffect(() => {
+    if (paymentRequest) {
+      let arr = paymentRequest ? paymentRequest.map((data) => data) : [];
+      let result = [];
+
+      arr.map((data) => {
+        result.push({
+          orderAt: data.orderAt,
+          name: data.name,
+          email: data.email,
+          mobile: data.mobile,
+          companyName: data.companyName,
+          companyNo: data.companyNo,
+          deliveryNo: data.deliveryNo,
+          deliveryCompany: data.deliveryCompany,
+          viewPayInfo: data.viewPayInfo,
+          viewDeliveryStatus: data.viewDeliveryStatus,
+        });
+      });
+
+      setCsvData(result);
+    }
+  }, [paymentRequest]);
 
   useEffect(() => {
     dispatch({
@@ -161,6 +202,12 @@ const OrderRequestList = () => {
   const detailModalToggle = useCallback(
     (data, type) => {
       if (data) {
+        dispatch({
+          type: PAYMENT_DETAIL_REQUEST,
+          data: {
+            paymentId: data.id,
+          },
+        });
         setPaymentData(data);
       } else {
         setPaymentData(null);
@@ -195,6 +242,24 @@ const OrderRequestList = () => {
   );
 
   ////// HANDLER //////
+
+  const selectCsvHandler = useCallback((data) => {
+    let arr = [];
+
+    arr.push({
+      orderAt: data.orderAt,
+      name: data.name,
+      email: data.email,
+      mobile: data.mobile,
+      companyName: data.companyName,
+      companyNo: data.companyNo,
+      deliveryNo: data.deliveryNo,
+      deliveryCompany: data.deliveryCompany,
+      viewPayInfo: data.viewPayInfo,
+      viewDeliveryStatus: data.viewDeliveryStatus,
+    });
+    setSelectCsvData(arr);
+  }, []);
 
   const deliveryOnFill = useCallback(
     (data) => {
@@ -248,6 +313,19 @@ const OrderRequestList = () => {
 
   ////// DATAVIEW //////
 
+  const headers = [
+    { label: "주문일", key: "orderAt" },
+    { label: "주문자명", key: "name" },
+    { label: "주문자이메일", key: "email" },
+    { label: "전화번호", key: "mobile" },
+    { label: "회사이름", key: "companyName" },
+    { label: "사업자번호", key: "companyNo" },
+    { label: "운송장번호", key: "deliveryNo" },
+    { label: "배송회사", key: "deliveryCompany" },
+    { label: "결제방법", key: "viewPayInfo" },
+    { label: "배송상태", key: "viewDeliveryStatus" },
+  ];
+
   const columns = [
     {
       title: "번호",
@@ -256,6 +334,10 @@ const OrderRequestList = () => {
     {
       title: "주문일",
       dataIndex: "orderAt",
+    },
+    {
+      title: "상품명",
+      dataIndex: "productName",
     },
     {
       title: "주문자",
@@ -325,7 +407,16 @@ const OrderRequestList = () => {
     },
     {
       title: "주문서 다운로드",
-      render: (data) => <Button size="small">주문서 다운로드</Button>,
+      render: (data) => (
+        <DownLoadBtn
+          filename={`약속처방 주문서`}
+          headers={headers}
+          data={selectCsvData}
+          onClick={() => selectCsvHandler(data)}
+        >
+          주문서 다운로드
+        </DownLoadBtn>
+      ),
     },
   ];
   const completeColumns = [
@@ -336,6 +427,10 @@ const OrderRequestList = () => {
     {
       title: "처리일",
       dataIndex: "completedAt",
+    },
+    {
+      title: "상품명",
+      dataIndex: "productName",
     },
     {
       title: "주문자",
@@ -378,7 +473,16 @@ const OrderRequestList = () => {
 
     {
       title: "주문서 다운로드",
-      render: (data) => <Button size="small">주문서 다운로드</Button>,
+      render: (data) => (
+        <DownLoadBtn
+          filename={`약속처방 주문서`}
+          headers={headers}
+          data={selectCsvData}
+          onClick={() => selectCsvHandler(data)}
+        >
+          주문서 다운로드
+        </DownLoadBtn>
+      ),
     },
   ];
   return (
@@ -448,11 +552,19 @@ const OrderRequestList = () => {
             <AdminButton type="danger" size="small" onClick={unitModalToggle}>
               주의사항
             </AdminButton>
-            <AdminButton size="small">전체 주문서 다운로드</AdminButton>
+            {csvData && (
+              <DownLoadBtn
+                headers={headers}
+                data={csvData}
+                filename={`전체 주문서 다운로드`}
+              >
+                전체 주문서 다운로드
+              </DownLoadBtn>
+            )}
           </Wrapper>
         </Wrapper>
 
-        {console.log(paymentRequest)}
+        {/* {console.log(paymentRequest)} */}
         <Table
           columns={
             isComplete === 2 || isComplete === 3 ? completeColumns : columns
@@ -586,6 +698,7 @@ const OrderRequestList = () => {
       </Modal>
 
       {/* PAYMENT DETAIL MODAL */}
+      {console.log("paymentDetail", paymentDetail)}
 
       <Modal
         title="주문상세"
@@ -790,7 +903,7 @@ const OrderRequestList = () => {
             al={`flex-start`}
             borderTop={`1px solid ${Theme.black_C}`}
           >
-            {paymentRequest && paymentRequest.result2 && (
+            {paymentDetail && paymentDetail.PaymentRequest && (
               <>
                 <Wrapper
                   width={`20%`}
@@ -798,9 +911,9 @@ const OrderRequestList = () => {
                   ju={`flex-start`}
                   padding={`${
                     90 *
-                    (paymentRequest.result2.length === 0
+                    (paymentDetail.PaymentRequest.length === 0
                       ? 4
-                      : paymentRequest.result2.length)
+                      : paymentDetail.PaymentRequest.length)
                   }px 0`}
                   color={Theme.white_C}
                   bgColor={Theme.black_C}
@@ -814,12 +927,12 @@ const OrderRequestList = () => {
                   ju={`space-between`}
                   padding={`10px 20px`}
                 >
-                  {paymentRequest.result2.length === 0 ? (
+                  {paymentDetail.PaymentRequest.length === 0 ? (
                     <Wrapper padding={`5px 0 0`}>
                       <Empty />
                     </Wrapper>
                   ) : (
-                    paymentRequest.result2.map((data) => {
+                    paymentDetail.PaymentRequest.map((data) => {
                       return (
                         <Wrapper
                           width={`calc(100% - 5px)`}

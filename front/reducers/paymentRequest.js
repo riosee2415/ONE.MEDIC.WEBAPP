@@ -202,6 +202,7 @@ const reducer = (state = initialState, action) =>
       case PAYMENT_DETAIL_SUCCESS:
         draft.st_paymentDetailLoading = false;
         draft.st_paymentDetailDone = true;
+        draft.st_paymentDetailError = null;
         draft.paymentDetail = action.data.list;
         break;
       case PAYMENT_DETAIL_FAILURE:

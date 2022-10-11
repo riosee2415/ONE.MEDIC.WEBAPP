@@ -336,7 +336,7 @@ const Index = ({}) => {
                       ? `외 ${pprDetail.materialDatum.length}개`
                       : ""
                   }`,
-                  amount: 150,
+                  amount: productPayment - discount + 5000,
                   // amount: 150,
                   buyer_name: me.username,
                   buyer_tel: me.mobile.replace(
