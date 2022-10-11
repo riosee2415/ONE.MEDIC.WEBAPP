@@ -1,9 +1,10 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import ClientLayout from "../../components/ClientLayout";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import {
   COMPANY_CREATE_REQUEST,
+  COMPANY_UPLOAD_REQUEST,
   LOAD_MY_INFO_REQUEST,
 } from "../../reducers/user";
 import axios from "axios";
@@ -99,21 +100,29 @@ const Question = () => {
   const dispatch = useDispatch();
   ////// GLOBAL STATE //////
 
-  const { me, companyFilePath } = useSelector((state) => state.user);
+  const {
+    me,
+    companyFilePath,
+
+    st_companyFileUploadDone,
+    st_companyFileUploadError,
+
+    st_companyCreateDone,
+    st_companyCreateError,
+  } = useSelector((state) => state.user);
 
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
     (state) => state.seo
   );
-  const { st_questionCreateDone, st_questionCreateError } = useSelector(
-    (state) => state.question
-  );
-
-  const [isTerms, setIsTerms] = useState(false);
 
   const router = useRouter();
 
+  const fileRef = useRef();
+
   const titleInput = useInput("");
   const companyNoInput = useInput("");
+
+  const [fileValue, setFileValue] = useState(null);
 
   ////// HOOKS //////
   ////// REDUX //////
@@ -125,25 +134,36 @@ const Question = () => {
     }
   }, [me]);
 
-  useEffect(() => {
-    if (st_questionCreateError) {
-      return LoadNotification(
-        "ERROR",
-        "일시적인 장애가 발생되었습니다. 잠시 후 다시 시도해주세요."
-      );
-    }
-  }, [st_questionCreateError]);
+  // 파일 업로드
 
   useEffect(() => {
-    if (st_questionCreateDone) {
-      return LoadNotification(
-        "등록완료",
-        "문의사항이 정상적으로 등록되었습니다."
-      );
+    if (st_companyFileUploadDone) {
+      setFileValue(null);
+      return message.success("업로드되었습니다.");
     }
-    titleInput.setValue("");
-    companyNoInput.setValue("");
-  }, [st_questionCreateDone]);
+  }, [st_companyFileUploadDone]);
+
+  useEffect(() => {
+    if (st_companyFileUploadError) {
+      return message.error(st_companyFileUploadError);
+    }
+  }, [st_companyFileUploadError]);
+
+  // 화사 신청
+
+  useEffect(() => {
+    if (st_companyCreateDone) {
+      message.success("신청되었습니다.");
+      return router.push("/");
+    }
+  }, [st_companyCreateDone]);
+
+  useEffect(() => {
+    if (st_companyCreateError) {
+      return message.error(st_companyCreateError);
+    }
+  }, [st_companyCreateError]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
 
@@ -171,6 +191,23 @@ const Question = () => {
     titleInput.setValue("");
     companyNoInput.setValue("");
   }, [titleInput.value, companyNoInput.value]);
+
+  const fileClick = useCallback(() => {
+    fileRef.current.click();
+  }, []);
+
+  const fileUploadHandler = useCallback((e) => {
+    const formData = new FormData();
+
+    [].forEach.call(e.target.files, (file) => {
+      formData.append("file", file);
+    });
+
+    dispatch({
+      type: COMPANY_UPLOAD_REQUEST,
+      data: formData,
+    });
+  }, []);
 
   ////// DATAVIEW //////
 
@@ -251,8 +288,17 @@ const Question = () => {
                   {...companyNoInput}
                 />
 
-                <input type="file" hidden></input>
-                <CommonButton>사업첨부파일 업로드</CommonButton>
+                <input
+                  type="file"
+                  hidden
+                  ref={fileRef}
+                  value={null}
+                  onChange={fileUploadHandler}
+                />
+                <CommonButton onClick={fileClick}>
+                  사업첨부파일 업로드
+                </CommonButton>
+                <Text>{companyFilePath}</Text>
 
                 <Wrapper dr={`row`} ju={`flex-end`}>
                   <QuestionBtn onClick={onCancel} kindOf={`white`}>

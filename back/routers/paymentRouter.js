@@ -54,7 +54,7 @@ router.get("/list", async (req, res, next) => {
             CASE
               WHEN	p.payInfo = 'card' THEN "신용카드"
               WHEN	p.payInfo = 'phone' THEN "휴대폰 결제"
-              WHEN	p.payInfo = 'nobank' THEN "무통장압금"
+              WHEN	p.payInfo = 'nobank' THEN "무통장입금"
               WHEN	p.payInfo = 'simpleCard' THEN "간편 카드 결제"
               WHEN	p.payInfo = 'trans' THEN "계좌 간편 결제"
               ELSE	p.payInfo
