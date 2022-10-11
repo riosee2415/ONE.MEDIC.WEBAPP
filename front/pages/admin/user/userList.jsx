@@ -315,7 +315,7 @@ const UserList = ({}) => {
     {
       title: "회사승인",
       dataIndex: "isCompany",
-      render: (data) => <Switch checked={data} readOnly />,
+      render: (data) => <Switch checked={data} disabled />,
     },
     {
       title: "권한수정",
