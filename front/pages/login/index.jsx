@@ -173,7 +173,7 @@ const Login = () => {
                 |
                 <Link href={`/find/findEmail`}>
                   <a>
-                    <Text margin={`0 20px 0`}>아이디 찾기</Text>
+                    <Text margin={`0 20px 0`}>이메일 찾기</Text>
                   </a>
                 </Link>
                 |

@@ -52,6 +52,10 @@ const Index = () => {
       name.setValue("");
       mobile.setValue("");
 
+      if (!email) {
+        return message.error("올바르지 않은 정보입니다.");
+      }
+
       setCurrentTab(true);
 
       return message.success("이메일을 찾았습니다.");
