@@ -226,8 +226,6 @@ const UserList = ({}) => {
       filePath.length
     );
 
-    console.log(ext);
-
     const originName = `첨부파일.${ext}`;
     saveAs(file, originName);
   });
@@ -361,8 +359,6 @@ const UserList = ({}) => {
     //   ),
     // },
   ];
-
-  console.log(detailData);
 
   return (
     <AdminLayout>
