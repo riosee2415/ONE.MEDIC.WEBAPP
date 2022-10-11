@@ -1,5 +1,14 @@
-import { Row, Col, Button, Form, Input, Select, Checkbox } from "antd";
-import styled from "styled-components";
+import { Row, Col, Button, Form, Checkbox } from "antd";
+import styled, { keyframes } from "styled-components";
+
+export const fadeAni = keyframes`
+    0%{
+        opacity:0;
+    }
+    100%{
+        opacity:1;
+    }
+`;
 
 export const RowWrapper = styled(Row)`
   width: ${(props) => props.width || `100%`};
@@ -96,6 +105,7 @@ export const WholeWrapper = styled.section`
   margin: ${(props) => props.margin};
   padding: ${(props) => props.padding};
   border-radius: ${(props) => props.radius};
+  animation: ${fadeAni} 0.5s forwards;
 `;
 
 export const Wrapper = styled.div`

@@ -7,6 +7,7 @@ import {
   WholeWrapper,
   RsWrapper,
   TextInput,
+  SpanText,
 } from "./commonComponents";
 import { withResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
@@ -18,7 +19,6 @@ import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT_REQUEST } from "../reducers/user";
 import { MATERIAL_LIST_REQUEST, MATERIAL_USER_ADD } from "../reducers/material";
-import useInput from "../hooks/useInput";
 import { SEARCH_LIST_REQUEST } from "../reducers/search";
 
 const CustomForm = styled(Form)`
@@ -170,6 +170,11 @@ const AppHeader = ({ children, width }) => {
     },
     [userMaterialsArr, userMaterials, drawar]
   );
+
+  const backHandler = useCallback(() => {
+    window.history.back();
+    window.scrollTo({ top: 0 });
+  });
 
   ////////////// - USE EFFECT- //////////////
   useEffect(() => {
@@ -345,7 +350,15 @@ const AppHeader = ({ children, width }) => {
       ) : router.pathname === "/prescription" ? (
         <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
           <Wrapper dr={`row`} ju={`space-between`}>
-            <Text fontSize={width < 800 ? `20px` : `26px`} fontWeight={`bold`}>
+            <Text
+              fontSize={width < 800 ? `20px` : `26px`}
+              fontWeight={`bold`}
+              onClick={() => backHandler()}
+              cursor={`pointer`}
+            >
+              <SpanText fontSize={`20px`} margin={`0 10px 0 0`}>
+                <LeftOutlined />
+              </SpanText>
               {headerView.map((data) => {
                 return data.router === router.pathname && data.title;
               })}
@@ -524,11 +537,30 @@ const AppHeader = ({ children, width }) => {
       ) : (
         <RsWrapper bgColor={Theme.basicTheme_C} color={Theme.white_C}>
           <Wrapper dr={`row`} ju={`space-between`}>
-            <Text fontSize={width < 800 ? `20px` : `26px`} fontWeight={`bold`}>
-              {headerView.map((data) => {
-                return data.router === router.pathname && data.title;
-              })}
-            </Text>
+            {router.pathname === "/" ? (
+              <Text
+                fontSize={width < 800 ? `20px` : `26px`}
+                fontWeight={`bold`}
+              >
+                {headerView.map((data) => {
+                  return data.router === router.pathname && data.title;
+                })}
+              </Text>
+            ) : (
+              <Text
+                fontSize={width < 800 ? `20px` : `26px`}
+                fontWeight={`bold`}
+                onClick={() => backHandler()}
+                cursor={`pointer`}
+              >
+                <SpanText fontSize={`20px`} margin={`0 10px 0 0`}>
+                  <LeftOutlined />
+                </SpanText>
+                {headerView.map((data) => {
+                  return data.router === router.pathname && data.title;
+                })}
+              </Text>
+            )}
 
             <DotWrapper width={`26px`} onClick={drawarToggle}>
               <Dot />
