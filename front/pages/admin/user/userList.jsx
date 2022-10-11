@@ -56,6 +56,11 @@ const LoadNotification = (msg, content) => {
   });
 };
 
+const DownloadA = styled.a`
+  font-size: 15px;
+  margin: 0;
+`;
+
 const UserList = ({}) => {
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
   const { me, st_loadMyInfoDone } = useSelector((state) => state.user);
@@ -93,6 +98,7 @@ const UserList = ({}) => {
   const [detailData, setDetailData] = useState(null);
   const [companyFile, setCompanyFile] = useState(null);
   const [isCompany, setIsCompany] = useState(false);
+  const [bFile, setBFile] = useState(null); // 자격증
 
   const inputName = useInput("");
   const inputEmail = useInput("");
@@ -189,6 +195,7 @@ const UserList = ({}) => {
         setDetailData(data);
       } else {
         setCompanyFile(null);
+        setBFile(null);
         setDetailData(null);
         setIsCompany(false);
         dForm.resetFields();
@@ -247,8 +254,9 @@ const UserList = ({}) => {
       });
       setIsCompany(data.isCompany);
       setCompanyFile(data.companyFile);
+      setBFile(data.businessFile);
     },
-    [dFormRef, companyFile]
+    [dFormRef, companyFile, bFile]
   );
 
   const userAllViewHandler = useCallback(() => {
@@ -485,8 +493,8 @@ const UserList = ({}) => {
         <Form
           form={dForm}
           ref={dFormRef}
-          labelCol={{ span: 2 }}
-          wrapperCol={{ span: 22 }}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
         >
           <GuideUl>
             <GuideLi isImpo={true}>
@@ -537,6 +545,20 @@ const UserList = ({}) => {
                 </AdminText>
               </Form.Item>
             </>
+          )}
+
+          {bFile && (
+            <Form.Item name="bFile" label="한의사면허증">
+              <DownloadA href={bFile} download={bFile}>
+                <Button size="small" type="dashed">
+                  첨부파일
+                </Button>
+              </DownloadA>
+
+              <AdminText>
+                * 첨부파일 클릭시 첨부파일이 다운로드 됩니다.
+              </AdminText>
+            </Form.Item>
           )}
         </Form>
       </Modal>
