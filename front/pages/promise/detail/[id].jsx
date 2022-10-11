@@ -294,16 +294,20 @@ const PromiseDetail = () => {
         userId: me.id,
         productName:
           temporaryDatum.length > 1
-            ? `${product.title} ${unit.value.name} 외 ${
-                temporaryDatum.length - 1
-              }개`
-            : `${product.title} ${unit.value.name}`,
+            ? `${product.title} ${
+                unit.value.name ? unit.value.name : unit.value
+              } 외 ${temporaryDatum.length - 1}개`
+            : `${product.title} ${
+                unit.value.name ? unit.value.name : unit.value
+              }`,
         paymentRequestDatum: temporaryDatum,
         totalPrice: totalPayment,
         prescriptionId: product.id,
       },
     });
   }, [temporaryDatum, me, product, totalPayment, unit.value]);
+
+  console.log(unit);
 
   ////// DATAVIEW //////
 

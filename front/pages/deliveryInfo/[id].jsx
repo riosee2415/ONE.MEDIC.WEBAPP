@@ -867,12 +867,15 @@ const Index = ({}) => {
                       </Text>
                     )}
                   </Wrapper>
-                  <Wrapper width={`20px`} onClick={oModalToggle}>
-                    <Image
-                      src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/pay_icon/delivery.png`}
-                      alt={`delivery_price`}
-                    />
-                  </Wrapper>
+
+                  {router.query && router.query.type !== "payment" && (
+                    <Wrapper width={`20px`} onClick={oModalToggle}>
+                      <Image
+                        src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/pay_icon/delivery.png`}
+                        alt={`delivery_price`}
+                      />
+                    </Wrapper>
+                  )}
                 </Wrapper>
                 <CommonButton
                   shadow={`0`}
