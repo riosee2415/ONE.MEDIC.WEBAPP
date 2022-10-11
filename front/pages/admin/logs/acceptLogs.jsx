@@ -29,6 +29,7 @@ const AcceptLogs = () => {
 
   // LOAD CURRENT INFO AREA /////////////////////////////////////////////
 
+  ////// HOOKS //////
   const [dataList, setDataList] = useState(
     acceptList.map((data) => data.count)
   );
@@ -36,43 +37,59 @@ const AcceptLogs = () => {
     acceptList.map((data) => data.date)
   );
 
-  const [chartConfig, setChartConfig] = useState({
-    series: [
-      {
-        name: "AcceptLogs",
-        data: dataList,
-      },
-    ],
-    options: {
-      chart: {
-        height: 350,
-        type: "line",
-        zoom: {
-          enabled: false,
-        },
-      },
-      dataLabels: {
-        enabled: true,
-      },
-      stroke: {
-        curve: "straight",
-      },
-      title: {
-        text: "Accpet Logs",
-        align: "left",
-      },
-      grid: {
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
-      },
-      xaxis: {
-        categories: categoryList,
-      },
-    },
-  });
+  const [chartConfig, setChartConfig] = useState(null);
 
+  ////// USEEFFECT //////
+  useEffect(() => {
+    if (st_loadMyInfoDone) {
+      if (!me || parseInt(me.level) < 3) {
+        moveLinkHandler(`/admin`);
+      }
+    }
+  }, [st_loadMyInfoDone]);
+
+  useEffect(() => {
+    if (acceptList) {
+      setChartConfig({
+        series: [
+          {
+            name: "AcceptLogs",
+            data: acceptList.map((data) => data.count),
+          },
+        ],
+        options: {
+          chart: {
+            height: 350,
+            type: "line",
+            zoom: {
+              enabled: false,
+            },
+          },
+          dataLabels: {
+            enabled: true,
+          },
+          stroke: {
+            curve: "straight",
+          },
+          title: {
+            text: "Accpet Logs",
+            align: "left",
+          },
+          grid: {
+            row: {
+              colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+              opacity: 0.5,
+            },
+          },
+          xaxis: {
+            categories: acceptList.map((data) => data.date),
+          },
+        },
+      });
+    }
+  }, [acceptList]);
+
+  ////// HANDLER //////
   const setDataToConfig = useCallback(() => {
     const tempData = acceptList.map((data) => data.count);
     const tempCategory = acceptList.map((data) => data.date);
@@ -85,13 +102,6 @@ const AcceptLogs = () => {
     router.push(link);
   }, []);
 
-  useEffect(() => {
-    if (st_loadMyInfoDone) {
-      if (!me || parseInt(me.level) < 3) {
-        moveLinkHandler(`/admin`);
-      }
-    }
-  }, [st_loadMyInfoDone]);
   /////////////////////////////////////////////////////////////////////////
 
   return (
@@ -109,12 +119,14 @@ const AcceptLogs = () => {
           <TabPane tab="최근 30일" key="1"></TabPane>
         </Tabs>
 
-        <Chart
-          options={chartConfig.options}
-          series={chartConfig.series}
-          type="line"
-          height="550"
-        />
+        {acceptList && chartConfig && (
+          <Chart
+            options={chartConfig.options}
+            series={chartConfig.series}
+            type="line"
+            height="550"
+          />
+        )}
       </AdminContent>
     </AdminLayout>
   );

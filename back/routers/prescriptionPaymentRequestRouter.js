@@ -9,6 +9,7 @@ const {
   UseMaterial,
   User,
   Materials,
+  MaterialsHistory,
 } = require("../models");
 
 const router = express.Router();
@@ -245,35 +246,14 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
 
     await Promise.all(
       useMaterialData.map(async (data) => {
-        const masterialFind = materialSelect[0].find(
-          (value) => value.id === data.id
-        );
-
-        if (masterialFind) {
-          await UseMaterial.create({
-            name: data.name,
-            qnt: parseInt(data.qnt),
-            unit: data.unit,
-            buyPrice: parseInt(data.price),
-            MaterialId: parseInt(data.id),
-            PrescriptionPaymentRequestId: parseInt(pprResult.id),
-          });
-          console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
-          console.log(masterialFind.stock);
-          console.log(data.qnt);
-          console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅");
-
-          await Materials.update(
-            {
-              stock: masterialFind.stock - data.qnt,
-            },
-            {
-              where: {
-                id: data.id,
-              },
-            }
-          );
-        }
+        await UseMaterial.create({
+          name: data.name,
+          qnt: parseInt(data.qnt),
+          unit: data.unit,
+          buyPrice: parseInt(data.price),
+          MaterialId: parseInt(data.id),
+          PrescriptionPaymentRequestId: parseInt(pprResult.id),
+        });
       })
     );
 
@@ -484,17 +464,20 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
         id: parseInt(req.user.id),
       },
     });
+
     const currentPayment = await PrescriptionPaymentRequest.findOne({
       where: {
         id: parseInt(pprId),
       },
     });
 
+    // 사용할 재료 ////////////
     const currentMaterial = await UseMaterial.findAll({
       where: {
         PrescriptionPaymentRequestId: pprId,
       },
     });
+    ////////////////////////
 
     const _payinfo = payInfo ? payInfo : "";
 
@@ -561,36 +544,68 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
       const { code, message } = paymentResult.data;
 
       if (code === 0) {
-        const result = await PrescriptionPaymentRequest.update(
-          {
-            payInfo: _payinfo,
-            isPayment: true,
-            isNobank: true,
-          },
-          {
-            where: {
-              id: parseInt(pprId),
-            },
-          }
-        );
+        // 결제 완료
+        const pprUpdateQuery = `
+        UPDATE  prescriptionPaymentRequest SET 
+		            payInfo = ${_payinfo},
+		            isPayment = TRUE,
+		            isNobank = TRUE
+         WHERE  id = ${parseInt(pprId)};
+        `;
+
+        const pprUpdate = await models.sequelize.query(pprUpdateQuery);
+
+        // 재료 조회
+        const materialInfoQuery = `
+        SELECT	id,
+                name,
+                stock,
+                unit
+          FROM  materials m
+         WHERE  id IN (${currentMaterial.map((data) => data.id)});
+        `;
+
+        const materialInfo = await models.sequelize.query(materialInfoQuery);
 
         // 재료 재고 차감
         for (let i = 0; i < currentMaterial.length; i++) {
-          const result = await Materials.findOne({
-            where: {
-              id: currentMaterial[i].MaterialId,
-            },
-          });
+          const result = materialInfo[0].find(
+            (data) => data.id === currentMaterial[i].MaterialId
+          );
 
-          await Materials.update(
-            {
-              qnt: result.qnt - currentMaterial[i].qnt,
-            },
-            {
-              where: {
-                id: currentMaterial[i].MaterialId,
-              },
-            }
+          // 재료 사용 기록 생성
+
+          const materialHistoryCreateQeury = `
+          INSERT INTO  materialsHistory 
+            (
+            	useQnt, 
+            	useUnit, 
+            	materialName, 
+            	createdAt, 
+            	updatedAt
+            ) VALUES (
+            	${currentMaterial[i].qnt}, 
+            	'${currentMaterial[i].unit}, 
+            	'${currentMaterial[i].name}', 
+            	NOW(), 
+            	NOW()
+            );
+          `;
+
+          const materialHistoryCreate = await models.sequelize.query(
+            materialHistoryCreateQeury
+          );
+
+          // 재료 차감
+          const materialStockUpdateQuery = `
+          UPDATE  materials 
+             SET  stock = ${result.qnt - currentMaterial[i].qnt}
+           WHERE  id = ${currentMaterial[i].MaterialId};
+       
+          `;
+
+          const materialStockUpdate = await models.sequelize.query(
+            materialStockUpdateQuery
           );
         }
 
@@ -599,36 +614,67 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
         return res.status(401).send(message);
       }
     } else {
-      const result = await PrescriptionPaymentRequest.update(
-        {
-          payInfo: _payinfo,
-          isPayment: true,
-          isNobank: _payinfo === "nobank" ? false : true,
-        },
-        {
-          where: {
-            id: parseInt(pprId),
-          },
-        }
-      );
+      // 결제 완료
+      const pprUpdateQuery = `
+      UPDATE  prescriptionPaymentRequest SET 
+		          payInfo = ${_payinfo},
+		          isPayment = TRUE,
+		          isNobank = ${_payinfo === "nobank" ? "FALSE" : "TRUE"}
+       WHERE  id = ${parseInt(pprId)};
+      `;
+
+      const pprUpdate = await models.sequelize.query(pprUpdateQuery);
+
+      // 재료 조회
+      const materialInfoQuery = `
+      SELECT	id,
+              name,
+              stock,
+              unit
+        FROM  materials m
+       WHERE  id IN (${currentMaterial.map((data) => data.id)});
+      `;
+
+      const materialInfo = await models.sequelize.query(materialInfoQuery);
 
       // 재료 재고 차감
       for (let i = 0; i < currentMaterial.length; i++) {
-        const result = await Materials.findOne({
-          where: {
-            id: currentMaterial[i].MaterialId,
-          },
-        });
+        const result = materialInfo[0].find(
+          (data) => data.id === currentMaterial[i].MaterialId
+        );
 
-        await Materials.update(
-          {
-            qnt: result.qnt - currentMaterial[i].qnt,
-          },
-          {
-            where: {
-              id: currentMaterial[i].MaterialId,
-            },
-          }
+        // 재료 사용 기록 생성
+        const materialHistoryCreateQeury = `
+        INSERT INTO  materialsHistory 
+          (
+            useQnt, 
+            useUnit, 
+            materialName, 
+            createdAt, 
+            updatedAt
+          ) VALUES (
+            ${currentMaterial[i].qnt}, 
+            '${currentMaterial[i].unit}, 
+            '${currentMaterial[i].name}', 
+            NOW(), 
+            NOW()
+          );
+        `;
+
+        const materialHistoryCreate = await models.sequelize.query(
+          materialHistoryCreateQeury
+        );
+
+        // 재료 차감
+        const materialStockUpdateQuery = `
+        UPDATE  materials 
+           SET  stock = ${result.qnt - currentMaterial[i].qnt}
+         WHERE  id = ${currentMaterial[i].MaterialId};
+     
+        `;
+
+        const materialStockUpdate = await models.sequelize.query(
+          materialStockUpdateQuery
         );
       }
 
