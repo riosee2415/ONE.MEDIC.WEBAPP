@@ -149,14 +149,19 @@ const Index = ({}) => {
   const [oModal, setOModal] = useState(false);
 
   const [isMeterialData, setIsMeterialData] = useState([]);
+  const [isMeterialData2, setIsMeterialData2] = useState([]);
   ////// REDUX //////
   ////// USEEFFECT //////
   useEffect(() => {
     const result = sessionStorage.getItem("METAERIAL")
       ? JSON.parse(sessionStorage.getItem("METAERIAL"))
       : [];
+    const result2 = sessionStorage.getItem("METAERIAL2")
+      ? JSON.parse(sessionStorage.getItem("METAERIAL2"))
+      : [];
 
     setIsMeterialData(result);
+    setIsMeterialData2(result2);
   }, []);
 
   useEffect(() => {
@@ -934,37 +939,78 @@ const Index = ({}) => {
           {/* 주문하기 옆 모달 */}
           <CustomModal footer={null} visible={oModal} onCancel={oModalToggle}>
             <Wrapper
-              dr={`row`}
-              ju={`space-between`}
-              borderBottom={`1px solid ${Theme.grey_C}`}
-              padding={`10px`}
-              bgColor={Theme.grey_C}
-              color={Theme.white_C}
-              margin={`20px 0 0`}
+              padding={`20px`}
+              shadow={Theme.shadow_C}
+              radius={`20px`}
+              margin={`20px 0 15px`}
             >
-              <Text>구성약재</Text>
-              <Text>g</Text>
-              <Text>금액</Text>
+              <Wrapper dr={`row`} ju={`flex-start`}>
+                <Text color={Theme.grey_C}>종류</Text>
+              </Wrapper>
+              <Wrapper argin={`10px 0 0`} al={`flex-start`}>
+                <Text fontSize={width < 800 ? `16px` : `18px`}>
+                  {isMeterialData2 && isMeterialData2.chubSelect} /{" "}
+                  {isMeterialData2 && isMeterialData2.packSelect} /{" "}
+                  {isMeterialData2 && isMeterialData2.volumnSelect}
+                </Text>
+              </Wrapper>
             </Wrapper>
 
-            <Wrapper>
-              {isMeterialData.map((data) => {
-                return (
-                  <Wrapper
-                    dr={`row`}
-                    ju={`space-between`}
-                    borderBottom={`1px solid ${Theme.lightGrey_C}`}
-                    padding={`20px 10px 5px`}
-                  >
-                    <Text>{data.name}</Text>
-                    <Text>
-                      {data.qnt}
-                      {data.unit}
-                    </Text>
-                    <Text>{data.price * data.qnt}</Text>
-                  </Wrapper>
-                );
-              })}
+            <Wrapper
+              padding={`20px`}
+              shadow={Theme.shadow_C}
+              radius={`20px`}
+              margin={`20px 0 15px`}
+            >
+              <Wrapper
+                dr={`row`}
+                ju={`space-between`}
+                borderBottom={`1px solid ${Theme.grey2_C}`}
+                padding={`10px`}
+                color={Theme.grey_C}
+              >
+                <Wrapper al={`flex-start`} width={`calc(100% / 3)`}>
+                  구성약재
+                </Wrapper>
+                <Wrapper width={`calc(100% / 3)`}>단위</Wrapper>
+                <Wrapper al={`flex-end`} width={`calc(100% / 3)`}>
+                  금액
+                </Wrapper>
+              </Wrapper>
+              <Wrapper>
+                {isMeterialData.map((data) => {
+                  return (
+                    <Wrapper
+                      dr={`row`}
+                      ju={`space-between`}
+                      borderBottom={`1px solid ${Theme.lightGrey_C}`}
+                      padding={`20px 10px 5px`}
+                    >
+                      <Wrapper
+                        width={`calc(100% / 3)`}
+                        fontSize={width < 800 ? `16px` : `18px`}
+                        al={`flex-start`}
+                      >
+                        {data.name}
+                      </Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 3)`}
+                        fontSize={width < 800 ? `16px` : `18px`}
+                      >
+                        {data.qnt}
+                        {data.unit}
+                      </Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 3)`}
+                        fontSize={width < 800 ? `16px` : `18px`}
+                        al={`flex-end`}
+                      >
+                        {data.price * data.qnt}
+                      </Wrapper>
+                    </Wrapper>
+                  );
+                })}
+              </Wrapper>
             </Wrapper>
           </CustomModal>
 
