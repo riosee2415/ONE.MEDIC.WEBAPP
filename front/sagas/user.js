@@ -81,6 +81,10 @@ import {
   MODIFYPASS_UPDATE_SUCCESS,
   MODIFYPASS_UPDATE_FAILURE,
   /////////////////////////////
+  FIND_EMAIL_REQUEST,
+  FIND_EMAIL_SUCCESS,
+  FIND_EMAIL_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -626,6 +630,33 @@ function* userModifyPassUpdate(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function findEmailAPI(data) {
+  return await axios.post(`/api/user/findemail`, data);
+}
+
+function* findEmail(action) {
+  try {
+    const result = yield call(findEmailAPI, action.data);
+
+    yield put({
+      type: FIND_EMAIL_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: FIND_EMAIL_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -708,6 +739,10 @@ function* watchUserModifyPassUpdate() {
   yield takeLatest(MODIFYPASS_UPDATE_REQUEST, userModifyPassUpdate);
 }
 
+function* watchFindEmail() {
+  yield takeLatest(FIND_EMAIL_REQUEST, findEmail);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -731,6 +766,7 @@ export default function* userSaga() {
     fork(watchUserBoughtList),
     fork(watchUserModifyPass),
     fork(watchUserModifyPassUpdate),
+    fork(watchFindEmail),
     //
   ]);
 }

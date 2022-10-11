@@ -18,7 +18,11 @@ import {
 } from "../../reducers/user";
 
 const CustomForm = styled(Form)`
-  width: 100%;
+  width: 450px;
+
+  @media (max-width: 700px) {
+    width: 100%;
+  }
 `;
 
 const FindPw = () => {
@@ -114,6 +118,9 @@ const FindPw = () => {
       <WholeWrapper>
         <RsWrapper minHeight={`calc(100vh - 170px - 64px)`}>
           <Wrapper padding={`100px 0`}>
+            <Text fontSize={`20px`} fontWeight={`600`} margin={`0 0 40px`}>
+              비밀번호 찾기
+            </Text>
             {cuurentTab === 0 ? (
               <>
                 <CustomForm onFinish={secretSendHandler}>

@@ -7,6 +7,7 @@ export const initailState = {
   cardInfo: null,
   filePath: null,
   userBoughtList: null,
+  email: null, // 이메일 찾기
 
   companyUserLists: null,
 
@@ -100,6 +101,10 @@ export const initailState = {
   st_userModifyPassUpdateLoading: false, // 비밀번호 변경
   st_userModifyPassUpdateDone: false,
   st_userModifyPassUpdateError: null,
+  //
+  st_findEmailLoading: false, // 이메일 찾기
+  st_findEmailDone: false,
+  st_findEmailError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -181,6 +186,10 @@ export const MODIFYPASS_FAILURE = "MODIFYPASS_FAILURE";
 export const MODIFYPASS_UPDATE_REQUEST = "MODIFYPASS_UPDATE_REQUEST";
 export const MODIFYPASS_UPDATE_SUCCESS = "MODIFYPASS_UPDATE_SUCCESS";
 export const MODIFYPASS_UPDATE_FAILURE = "MODIFYPASS_UPDATE_FAILURE";
+
+export const FIND_EMAIL_REQUEST = "FIND_EMAIL_REQUEST";
+export const FIND_EMAIL_SUCCESS = "FIND_EMAIL_SUCCESS";
+export const FIND_EMAIL_FAILURE = "FIND_EMAIL_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -621,6 +630,28 @@ const reducer = (state = initailState, action) =>
           draft.currentAdminMenu = [...draft.currentAdminMenu, action.data.key];
         }
 
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case FIND_EMAIL_REQUEST: {
+        draft.st_findEmailLoading = true;
+        draft.st_findEmailDone = false;
+        draft.st_findEmailError = null;
+        break;
+      }
+      case FIND_EMAIL_SUCCESS: {
+        draft.st_findEmailLoading = false;
+        draft.st_findEmailDone = true;
+        draft.st_findEmailError = null;
+        draft.email = action.data.email;
+        break;
+      }
+      case FIND_EMAIL_FAILURE: {
+        draft.st_findEmailLoading = false;
+        draft.st_findEmailDone = false;
+        draft.st_findEmailError = action.error;
         break;
       }
 

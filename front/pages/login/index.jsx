@@ -94,9 +94,7 @@ const Login = () => {
         <meta name="keywords" content={seo_keywords} />
         <meta
           name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
+          content={seo_desc.length < 1 ? "ModerlLab" : seo_desc[0].content}
         />
         {/* <!-- OG tag  --> */}
         <meta
@@ -109,9 +107,7 @@ const Login = () => {
         />
         <meta
           property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
+          content={seo_desc.length < 1 ? "ModerlLab" : seo_desc[0].content}
         />
         <meta property="og:keywords" content={seo_keywords} />
         <meta
@@ -172,6 +168,12 @@ const Login = () => {
                 <Link href={`/join`}>
                   <a>
                     <Text margin={`0 20px 0 0`}>회원가입</Text>
+                  </a>
+                </Link>
+                |
+                <Link href={`/find/findEmail`}>
+                  <a>
+                    <Text margin={`0 20px 0`}>아이디 찾기</Text>
                   </a>
                 </Link>
                 |

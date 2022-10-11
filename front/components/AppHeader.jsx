@@ -297,7 +297,7 @@ const AppHeader = ({ children, width }) => {
             cursor={`pointer`}
           >
             <Link href={`/login`}>
-              <a>
+              <ATag width={`auto`} dr={`row`}>
                 <Wrapper
                   width={`auto`}
                   color={Theme.grey2_C}
@@ -306,9 +306,33 @@ const AppHeader = ({ children, width }) => {
                 >
                   <LeftOutlined />
                 </Wrapper>
-              </a>
+                비밀번호 찾기
+              </ATag>
             </Link>
-            비밀번호 찾기
+          </Wrapper>
+        </RsWrapper>
+      ) : router.pathname === "/find/findEmail" ? (
+        <RsWrapper>
+          <Wrapper
+            fontSize={width < 800 ? `20px` : `26px`}
+            fontWeight={`bold`}
+            dr={`row`}
+            ju={`flex-start`}
+            cursor={`pointer`}
+          >
+            <Link href={`/login`}>
+              <ATag width={`auto`} dr={`row`}>
+                <Wrapper
+                  width={`auto`}
+                  color={Theme.grey2_C}
+                  fontSize={`20px`}
+                  margin={`0 10px 0 0`}
+                >
+                  <LeftOutlined />
+                </Wrapper>
+                이메일 찾기
+              </ATag>
+            </Link>
           </Wrapper>
         </RsWrapper>
       ) : router.pathname === "/join" ? (
