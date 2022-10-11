@@ -99,7 +99,7 @@ const Question = () => {
   const dispatch = useDispatch();
   ////// GLOBAL STATE //////
 
-  const { me } = useSelector((state) => state.user);
+  const { me, companyFilePath } = useSelector((state) => state.user);
 
   const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
     (state) => state.seo

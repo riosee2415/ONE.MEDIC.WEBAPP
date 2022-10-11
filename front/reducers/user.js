@@ -6,6 +6,7 @@ export const initailState = {
   users: null,
   cardInfo: null,
   filePath: null,
+  companyFilePath: null,
   userBoughtList: null,
   email: null, // 이메일 찾기
 
@@ -109,6 +110,10 @@ export const initailState = {
   st_findEmailLoading: false, // 이메일 찾기
   st_findEmailDone: false,
   st_findEmailError: null,
+  //
+  st_companyFileUploadLoading: false, // 파일 업로드
+  st_companyFileUploadDone: false, // 파일 업로드
+  st_companyFileUploadError: false, // 파일 업로드
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -150,6 +155,10 @@ export const COMPANY_LIST_FAILURE = "COMPANY_LIST_FAILURE";
 export const COMPANY_CREATE_REQUEST = "COMPANY_CREATE_REQUEST";
 export const COMPANY_CREATE_SUCCESS = "COMPANY_CREATE_SUCCESS";
 export const COMPANY_CREATE_FAILURE = "COMPANY_CREATE_FAILURE";
+
+export const COMPANY_UPLOAD_REQUEST = "COMPANY_UPLOAD_REQUEST";
+export const COMPANY_UPLOAD_SUCCESS = "COMPANY_UPLOAD_SUCCESS";
+export const COMPANY_UPLOAD_FAILURE = "COMPANY_UPLOAD_FAILURE";
 
 export const COMPANY_REFUSAL_REQUEST = "COMPANY_REFUSAL_REQUEST";
 export const COMPANY_REFUSAL_SUCCESS = "COMPANY_REFUSAL_SUCCESS";
@@ -680,6 +689,28 @@ const reducer = (state = initailState, action) =>
         draft.st_findEmailLoading = false;
         draft.st_findEmailDone = false;
         draft.st_findEmailError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case COMPANY_UPLOAD_REQUEST: {
+        draft.st_companyFileUploadLoading = true;
+        draft.st_companyFileUploadDone = false;
+        draft.st_companyFileUploadError = null;
+        break;
+      }
+      case COMPANY_UPLOAD_SUCCESS: {
+        draft.st_companyFileUploadLoading = false;
+        draft.st_companyFileUploadDone = true;
+        draft.st_companyFileUploadError = null;
+        draft.companyFilePath = action.data.path;
+        break;
+      }
+      case COMPANY_UPLOAD_FAILURE: {
+        draft.st_companyFileUploadLoading = false;
+        draft.st_companyFileUploadDone = false;
+        draft.st_companyFileUploadError = action.error;
         break;
       }
 
