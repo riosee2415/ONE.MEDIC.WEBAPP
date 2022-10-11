@@ -345,6 +345,14 @@ const Prescription = ({}) => {
   // 주문하기
   const paymentCreateHandler = useCallback(() => {
     sessionStorage.setItem("METAERIAL", JSON.stringify(userMaterials));
+    sessionStorage.setItem(
+      "METAERIAL2",
+      JSON.stringify({
+        chubSelect: chubSelect + "첩",
+        packSelect: packSelect + "팩",
+        volumnSelect: volumnSelect + "ml",
+      })
+    );
     const recipeName = sessionStorage.getItem("recipeName");
 
     for (let i = 0; i < userMaterials.length; i++) {
@@ -365,7 +373,14 @@ const Prescription = ({}) => {
             }`,
       },
     });
-  }, [userMaterials, materialTotalPrice, packTotalPrice]);
+  }, [
+    userMaterials,
+    materialTotalPrice,
+    packTotalPrice,
+    chubSelect,
+    packSelect,
+    volumnSelect,
+  ]);
 
   ////// DATAVIEW //////
 
