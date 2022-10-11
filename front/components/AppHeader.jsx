@@ -8,11 +8,12 @@ import {
   RsWrapper,
   TextInput,
   SpanText,
+  CommonButton,
 } from "./commonComponents";
 import { withResizeDetector } from "react-resize-detector";
 import styled from "styled-components";
 import Theme from "./Theme";
-import { Drawer, message, Empty, Form } from "antd";
+import { Drawer, message, Empty, Form, Modal } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
@@ -60,6 +61,10 @@ const DotWrapper = styled(Wrapper)`
   }
 `;
 
+const WordBreack = styled(Text)`
+  word-break: break-all;
+`;
+
 const AppHeader = ({ children, width }) => {
   const router = useRouter();
   ////////////// - USE STATE- ///////////////
@@ -76,6 +81,8 @@ const AppHeader = ({ children, width }) => {
 
   const [userMaterialsArr, setUserMaterialsArr] = useState([]);
 
+  const [refusalModal, setRefusalModal] = useState(false);
+
   // const documentRef = useRef(document);
 
   const [drawar, setDrawar] = useState(false);
@@ -83,6 +90,10 @@ const AppHeader = ({ children, width }) => {
   const dispatch = useDispatch();
 
   ///////////// - EVENT HANDLER- ////////////
+
+  const refusalModalToggle = useCallback(() => {
+    setRefusalModal((prev) => !prev);
+  }, [refusalModal]);
 
   const drawarToggle = useCallback(() => {
     setDrawar(!drawar);
@@ -120,8 +131,6 @@ const AppHeader = ({ children, width }) => {
 
   const materialAddHandler = useCallback(
     (data) => {
-      console.log(data);
-
       let seleteMaterialArr = userMaterials.map((data) => data);
 
       let checkArr = [];
@@ -815,8 +824,27 @@ const AppHeader = ({ children, width }) => {
                       </ATag>
                     </Link>
                     {console.log(me)}
-                    <Link href={`/company`}>
-                      <ATag al={`flex-start`} onClick={drawarToggle}>
+                    {me &&
+                      (me.companyFile === null ? (
+                        <Link href={`/company`}>
+                          <ATag al={`flex-start`} onClick={drawarToggle}>
+                            <Wrapper dr={`row`} ju={`flex-start`}>
+                              <Image
+                                alt="icon"
+                                width={`26px`}
+                                height={`26px`}
+                                src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/7.company.png`}
+                              />
+                              <Text
+                                fontSize={width < 800 ? `16px` : `18px`}
+                                margin={`0 0 0 30px`}
+                              >
+                                회사신청하기
+                              </Text>
+                            </Wrapper>
+                          </ATag>
+                        </Link>
+                      ) : (
                         <Wrapper dr={`row`} ju={`flex-start`}>
                           <Image
                             alt="icon"
@@ -828,11 +856,22 @@ const AppHeader = ({ children, width }) => {
                             fontSize={width < 800 ? `16px` : `18px`}
                             margin={`0 0 0 30px`}
                           >
-                            회사신청하기
+                            {!me.isCompany && !me.isRefusal
+                              ? "회사신청 대기 중"
+                              : me.isCompany
+                              ? "회사승인"
+                              : me.isRefusal && "회사반려"}
                           </Text>
+                          {!me.isCompany && me.isRefusal && (
+                            <CommonButton
+                              margin={`0 0 0 10px`}
+                              onClick={refusalModalToggle}
+                            >
+                              반려사유
+                            </CommonButton>
+                          )}
                         </Wrapper>
-                      </ATag>
-                    </Link>
+                      ))}
                   </Wrapper>
                   <Wrapper
                     radius={`15px`}
@@ -875,6 +914,24 @@ const AppHeader = ({ children, width }) => {
           )}
         </RsWrapper>
       )}
+      <Modal
+        visible={refusalModal}
+        title={`반려사유`}
+        footer={null}
+        onCancel={refusalModalToggle}
+      >
+        <Wrapper
+          dr={`row`}
+          ju={`flex-start`}
+          al={`flex-start`}
+          fontSize={`16px`}
+        >
+          <Text width={`40px`}>사유 : </Text>
+          <WordBreack width={`calc(100% - 50px)`} margin={`0 0 0 10px`}>
+            {me && me.resusalReason}
+          </WordBreack>
+        </Wrapper>
+      </Modal>
     </WholeWrapper>
   );
 };
