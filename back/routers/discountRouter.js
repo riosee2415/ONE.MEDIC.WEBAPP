@@ -32,7 +32,7 @@ router.get("/list", isAdminCheck, async (req, res, next) => {
     if (result[0].length > 0) {
       return res.status(200).json(result[0]);
     } else {
-      return res.status(201).send("혜택이 존재하지 않습니다.");
+      return res.status(401).send("혜택이 존재하지 않습니다.");
     }
   } catch (e) {
     console.error(e);
