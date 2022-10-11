@@ -62,6 +62,10 @@ export const initailState = {
   st_companyListDone: false,
   st_companyListError: null,
   //
+  st_companyCreateLoading: false,
+  st_companyCreateDone: false,
+  st_companyCreateError: null,
+  //
   st_companyRefusalLoading: false, // 회사 거절
   st_companyRefusalDone: false,
   st_companyRefusalError: null,
@@ -142,6 +146,10 @@ export const KAKAO_LOGIN_FAILURE = "KAKAO_LOGIN_FAILURE";
 export const COMPANY_LIST_REQUEST = "COMPANY_LIST_REQUEST";
 export const COMPANY_LIST_SUCCESS = "COMPANY_LIST_SUCCESS";
 export const COMPANY_LIST_FAILURE = "COMPANY_LIST_FAILURE";
+
+export const COMPANY_CREATE_REQUEST = "COMPANY_CREATE_REQUEST";
+export const COMPANY_CREATE_SUCCESS = "COMPANY_CREATE_SUCCESS";
+export const COMPANY_CREATE_FAILURE = "COMPANY_CREATE_FAILURE";
 
 export const COMPANY_REFUSAL_REQUEST = "COMPANY_REFUSAL_REQUEST";
 export const COMPANY_REFUSAL_SUCCESS = "COMPANY_REFUSAL_SUCCESS";
@@ -369,6 +377,26 @@ const reducer = (state = initailState, action) =>
         draft.st_companyListLoading = false;
         draft.st_companyListDone = false;
         draft.st_companyListError = action.error;
+        break;
+      }
+      //////////////////////////////////////////////
+
+      case COMPANY_CREATE_REQUEST: {
+        draft.st_companyCreateLoading = true;
+        draft.st_companyCreateDone = null;
+        draft.st_companyCreateError = false;
+        break;
+      }
+      case COMPANY_CREATE_SUCCESS: {
+        draft.st_companyCreateLoading = false;
+        draft.st_companyCreateDone = true;
+        draft.st_companyCreateError = null;
+        break;
+      }
+      case COMPANY_CREATE_FAILURE: {
+        draft.st_companyCreateLoading = false;
+        draft.st_companyCreateDone = false;
+        draft.st_companyCreateError = action.error;
         break;
       }
       //////////////////////////////////////////////

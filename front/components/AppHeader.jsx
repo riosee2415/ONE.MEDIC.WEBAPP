@@ -256,6 +256,10 @@ const AppHeader = ({ children, width }) => {
       title: "문의하기",
     },
     {
+      router: "/company",
+      title: "회사신청하기",
+    },
+    {
       router: "/user/payment",
       title: "결제정보",
     },
@@ -790,7 +794,11 @@ const AppHeader = ({ children, width }) => {
                     </Link>
                     <Link href={`/question`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
-                        <Wrapper dr={`row`} ju={`flex-start`}>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`flex-start`}
+                          margin={`0 0 20px`}
+                        >
                           <Image
                             alt="icon"
                             width={`26px`}
@@ -802,6 +810,24 @@ const AppHeader = ({ children, width }) => {
                             margin={`0 0 0 30px`}
                           >
                             문의하기
+                          </Text>
+                        </Wrapper>
+                      </ATag>
+                    </Link>
+                    <Link href={`/company`}>
+                      <ATag al={`flex-start`} onClick={drawarToggle}>
+                        <Wrapper dr={`row`} ju={`flex-start`}>
+                          <Image
+                            alt="icon"
+                            width={`26px`}
+                            height={`26px`}
+                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/7.company.png`}
+                          />
+                          <Text
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            margin={`0 0 0 30px`}
+                          >
+                            회사신청하기
                           </Text>
                         </Wrapper>
                       </ATag>

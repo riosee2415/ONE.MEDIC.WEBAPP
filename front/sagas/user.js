@@ -33,6 +33,10 @@ import {
   COMPANY_LIST_SUCCESS,
   COMPANY_LIST_FAILURE,
   /////////////////////////////
+  COMPANY_CREATE_REQUEST,
+  COMPANY_CREATE_SUCCESS,
+  COMPANY_CREATE_FAILURE,
+  /////////////////////////////
   COMPANY_REFUSAL_REQUEST,
   COMPANY_REFUSAL_SUCCESS,
   COMPANY_REFUSAL_FAILURE,
@@ -294,6 +298,33 @@ function* companyList(action) {
     console.error(err);
     yield put({
       type: COMPANY_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function companyCreateAPI(data) {
+  return axios.patch(`/api/user/company/create`, data);
+}
+
+function* companyCreate(action) {
+  try {
+    const result = yield call(companyCreateAPI, action.data);
+
+    yield put({
+      type: COMPANY_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: COMPANY_CREATE_FAILURE,
       error: err.response.data,
     });
   }
@@ -691,6 +722,10 @@ function* watchCompanyList() {
   yield takeLatest(COMPANY_LIST_REQUEST, companyList);
 }
 
+function* watchCompanyCreate() {
+  yield takeLatest(COMPANY_CREATE_REQUEST, companyCreate);
+}
+
 function* watchCompanyRefusal() {
   yield takeLatest(COMPANY_REFUSAL_REQUEST, companyRefusal);
 }
@@ -754,6 +789,7 @@ export default function* userSaga() {
     fork(watchUserListUpdate),
     fork(watchKakaoLogin),
     fork(watchCompanyList),
+    fork(watchCompanyCreate),
     fork(watchCompanyRefusal),
     fork(watchCompanyApproval),
     fork(watchCompanyOperator),
