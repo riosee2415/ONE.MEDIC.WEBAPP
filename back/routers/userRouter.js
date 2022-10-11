@@ -225,7 +225,7 @@ router.post("/signin/admin", (req, res, next) => {
 });
 
 router.post("/signup", async (req, res, next) => {
-  const { email, username, nickname, mobile, password, terms, companyFile } =
+  const { email, username, nickname, mobile, password, terms, businessFile } =
     req.body;
 
   if (!terms) {
@@ -252,7 +252,7 @@ router.post("/signup", async (req, res, next) => {
       nickname,
       mobile,
       terms,
-      companyFile,
+      businessFile,
       password: hashedPassword,
     });
 
@@ -419,8 +419,6 @@ router.post("/modifypass", async (req, res, next) => {
     return res.status(401).send("잘못된 요청 입니다. [CODE097]");
   }
 });
-
-router.get("/modifypass", isLoggedIn);
 
 router.patch("/modifypass/update", async (req, res, next) => {
   const { email, password } = req.body;

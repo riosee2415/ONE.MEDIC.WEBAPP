@@ -64,8 +64,13 @@ module.exports = class User extends Model {
           allowNull: false,
           defaultValue: false,
         },
-        // 사업첨부파일
+        // 사업첨부파일 (회사 신청할 때 받는거)
         companyFile: {
+          type: DataTypes.STRING(600),
+          allowNull: true,
+        },
+        // 한의사 자격증 파일 (가입할 때 받는거)
+        businessFile: {
           type: DataTypes.STRING(600),
           allowNull: true,
         },
