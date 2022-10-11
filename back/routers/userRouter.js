@@ -595,17 +595,17 @@ router.get(
         }
       }
 
-      if (companyNo) {
-        const exCompany = await User.findOne({
-          where: {
-            companyNo,
-          },
-        });
+      // if (companyNo) {
+      //   const exCompany = await User.findOne({
+      //     where: {
+      //       companyNo,
+      //     },
+      //   });
 
-        if (exCompany) {
-          return res.status(401).send("신청을 한 회원입니다.");
-        }
-      }
+      //   if (exCompany) {
+      //     return res.status(401).send("신청을 한 회원입니다.");
+      //   }
+      // }
 
       const result = await User.update(
         {

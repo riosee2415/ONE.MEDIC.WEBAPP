@@ -89,6 +89,10 @@ import {
   FIND_EMAIL_SUCCESS,
   FIND_EMAIL_FAILURE,
   /////////////////////////////
+  COMPANY_UPLOAD_REQUEST,
+  COMPANY_UPLOAD_SUCCESS,
+  COMPANY_UPLOAD_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // SAGA AREA ********************************************************************************************************
@@ -550,6 +554,33 @@ function* fileUpload(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+function companyUploadAPI(data) {
+  return axios.post(`/api/user/file`, data);
+}
+
+function* companyUpload(action) {
+  try {
+    const result = yield call(companyUploadAPI, action.data);
+
+    yield put({
+      type: COMPANY_UPLOAD_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: COMPANY_UPLOAD_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 // ******************************************************************************************************************
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
@@ -778,6 +809,10 @@ function* watchFindEmail() {
   yield takeLatest(FIND_EMAIL_REQUEST, findEmail);
 }
 
+function* watchCompanyUpload() {
+  yield takeLatest(COMPANY_UPLOAD_REQUEST, companyUpload);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -803,6 +838,7 @@ export default function* userSaga() {
     fork(watchUserModifyPass),
     fork(watchUserModifyPassUpdate),
     fork(watchFindEmail),
+    fork(watchCompanyUpload),
     //
   ]);
 }
