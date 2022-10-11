@@ -33,9 +33,9 @@ import {
   COMPANY_LIST_SUCCESS,
   COMPANY_LIST_FAILURE,
   /////////////////////////////
-  COMPANY_CREATE_REQUEST,
-  COMPANY_CREATE_SUCCESS,
-  COMPANY_CREATE_FAILURE,
+  COMPANY_SUBMIT_REQUEST,
+  COMPANY_SUBMIT_SUCCESS,
+  COMPANY_SUBMIT_FAILURE,
   /////////////////////////////
   COMPANY_REFUSAL_REQUEST,
   COMPANY_REFUSAL_SUCCESS,
@@ -326,13 +326,13 @@ function* companyCreate(action) {
     const result = yield call(companyCreateAPI, action.data);
 
     yield put({
-      type: COMPANY_CREATE_SUCCESS,
+      type: COMPANY_SUBMIT_SUCCESS,
       data: result.data,
     });
   } catch (err) {
     console.error(err);
     yield put({
-      type: COMPANY_CREATE_FAILURE,
+      type: COMPANY_SUBMIT_FAILURE,
       error: err.response.data,
     });
   }
@@ -786,7 +786,7 @@ function* watchCompanyList() {
 }
 
 function* watchCompanyCreate() {
-  yield takeLatest(COMPANY_CREATE_REQUEST, companyCreate);
+  yield takeLatest(COMPANY_SUBMIT_REQUEST, companyCreate);
 }
 
 function* watchCompanyRefusal() {

@@ -156,9 +156,9 @@ export const COMPANY_LIST_REQUEST = "COMPANY_LIST_REQUEST";
 export const COMPANY_LIST_SUCCESS = "COMPANY_LIST_SUCCESS";
 export const COMPANY_LIST_FAILURE = "COMPANY_LIST_FAILURE";
 
-export const COMPANY_CREATE_REQUEST = "COMPANY_CREATE_REQUEST";
-export const COMPANY_CREATE_SUCCESS = "COMPANY_CREATE_SUCCESS";
-export const COMPANY_CREATE_FAILURE = "COMPANY_CREATE_FAILURE";
+export const COMPANY_SUBMIT_REQUEST = "COMPANY_SUBMIT_REQUEST";
+export const COMPANY_SUBMIT_SUCCESS = "COMPANY_SUBMIT_SUCCESS";
+export const COMPANY_SUBMIT_FAILURE = "COMPANY_SUBMIT_FAILURE";
 
 export const COMPANY_UPLOAD_REQUEST = "COMPANY_UPLOAD_REQUEST";
 export const COMPANY_UPLOAD_SUCCESS = "COMPANY_UPLOAD_SUCCESS";
@@ -398,19 +398,19 @@ const reducer = (state = initailState, action) =>
       }
       //////////////////////////////////////////////
 
-      case COMPANY_CREATE_REQUEST: {
+      case COMPANY_SUBMIT_REQUEST: {
         draft.st_companyCreateLoading = true;
         draft.st_companyCreateDone = null;
         draft.st_companyCreateError = false;
         break;
       }
-      case COMPANY_CREATE_SUCCESS: {
+      case COMPANY_SUBMIT_SUCCESS: {
         draft.st_companyCreateLoading = false;
         draft.st_companyCreateDone = true;
         draft.st_companyCreateError = null;
         break;
       }
-      case COMPANY_CREATE_FAILURE: {
+      case COMPANY_SUBMIT_FAILURE: {
         draft.st_companyCreateLoading = false;
         draft.st_companyCreateDone = false;
         draft.st_companyCreateError = action.error;

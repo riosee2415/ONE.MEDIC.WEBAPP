@@ -3,7 +3,7 @@ import ClientLayout from "../../components/ClientLayout";
 import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import {
-  COMPANY_CREATE_REQUEST,
+  COMPANY_SUBMIT_REQUEST,
   COMPANY_UPLOAD_REQUEST,
   LOAD_MY_INFO_REQUEST,
 } from "../../reducers/user";
@@ -181,7 +181,7 @@ const Question = () => {
     }
 
     dispatch({
-      type: COMPANY_CREATE_REQUEST,
+      type: COMPANY_SUBMIT_REQUEST,
       data: {
         id: me.id,
         companyName: titleInput.value,
