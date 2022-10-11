@@ -547,10 +547,10 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
         // 결제 완료
         const pprUpdateQuery = `
         UPDATE  prescriptionPaymentRequest SET 
-		            payInfo = ${_payinfo},
+		            payInfo = '${_payinfo}',
 		            isPayment = TRUE,
 		            isNobank = TRUE
-         WHERE  id = ${parseInt(pprId)};
+         WHERE  id = ${parseInt(pprId)}
         `;
 
         const pprUpdate = await models.sequelize.query(pprUpdateQuery);
@@ -562,7 +562,7 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
                 stock,
                 unit
           FROM  materials m
-         WHERE  id IN (${currentMaterial.map((data) => data.id)});
+         WHERE  id IN (${currentMaterial.map((data) => data.id)})
         `;
 
         const materialInfo = await models.sequelize.query(materialInfoQuery);
@@ -585,11 +585,11 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
             	updatedAt
             ) VALUES (
             	${currentMaterial[i].qnt}, 
-            	'${currentMaterial[i].unit}, 
+            	'${currentMaterial[i].unit}', 
             	'${currentMaterial[i].name}', 
             	NOW(), 
             	NOW()
-            );
+            )
           `;
 
           const materialHistoryCreate = await models.sequelize.query(
@@ -600,7 +600,7 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
           const materialStockUpdateQuery = `
           UPDATE  materials 
              SET  stock = ${result.qnt - currentMaterial[i].qnt}
-           WHERE  id = ${currentMaterial[i].MaterialId};
+           WHERE  id = ${currentMaterial[i].MaterialId}
        
           `;
 
@@ -617,13 +617,19 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
       // 결제 완료
       const pprUpdateQuery = `
       UPDATE  prescriptionPaymentRequest SET 
-		          payInfo = ${_payinfo},
+		          payInfo = '${_payinfo}',
 		          isPayment = TRUE,
 		          isNobank = ${_payinfo === "nobank" ? "FALSE" : "TRUE"}
-       WHERE  id = ${parseInt(pprId)};
+       WHERE  id = ${parseInt(pprId)}
       `;
 
       const pprUpdate = await models.sequelize.query(pprUpdateQuery);
+
+      let materialIdArr = [];
+
+      await Promise.all(
+        currentMaterial.map((data) => materialIdArr.push(data.MaterialId))
+      );
 
       // 재료 조회
       const materialInfoQuery = `
@@ -632,7 +638,7 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
               stock,
               unit
         FROM  materials m
-       WHERE  id IN (${currentMaterial.map((data) => data.id)});
+       WHERE  id IN (${materialIdArr})
       `;
 
       const materialInfo = await models.sequelize.query(materialInfoQuery);
@@ -654,11 +660,11 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
             updatedAt
           ) VALUES (
             ${currentMaterial[i].qnt}, 
-            '${currentMaterial[i].unit}, 
+            '${currentMaterial[i].unit}', 
             '${currentMaterial[i].name}', 
             NOW(), 
             NOW()
-          );
+          )
         `;
 
         const materialHistoryCreate = await models.sequelize.query(
@@ -668,8 +674,8 @@ router.patch("/isPayment/:pprId", isLoggedIn, async (req, res, next) => {
         // 재료 차감
         const materialStockUpdateQuery = `
         UPDATE  materials 
-           SET  stock = ${result.qnt - currentMaterial[i].qnt}
-         WHERE  id = ${currentMaterial[i].MaterialId};
+           SET  stock = ${result.stock - currentMaterial[i].qnt}
+         WHERE  id = ${currentMaterial[i].MaterialId}
      
         `;
 

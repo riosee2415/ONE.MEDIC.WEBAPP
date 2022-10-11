@@ -13,6 +13,7 @@ import {
   Input,
   message,
   Empty,
+  Select,
 } from "antd";
 
 import { useRouter, withRouter } from "next/router";
@@ -902,6 +903,7 @@ const UserDeliAddress = ({}) => {
             </Text>
           </Wrapper>
           <Wrapper
+            height={`400px`}
             dr={`row`}
             al={`flex-start`}
             borderTop={`1px solid ${Theme.black_C}`}
@@ -911,10 +913,6 @@ const UserDeliAddress = ({}) => {
                 <Wrapper
                   width={`20%`}
                   height={`100%`}
-                  ju={`flex-start`}
-                  padding={`${
-                    18 * (material.length === 0 ? 4 : material.length)
-                  }px 0`}
                   color={Theme.white_C}
                   bgColor={Theme.black_C}
                 >
@@ -922,67 +920,71 @@ const UserDeliAddress = ({}) => {
                 </Wrapper>
 
                 <Wrapper
+                  height={`100%`}
                   width={`80%`}
-                  dr={`row`}
-                  ju={`space-between`}
                   padding={`10px 20px`}
+                  overflow={`auto`}
+                  ju={`flex-start`}
                 >
-                  {material.length === 0 ? (
-                    <Wrapper padding={`5px 0 0`}>
-                      <Empty />
-                    </Wrapper>
-                  ) : (
-                    material.map((data) => {
-                      return (
-                        <Wrapper
-                          width={`calc(100% / 2 - 5px)`}
-                          al={`flex-start`}
-                          border={`1px solid ${Theme.black_C}`}
-                        >
+                  <Wrapper height={`auto`} dr={`row`} ju={`space-between`}>
+                    {material.length === 0 ? (
+                      <Wrapper padding={`5px 0 0`}>
+                        <Empty />
+                      </Wrapper>
+                    ) : (
+                      material.map((data) => {
+                        return (
                           <Wrapper
-                            dr={`row`}
-                            borderBottom={`1px solid ${Theme.black_C}`}
+                            width={`calc(100% / 2 - 5px)`}
+                            al={`flex-start`}
+                            border={`1px solid ${Theme.black_C}`}
+                            margin={`0 0 10px`}
                           >
-                            <Text
-                              width={`40%`}
-                              textAlign={`center`}
-                              padding={`5px 0`}
-                              bgColor={Theme.black_C}
-                              color={Theme.white_C}
+                            <Wrapper
+                              dr={`row`}
+                              borderBottom={`1px solid ${Theme.black_C}`}
                             >
-                              재료이름
-                            </Text>
-                            <Text
-                              width={`60%`}
-                              textAlign={`center`}
-                              padding={`5px 0`}
-                            >
-                              {data.Material.name}
-                            </Text>
+                              <Text
+                                width={`40%`}
+                                textAlign={`center`}
+                                padding={`5px 0`}
+                                bgColor={Theme.black_C}
+                                color={Theme.white_C}
+                              >
+                                재료이름
+                              </Text>
+                              <Text
+                                width={`60%`}
+                                textAlign={`center`}
+                                padding={`5px 0`}
+                              >
+                                {data.Material.name}
+                              </Text>
+                            </Wrapper>
+                            <Wrapper dr={`row`}>
+                              <Text
+                                width={`40%`}
+                                textAlign={`center`}
+                                padding={`5px 0`}
+                                bgColor={Theme.black_C}
+                                color={Theme.white_C}
+                              >
+                                용량
+                              </Text>
+                              <Text
+                                width={`60%`}
+                                textAlign={`center`}
+                                padding={`5px 0`}
+                              >
+                                {data.qnt}
+                                {data.unit}
+                              </Text>
+                            </Wrapper>
                           </Wrapper>
-                          <Wrapper dr={`row`}>
-                            <Text
-                              width={`40%`}
-                              textAlign={`center`}
-                              padding={`5px 0`}
-                              bgColor={Theme.black_C}
-                              color={Theme.white_C}
-                            >
-                              용량
-                            </Text>
-                            <Text
-                              width={`60%`}
-                              textAlign={`center`}
-                              padding={`5px 0`}
-                            >
-                              {data.qnt}
-                              {data.unit}
-                            </Text>
-                          </Wrapper>
-                        </Wrapper>
-                      );
-                    })
-                  )}
+                        );
+                      })
+                    )}
+                  </Wrapper>
                 </Wrapper>
               </>
             )}
@@ -1064,14 +1066,20 @@ const UserDeliAddress = ({}) => {
             name="deliveryNo"
             rules={[{ required: true, message: "운송장번호를 입력해주세요." }]}
           >
-            <Input />
+            <Input placeholder="운송장번호를 입력해주세요." />
           </Form.Item>
           <Form.Item
             label="배송회사"
             name="deliveryCompany"
             rules={[{ required: true, message: "배송회사를 입력해주세요." }]}
           >
-            <Input />
+            <Select placeholder={`배송회사를 선택해주세요.`}>
+              <Select.Option value={`CJ대한통운`}>CJ대한통운</Select.Option>
+              <Select.Option value={`한진택배`}>한진택배</Select.Option>
+              <Select.Option value={`로젠택배`}>로젠택배</Select.Option>
+              <Select.Option value={`롯데택배`}>롯데택배</Select.Option>
+              <Select.Option value={`경동택배`}>경동택배</Select.Option>
+            </Select>
           </Form.Item>
           <Wrapper dr={`row`} ju={`flex-end`}>
             <AdminButton
