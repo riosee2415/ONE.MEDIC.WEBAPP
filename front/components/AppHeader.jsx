@@ -823,7 +823,6 @@ const AppHeader = ({ children, width }) => {
                         </Wrapper>
                       </ATag>
                     </Link>
-                    {console.log(me)}
                     {me &&
                       (me.companyFile === null ? (
                         <Link href={`/company`}>

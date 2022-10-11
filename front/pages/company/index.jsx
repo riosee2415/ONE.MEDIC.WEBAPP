@@ -87,6 +87,10 @@ const TermsModal = styled(Modal)`
   }
 `;
 
+const WordBreackText = styled(Text)`
+  word-break: break-all;
+`;
+
 const LoadNotification = (msg, content) => {
   notification.open({
     message: msg,
@@ -302,7 +306,7 @@ const Question = () => {
                 <CommonButton onClick={fileClick}>
                   사업첨부파일 업로드
                 </CommonButton>
-                <Text>{companyFilePath}</Text>
+                <WordBreackText>{companyFilePath}</WordBreackText>
 
                 <Wrapper dr={`row`} ju={`flex-end`}>
                   <QuestionBtn onClick={onCancel} kindOf={`white`}>
