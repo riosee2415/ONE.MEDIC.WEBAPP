@@ -316,7 +316,7 @@ const Question = () => {
               title="약관"
               visible={isModalVisible}
               onCancel={handleCancel}
-              width={`350px`}
+              width={`800px`}
               footer
             >
               <Wrapper al={`flex-start`} fontSize={`12px`} color={Theme.grey_C}>
