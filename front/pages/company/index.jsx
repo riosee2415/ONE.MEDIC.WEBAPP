@@ -176,16 +176,20 @@ const Question = () => {
       return LoadNotification("안내", "사업자번호를 입력해주세요.");
     }
 
+    if (!companyFilePath || companyFilePath.trim() === "") {
+      return LoadNotification("안내", "사업첨부파일을 업로드해주세요.");
+    }
+
     dispatch({
       type: COMPANY_CREATE_REQUEST,
       data: {
         id: me.id,
         companyName: titleInput.value,
         companyNo: companyNoInput.value,
-        companyFile: companyNoInput.value,
+        companyFile: companyFilePath,
       },
     });
-  }, [me, titleInput.value, companyNoInput.value]);
+  }, [me, titleInput.value, companyNoInput.value, companyFilePath]);
 
   const onCancel = useCallback(() => {
     titleInput.setValue("");

@@ -814,6 +814,7 @@ const AppHeader = ({ children, width }) => {
                         </Wrapper>
                       </ATag>
                     </Link>
+                    {console.log(me)}
                     <Link href={`/company`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper dr={`row`} ju={`flex-start`}>

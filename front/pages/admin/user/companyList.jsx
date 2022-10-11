@@ -551,10 +551,10 @@ const CompanyList = () => {
           </Form.Item>
           <AdminModalFooter>
             <AdminBtn size="small" onClick={() => refusalModalToggle(null)}>
-              Cancel
+              취소
             </AdminBtn>
-            <AdminBtn size="small" type="primary" htmlType="submit">
-              Submit
+            <AdminBtn size="small" type="primary" htmlType="거절">
+              거절
             </AdminBtn>
           </AdminModalFooter>
         </Form>
