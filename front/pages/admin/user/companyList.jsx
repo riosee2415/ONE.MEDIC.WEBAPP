@@ -93,7 +93,7 @@ const CompanyList = () => {
   ////// HOOKS //////
   const dispatch = useDispatch();
 
-  const [companyTab, setCompanyTab] = useState(1);
+  const [companyTab, setCompanyTab] = useState(4);
 
   const [detailData, setDetailData] = useState(null);
 
@@ -392,15 +392,15 @@ const CompanyList = () => {
   return (
     <AdminLayout>
       <PageHeader
-        breadcrumbs={["회원 관리", "회사 신청 관리"]}
-        title={`회사 신청 관리`}
+        breadcrumbs={["회원 관리", "한의원 등록 관리"]}
+        title={`한의원 등록 관리`}
         subTitle={`홈페이지에서 신청한 회사 신청 목록을 관리할 수 있습니다.`}
       />
 
       <AdminContent>
         <AdminTop>
           <AdminTab>
-            <AdminBtn
+            {/* <AdminBtn
               size="small"
               type={companyTab === 1 && "primary"}
               onClick={() => tabChangeHandler(1)}
@@ -420,16 +420,16 @@ const CompanyList = () => {
               onClick={() => tabChangeHandler(3)}
             >
               거절
-            </AdminBtn>
+            </AdminBtn> */}
           </AdminTab>
           <AdminTab>
-            <AdminBtn
+            {/* <AdminBtn
               size="small"
               type={companyTab === 4 ? "primary" : "dashed"}
               onClick={() => tabChangeHandler(4)}
             >
               전체조회
-            </AdminBtn>
+            </AdminBtn> */}
             <AdminBtn size="small" type="danger" onClick={unitModalToggle}>
               주의사항
             </AdminBtn>
@@ -512,12 +512,10 @@ const CompanyList = () => {
       >
         <GuideUl>
           <GuideLi isImpo={true}>
-            회사인증을 승인하게되면 다시 일반회원으로 되돌릴 수 없으니 정확한
-            확인 후 승인처리 해주시기 바랍니다.
+            한의원 등록된 회원을 조회하실 수 있습니다.
           </GuideLi>
           <GuideLi>
-            조작의 실수 및 기능문의는 (주)4LEAF SOFTWARE 1600-4198로
-            연락바랍니다.
+            기능문의는 (주)4LEAF SOFTWARE 1600-4198로 연락바랍니다.
           </GuideLi>
         </GuideUl>
       </Modal>

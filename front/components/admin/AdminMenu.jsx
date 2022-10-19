@@ -120,7 +120,7 @@ const AdminMenu = () => {
             <MenuName>회원 리스트</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/user/companyList">
-            <MenuName>회사 신청 관리</MenuName>
+            <MenuName>한의원 등록 관리</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/user/discountList">
             <MenuName>회원 혜택 관리</MenuName>

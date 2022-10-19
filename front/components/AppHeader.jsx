@@ -266,7 +266,7 @@ const AppHeader = ({ children, width }) => {
     },
     {
       router: "/company",
-      title: "회사신청하기",
+      title: "한의원 등록",
     },
     {
       router: "/user/payment",
@@ -838,7 +838,7 @@ const AppHeader = ({ children, width }) => {
                                 fontSize={width < 800 ? `16px` : `18px`}
                                 margin={`0 0 0 30px`}
                               >
-                                회사신청하기
+                                한의원 등록
                               </Text>
                             </Wrapper>
                           </ATag>

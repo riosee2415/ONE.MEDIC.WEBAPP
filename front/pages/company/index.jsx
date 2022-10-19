@@ -279,7 +279,7 @@ const Question = () => {
             >
               <Wrapper al={`flex-start`}>
                 <Text padding={`0 0 23px`} fontSize={`22px`}>
-                  회사신청하기
+                  한의원 등록
                 </Text>
                 <Text color={Theme.grey_C} fontWeight={`bold`}>
                   회사 이름
