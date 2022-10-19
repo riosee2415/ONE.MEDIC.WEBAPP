@@ -209,7 +209,7 @@ const Prescription = ({}) => {
   // 팩 가격
   useEffect(() => {
     if (price) {
-      setPackTotalPrice(parseInt(packSelect) * price.price);
+      setPackTotalPrice(parseInt(packSelect) * price.packPrice);
     }
   }, [price, packSelect]);
 
@@ -512,6 +512,22 @@ const Prescription = ({}) => {
                 </Wrapper>
               </Wrapper>
               {/* CHUB / PACK / VOLUMN SELECT AREA END */}
+
+              {/* 요청사항 SELECT AREA */}
+              <Wrapper
+                padding={`20px`}
+                shadow={Theme.shadow_C}
+                radius={`20px`}
+                margin={`0 0 15px`}
+              >
+                <Wrapper dr={`row`} ju={`space-between`}>
+                  <Text color={Theme.grey_C}>요청사항</Text>
+                </Wrapper>
+                <ComboBox placeholder={`요청사항을 선택해주세요.`}>
+                  <Option value={"test"}>test</Option>
+                </ComboBox>
+              </Wrapper>
+              {/* 요청사항 SELECT AREA END */}
 
               {/* SELECT MATERIAL VIEW AREA */}
               <Wrapper padding={`20px`} shadow={Theme.shadow_C} radius={`20px`}>
