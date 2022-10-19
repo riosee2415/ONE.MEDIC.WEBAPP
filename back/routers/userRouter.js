@@ -57,81 +57,88 @@ router.post("/file", upload.single("file"), async (req, res, next) => {
   }
 });
 
-router.get(
-  ["/list", "/list/:listType"],
-  isAdminCheck,
-  async (req, res, next) => {
-    let findType = 1;
+router.post("/list", isAdminCheck, async (req, res, next) => {
+  const { email, name, isStop, isPermission } = req.body;
 
-    const { listType } = req.params;
-    const { name, email } = req.query;
+  const _email = email ? email : ``;
+  const _name = name ? name : ``;
 
-    const validation = Number(listType);
-    const numberFlag = isNaN(validation);
+  const _isStop = parseInt(isStop) || 3;
+  const _isPermission = parseInt(isPermission) || 3;
 
-    if (numberFlag) {
-      findType = parseInt(1);
-    }
+  const selectQuery = `
+SELECT 	ROW_NUMBER() OVER(ORDER BY createdAt)	AS	num,
+   			id,
+   			email,
+   			username,
+   			nickname,
+   			mobile,
+   			level,
+   			CASE
+   				WHEN	level = 1 THEN "일반회원"
+   				WHEN	level = 2 THEN "비어있음"
+   				WHEN	level = 3 THEN "운영자"
+   				WHEN	level = 4 THEN "최고관리자"
+   				WHEN	level = 5 THEN "개발사"
+   			END										AS	viewLevel,
+   			companyName,
+   			companyNo,
+   			isCompany,
+   			companyFile,
+   			businessFile,
+   			operatorLevel,
+   			isRefusal,
+   			resusalReason,
+   			licenseNo,
+   			cardNo,
+   			cardPassword,
+   			cardBirth,
+   			userCode,
+   			cardName,
+   			payInfo,
+   			isExit,
+   			createdAt,
+   			updatedAt,
+   			DATE_FORMAT(createdAt, "%Y년 %m월 %d일")	AS viewCreatedAt,
+   			DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")	AS viewUpdatedAt,
+   			isStop,
+   			isPermission,
+   			DATE_FORMAT(stopedAt, "%Y년 %m월 %d일")	AS viewStopedAt,
+   			DATE_FORMAT(permitedAt, "%Y년 %m월 %d일")	AS viewPermitedAt
+  FROM	users
+ WHERE  1 = 1
+   AND  email LIKE '%${_email}%'
+   AND  username LIKE '%${_name}%'
+   ${
+     _isStop === 1
+       ? `AND isStop = 0`
+       : _isStop === 2
+       ? `AND isStop = 1`
+       : _isStop === 3
+       ? ``
+       : ``
+   }
+   ${
+     _isPermission === 1
+       ? `AND isPermission = 0`
+       : _isPermission === 2
+       ? `AND isPermission = 1`
+       : _isPermission === 3
+       ? ``
+       : ``
+   }
+ ORDER	BY num DESC
+  `;
 
-    if (validation >= 2) {
-      findType = 2;
-    } else {
-      findType = 1;
-    }
+  try {
+    const list = await models.sequelize.query(selectQuery);
 
-    try {
-      let users = [];
-
-      const searchName = name ? name : "";
-      const searchEmail = email ? email : "";
-
-      switch (parseInt(findType)) {
-        case 1:
-          users = await User.findAll({
-            where: {
-              username: {
-                [Op.like]: `%${searchName}%`,
-              },
-              email: {
-                [Op.like]: `%${searchEmail}%`,
-              },
-              isExit: false,
-            },
-            attributes: {
-              exclude: ["password"],
-            },
-            order: [["createdAt", "DESC"]],
-          });
-          break;
-        case 2:
-          users = await User.findAll({
-            where: {
-              username: {
-                [Op.like]: `%${searchName}%`,
-              },
-              email: {
-                [Op.like]: `%${searchEmail}%`,
-              },
-              isExit: false,
-            },
-            attributes: {
-              exclude: ["password"],
-            },
-            order: [["username", "ASC"]],
-          });
-          break;
-
-        default:
-          break;
-      }
-
-      return res.status(200).json(users);
-    } catch (error) {
-      console.error(error);
-      return res.status(401).send("사용자 목록을 불러올 수 없습니다.");
-    }
+    return res.status(200).json(list[0]);
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("사용자 목록을 불러올 수 없습니다.");
   }
-);
+});
 
 router.get("/signin", async (req, res, next) => {
   console.log("❌❌❌❌❌❌❌❌❌❌❌❌❌❌");
@@ -260,6 +267,74 @@ router.post("/signup", async (req, res, next) => {
   } catch (error) {
     console.error(error);
     next(error);
+  }
+});
+
+router.post("/permission", isAdminCheck, async (req, res, next) => {
+  const { id } = req.body;
+
+  const findQuery = `
+  SELECT  *
+    FROM  users
+   WHERE  id = ${id}
+  `;
+
+  const updateQuery = `
+  UPDATE  users
+     SET  isPermission = 1,
+          permitedAt = NOW()
+   WHERE  id = ${id}
+  `;
+
+  try {
+    const findResult = await models.sequelize.query(findQuery);
+
+    if (findResult[0].length === 0) {
+      return res.status(401).send("존재하지 않는 사용자입니다.");
+    }
+
+    if (findResult[0][0].isPermission) {
+      return res.status(401).send("이미 승인된 회원입니다.");
+    }
+
+    const updateResult = await models.sequelize.query(updateQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("회원을 승인할 수 없습니다.");
+  }
+});
+
+router.post("/stop/update", isAdminCheck, async (req, res, next) => {
+  const { id, isStop } = req.body;
+
+  const findQuery = `
+  SELECT  *
+    FROM  users
+   WHERE  id = ${id}
+  `;
+
+  const updateQuery = `
+  UPDATE  users
+     SET  isStop = ${isStop},
+          stopedAt = NOW()
+   WHERE  id = ${id}
+  `;
+
+  try {
+    const findResult = await models.sequelize.query(findQuery);
+
+    if (findResult[0].length === 0) {
+      return res.status(401).send("존재하지 않는 사용자입니다.");
+    }
+
+    const updateResult = await models.sequelize.query(updateQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("회원을 정지 처리할 수 없습니다.");
   }
 });
 

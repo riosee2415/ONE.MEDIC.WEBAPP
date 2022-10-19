@@ -25,6 +25,18 @@ module.exports = () => {
             });
           }
 
+          if (user.isStop) {
+            return done(null, false, {
+              reason: "사이트 이용이 정지되었습니다.",
+            });
+          }
+
+          if (!user.isPermission) {
+            return done(null, false, {
+              reason: "승인 후 로그인 가능합니다.",
+            });
+          }
+
           const result = await bcrypt.compare(password, user.password);
           if (result) {
             return done(null, user);

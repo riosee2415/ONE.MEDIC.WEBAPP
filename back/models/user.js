@@ -131,6 +131,26 @@ module.exports = class User extends Model {
           defaultValue: false,
           allowNull: false, // 필수
         },
+
+        isStop: {
+          type: DataTypes.BOOLEAN, // 회원 이용 정지 여부
+          defaultValue: false,
+          allowNull: false, // 필수
+        },
+        stopedAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+        },
+
+        isPermission: {
+          type: DataTypes.BOOLEAN, // 회원 승인 여부
+          defaultValue: false,
+          allowNull: false, // 필수
+        },
+        permitedAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+        },
       },
       {
         modelName: "User",
