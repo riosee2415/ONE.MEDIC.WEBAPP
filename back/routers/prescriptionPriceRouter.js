@@ -7,10 +7,26 @@ const { PrescriptionPrice } = require("../models");
 const router = express.Router();
 
 router.get("/list", async (req, res, next) => {
-  try {
-    const result = await PrescriptionPrice.findOne();
+  const selectQuery = `
+    SELECT  id,
+            pharmacyPrice,
+            tangjeonPrice,
+            packPrice,
+            deliveryPrice,
+            CONCAT(FORMAT(pharmacyPrice, 0), '원')    AS viewPharmacyPrice,
+            CONCAT(FORMAT(tangjeonPrice, 0), '원')    AS viewTangjeonPrice,
+            CONCAT(FORMAT(packPrice, 0), '원')    AS viewPackPrice,
+            CONCAT(FORMAT(deliveryPrice, 0), '원')    AS viewDeliveryPrice,
+            createdAt,
+            updatedAt
+      FROM  prescriptionPrice
+     WHERE  id = 1
+    `;
 
-    return res.status(200).json(result);
+  try {
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0][0]);
   } catch (e) {
     console.error(e);
     return res.status(400).send("가격을 불러올 수 없습니다.");
@@ -39,12 +55,10 @@ router.post("/create", isAdminCheck, async (req, res, next) => {
 });
 
 router.patch("/update", isAdminCheck, async (req, res, next) => {
-  const { id, price } = req.body;
+  const { id, pharmacyPrice, tangjeonPrice, packPrice, deliveryPrice } =
+    req.body;
 
   try {
-    console.log(id);
-    console.log(price);
-
     const exPrice = await PrescriptionPrice.findOne({
       where: {
         id,
@@ -57,7 +71,10 @@ router.patch("/update", isAdminCheck, async (req, res, next) => {
 
     await PrescriptionPrice.update(
       {
-        price,
+        pharmacyPrice,
+        tangjeonPrice,
+        packPrice,
+        deliveryPrice,
       },
       {
         where: {

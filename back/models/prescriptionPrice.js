@@ -6,9 +6,29 @@ module.exports = class PrescriptionPrice extends Model {
   static init(sequelize) {
     return super.init(
       {
-        price: {
+        // 조제료
+        pharmacyPrice: {
           type: DataTypes.INTEGER,
           allowNull: false, // 필수
+          defaultValue: 0,
+        },
+        // 탕전료
+        tangjeonPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+          defaultValue: 0,
+        },
+        // 팩가격
+        packPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+          defaultValue: 0,
+        },
+        //배송비
+        deliveryPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false, // 필수
+          defaultValue: 0,
         },
       },
       {
