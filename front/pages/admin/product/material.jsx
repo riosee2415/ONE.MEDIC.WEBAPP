@@ -236,7 +236,10 @@ const Material = () => {
 
   const priceModalToggle = useCallback(() => {
     priceForm.setFieldsValue({
-      price: price ? price.price : 0,
+      pharmacyPrice: price ? price.pharmacyPrice : 0,
+      tangjeonPrice: price ? price.tangjeonPrice : 0,
+      packPrice: price ? price.packPrice : 0,
+      deliveryPrice: price ? price.deliveryPrice : 0,
     });
 
     dispatch({
@@ -307,7 +310,10 @@ const Material = () => {
         type: PP_UPDATE_REQUEST,
         data: {
           id: price && price.id,
-          price: data.price,
+          pharmacyPrice: data.pharmacyPrice,
+          tangjeonPrice: data.tangjeonPrice,
+          packPrice: data.packPrice,
+          deliveryPrice: data.deliveryPrice,
         },
       });
     },
@@ -390,15 +396,33 @@ const Material = () => {
           </SearchFormItem>
         </SearchForm>
         <Wrapper dr={`row`} ju={`flex-end`} margin={`0 0 10px`}>
-          <Wrapper width={`30%`} al={`flex-start`}>
+          <Wrapper width={`50%`} ju={`flex-start`} dr={`row`}>
             {price && (
               <Text>
+                조제료 :&nbsp;
+                {price.viewPharmacyPrice}
+              </Text>
+            )}
+            {price && (
+              <Text margin={`0 0 0 20px`}>
+                탕전료 :&nbsp;
+                {price.viewTangjeonPrice}
+              </Text>
+            )}
+            {price && (
+              <Text margin={`0 0 0 20px`}>
                 1팩 가격 :&nbsp;
-                {numberWithCommas(price.price)}원
+                {price.viewPackPrice}
+              </Text>
+            )}
+            {price && (
+              <Text margin={`0 0 0 20px`}>
+                배송비 :&nbsp;
+                {price.viewDeliveryPrice}
               </Text>
             )}
           </Wrapper>
-          <Wrapper width={`70%`} dr={`row`} ju={`flex-end`}>
+          <Wrapper width={`50%`} dr={`row`} ju={`flex-end`}>
             <ModalBtn
               size="small"
               type="dashed"
@@ -414,8 +438,9 @@ const Material = () => {
               onClick={priceModalToggle}
               loading={st_ppUpdateLoading}
             >
-              팩가격관리
+              팩 가격
             </ModalBtn>
+
             <ModalBtn
               size="small"
               type="primary"
@@ -534,10 +559,37 @@ const Material = () => {
             </GuideUl>
           </Wrapper>
           <Form.Item
-            label="가격"
-            name="price"
+            label="조제료"
+            name="pharmacyPrice"
             rules={[
-              { required: true, message: "가격을 입력해주시기 바랍니다." },
+              { required: true, message: "조제료를 입력해주시기 바랍니다." },
+            ]}
+          >
+            <Input size="small" type="number" />
+          </Form.Item>
+          <Form.Item
+            label="탕전료"
+            name="tangjeonPrice"
+            rules={[
+              { required: true, message: "탕전료를 입력해주시기 바랍니다." },
+            ]}
+          >
+            <Input size="small" type="number" />
+          </Form.Item>
+          <Form.Item
+            label="1팩 가격"
+            name="packPrice"
+            rules={[
+              { required: true, message: "1팩 가격을 입력해주시기 바랍니다." },
+            ]}
+          >
+            <Input size="small" type="number" />
+          </Form.Item>
+          <Form.Item
+            label="배송비"
+            name="deliveryPrice"
+            rules={[
+              { required: true, message: "배송비를 입력해주시기 바랍니다." },
             ]}
           >
             <Input size="small" type="number" />
