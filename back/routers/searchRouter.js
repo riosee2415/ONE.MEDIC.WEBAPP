@@ -42,6 +42,7 @@ router.get("/list", async (req, res, next) => {
     return res.status(200).json({ searchRecipe, searchMaterial });
   } catch (e) {
     console.error(e);
+    return res.status(400).send("잘못된 요청입니다.");
   }
 });
 

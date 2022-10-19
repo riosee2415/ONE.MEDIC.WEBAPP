@@ -24,6 +24,7 @@ const payment = require("./payment");
 const searchRecipe = require("./searchRecipe");
 const searchMaterial = require("./searchMaterial");
 const prescriptionPrice = require("./prescriptionPrice");
+const deliveryPrice = require("./deliveryPrice");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -61,6 +62,7 @@ db.Payment = payment;
 db.SearchRecipe = searchRecipe;
 db.SearchMaterial = searchMaterial;
 db.PrescriptionPrice = prescriptionPrice;
+db.DeliveryPrice = deliveryPrice;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);
