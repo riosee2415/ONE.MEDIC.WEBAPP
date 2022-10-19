@@ -45,6 +45,7 @@ import {
   PPR_ISPAYMENT_REQUEST,
 } from "../../reducers/prescriptionPaymentRequest";
 import { numberWithCommas } from "../../components/commonUtils";
+import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -85,6 +86,8 @@ const Index = ({}) => {
     st_pprIsPayMentDone,
     st_pprIsPayMentError,
   } = useSelector((state) => state.prescriptionPaymentRequest);
+
+  const { price } = useSelector((state) => state.prescriptionPrice);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -230,7 +233,8 @@ const Index = ({}) => {
         data: {
           paymentId: router.query.id,
           isCard: "1",
-          totalPrice: productPayment - discount + 5000,
+          totalPrice:
+            productPayment - discount + (price && price.deliveryPrice),
         },
       });
     } else {
@@ -264,7 +268,8 @@ const Index = ({}) => {
                 data: {
                   paymentId: router.query.id,
                   isCard: "0",
-                  totalPrice: productPayment - discount + 5000,
+                  totalPrice:
+                    productPayment - discount + (price && price.deliveryPrice),
                   payInfo: paymentType,
                   userPayinfo: isAgree1 ? paymentType : null,
                   name: paymentDetail.productName,
@@ -277,7 +282,8 @@ const Index = ({}) => {
                   pay_method: paymentType,
                   merchant_uid: orderPK,
                   name: paymentDetail.productName,
-                  amount: productPayment - discount + 5000,
+                  amount:
+                    productPayment - discount + (price && price.deliveryPrice),
                   // amount: 150,
                   buyer_name: me.username,
                   buyer_tel: me.mobile.replace(
@@ -298,7 +304,10 @@ const Index = ({}) => {
                       data: {
                         paymentId: router.query.id,
                         isCard: "0",
-                        totalPrice: productPayment - discount + 5000,
+                        totalPrice:
+                          productPayment -
+                          discount +
+                          (price && price.deliveryPrice),
                         payInfo: paymentType,
                         userPayinfo: isAgree1 ? paymentType : null,
                         name: paymentDetail.productName,
@@ -320,7 +329,8 @@ const Index = ({}) => {
                 data: {
                   pprId: router.query.id,
                   isCard: "0",
-                  totalPrice: productPayment - discount + 5000,
+                  totalPrice:
+                    productPayment - discount + (price && price.deliveryPrice),
                   payInfo: paymentType,
                   userPayinfo: isAgree1 ? paymentType : null,
                 },
@@ -336,7 +346,8 @@ const Index = ({}) => {
                       ? `외 ${pprDetail.materialDatum.length}개`
                       : ""
                   }`,
-                  amount: productPayment - discount + 5000,
+                  amount:
+                    productPayment - discount + (price && price.deliveryPrice),
                   // amount: 150,
                   buyer_name: me.username,
                   buyer_tel: me.mobile.replace(
@@ -357,7 +368,10 @@ const Index = ({}) => {
                       data: {
                         pprId: router.query.id,
                         isCard: "0",
-                        totalPrice: productPayment - discount + 5000,
+                        totalPrice:
+                          productPayment -
+                          discount +
+                          (price && price.deliveryPrice),
                         payInfo: paymentType,
                         userPayinfo: isAgree1 ? paymentType : null,
                       },
@@ -732,16 +746,15 @@ const Index = ({}) => {
                       color={Theme.black_C}
                       fontWeight={`700`}
                     >
-                      5,000원
+                      {price && price.viewDeliveryPrice}
                     </Text>
                   </Wrapper>
                 </Wrapper>
                 <Wrapper al={`flex-end`}>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {String(productPayment - discount + 5000).replace(
-                      /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-                      ","
-                    )}
+                    {String(
+                      productPayment - discount + (price && price.deliveryPrice)
+                    ).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")}
                     <SpanText fontWeight={`500`}>원</SpanText>
                   </Text>
                 </Wrapper>
@@ -918,10 +931,9 @@ const Index = ({}) => {
                   fontWeight={`700`}
                   onClick={() => setPayOkModal(true)}
                 >
-                  {String(productPayment - discount + 5000).replace(
-                    /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-                    ","
-                  )}
+                  {String(
+                    productPayment - discount + (price && price.deliveryPrice)
+                  ).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")}
                   원 결제하기
                 </Text>
               </CommonButton>
@@ -992,6 +1004,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: SEO_LIST_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: PP_GET_REQUEST,
     });
 
     // 구현부 종료
