@@ -113,11 +113,15 @@ export const initailState = {
   //
   st_companyFileUploadLoading: false, // 파일 업로드
   st_companyFileUploadDone: false, // 파일 업로드
-  st_companyFileUploadError: false, // 파일 업로드
+  st_companyFileUploadError: null, // 파일 업로드
   //
   st_licenseNoUpdateLoading: false, // 면허번호
   st_licenseNoUpdateDone: false, // 면허번호
-  st_licenseNoUpdateError: false, // 면허번호
+  st_licenseNoUpdateError: null, // 면허번호
+  //
+  st_userIspermissionLoading: false, // 이용정지
+  st_userIspermissionDone: false,
+  st_userIspermissionError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -215,6 +219,10 @@ export const FIND_EMAIL_FAILURE = "FIND_EMAIL_FAILURE";
 export const LICENSENO_UPDATE_REQUEST = "LICENSENO_UPDATE_REQUEST";
 export const LICENSENO_UPDATE_SUCCESS = "LICENSENO_UPDATE_SUCCESS";
 export const LICENSENO_UPDATE_FAILURE = "LICENSENO_UPDATE_FAILURE";
+
+export const USER_ISPERMISSION_REQUEST = "USER_ISPERMISSION_REQUEST";
+export const USER_ISPERMISSION_SUCCESS = "USER_ISPERMISSION_SUCCESS";
+export const USER_ISPERMISSION_FAILURE = "USER_ISPERMISSION_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -740,6 +748,27 @@ const reducer = (state = initailState, action) =>
         draft.st_licenseNoUpdateLoading = false;
         draft.st_licenseNoUpdateDone = false;
         draft.st_licenseNoUpdateError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case USER_ISPERMISSION_REQUEST: {
+        draft.st_userIspermissionLoading = true;
+        draft.st_userIspermissionDone = false;
+        draft.st_userIspermissionError = null;
+        break;
+      }
+      case USER_ISPERMISSION_SUCCESS: {
+        draft.st_userIspermissionLoading = false;
+        draft.st_userIspermissionDone = true;
+        draft.st_userIspermissionError = null;
+        break;
+      }
+      case USER_ISPERMISSION_FAILURE: {
+        draft.st_userIspermissionLoading = false;
+        draft.st_userIspermissionDone = false;
+        draft.st_userIspermissionError = action.error;
         break;
       }
 
