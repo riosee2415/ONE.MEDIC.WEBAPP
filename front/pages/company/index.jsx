@@ -47,6 +47,12 @@ const TitleInput = styled(TextInput)`
     border: none;
     border-bottom: 1px solid ${Theme.grey_C};
   }
+
+  @media (max-width: 700px) {
+    &::placeholder {
+      font-size: 14px;
+    }
+  }
 `;
 
 const ContentArea = styled(TextArea)`
@@ -115,10 +121,6 @@ const Question = () => {
     st_companyCreateError,
   } = useSelector((state) => state.user);
 
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
-
   const router = useRouter();
 
   const fileRef = useRef();
@@ -127,6 +129,7 @@ const Question = () => {
   const companyNoInput = useInput("");
 
   const [fileValue, setFileValue] = useState(null);
+  const [compnayNumCheck, setCompanyNumCheck] = useState(false);
 
   ////// HOOKS //////
   ////// REDUX //////
@@ -142,7 +145,6 @@ const Question = () => {
 
   useEffect(() => {
     if (st_companyFileUploadDone) {
-      setFileValue(null);
       return message.success("업로드되었습니다.");
     }
   }, [st_companyFileUploadDone]);
@@ -171,6 +173,36 @@ const Question = () => {
   ////// TOGGLE //////
   ////// HANDLER //////
 
+  // 사업자 번호 있는 사업자 번호인지 아닌지 검증
+  const checkCompnayNumHandler = useCallback(() => {
+    const b1 = companyNoInput.value.substr(0, 3);
+    const b2 = companyNoInput.value.substr(2, 2);
+    const b3 = companyNoInput.value.substr(4, 5);
+
+    let checkID = new Array(1, 3, 7, 1, 3, 7, 1, 3, 5, 1);
+    // let tmpBizID, i, chkSum=0, c2, remander;
+
+    let chkSum = 0;
+    let c2 = null;
+    let remander = null;
+    let bizID = b1 + b2 + b3;
+
+    if (bizID) return false;
+
+    for (i = 0; i <= 7; i++) chkSum += checkID[i] * bizID.charAt(i);
+    c2 = "0" + checkID[8] * bizID.charAt(8);
+    c2 = c2.substring(c2.length - 2, c2.length);
+    chkSum += Math.floor(c2.charAt(0)) + Math.floor(c2.charAt(1));
+    remander = (10 - (chkSum % 10)) % 10;
+
+    if (Math.floor(bizID.charAt(9)) == remander) {
+      setCompanyNumCheck(true);
+    } // OK!
+    else {
+      setCompanyNumCheck(false);
+    }
+  }, [companyNoInput.value]);
+
   const onSubmit = useCallback(() => {
     if (!titleInput.value || titleInput.value.trim() === "") {
       return LoadNotification("안내", "화시 이름을 입력해주세요.");
@@ -179,6 +211,12 @@ const Question = () => {
     if (!companyNoInput.value || companyNoInput.value.trim() === "") {
       return LoadNotification("안내", "사업자번호를 입력해주세요.");
     }
+
+    // checkCompnayNumHandler();
+
+    // if (!compnayNumCheck) {
+    //   return LoadNotification("안내", "사업자번호를 정확하게 입력해주세요.");
+    // }
 
     if (!companyFilePath || companyFilePath.trim() === "") {
       return LoadNotification("안내", "사업첨부파일을 업로드해주세요.");
@@ -193,7 +231,13 @@ const Question = () => {
         companyFile: companyFilePath,
       },
     });
-  }, [me, titleInput.value, companyNoInput.value, companyFilePath]);
+  }, [
+    me,
+    titleInput.value,
+    companyNoInput.value,
+    companyFilePath,
+    compnayNumCheck,
+  ]);
 
   const onCancel = useCallback(() => {
     titleInput.setValue("");
@@ -205,6 +249,8 @@ const Question = () => {
   }, []);
 
   const fileUploadHandler = useCallback((e) => {
+    setFileValue(e.target.files[0].name);
+
     const formData = new FormData();
 
     [].forEach.call(e.target.files, (file) => {
@@ -222,45 +268,7 @@ const Question = () => {
   return (
     <>
       <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
+        <title>ModerlLab | 한의원 등록</title>
       </Head>
 
       <ClientLayout>
@@ -282,17 +290,18 @@ const Question = () => {
                   한의원 등록
                 </Text>
                 <Text color={Theme.grey_C} fontWeight={`bold`}>
-                  회사 이름
+                  한의원 명
                 </Text>
                 <TitleInput
-                  placeholder="신청할 회사 이름을 적어주세요."
+                  placeholder="신청할 한의원 명을 적어주세요."
                   {...titleInput}
                 />
                 <Text color={Theme.grey_C} fontWeight={`bold`}>
                   사업자번호
                 </Text>
                 <TitleInput
-                  placeholder="신청할 사업자번호를 적어주세요."
+                  pattern=""
+                  placeholder="신청할 사업자번호를 `-`를 제외하고 적어주세요."
                   {...companyNoInput}
                 />
 
@@ -302,13 +311,18 @@ const Question = () => {
                   ref={fileRef}
                   value={null}
                   onChange={fileUploadHandler}
+                  accept=".png, .jpg"
                 />
                 <CommonButton onClick={fileClick}>
                   사업첨부파일 업로드
                 </CommonButton>
-                <WordBreackText>{companyFilePath}</WordBreackText>
+                <WordBreackText>{fileValue}</WordBreackText>
 
-                <Wrapper dr={`row`} ju={`flex-end`}>
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-end`}
+                  margin={width < 700 ? `20px 0 0` : `0`}
+                >
                   <QuestionBtn onClick={onCancel} kindOf={`white`}>
                     취소
                   </QuestionBtn>

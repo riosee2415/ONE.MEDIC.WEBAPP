@@ -823,7 +823,29 @@ const AppHeader = ({ children, width }) => {
                         </Wrapper>
                       </ATag>
                     </Link>
-                    {me &&
+
+                    {me && me.companyFile === null && (
+                      <Link href={`/company`}>
+                        <ATag al={`flex-start`} onClick={drawarToggle}>
+                          <Wrapper dr={`row`} ju={`flex-start`}>
+                            <Image
+                              alt="icon"
+                              width={`26px`}
+                              height={`26px`}
+                              src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/7.company.png`}
+                            />
+                            <Text
+                              fontSize={width < 800 ? `16px` : `18px`}
+                              margin={`0 0 0 30px`}
+                            >
+                              한의원 등록
+                            </Text>
+                          </Wrapper>
+                        </ATag>
+                      </Link>
+                    )}
+
+                    {/* {me &&
                       (me.companyFile === null ? (
                         <Link href={`/company`}>
                           <ATag al={`flex-start`} onClick={drawarToggle}>
@@ -870,7 +892,7 @@ const AppHeader = ({ children, width }) => {
                             </CommonButton>
                           )}
                         </Wrapper>
-                      ))}
+                      ))} */}
                   </Wrapper>
                   <Wrapper
                     radius={`15px`}
