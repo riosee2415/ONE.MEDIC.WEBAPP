@@ -628,7 +628,7 @@ const UserList = ({}) => {
             <Input readOnly />
           </Form.Item>
 
-          {isCompany && (
+          {isCompany ? (
             <>
               <Form.Item name="companyName" label="회사이름">
                 <Input readOnly />
@@ -649,9 +649,11 @@ const UserList = ({}) => {
                 </AdminText>
               </Form.Item>
             </>
+          ) : (
+            ""
           )}
 
-          {bFile && (
+          {bFile ? (
             <Form.Item name="bFile" label="한의사면허증">
               <DownloadA href={bFile} download={bFile}>
                 <Button size="small" type="dashed">
@@ -663,6 +665,8 @@ const UserList = ({}) => {
                 * 첨부파일 클릭시 첨부파일이 다운로드 됩니다.
               </AdminText>
             </Form.Item>
+          ) : (
+            ""
           )}
         </Form>
       </Modal>
