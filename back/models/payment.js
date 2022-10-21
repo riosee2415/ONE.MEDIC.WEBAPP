@@ -1,7 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
-// 결제내역
+// 약속처방 결제내역
 module.exports = class Payment extends Model {
   static init(sequelize) {
     return super.init(
