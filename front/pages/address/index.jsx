@@ -256,7 +256,7 @@ const Address = ({}) => {
   const onFill = useCallback((data) => {
     cFormRef.current.setFieldsValue({
       username: data.username,
-      userMobile: data.userMobile,
+      tel: data.userMobile,
       address: `${data.address}(${data.postCode})`,
       detailAddress: data.detailAddress,
     });
@@ -273,6 +273,10 @@ const Address = ({}) => {
 
   const addressCreateSubmitHandler = useCallback(
     (data) => {
+      if (!/^[0-9]{2,3}[0-9]{3,4}[0-9]{4}/.test(data.tel)) {
+        return message.error("전화번호를 정확하게 입력해주세요.");
+      }
+
       dispatch({
         type: ADDRESS_CREATE_REQUEST,
         data: {
@@ -281,7 +285,7 @@ const Address = ({}) => {
           detailAddress: data.detailAddress,
           userId: me.id,
           username: data.username,
-          userMobile: data.userMobile,
+          userMobile: data.tel,
         },
       });
     },
@@ -317,7 +321,7 @@ const Address = ({}) => {
           address: data.address.split("(")[0],
           detailAddress: data.detailAddress,
           username: data.username,
-          userMobile: data.userMobile,
+          tel: data.tel,
           addressId: updateAddressData.id,
         },
       });
@@ -510,7 +514,7 @@ const Address = ({}) => {
                                     </Wrapper>
                                   )}
                                 </Wrapper>
-                                <Text>{data.userMobile}</Text>
+                                <Text>{data.tel}</Text>
                               </Wrapper>
                             ) : (
                               <CommonCheckBox
@@ -534,7 +538,7 @@ const Address = ({}) => {
                                       {data.address}&nbsp;({data.postCode})
                                     </Text>
                                   </Wrapper>
-                                  <Text>{data.userMobile}</Text>
+                                  <Text>{data.tel}</Text>
                                 </Wrapper>
                               </CommonCheckBox>
                             )}
@@ -599,7 +603,7 @@ const Address = ({}) => {
                 </Form.Item>
                 <Text>전화번호</Text>
                 <Form.Item
-                  name="userMobile"
+                  name="tel"
                   rules={[
                     { required: true, message: "전화번호를 입랙해주세요." },
                   ]}
