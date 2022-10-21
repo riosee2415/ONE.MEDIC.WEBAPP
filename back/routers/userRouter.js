@@ -271,17 +271,22 @@ router.post("/signup", async (req, res, next) => {
 });
 
 router.post("/permission", isAdminCheck, async (req, res, next) => {
-  const { id } = req.body;
+  const { id, isPermission } = req.body;
+
+  console.log("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩");
+  console.log(id);
+  console.log(isPermission);
+  console.log("🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩");
 
   const findQuery = `
-  SELECT  *
+  SELECT  id
     FROM  users
    WHERE  id = ${id}
   `;
 
   const updateQuery = `
   UPDATE  users
-     SET  isPermission = 1,
+     SET  isPermission = ${isPermission},
           permitedAt = NOW()
    WHERE  id = ${id}
   `;

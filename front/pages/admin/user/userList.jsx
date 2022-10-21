@@ -13,6 +13,7 @@ import {
   DETAIL_MODAL_TOGGLE,
   UNIT_MODAL_TOGGLE,
   LICENSENO_UPDATE_REQUEST,
+  USER_ISPERMISSION_REQUEST,
 } from "../../../reducers/user";
 import {
   Table,
@@ -97,6 +98,10 @@ const UserList = ({}) => {
     //
     st_licenseNoUpdateDone,
     st_licenseNoUpdateError,
+    //
+    st_userIspermissionLoading,
+    st_userIspermissionDone,
+    st_userIspermissionError,
   } = useSelector((state) => state.user);
 
   const [updateData, setUpdateData] = useState(null);
@@ -202,6 +207,31 @@ const UserList = ({}) => {
       return message.error(st_licenseNoUpdateError);
     }
   }, [st_licenseNoUpdateError]);
+
+  // 이용정지
+
+  useEffect(() => {
+    if (st_userIspermissionDone) {
+      const query = router.query;
+
+      dispatch({
+        type: USERLIST_REQUEST,
+        data: {
+          name: query.name ? query.name : ``,
+          email: query.email ? query.email : ``,
+          listType: query.sort,
+        },
+      });
+
+      return message.success("이용정지 되었습니다.");
+    }
+  }, [st_userIspermissionDone]);
+
+  useEffect(() => {
+    if (st_userIspermissionError) {
+      return message.error(st_userIspermissionError);
+    }
+  }, [st_userIspermissionError]);
 
   ////// TOGGLE //////
   const updateModalOpen = useCallback(
@@ -343,6 +373,16 @@ const UserList = ({}) => {
     [licenseData]
   );
 
+  const permissionChangeHandler = useCallback((id, isPermission) => {
+    dispatch({
+      type: USER_ISPERMISSION_REQUEST,
+      data: {
+        id,
+        isPermission,
+      },
+    });
+  }, []);
+
   ////// DATAVIEW //////
 
   const columns = [
@@ -353,40 +393,36 @@ const UserList = ({}) => {
 
     {
       title: "이름",
-      render: (data) => <div>{data.username}</div>,
+      dataIndex: "username",
     },
     {
       title: "닉네임",
-      render: (data) => <div>{data.nickname}</div>,
+      dataIndex: "nickname",
     },
     {
       title: "이메일",
-      render: (data) => <div>{data.email}</div>,
+      dataIndex: "email",
     },
     {
       title: "모바일",
-      render: (data) => <div>{data.mobile}</div>,
+      dataIndex: "mobile",
     },
     {
       title: "권한",
-      render: (data) => (
-        <div>
-          {data.level === 1
-            ? "일반회원"
-            : data.level === 2
-            ? `비어있음`
-            : data.level === 3
-            ? `운영자`
-            : data.level === 4
-            ? `최고관리자`
-            : `개발사`}
-        </div>
-      ),
+      dataIndex: "viewLevel",
     },
+
     {
-      title: "회사승인",
-      dataIndex: "isCompany",
-      render: (data) => <Switch checked={data} disabled />,
+      title: "이용정지",
+      render: (data) => (
+        <Switch
+          checked={!data.isPermission}
+          onChange={() =>
+            permissionChangeHandler(data.id, data.isPermission ? 0 : 1)
+          }
+          loading={st_userIspermissionLoading}
+        />
+      ),
     },
     {
       title: "권한수정",
@@ -424,15 +460,6 @@ const UserList = ({}) => {
         </Button>
       ),
     },
-
-    // {
-    //   title: "DELETE",
-    //   render: (data) => (
-    //     <Button type="danger" onClick={deletePopToggle(data.id)}>
-    //       DEL
-    //     </Button>
-    //   ),
-    // },
   ];
 
   return (
@@ -491,6 +518,8 @@ const UserList = ({}) => {
             </Button>
           </Wrapper>
         </Wrapper>
+
+        {console.log(users)}
 
         <Table
           rowKey="id"
