@@ -150,6 +150,9 @@ const Index = ({}) => {
 
   const [isMeterialData, setIsMeterialData] = useState([]);
   const [isMeterialData2, setIsMeterialData2] = useState([]);
+
+  const [dRequest, setDRequest] = useState(""); // 배송시 요청사항
+
   ////// REDUX //////
   ////// USEEFFECT //////
   useEffect(() => {
@@ -291,6 +294,13 @@ const Index = ({}) => {
 
   const deliveryUpdateHandler = useCallback(
     (data) => {
+      if (!/^[0-9]{2,3}[0-9]{3,4}[0-9]{4}/.test(data.rmobile)) {
+        return message.error("전화번호를 정확하게 입력해주세요.");
+      }
+      if (!/^[0-9]{2,3}[0-9]{3,4}[0-9]{4}/.test(data.smobile)) {
+        return message.error("전화번호를 정확하게 입력해주세요.");
+      }
+
       if (router.query.type === "payment") {
         dispatch({
           type: PAYMENT_DELIVERY_REQUEST,
@@ -363,6 +373,13 @@ const Index = ({}) => {
       sdetailAddress: addressDetail.detailAddress,
     });
   }, [addressDetail]);
+
+  const deliRequestHandler = useCallback(
+    (e) => {
+      setDRequest(e);
+    },
+    [dRequest]
+  );
 
   ////// DATAVIEW //////
 
@@ -554,6 +571,7 @@ const Index = ({}) => {
                           radius={`0`}
                           shadow={`none`}
                           width={`100%`}
+                          type="tel"
                           placeholder={`(필수)연락처를 입력해주세요`}
                           phFontSize={width < 450 ? `14px` : `16px`}
                           focusBorder={`none`}
@@ -615,7 +633,15 @@ const Index = ({}) => {
                       >
                         상세주소
                       </Text>
-                      <Form.Item name="rdetailAddress">
+                      <Form.Item
+                        rules={[
+                          {
+                            required: true,
+                            message: "상세주소를 입력해주세요.",
+                          },
+                        ]}
+                        name="rdetailAddress"
+                      >
                         <TextInput
                           border={`none`}
                           borderBottom={`1px solid ${Theme.grey2_C}`}
@@ -712,6 +738,7 @@ const Index = ({}) => {
                           radius={`0`}
                           shadow={`none`}
                           width={`100%`}
+                          type="tel"
                           placeholder={`(필수)연락처를 입력해주세요`}
                           phFontSize={width < 450 ? `14px` : `16px`}
                           focusBorder={`none`}
@@ -773,7 +800,15 @@ const Index = ({}) => {
                       >
                         상세주소
                       </Text>
-                      <Form.Item name="sdetailAddress">
+                      <Form.Item
+                        rules={[
+                          {
+                            required: true,
+                            message: "상세주소를 입력해주세요.",
+                          },
+                        ]}
+                        name="sdetailAddress"
+                      >
                         <TextInput
                           border={`none`}
                           borderBottom={`1px solid ${Theme.grey2_C}`}
@@ -807,34 +842,41 @@ const Index = ({}) => {
 
                   <Wrapper padding={`20px 20px 0`}>
                     <Form.Item name="deliveryMessage">
-                      <CustomSelect defaultValue={`default`}>
+                      <CustomSelect
+                        defaultValue={`default`}
+                        onChange={deliRequestHandler}
+                      >
                         <Select.Option value={`default`}>
                           배송 메세지를 선택해주세요.
                         </Select.Option>
+                        <Select.Option value="직접입력">직접입력</Select.Option>
                         <Select.Option value="테스트1">테스트1</Select.Option>
                         <Select.Option value="테스트2">테스트2</Select.Option>
                       </CustomSelect>
                     </Form.Item>
 
-                    <Wrapper al={`flex-start`} margin={`30px 0 10px`}>
-                      <Text
-                        color={Theme.grey_C}
-                        fontSize={`16px`}
-                        fontWeight={`700`}
-                        padding={`0 0 0 10px`}
-                      >
-                        요청사항
-                      </Text>
-                      <Form.Item name="deliveryRequest">
-                        <TextInput
-                          border={`none`}
-                          borderBottom={`1px solid ${Theme.grey2_C}`}
-                          radius={`0`}
-                          shadow={`none`}
-                          width={`100%`}
-                        />
-                      </Form.Item>
-                    </Wrapper>
+                    {dRequest === "직접입력" && (
+                      <Wrapper al={`flex-start`} margin={`30px 0 10px`}>
+                        <Text
+                          color={Theme.grey_C}
+                          fontSize={`16px`}
+                          fontWeight={`700`}
+                          padding={`0 0 0 10px`}
+                        >
+                          요청사항
+                        </Text>
+                        <Form.Item name="deliveryRequest">
+                          <TextInput
+                            border={`none`}
+                            borderBottom={`1px solid ${Theme.grey2_C}`}
+                            radius={`0`}
+                            shadow={`none`}
+                            width={`100%`}
+                            placeholder={"요청사항을 입력해주세요."}
+                          />
+                        </Form.Item>
+                      </Wrapper>
+                    )}
                   </Wrapper>
                 </Wrapper>
               </Wrapper>
@@ -1066,7 +1108,7 @@ const Index = ({}) => {
                           <Wrapper width={`25%`}>
                             <Text>{data.username}</Text>
                             <Text color={Theme.subTheme2_C}>
-                              {data.isNormal && "기본주소"}
+                              {data.isNormal ? "기본주소" : ""}
                             </Text>
                           </Wrapper>
                           <Wrapper
@@ -1075,6 +1117,7 @@ const Index = ({}) => {
                             fontSize={`14px`}
                           >
                             <Text>{data.address}</Text>
+                            <Text>{data.detailAddress}</Text>
                             <Text>{data.userMobile}</Text>
                           </Wrapper>
                           <Wrapper width={`30%`}>
