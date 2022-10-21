@@ -1,6 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 탕전 장바구니 상품
 module.exports = class WishPrescriptionItem extends Model {
   static init(sequelize) {
     return super.init(
@@ -10,29 +11,40 @@ module.exports = class WishPrescriptionItem extends Model {
           allowNull: false,
         },
         title: {
-          type: DataTypes.STRING(300),
+          type: DataTypes.STRING(300), // 처방명
           allowNull: false,
         },
         totalPrice: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.INTEGER, // 총가격
           allowNull: false,
         },
         cheob: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.INTEGER, // 첩
           allowNull: false,
+          defaultValue: 1,
         },
         pack: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.INTEGER, // 팩
           allowNull: false,
+          defaultValue: 1,
         },
         unit: {
-          type: DataTypes.STRING(100),
+          type: DataTypes.INTEGER, // 용량
           allowNull: false,
+          defaultValue: 1,
         },
         qnt: {
           type: DataTypes.INTEGER, // 수량
           defaultValue: 1,
           allowNull: false, // 필수
+        },
+        receiverName: {
+          type: DataTypes.STRING(100), // 환자이름
+          allowNull: false,
+        },
+        content: {
+          type: DataTypes.STRING(500),
+          allowNull: true,
         },
       },
       {
@@ -45,7 +57,6 @@ module.exports = class WishPrescriptionItem extends Model {
     );
   }
   static associate(db) {
-    db.WishPrescriptionItem.belongsTo(db.WishPreContainer);
     db.WishPrescriptionItem.hasMany(db.WishMaterialsItem);
   }
 };

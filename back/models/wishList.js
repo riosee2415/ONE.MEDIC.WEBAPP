@@ -23,7 +23,7 @@ module.exports = class WishList extends Model {
   }
   static associate(db) {
     db.WishList.hasMany(db.WishPaymentContainer);
-    db.WishList.hasMany(db.WishPreContainer);
+    db.WishList.hasMany(db.WishPrescriptionItem);
     db.WishList.belongsTo(db.User);
   }
 };

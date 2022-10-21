@@ -4,22 +4,25 @@ const models = require("../models");
 
 const router = express.Router();
 /// 장바구니에 상품 추가
-
 /// 바로 wishList에 추가됨 (약속처방)
-router.post("/payment/create", isLoggedIn, async (req, res, next) => {
-  const {
-    productname,
-    totalPrice,
-    totalQun,
-    paymentId,
-    title,
-    price,
-    pack,
-    type,
-    unit,
-    qnt,
-    otherRequest,
-  } = req.body;
+router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
+  const { productname, totalPrice, totalQun, items } = req.body;
+
+  if (!Array.isArray(items)) {
+    return res.status(401).send("잘못된 요청입니다.");
+  }
+
+  //   item informations
+  //   -----------------------
+  //   paymentId,
+  //   title,
+  //   price,
+  //   pack,
+  //   type,
+  //   unit,
+  //   qnt,
+  //   otherRequest
+  //   -----------------------
 
   const findWishList = `
   SELECT  id
@@ -80,38 +83,42 @@ router.post("/payment/create", isLoggedIn, async (req, res, next) => {
       containerInsertQuery
     );
 
-    const insertQuery = `
-    INSERT  INTO    wishPaymentItem
-    (
-        paymentId,
-        title,
-        price,
-        pack,
-        type,
-        unit,
-        otherRequest,
-        createdAt,
-        updatedAt,
-        qnt,
-        WishPaymentContainerId
-    )
-    VALUES
-    (
-        ${paymentId},
-        "${title}",
-        ${price},
-        "${pack}",
-        "${type}",
-        "${unit}",
-        "${otherRequest}",
-        NOW(),
-        NOW(),
-        ${qnt},
-        ${containerInsertResult[0].insertId}
-    )
-    `;
+    await Promise.all(
+      items.map(async (data) => {
+        const insertQuery = `
+        INSERT  INTO    wishPaymentItem
+        (
+            paymentId,
+            title,
+            price,
+            pack,
+            type,
+            unit,
+            otherRequest,
+            createdAt,
+            updatedAt,
+            qnt,
+            WishPaymentContainerId
+        )
+        VALUES
+        (
+            ${data.paymentId},
+            "${data.title}",
+            ${data.price},
+            "${data.pack}",
+            "${data.type}",
+            ${data.unit},
+            "${data.otherRequest}",
+            NOW(),
+            NOW(),
+            ${qnt},
+            ${containerInsertResult[0].insertId}
+        )
+        `;
 
-    const insertResult = await models.sequelize.query(insertQuery);
+        await models.sequelize.query(insertQuery);
+      })
+    );
 
     return res.status(201).json({ result: true });
   } catch (error) {
@@ -156,7 +163,7 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
       ${price},
       "${pack}",
       "${type}",
-      "${unit}",
+      ${unit},
       "${otherRequest}",
       NOW(),
       NOW(),
@@ -175,6 +182,7 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
   }
 });
 
+// container안에 상품 수정(약속처방)
 router.post("/payment/item/update", isLoggedIn, async (req, res, next) => {
   const { wishPaymentItemId, price, pack, type, unit, otherRequest } = req.body;
 
@@ -183,7 +191,7 @@ router.post("/payment/item/update", isLoggedIn, async (req, res, next) => {
      SET    price = ${price},
             pack = "${pack}",
             type = "${type}",
-            unit = "${unit}",
+            unit = ${unit},
             otherRequest = "${otherRequest}",
             updatedAt = NOW()
    WHERE    id = ${wishPaymentItemId}
@@ -199,6 +207,7 @@ router.post("/payment/item/update", isLoggedIn, async (req, res, next) => {
   }
 });
 
+//container 안에 상품 삭제(약속처방)
 router.post("/payment/item/delete", isLoggedIn, async (req, res, next) => {
   const { wishPaymentItemId } = req.body;
 
@@ -218,9 +227,55 @@ router.post("/payment/item/delete", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
-  const {} = req.body;
+/// 장바구니에 상품 추가
+/// 바로 wishList에 추가됨 (탕전처방)
+router.post("/pre/container/create", isLoggedIn, async (req, res, next) => {
+  const {
+    prescriptionId,
+    title,
+    totalPrice,
+    cheob,
+    pack,
+    unit,
+    qnt,
+    materials,
+  } = req.body;
+
+  if (!Array.isArray(materials)) {
+    return res.status(401).send("잘못된 요청입니다.");
+  }
+
+  const findWishList = `
+  SELECT  id
+    FROM  wishLists
+   WHERE  UserId = ${req.user.id}
+  `;
+
   try {
+    const findResult = await models.sequelize.query(findWishList);
+
+    let createResult = [];
+
+    if (findResult[0].length === 0) {
+      const createWishListQuery = `
+        INSERT  INTO    wishLists
+        (
+            createdAt,
+            updatedAt,
+            UserId
+        )
+        VALUES
+        (   
+            NOW(),
+            NOW(),
+            ${req.user.id}
+        )
+        `;
+
+      createResult = await models.sequelize.query(createWishListQuery);
+    }
+
+    return res.status(201).json({ result: true });
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니에 상품을 추가할 수 없습니다.");

@@ -1,7 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
-// 사용 재료
+// 상세 사용 재료 (탕전 처방)
 module.exports = class WishMaterialsItem extends Model {
   static init(sequelize) {
     return super.init(

@@ -1,6 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
+// 약속 장바구니 상세 상품
 module.exports = class WishPaymentItem extends Model {
   static init(sequelize) {
     return super.init(
