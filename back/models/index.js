@@ -24,6 +24,12 @@ const payment = require("./payment");
 const searchRecipe = require("./searchRecipe");
 const searchMaterial = require("./searchMaterial");
 const prescriptionPrice = require("./prescriptionPrice");
+const wishpaymentcontainer = require("./wishpaymentcontainer");
+const wishprecontainer = require("./wishprecontainer");
+const wishPaymentItem = require("./wishPaymentItem");
+const wishPrescriptionItem = require("./wishPrescriptionItem");
+const wishMaterialsItem = require("./wishMaterialsItem");
+const wishList = require("./wishList");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -61,6 +67,12 @@ db.Payment = payment;
 db.SearchRecipe = searchRecipe;
 db.SearchMaterial = searchMaterial;
 db.PrescriptionPrice = prescriptionPrice;
+db.WishPreContainer = wishprecontainer;
+db.WishPaymentContainer = wishpaymentcontainer;
+db.WishPaymentItem = wishPaymentItem;
+db.WishPrescriptionItem = wishPrescriptionItem;
+db.WishMaterialsItem = wishMaterialsItem;
+db.WishList = wishList;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);
