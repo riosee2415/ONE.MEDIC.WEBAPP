@@ -1,10 +1,6 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import ClientLayout from "../../components/ClientLayout";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
@@ -23,17 +19,10 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  CloseOutlined,
-  DownOutlined,
-  DropboxOutlined,
-  RightOutlined,
-  UpOutlined,
-} from "@ant-design/icons";
+import { DownOutlined, RightOutlined, UpOutlined } from "@ant-design/icons";
 import { Modal, Select, message, notification } from "antd";
 import {
   PAYMENT_DETAIL_REQUEST,
@@ -64,12 +53,24 @@ const LoadNotification = (msg, content) => {
   });
 };
 
+const PayBtn = styled.button`
+  width: calc(50% - 2px);
+  height: 50px;
+  border-radius: 10px;
+  padding: 0px;
+  cursor: pointer;
+  color: ${(props) =>
+    props.isActive ? props.theme.white_C : props.theme.basicTheme_C};
+  background-color: ${(props) =>
+    props.isActive ? props.theme.basicTheme_C : props.theme.white_C};
+  border: 1px solid
+    ${(props) =>
+      props.isActive ? props.theme.basicTheme_C : props.theme.grey2_C};
+`;
+
 const Index = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
 
   const { me } = useSelector((state) => state.user);
 
@@ -403,45 +404,7 @@ const Index = ({}) => {
   return (
     <>
       <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
+        <title>ModerlLab</title>
       </Head>
 
       <ClientLayout>
@@ -529,19 +492,28 @@ const Index = ({}) => {
                     color={Theme.black_C}
                     margin={`0 0 12px`}
                   >
-                    {me && me.username}
+                    {router.query && router.query.type === "payment"
+                      ? paymentDetail && paymentDetail.receiveUser
+                      : pprDetail && pprDetail.receiveUser}
                   </Text>
                   <Text
                     fontSize={`16px`}
                     color={Theme.grey_C}
                     margin={`0 0 12px`}
                   >
-                    {me && me.mobile}
+                    {router.query && router.query.type === "payment"
+                      ? paymentDetail && paymentDetail.receiveMobile
+                      : pprDetail && pprDetail.receiveMobile}
                   </Text>
                   <Text fontSize={`16px`} color={Theme.grey_C}>
                     {router.query && router.query.type === "payment"
                       ? paymentDetail && paymentDetail.receiveAddress
                       : pprDetail && pprDetail.receiveAddress}
+                  </Text>
+                  <Text fontSize={`16px`} color={Theme.grey_C}>
+                    {router.query && router.query.type === "payment"
+                      ? paymentDetail && paymentDetail.receiveDetailAddress
+                      : pprDetail && pprDetail.receiveDetailAddress}
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -768,7 +740,7 @@ const Index = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text fontSize={`22px`}>결제수단</Text>
-                  {payOpenToggle ? (
+                  {/* {payOpenToggle ? (
                     <UpOutlined
                       onClick={() => setPayOpenToggle((prev) => !prev)}
                       style={{ fontSize: `16px` }}
@@ -778,75 +750,55 @@ const Index = ({}) => {
                       onClick={() => setPayOpenToggle((prev) => !prev)}
                       style={{ fontSize: `16px` }}
                     />
-                  )}
+                  )} */}
                 </Wrapper>
-                {payOpenToggle && (
-                  <Wrapper margin={`20px 0 0 0`}>
-                    <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
-                      <CommonButton
-                        kindOf={paymentType !== "card" && `white`}
-                        width={`calc(50% - 2px)`}
-                        height={`50px`}
-                        radius={`10px`}
-                        padding={`0px`}
-                        onClick={() => paymentSelectHadnler("card")}
-                      >
-                        <Text fontSize={`16px`}>신용카드</Text>
-                      </CommonButton>
-                      <CommonButton
-                        kindOf={paymentType !== "trans" && `white`}
-                        width={`calc(50% - 2px)`}
-                        height={`50px`}
-                        radius={`10px`}
-                        padding={`0px`}
-                        onClick={() => paymentSelectHadnler("trans")}
-                      >
-                        <Text fontSize={`16px`}>계좌 간편 결제</Text>
-                      </CommonButton>
-                    </Wrapper>
-                    <Wrapper
-                      dr={`row`}
-                      ju={`space-between`}
-                      margin={`0 0 30px`}
+                {/* {payOpenToggle && ( */}
+                <Wrapper margin={`20px 0 0 0`}>
+                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 5px`}>
+                    <PayBtn
+                      isActive={paymentType === "card"}
+                      onClick={() => paymentSelectHadnler("card")}
                     >
-                      <CommonButton
-                        kindOf={paymentType !== "phone" && `white`}
-                        width={`calc(50% - 2px)`}
-                        height={`50px`}
-                        radius={`10px`}
-                        padding={`0px`}
-                        onClick={() => paymentSelectHadnler("phone")}
-                      >
-                        <Text fontSize={`16px`}>휴대폰 결제</Text>
-                      </CommonButton>
-                      <CommonButton
-                        kindOf={paymentType !== "nobank" && `white`}
-                        width={`calc(50% - 2px)`}
-                        height={`50px`}
-                        radius={`10px`}
-                        padding={`0px`}
-                        onClick={() => paymentSelectHadnler("nobank")}
-                      >
-                        <Text fontSize={`16px`}>무통장입금</Text>
-                      </CommonButton>
-                    </Wrapper>
-                    <Wrapper dr={`row`} ju={`flex-start`}>
-                      <CommonCheckBox
-                        checked={isAgree1}
-                        onClick={() => setIsAgree1((prev) => !prev)}
-                        style={{ margin: `0 5px 0 0` }}
-                      />
-                      <Text
-                        fontSize={`16px`}
-                        color={Theme.black_C}
-                        cursor={`pointer`}
-                        onClick={() => setIsAgree1((prev) => !prev)}
-                      >
-                        선택한 결제 수단을 다음에도 선택
-                      </Text>
-                    </Wrapper>
+                      <Text fontSize={`16px`}>신용카드</Text>
+                    </PayBtn>
+                    <PayBtn
+                      isActive={paymentType === "trans"}
+                      onClick={() => paymentSelectHadnler("trans")}
+                    >
+                      <Text fontSize={`16px`}>계좌 간편 결제</Text>
+                    </PayBtn>
                   </Wrapper>
-                )}
+                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 30px`}>
+                    <PayBtn
+                      isActive={paymentType === "phone"}
+                      onClick={() => paymentSelectHadnler("phone")}
+                    >
+                      <Text fontSize={`16px`}>휴대폰 결제</Text>
+                    </PayBtn>
+                    <PayBtn
+                      isActive={paymentType === "nobank"}
+                      onClick={() => paymentSelectHadnler("nobank")}
+                    >
+                      <Text fontSize={`16px`}>무통장입금</Text>
+                    </PayBtn>
+                  </Wrapper>
+                  <Wrapper dr={`row`} ju={`flex-start`}>
+                    <CommonCheckBox
+                      checked={isAgree1}
+                      onClick={() => setIsAgree1((prev) => !prev)}
+                      style={{ margin: `0 5px 0 0` }}
+                    />
+                    <Text
+                      fontSize={`16px`}
+                      color={Theme.black_C}
+                      cursor={`pointer`}
+                      onClick={() => setIsAgree1((prev) => !prev)}
+                    >
+                      선택한 결제 수단을 다음에도 선택
+                    </Text>
+                  </Wrapper>
+                </Wrapper>
+                {/* )} */}
               </Wrapper>
 
               <Wrapper dr={`row`} ju={`flex-start`} al={`flex-start`}>
@@ -1000,10 +952,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     context.store.dispatch({

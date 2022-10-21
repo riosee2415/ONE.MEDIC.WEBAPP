@@ -1,10 +1,6 @@
 import React, { useEffect, useCallback, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import ClientLayout from "../../components/ClientLayout";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
@@ -22,7 +18,6 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -39,6 +34,7 @@ import DaumPostcode from "react-daum-postcode";
 import {
   ADDRESS_LIST_REQUEST,
   ADDRESS_LIST_MODAL_TOGGLE,
+  ADDRESS_CREATE_REQUEST,
 } from "../../reducers/address";
 import useInput from "../../hooks/useInput";
 import { numberWithCommas } from "../../components/commonUtils";
@@ -109,9 +105,6 @@ const AddressInput = styled(TextInput)`
 const Index = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
 
   const { me } = useSelector((state) => state.user);
   const { addressList, addressDetail, addressListModal } = useSelector(
@@ -318,6 +311,18 @@ const Index = ({}) => {
             deliveryRequest: data.deliveryRequest,
           },
         });
+
+        dispatch({
+          type: ADDRESS_CREATE_REQUEST,
+          data: {
+            postCode: data.raddress.split("(")[1].substring(0, 5),
+            address: data.raddress.split("(")[0],
+            detailAddress: data.rdetailAddress,
+            userId: me.id,
+            username: data.ruser,
+            userMobile: data.rmobile,
+          },
+        });
       } else {
         dispatch({
           type: PPR_ADDRESS_UPDATE_REQUEST,
@@ -335,9 +340,21 @@ const Index = ({}) => {
             deliveryRequest: data.deliveryRequest,
           },
         });
+
+        dispatch({
+          type: ADDRESS_CREATE_REQUEST,
+          data: {
+            postCode: data.raddress.split("(")[1].substring(0, 5),
+            address: data.raddress.split("(")[0],
+            detailAddress: data.rdetailAddress,
+            userId: me.id,
+            username: data.ruser,
+            userMobile: data.rmobile,
+          },
+        });
       }
     },
-    [router.query.id, router.query.type]
+    [router.query.id, router.query.type, me]
   );
 
   const selectAddressHandler = useCallback((data) => {
@@ -386,45 +403,7 @@ const Index = ({}) => {
   return (
     <>
       <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
+        <title>ModerlLab</title>
       </Head>
 
       <ClientLayout>
@@ -865,7 +844,15 @@ const Index = ({}) => {
                         >
                           요청사항
                         </Text>
-                        <Form.Item name="deliveryRequest">
+                        <Form.Item
+                          rules={[
+                            {
+                              required: dRequest === "직접입력" ? true : false,
+                              message: "상세주소를 입력해주세요.",
+                            },
+                          ]}
+                          name="deliveryRequest"
+                        >
                           <TextInput
                             border={`none`}
                             borderBottom={`1px solid ${Theme.grey2_C}`}
@@ -1168,10 +1155,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     // 구현부 종료

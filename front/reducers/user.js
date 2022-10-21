@@ -257,6 +257,7 @@ const reducer = (state = initailState, action) =>
       case LOAD_MY_INFO_SUCCESS:
         draft.st_loadMyInfoLoading = false;
         draft.st_loadMyInfoDone = true;
+        draft.st_loadMyInfoError = null;
         draft.me = action.data;
         break;
 
