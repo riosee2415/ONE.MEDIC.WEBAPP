@@ -3,6 +3,17 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const models = require("../models");
 
 const router = express.Router();
+
+// router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
+//   const { containerId } = req.body;
+
+//   try {
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(401).send("상품 정보를 불러올 수 없습니다.");
+//   }
+// });
+
 /// 장바구니에 상품 추가
 /// 바로 wishList에 추가됨 (약속처방)
 router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
@@ -127,6 +138,16 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
   }
 });
 
+// router.post("/payment/container/update", isLoggedIn, async (req, res, next) => {
+//   const { containerId } = req.body;
+
+//   try {
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(401).send("상품 정보를 불러올 수 없습니다.");
+//   }
+// });
+
 // container 안에 상품 추가 (약속처방)
 router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
   const {
@@ -229,7 +250,7 @@ router.post("/payment/item/delete", isLoggedIn, async (req, res, next) => {
 
 /// 장바구니에 상품 추가
 /// 바로 wishList에 추가됨 (탕전처방)
-router.post("/pre/container/create", isLoggedIn, async (req, res, next) => {
+router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
   const {
     prescriptionId,
     title,
@@ -238,6 +259,9 @@ router.post("/pre/container/create", isLoggedIn, async (req, res, next) => {
     pack,
     unit,
     qnt,
+    receiverName,
+    content,
+    medication,
     materials,
   } = req.body;
 
@@ -275,10 +299,94 @@ router.post("/pre/container/create", isLoggedIn, async (req, res, next) => {
       createResult = await models.sequelize.query(createWishListQuery);
     }
 
+    const preScriptionItemCreateQuery = `
+    INSERT  INTO  wishPrescriptionItem
+    (
+      prescriptionId,
+      title,
+      totalPrice,
+      cheob,
+      pack,
+      unit,
+      qnt,
+      medication,
+      receiverName,
+      content,
+      createdAt,
+      updatedAt,
+      WishListId
+    )
+    VALUES
+    (
+      ${prescriptionId},
+      "${title}",
+      ${totalPrice},
+      ${cheob},
+      ${pack},
+      ${unit},
+      ${qnt},
+      ${medication ? medication`"${medication}"` : null},
+      "${receiverName}",
+      ${content ? content`"${content}"` : null},
+      NOW(),
+      NOW(),
+      ${
+        findResult[0].length !== 0
+          ? findResult[0][0].id
+          : createResult[0].insertId
+      }
+    )
+    `;
+
+    const preInsertResult = await models.sequelize.query(
+      preScriptionItemCreateQuery
+    );
+
+    await Promise.all(
+      materials.map(async (data) => {
+        const insertMaterialQuery = `
+        INSERT  INTO  wishMaterialsItem
+        (
+          materialId,
+          name,
+          price,
+          qnt,
+          unit,
+          createdAt,
+          updatedAt,
+          WishPrescriptionItemId
+        )
+        VALUES
+        (
+          ${data.materialId},
+          "${data.name}",
+          ${data.price},
+          ${data.qnt},
+          "${data.unit}",
+          NOW(),
+          NOW(),
+          ${preInsertResult[0].insertId}
+        )
+        `;
+
+        await models.sequelize.query(insertMaterialQuery);
+      })
+    );
+
     return res.status(201).json({ result: true });
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니에 상품을 추가할 수 없습니다.");
   }
 });
+
+// router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
+//   const {} = req.body;
+//   try {
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(401).send("상품 정보를 불러올 수 없습니다.");
+//   }
+// });
+
 module.exports = router;
