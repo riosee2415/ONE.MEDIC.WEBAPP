@@ -442,7 +442,9 @@ const Address = ({}) => {
                         shadow={Theme.shadow_C}
                         padding={`15px`}
                         al={`flex-start`}
+                        ju={`space-between`}
                         margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
+                        height={`250px !important`}
                       >
                         <Wrapper
                           dr={`row`}
@@ -567,7 +569,7 @@ const Address = ({}) => {
                     { required: true, message: "전화번호를 입랙해주세요." },
                   ]}
                 >
-                  <Input placeholder="전화번호를 입력해주세요." type="number" />
+                  <Input placeholder="전화번호를 입력해주세요." type="tel" />
                 </Form.Item>
                 <Text>주소</Text>
                 <Form.Item
