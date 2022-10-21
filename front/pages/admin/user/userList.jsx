@@ -637,7 +637,13 @@ const UserList = ({}) => {
                 <Input readOnly />
               </Form.Item>
               <Form.Item name="companyFile" label="사업첨부파일">
-                <Button
+                <Image
+                  width={`150px`}
+                  height={`150px`}
+                  src={companyFile}
+                  alt={`image`}
+                />
+                {/* <Button
                   size="small"
                   type="dashed"
                   onClick={() => fileDownloadHandler(companyFile)}
@@ -646,7 +652,7 @@ const UserList = ({}) => {
                 </Button>
                 <AdminText>
                   * 첨부파일 클릭시 첨부파일이 다운로드 됩니다.
-                </AdminText>
+                </AdminText> */}
               </Form.Item>
             </>
           ) : (
@@ -655,7 +661,13 @@ const UserList = ({}) => {
 
           {bFile ? (
             <Form.Item name="bFile" label="한의사면허증">
-              <DownloadA href={bFile} download={bFile}>
+              <Image
+                width={`150px`}
+                height={`150px`}
+                src={bFile}
+                alt={`image`}
+              />
+              {/* <DownloadA href={bFile} download={bFile}>
                 <Button size="small" type="dashed">
                   첨부파일
                 </Button>
@@ -663,7 +675,7 @@ const UserList = ({}) => {
 
               <AdminText>
                 * 첨부파일 클릭시 첨부파일이 다운로드 됩니다.
-              </AdminText>
+              </AdminText> */}
             </Form.Item>
           ) : (
             ""
