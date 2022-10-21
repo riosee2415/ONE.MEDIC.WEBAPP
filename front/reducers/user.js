@@ -119,9 +119,13 @@ export const initailState = {
   st_licenseNoUpdateDone: false, // 면허번호
   st_licenseNoUpdateError: null, // 면허번호
   //
-  st_userIspermissionLoading: false, // 이용정지
+  st_userIspermissionLoading: false, // 회원승인
   st_userIspermissionDone: false,
   st_userIspermissionError: null,
+  //
+  st_userIsStopLoading: false, // 이용정지
+  st_userIsStopDone: false,
+  st_userIsStopError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -223,6 +227,10 @@ export const LICENSENO_UPDATE_FAILURE = "LICENSENO_UPDATE_FAILURE";
 export const USER_ISPERMISSION_REQUEST = "USER_ISPERMISSION_REQUEST";
 export const USER_ISPERMISSION_SUCCESS = "USER_ISPERMISSION_SUCCESS";
 export const USER_ISPERMISSION_FAILURE = "USER_ISPERMISSION_FAILURE";
+
+export const USER_ISSTOP_REQUEST = "USER_ISSTOP_REQUEST";
+export const USER_ISSTOP_SUCCESS = "USER_ISSTOP_SUCCESS";
+export const USER_ISSTOP_FAILURE = "USER_ISSTOP_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -770,6 +778,27 @@ const reducer = (state = initailState, action) =>
         draft.st_userIspermissionLoading = false;
         draft.st_userIspermissionDone = false;
         draft.st_userIspermissionError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case USER_ISSTOP_REQUEST: {
+        draft.st_userIsStopLoading = true;
+        draft.st_userIsStopDone = false;
+        draft.st_userIsStopError = null;
+        break;
+      }
+      case USER_ISSTOP_SUCCESS: {
+        draft.st_userIsStopLoading = false;
+        draft.st_userIsStopDone = true;
+        draft.st_userIsStopError = null;
+        break;
+      }
+      case USER_ISSTOP_FAILURE: {
+        draft.st_userIsStopLoading = false;
+        draft.st_userIsStopDone = false;
+        draft.st_userIsStopError = action.error;
         break;
       }
 

@@ -101,6 +101,10 @@ import {
   USER_ISPERMISSION_SUCCESS,
   USER_ISPERMISSION_FAILURE,
   /////////////////////////////
+  USER_ISSTOP_REQUEST,
+  USER_ISSTOP_SUCCESS,
+  USER_ISSTOP_FAILURE,
+  /////////////////////////////
 } from "../reducers/user";
 
 // ******************************************************************************************************************
@@ -799,6 +803,34 @@ function* permission(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 // ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function isStopUpdateAPI(data) {
+  return await axios.post(`/api/user/stop/update`, data);
+}
+
+function* isStopUpdate(action) {
+  try {
+    const result = yield call(isStopUpdateAPI, action.data);
+
+    yield put({
+      type: USER_ISSTOP_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: USER_ISSTOP_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -901,6 +933,10 @@ function* watchPermission() {
   yield takeLatest(USER_ISPERMISSION_REQUEST, permission);
 }
 
+function* watchIsStopUpdate() {
+  yield takeLatest(USER_ISSTOP_REQUEST, isStopUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -929,6 +965,7 @@ export default function* userSaga() {
     fork(watchCompanyUpload),
     fork(watchLicenseNoUpdate),
     fork(watchPermission),
+    fork(watchIsStopUpdate),
     //
   ]);
 }

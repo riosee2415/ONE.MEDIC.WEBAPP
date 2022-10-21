@@ -14,6 +14,7 @@ import {
   UNIT_MODAL_TOGGLE,
   LICENSENO_UPDATE_REQUEST,
   USER_ISPERMISSION_REQUEST,
+  USER_ISSTOP_REQUEST,
 } from "../../../reducers/user";
 import {
   Table,
@@ -102,6 +103,10 @@ const UserList = ({}) => {
     st_userIspermissionLoading,
     st_userIspermissionDone,
     st_userIspermissionError,
+    //
+    st_userIsStopLoading,
+    st_userIsStopDone,
+    st_userIsStopError,
   } = useSelector((state) => state.user);
 
   const [updateData, setUpdateData] = useState(null);
@@ -223,7 +228,7 @@ const UserList = ({}) => {
         },
       });
 
-      return message.success("이용정지 되었습니다.");
+      return message.success("승인되었습니다.");
     }
   }, [st_userIspermissionDone]);
 
@@ -232,6 +237,29 @@ const UserList = ({}) => {
       return message.error(st_userIspermissionError);
     }
   }, [st_userIspermissionError]);
+
+  useEffect(() => {
+    if (st_userIsStopDone) {
+      const query = router.query;
+
+      dispatch({
+        type: USERLIST_REQUEST,
+        data: {
+          name: query.name ? query.name : ``,
+          email: query.email ? query.email : ``,
+          listType: query.sort,
+        },
+      });
+
+      return message.success("수정되었습니다.");
+    }
+  }, [st_userIsStopDone]);
+
+  useEffect(() => {
+    if (st_userIsStopError) {
+      return message.error(st_userIsStopError);
+    }
+  }, [st_userIsStopError]);
 
   ////// TOGGLE //////
   const updateModalOpen = useCallback(
@@ -373,12 +401,23 @@ const UserList = ({}) => {
     [licenseData]
   );
 
-  const permissionChangeHandler = useCallback((id, isPermission) => {
+  // 승인
+  const permissionChangeHandler = useCallback((id) => {
     dispatch({
       type: USER_ISPERMISSION_REQUEST,
       data: {
         id,
-        isPermission,
+      },
+    });
+  }, []);
+
+  // 이용정지
+  const isStopChangeHandler = useCallback((id, isStop) => {
+    dispatch({
+      type: USER_ISSTOP_REQUEST,
+      data: {
+        id,
+        isStop,
       },
     });
   }, []);
@@ -416,11 +455,21 @@ const UserList = ({}) => {
       title: "이용정지",
       render: (data) => (
         <Switch
-          checked={!data.isPermission}
-          onChange={() =>
-            permissionChangeHandler(data.id, data.isPermission ? 0 : 1)
-          }
-          loading={st_userIspermissionLoading}
+          checked={data.isStop}
+          onChange={() => isStopChangeHandler(data.id, data.isStop ? 0 : 1)}
+          loading={st_userIsStopLoading || st_userIspermissionLoading}
+        />
+      ),
+    },
+
+    {
+      title: "승인",
+      render: (data) => (
+        <Switch
+          checked={data.isPermission}
+          onChange={() => permissionChangeHandler(data.id)}
+          disabled={data.isPermission}
+          loading={st_userIsStopLoading || st_userIspermissionLoading}
         />
       ),
     },

@@ -904,7 +904,7 @@ const UserDeliAddress = ({}) => {
           onFinish={packCreateFormHandler}
         >
           <Form.Item
-            label="단위명"
+            label="포장명"
             rules={[{ required: true, message: "필수 입력사항 입니다." }]}
             name="name"
           >
