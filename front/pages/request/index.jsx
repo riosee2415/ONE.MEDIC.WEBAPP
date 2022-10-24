@@ -225,33 +225,56 @@ const Request = () => {
   ////// HANDLER /////
 
   // 요청사항 추가
-  const requestCreateHandler = useCallback((data) => {
-    dispatch({
-      type: REQUEST_CREATE_REQUEST,
-      data: data,
-    });
-  }, []);
+  const requestCreateHandler = useCallback(
+    (data) => {
+      if (st_requestCreateLoading) {
+        return message.info("추가중입니다.");
+      }
+
+      dispatch({
+        type: REQUEST_CREATE_REQUEST,
+        data: data,
+      });
+    },
+    [st_requestCreateLoading]
+  );
 
   // 요청사항 수정
   const requestUpdateHandler = useCallback(
     (data) => {
+      if (st_requestUpdateLoading) {
+        return message.info("수정중입니다.");
+      }
+
+      if (modalData) {
+        return message.info("잠시 후 다시 시도해주시기 바랍니다.");
+      }
+
       dispatch({
         type: REQUEST_UPDATE_REQUEST,
         data: { id: modalData.id, ...data },
       });
     },
-    [modalData]
+    [modalData, st_requestUpdateLoading]
   );
 
   // 요청사항 삭제
   const requestDeleteHandler = useCallback(() => {
+    if (st_requestDeleteLoading) {
+      return message.info("삭제중입니다.");
+    }
+
+    if (modalData) {
+      return message.info("잠시 후 다시 시도해주시기 바랍니다.");
+    }
+
     dispatch({
       type: REQUEST_DELETE_REQUEST,
       data: {
         id: modalData.id,
       },
     });
-  }, [modalData]);
+  }, [modalData, st_requestDeleteLoading]);
 
   // 페이지 네이션 - 페이지 교체
   const pageChangeHandler = useCallback(
