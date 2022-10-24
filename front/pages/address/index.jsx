@@ -79,12 +79,19 @@ const Address = ({}) => {
     searchAddressModal,
     addressDeleteModal,
     //
+    st_addressCreateLoading,
     st_addressCreateDone,
     st_addressCreateError,
+    //
+    st_addressUpdateLoading,
     st_addressUpdateDone,
     st_addressUpdateError,
+    //
+    st_addressDeleteLoading,
     st_addressDeleteDone,
     st_addressDeleteError,
+    //
+    st_addressIsNormalLoading,
     st_addressIsNormalDone,
     st_addressIsNormalError,
   } = useSelector((state) => state.address);
@@ -267,10 +274,15 @@ const Address = ({}) => {
     });
   }, []);
 
+  // 주소 생성하기
   const addressCreateSubmitHandler = useCallback(
     (data) => {
+      if (st_addressCreateLoading) {
+        return message.info("생성중입니다.");
+      }
+
       if (!/^[0-9]{2,3}[0-9]{3,4}[0-9]{4}/.test(data.tel)) {
-        return message.error("전화번호를 정확하게 입력해주세요.");
+        return message.info("전화번호를 정확하게 입력해주세요.");
       }
 
       dispatch({
@@ -295,9 +307,14 @@ const Address = ({}) => {
     [isNormalCheck]
   );
 
+  // 기본주소 설정하기
   const addressIsNormalHandler = useCallback(() => {
+    if (st_addressUpdateLoading) {
+      return message.info("설정중입니다.");
+    }
+
     if (!isNormalCheck) {
-      return message.error("기본주소로 설정할 주소를 선택해주세요.");
+      return message.info("기본주소로 설정할 주소를 선택해주세요.");
     }
     dispatch({
       type: ADDRESS_ISNORMAL_REQUEST,
@@ -308,8 +325,13 @@ const Address = ({}) => {
     });
   }, [isNormalCheck]);
 
+  // 주소 수정하기
   const addressUpdateHandler = useCallback(
     (data) => {
+      if (st_addressDeleteLoading) {
+        return message.info("수정중입니다.");
+      }
+
       dispatch({
         type: ADDRESS_UPDATE_REQUEST,
         data: {
@@ -325,7 +347,12 @@ const Address = ({}) => {
     [updateAddressData]
   );
 
+  // 주소 삭제하기
   const addressDeleteHandler = useCallback(() => {
+    if (st_addressIsNormalLoading) {
+      return message.info("삭제중입니다.");
+    }
+
     dispatch({
       type: ADDRESS_DELETE_REQUEST,
       data: {

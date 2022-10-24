@@ -784,6 +784,33 @@ const AppHeader = ({ children, width }) => {
                         </Link>
                       </>
                     )}
+
+                    {/* 장바구니 */}
+                    <Link href={`/cart`}>
+                      <ATag al={`flex-start`} onClick={drawarToggle}>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`flex-start`}
+                          padding={`0 0 20px`}
+                          margin={`0 0 20px`}
+                          borderBottom={`1px solid ${Theme.grey2_C}`}
+                        >
+                          <Image
+                            alt="icon"
+                            width={`26px`}
+                            height={`26px`}
+                            src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/menu_icon/4.cart.png`}
+                          />
+                          <Text
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            margin={`0 0 0 30px`}
+                          >
+                            장바구니
+                          </Text>
+                        </Wrapper>
+                      </ATag>
+                    </Link>
+
                     <Link href={`/notice`}>
                       <ATag al={`flex-start`} onClick={drawarToggle}>
                         <Wrapper

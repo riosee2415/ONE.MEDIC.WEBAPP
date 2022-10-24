@@ -460,6 +460,21 @@ const Prescription = ({}) => {
               <Wrapper width={`auto`}>
                 <Image
                   alt="icon"
+                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/2.cart_g.png`}
+                  width={`22px`}
+                />
+                <Text fontSize={`12px`} margin={`5px 0 0`} color={Theme.grey_C}>
+                  장바구니
+                </Text>
+              </Wrapper>
+
+              <RightOutlined
+                style={{ color: Theme.grey2_C, margin: "0 20px" }}
+              />
+
+              <Wrapper width={`auto`}>
+                <Image
+                  alt="icon"
                   src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/process_icon/3.delivery_g.png`}
                   width={`22px`}
                 />
