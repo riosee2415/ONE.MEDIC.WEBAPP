@@ -38,6 +38,10 @@ module.exports = class WishPrescriptionItem extends Model {
           defaultValue: 1,
           allowNull: false, // 필수
         },
+        medication: {
+          type: DataTypes.STRING(600),
+          allowNull: true,
+        },
         receiverName: {
           type: DataTypes.STRING(100), // 환자이름
           allowNull: false,
