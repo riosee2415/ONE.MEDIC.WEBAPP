@@ -115,6 +115,9 @@ const UserList = ({}) => {
   const [isCompany, setIsCompany] = useState(false);
   const [bFile, setBFile] = useState(null); // 자격증
 
+  // 이용정지
+  const [isStopType, setIsStopType] = useState(false);
+
   const [licenseModal, setLicenseModal] = useState(false); // 라이선스 모달
   const [licenseData, setLicenseData] = useState(false); // 라이선스 모달
 
@@ -136,6 +139,7 @@ const UserList = ({}) => {
     dispatch({
       type: USERLIST_REQUEST,
       data: {
+        isStop: query.isStopType ? query.isStopType : 3,
         name: query.name ? query.name : ``,
         email: query.email ? query.email : ``,
         listType: query.sort,
@@ -160,6 +164,7 @@ const UserList = ({}) => {
       dispatch({
         type: USERLIST_REQUEST,
         data: {
+          isStop: query.isStopType ? query.isStopType : 3,
           name: query.name ? query.name : ``,
           email: query.email ? query.email : ``,
           listType: query.sort,
@@ -182,9 +187,11 @@ const UserList = ({}) => {
 
   useEffect(() => {
     router.push(
-      `/admin/user/userList?name=${inputName.value}&email=${inputEmail.value}&sort=${inputSort.value}`
+      `/admin/user/userList?name=${inputName.value}&email=${
+        inputEmail.value
+      }&sort=${inputSort.value}&isStopType=${isStopType ? 2 : 1}`
     );
-  }, [inputSort.value]);
+  }, [inputSort.value, isStopType]);
 
   // 면허번호 등록
 
@@ -195,6 +202,7 @@ const UserList = ({}) => {
       dispatch({
         type: USERLIST_REQUEST,
         data: {
+          isStop: query.isStopType ? query.isStopType : 3,
           name: query.name ? query.name : ``,
           email: query.email ? query.email : ``,
           listType: query.sort,
@@ -222,6 +230,7 @@ const UserList = ({}) => {
       dispatch({
         type: USERLIST_REQUEST,
         data: {
+          isStop: query.isStopType ? query.isStopType : 3,
           name: query.name ? query.name : ``,
           email: query.email ? query.email : ``,
           listType: query.sort,
@@ -245,6 +254,7 @@ const UserList = ({}) => {
       dispatch({
         type: USERLIST_REQUEST,
         data: {
+          isStop: query.isStopType ? query.isStopType : 3,
           name: query.name ? query.name : ``,
           email: query.email ? query.email : ``,
           listType: query.sort,
@@ -323,20 +333,25 @@ const UserList = ({}) => {
 
   ////// HANDLER //////
 
-  const fileDownloadHandler = useCallback(async (filePath) => {
-    let blob = await fetch(filePath).then((r) => r.blob());
+  const isStopTypeChangeHandler = useCallback(() => {
+    setIsStopType((prev) => !prev);
+  }, [isStopType]);
 
-    const file = new Blob([blob]);
+  // 파일 다운로드
+  // const fileDownloadHandler = useCallback(async (filePath) => {
+  //   let blob = await fetch(filePath).then((r) => r.blob());
 
-    const ext = filePath.substring(
-      0,
-      filePath.lastIndexOf(".") + 1,
-      filePath.length
-    );
+  //   const file = new Blob([blob]);
 
-    const originName = `첨부파일.${ext}`;
-    saveAs(file, originName);
-  });
+  //   const ext = filePath.substring(
+  //     0,
+  //     filePath.lastIndexOf(".") + 1,
+  //     filePath.length
+  //   );
+
+  //   const originName = `첨부파일.${ext}`;
+  //   saveAs(file, originName);
+  // });
 
   const onFill = useCallback(
     (data) => {
@@ -522,7 +537,10 @@ const UserList = ({}) => {
 
       <AdminContent>
         <Wrapper dr={`row`} ju={`space-between`}>
-          <Input.Group compact style={{ width: `90%`, margin: ` 0 0 10px 0` }}>
+          <Input.Group
+            compact
+            style={{ width: `calc(100% - 300px)`, margin: ` 0 0 10px 0` }}
+          >
             <Select
               defaultValue="1"
               style={{ width: "10%" }}
@@ -553,22 +571,22 @@ const UserList = ({}) => {
               검색
             </Button>
           </Input.Group>
-          <Wrapper width={`auto`} dr={`row`}>
-            <Button type="dashed" size="small" onClick={userAllViewHandler}>
-              전체조회
-            </Button>
+          <Wrapper width={`300px`} dr={`row`} ju={`flex-end`}>
             <Button
+              type={isStopType && `primary`}
               size="small"
-              type="danger"
-              style={{ margin: `0 0 0 5px` }}
-              onClick={unitModalToggle}
+              onClick={isStopTypeChangeHandler}
             >
-              주의사항
+              이용정지
             </Button>
+            <ModalBtn type="dashed" size="small" onClick={userAllViewHandler}>
+              전체조회
+            </ModalBtn>
+            <ModalBtn size="small" type="danger" onClick={unitModalToggle}>
+              주의사항
+            </ModalBtn>
           </Wrapper>
         </Wrapper>
-
-        {console.log(users)}
 
         <Table
           rowKey="id"

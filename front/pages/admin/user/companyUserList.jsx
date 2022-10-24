@@ -223,9 +223,9 @@ const CompanyUserList = () => {
   return (
     <AdminLayout>
       <PageHeader
-        breadcrumbs={["회원 관리", "회사 회원 리스트"]}
-        title={`회사 회원 리스트`}
-        subTitle={`회사 승인된 회원의 리스트를 확인할 수 있습니다.`}
+        breadcrumbs={["회원 관리", "한의원 회원 리스트"]}
+        title={`한의원 회원 리스트`}
+        subTitle={`한의원 회원의 리스트를 확인할 수 있습니다.`}
       />
 
       <AdminContent>
