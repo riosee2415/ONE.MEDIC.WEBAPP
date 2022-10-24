@@ -22,7 +22,6 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import Head from "next/head";
 import { Checkbox, Empty, Form, Input, message, Modal } from "antd";
 import { useRef } from "react";
@@ -416,79 +415,44 @@ const Address = ({}) => {
               </Wrapper>
             </Wrapper>
 
-            <Wrapper
-              padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
-              minHeight={`calc(100vh - 185px - 75px)`}
-              dr={`row`}
-              ju={`flex-start`}
-              al={`flex-start`}
-            >
-              {addressList &&
-                (addressList.lenght === 0 ? (
-                  <Wrapper>
-                    <Empty description={`주소가 없습니다.`} />
-                  </Wrapper>
-                ) : (
-                  addressList.map((data) => {
-                    return (
-                      <Wrapper
-                        key={data.id}
-                        width={
-                          width < 1100
-                            ? width < 700
-                              ? `100%`
-                              : `calc(100% / 2 - 16px)`
-                            : `calc(100% / 3 - 16px)`
-                        }
-                        radius={`20px`}
-                        shadow={Theme.shadow_C}
-                        padding={`15px`}
-                        al={`flex-start`}
-                        ju={`space-between`}
-                        margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
-                        height={`250px !important`}
-                      >
+            <Wrapper minHeight={`calc(100vh - 185px - 75px)`} ju={`flex-start`}>
+              <Wrapper
+                padding={width < 800 ? `0 10px 30px` : `0 38px 30px`}
+                dr={`row`}
+                ju={`flex-start`}
+                al={`flex-start`}
+              >
+                {addressList &&
+                  (addressList.lenght === 0 ? (
+                    <Wrapper>
+                      <Empty description={`주소가 없습니다.`} />
+                    </Wrapper>
+                  ) : (
+                    addressList.map((data) => {
+                      return (
                         <Wrapper
-                          dr={`row`}
+                          key={data.id}
+                          width={
+                            width < 1100
+                              ? width < 700
+                                ? `100%`
+                                : `calc(100% / 2 - 16px)`
+                              : `calc(100% / 3 - 16px)`
+                          }
+                          radius={`20px`}
+                          shadow={Theme.shadow_C}
+                          padding={`15px`}
+                          al={`flex-start`}
                           ju={`space-between`}
-                          margin={`15px 0`}
+                          margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
                         >
-                          <Wrapper dr={`row`} ju={`flex-start`}>
-                            {data.isNormal ? (
-                              <Wrapper al={`flex-start`} margin={`0 0 0 15px`}>
-                                <Text fontSize={`18px`} fontWeight={`bold`}>
-                                  {data.username}
-                                </Text>
-                                <Wrapper dr={`row`} ju={`space-between`}>
-                                  <Text color={Theme.grey_C}>
-                                    {data.address}&nbsp;({data.postCode})
-                                  </Text>
-                                  {data.isNormal && (
-                                    <Wrapper
-                                      width={`75px`}
-                                      height={`33px`}
-                                      radius={`8px`}
-                                      border={`1px solid ${Theme.basicTheme_C}`}
-                                      color={Theme.subTheme2_C}
-                                      bgColor={Theme.subTheme4_C}
-                                      fontSize={`16px`}
-                                    >
-                                      기본주소
-                                    </Wrapper>
-                                  )}
-                                </Wrapper>
-                                <Text>{data.tel}</Text>
-                              </Wrapper>
-                            ) : (
-                              <CommonCheckBox
-                                onChange={() =>
-                                  addressCheckBoxHandler(
-                                    isNormalCheck === data.id ? null : data.id
-                                  )
-                                }
-                                checked={isNormalCheck === data.id}
-                                style={{ alignItems: "center" }}
-                              >
+                          <Wrapper
+                            dr={`row`}
+                            ju={`space-between`}
+                            margin={`15px 0`}
+                          >
+                            <Wrapper dr={`row`} ju={`flex-start`}>
+                              {data.isNormal ? (
                                 <Wrapper
                                   al={`flex-start`}
                                   margin={`0 0 0 15px`}
@@ -497,42 +461,88 @@ const Address = ({}) => {
                                     {data.username}
                                   </Text>
                                   <Wrapper dr={`row`} ju={`space-between`}>
-                                    <Text color={Theme.grey_C}>
+                                    <Text
+                                      color={Theme.grey_C}
+                                      width={
+                                        data.isNormal
+                                          ? `calc(100% - 76px)`
+                                          : `100%`
+                                      }
+                                      isEllipsis
+                                    >
                                       {data.address}&nbsp;({data.postCode})
                                     </Text>
+                                    {data.isNormal && (
+                                      <Wrapper
+                                        width={`75px`}
+                                        height={`33px`}
+                                        radius={`8px`}
+                                        border={`1px solid ${Theme.basicTheme_C}`}
+                                        color={Theme.subTheme2_C}
+                                        bgColor={Theme.subTheme4_C}
+                                        fontSize={`16px`}
+                                      >
+                                        기본주소
+                                      </Wrapper>
+                                    )}
                                   </Wrapper>
                                   <Text>{data.tel}</Text>
                                 </Wrapper>
-                              </CommonCheckBox>
-                            )}
+                              ) : (
+                                <CommonCheckBox
+                                  onChange={() =>
+                                    addressCheckBoxHandler(
+                                      isNormalCheck === data.id ? null : data.id
+                                    )
+                                  }
+                                  checked={isNormalCheck === data.id}
+                                  style={{ alignItems: "center" }}
+                                >
+                                  <Wrapper
+                                    al={`flex-start`}
+                                    margin={`0 0 0 15px`}
+                                  >
+                                    <Text fontSize={`18px`} fontWeight={`bold`}>
+                                      {data.username}
+                                    </Text>
+                                    <Wrapper dr={`row`} ju={`space-between`}>
+                                      <Text color={Theme.grey_C}>
+                                        {data.address}&nbsp;({data.postCode})
+                                      </Text>
+                                    </Wrapper>
+                                    <Text>{data.tel}</Text>
+                                  </Wrapper>
+                                </CommonCheckBox>
+                              )}
+                            </Wrapper>
+                          </Wrapper>
+                          <Wrapper
+                            dr={`row`}
+                            color={Theme.grey_C}
+                            borderTop={`1px solid ${Theme.grey2_C}`}
+                            padding={`10px 0 0`}
+                          >
+                            <Wrapper
+                              width={`calc(100% / 2)`}
+                              cursor={`pointer`}
+                              onClick={() => addressModalToggle(data)}
+                            >
+                              상세정보
+                            </Wrapper>
+                            <Wrapper
+                              width={`calc(100% / 2)`}
+                              cursor={`pointer`}
+                              borderLeft={`1px solid ${Theme.grey2_C}`}
+                              onClick={() => addressDeleteModalToggle(data)}
+                            >
+                              삭제
+                            </Wrapper>
                           </Wrapper>
                         </Wrapper>
-                        <Wrapper
-                          dr={`row`}
-                          color={Theme.grey_C}
-                          borderTop={`1px solid ${Theme.grey2_C}`}
-                          padding={`10px 0 0`}
-                        >
-                          <Wrapper
-                            width={`calc(100% / 2)`}
-                            cursor={`pointer`}
-                            onClick={() => addressModalToggle(data)}
-                          >
-                            수정
-                          </Wrapper>
-                          <Wrapper
-                            width={`calc(100% / 2)`}
-                            cursor={`pointer`}
-                            borderLeft={`1px solid ${Theme.grey2_C}`}
-                            onClick={() => addressDeleteModalToggle(data)}
-                          >
-                            삭제
-                          </Wrapper>
-                        </Wrapper>
-                      </Wrapper>
-                    );
-                  })
-                ))}
+                      );
+                    })
+                  ))}
+              </Wrapper>
             </Wrapper>
 
             {/* CREATE . UPDATE MODAL */}

@@ -10,7 +10,6 @@ import {
   Wrapper,
   Text,
   CommonButton,
-  TextArea,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import {
