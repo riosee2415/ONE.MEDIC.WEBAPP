@@ -137,4 +137,25 @@ router.post("/delete", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.post("/allList", isLoggedIn, async (req, res, next) => {
+  const selectQuery = `
+    SELECT  id,
+            title,
+            receiverName,
+            medication,
+            content
+      FROM  userRequest
+     WHERE  UserId = ${req.user.id}
+    `;
+
+  try {
+    const result = await models.sequelize.query(selectQuery);
+
+    return res.status(200).json(result[0]);
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("요청사항을 불러올 수 없습니다.");
+  }
+});
+
 module.exports = router;

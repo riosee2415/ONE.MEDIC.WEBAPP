@@ -6,7 +6,7 @@ import axios from "axios";
 import wrapper from "../../store/configureStore";
 import { END } from "redux-saga";
 import ClientLayout from "../../components/ClientLayout";
-import { Empty, Modal, Select, Radio, Form, message } from "antd";
+import { Empty, Modal, Select, Radio, Form, message, Input } from "antd";
 import { RightOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import {
   Text,
@@ -33,6 +33,8 @@ import {
   PPR_DETAIL_REQUEST,
 } from "../../reducers/prescriptionPaymentRequest";
 
+import useInput from "../../hooks/useInput";
+
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
 `;
@@ -53,7 +55,7 @@ const ListWrapper = styled(Wrapper)`
   cursor: pointer;
 `;
 
-const DeleteModal = styled(Modal)`
+const CustomModal = styled(Modal)`
   & .ant-modal-close-x {
     display: none;
   }
@@ -139,6 +141,11 @@ const Prescription = ({}) => {
 
   const [selectMaterial, setSelectMaterial] = useState(0);
   const [materialArr, setMaterialArr] = useState(null);
+
+  // 수량 선택 수정
+  const [qntSelect, setQntSelect] = useState(null);
+
+  const qntInput = useInput(0);
 
   const [qntForm] = Form.useForm();
 
@@ -275,6 +282,22 @@ const Prescription = ({}) => {
     });
     setIsModalVisible3(!isModalVisible3);
   }, [isModalVisible3, selectMaterial]);
+
+  // 수량 선택
+  const qntSelectHandler = useCallback(
+    (data) => {
+      if (qntSelect === data.id) {
+        setQntSelect(null);
+        qntInput.setValue(0);
+        return;
+      }
+
+      qntInput.setValue(data.qnt);
+      setQntSelect(data.id);
+    },
+    [qntSelect, qntInput.value]
+  );
+
   ////// HANDLER //////
 
   // 약재 선택
@@ -313,6 +336,40 @@ const Prescription = ({}) => {
     },
     [chubSelect, packSelect, volumnSelect, isModalVisible1]
   );
+
+  // 약제 용량 수정
+  const qntSaveHandler = useCallback(() => {
+    if (
+      !qntSelect ||
+      userMaterials.find((item) => item.id === qntSelect).qnt ===
+        parseInt(qntInput.value) ||
+      !qntInput.value ||
+      parseInt(qntInput.value) === 0
+    ) {
+      return;
+    }
+
+    const updateArr = userMaterials.map((item) => {
+      if (item.id === qntSelect) {
+        return {
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          qnt: parseInt(qntInput.value),
+          unit: item.unit,
+        };
+      } else {
+        return item;
+      }
+    });
+
+    dispatch({
+      type: MATERIAL_USER_ADD,
+      data: updateArr,
+    });
+
+    setQntSelect(null);
+  }, [userMaterials, qntSelect, qntInput.value]);
 
   // 약재 용량 수정
   const updateQntHandler = useCallback(
@@ -429,7 +486,7 @@ const Prescription = ({}) => {
       </Head>
 
       <ClientLayout>
-        <WholeWrapper>
+        <WholeWrapper onClick={qntSaveHandler}>
           <RsWrapper
             minHeight={`calc(100vh - 64px)`}
             ju={`flex-start`}
@@ -537,10 +594,8 @@ const Prescription = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text color={Theme.grey_C}>요청사항</Text>
+                  <CommonButton>설정하기</CommonButton>
                 </Wrapper>
-                <ComboBox placeholder={`요청사항을 선택해주세요.`}>
-                  <Option value={"test"}>test</Option>
-                </ComboBox>
               </Wrapper>
               {/* 요청사항 SELECT AREA END */}
 
@@ -584,7 +639,6 @@ const Prescription = ({}) => {
                         return (
                           <ListWrapper
                             key={data.id}
-                            onClick={() => selectMaterialHandler(data)}
                             bgColor={
                               selectMaterial &&
                               selectMaterial.id === data.id &&
@@ -594,8 +648,9 @@ const Prescription = ({}) => {
                             <Wrapper
                               dr={`row`}
                               ju={`flex-start`}
-                              width={`40%`}
+                              width={`35%`}
                               color={`${Theme.black_C}`}
+                              onClick={() => selectMaterialHandler(data)}
                             >
                               <Text
                                 fontSize={width < 600 ? `16px` : `18px`}
@@ -605,16 +660,41 @@ const Prescription = ({}) => {
                               </Text>
                             </Wrapper>
 
-                            <Wrapper width={`10%`}>
-                              <Text
-                                color={`${Theme.black_C}`}
-                                fontSize={width < 600 ? `16px` : `18px`}
-                              >
-                                {data.qnt}&nbsp;{data.unit}
-                              </Text>
+                            <Wrapper
+                              width={`25%`}
+                              onClick={() =>
+                                !qntSelect && qntSelectHandler(data)
+                              }
+                            >
+                              {qntSelect && qntSelect === data.id ? (
+                                <Wrapper dr={`row`}>
+                                  <Wrapper
+                                    dr={`row`}
+                                    width={`calc(100% - 25px)`}
+                                  >
+                                    <TextInput
+                                      width={`100%`}
+                                      placeholder={`용량`}
+                                      {...qntInput}
+                                    />
+                                  </Wrapper>
+                                  &nbsp;{data.unit}
+                                </Wrapper>
+                              ) : (
+                                <Text
+                                  color={`${Theme.black_C}`}
+                                  fontSize={width < 600 ? `16px` : `18px`}
+                                >
+                                  {data.qnt}&nbsp;{data.unit}
+                                </Text>
+                              )}
                             </Wrapper>
 
-                            <Wrapper width={`50%`} al={`flex-end`}>
+                            <Wrapper
+                              width={`40%`}
+                              al={`flex-end`}
+                              onClick={() => selectMaterialHandler(data)}
+                            >
                               <Text
                                 color={`${Theme.black_C}`}
                                 fontSize={width < 600 ? `16px` : `18px`}
@@ -671,7 +751,7 @@ const Prescription = ({}) => {
                 cursor={`pointer`}
                 onClick={paymentCreateHandler}
               >
-                주문하기
+                장바구니 담기
               </CommonButton>
             </Wrapper>
             {/* FOOTER AREA END */}
@@ -784,7 +864,7 @@ const Prescription = ({}) => {
         </SelectModal>
 
         {/* MATERIAL UPDATE MODAL */}
-        <DeleteModal
+        <CustomModal
           width={380}
           visible={isModalVisible3}
           onCancel={() => modalToggleHandler3()}
@@ -838,10 +918,10 @@ const Prescription = ({}) => {
               </CustomForm>
             </Wrapper>
           </Wrapper>
-        </DeleteModal>
+        </CustomModal>
 
         {/* DELETE MODAL */}
-        <DeleteModal
+        <CustomModal
           width={380}
           visible={isModalVisible2}
           onCancel={() => modalToggleHandler2()}
@@ -874,7 +954,14 @@ const Prescription = ({}) => {
               </Wrapper>
             </Wrapper>
           </Wrapper>
-        </DeleteModal>
+        </CustomModal>
+
+        {/* REQUEST MODAL */}
+        <CustomModal title={`요청사항 설정하기`} footer={null}>
+          <Wrapper>
+            <ComboBox></ComboBox>
+          </Wrapper>
+        </CustomModal>
       </ClientLayout>
     </>
   );

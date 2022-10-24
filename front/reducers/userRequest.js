@@ -3,6 +3,7 @@ import produce from "../util/produce";
 export const initailState = {
   requestList: [],
   requestLastPage: 1,
+  requestAllList: [],
   //
   st_requestListLoading: false,
   st_requestListDone: false,
@@ -19,11 +20,19 @@ export const initailState = {
   st_requestDeleteLoading: false,
   st_requestDeleteDone: false,
   st_requestDeleteError: null,
+  //
+  st_requestAllListLoading: false,
+  st_requestAllListDone: false,
+  st_requestAllListError: null,
 };
 
 export const REQUEST_LIST_REQUEST = "REQUEST_LIST_REQUEST";
 export const REQUEST_LIST_SUCCESS = "REQUEST_LIST_SUCCESS";
 export const REQUEST_LIST_FAILURE = "REQUEST_LIST_FAILURE";
+
+export const REQUEST_ALL_LIST_REQUEST = "REQUEST_ALL_LIST_REQUEST";
+export const REQUEST_ALL_LIST_SUCCESS = "REQUEST_ALL_LIST_SUCCESS";
+export const REQUEST_ALL_LIST_FAILURE = "REQUEST_ALL_LIST_FAILURE";
 
 export const REQUEST_CREATE_REQUEST = "REQUEST_CREATE_REQUEST";
 export const REQUEST_CREATE_SUCCESS = "REQUEST_CREATE_SUCCESS";
@@ -58,6 +67,28 @@ const reducer = (state = initailState, action) =>
         draft.st_requestListLoading = false;
         draft.st_requestListDone = false;
         draft.st_requestListError = action.error;
+        break;
+      }
+
+      ///////////////////////////////////////////////////////
+
+      case REQUEST_ALL_LIST_REQUEST: {
+        draft.st_requestAllListLoading = true;
+        draft.st_requestAllListDone = false;
+        draft.st_requestAllListError = null;
+        break;
+      }
+      case REQUEST_ALL_LIST_SUCCESS: {
+        draft.st_requestAllListLoading = false;
+        draft.st_requestAllListDone = true;
+        draft.st_requestAllListError = null;
+        draft.requestAllList = action.data;
+        break;
+      }
+      case REQUEST_ALL_LIST_FAILURE: {
+        draft.st_requestAllListLoading = false;
+        draft.st_requestAllListDone = false;
+        draft.st_requestAllListError = action.error;
         break;
       }
 
