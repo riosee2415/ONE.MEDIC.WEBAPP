@@ -5,6 +5,15 @@ const models = require("../models");
 const router = express.Router();
 
 router.post("/list", isLoggedIn, async (req, res, next) => {
+  const { page } = req.body;
+
+  const LIMIT = 9;
+
+  const _page = page ? page : 1;
+
+  const __page = _page - 1;
+  const OFFSET = __page * 9;
+
   const selectQuery = `
   SELECT  id,
           title,
@@ -15,15 +24,41 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
           DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")	AS viewUpdatedAt
     FROM  userRequest
    WHERE  UserId = ${req.user.id}
+   ORDER  BY createdAt DESC
+   LIMIT  ${LIMIT}
+  OFFSET  ${OFFSET}
+    `;
+
+  const lengthQuery = `
+  SELECT  id,
+          title,
+          receiverName,
+          medication,
+          content,
+          DATE_FORMAT(createdAt, "%Y년 %m월 %d일")	AS viewCreatedAt,
+          DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")	AS viewUpdatedAt
+    FROM  userRequest
+   WHERE  UserId = ${req.user.id}
+   ORDER  BY createdAt DESC
     `;
 
   try {
     const result = await models.sequelize.query(selectQuery);
 
-    return res.status(200).json(result[0]);
+    const lengthResult = await models.sequelize.query(lengthQuery);
+
+    const requestLen = lengthResult[0].length;
+
+    const lastPage =
+      requestLen % LIMIT > 0 ? requestLen / LIMIT + 1 : requestLen / LIMIT;
+
+    return res.status(200).json({
+      list: result[0],
+      lastPage: parseInt(lastPage),
+    });
   } catch (e) {
     console.error(e);
-    return res.status(401).send("요청사항을 불러올수 없습니다.");
+    return res.status(401).send("요청사항을 불러올 수 없습니다.");
   }
 });
 
@@ -36,12 +71,17 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
     receiverName,
     medication,
     content,
-    createdAt
+    createdAt,
+    updatedAt,
+    UserId
   ) VALUES (
     '${title}',
     '${receiverName}',
     '${medication}',
-    '${content}'
+    '${content}',
+    NOW(),
+    NOW(),
+    ${req.user.id}
   )
   `;
 
@@ -51,7 +91,7 @@ router.post("/create", isLoggedIn, async (req, res, next) => {
     return res.status(200).json(result[0]);
   } catch (e) {
     console.error(e);
-    return res.status(401).send("요청사항을 불러올수 없습니다.");
+    return res.status(401).send("요청사항을 생성할 수 없습니다.");
   }
 });
 
@@ -74,7 +114,7 @@ router.post("/update", isLoggedIn, async (req, res, next) => {
     return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
-    return res.status(401).send("요청사항을 불러올수 없습니다.");
+    return res.status(401).send("요청사항을 수정할 수 없습니다.");
   }
 });
 
@@ -93,7 +133,7 @@ router.post("/delete", isLoggedIn, async (req, res, next) => {
     return res.status(200).json({ result: true });
   } catch (e) {
     console.error(e);
-    return res.status(401).send("요청사항을 불러올수 없습니다.");
+    return res.status(401).send("요청사항을 삭제할 수 없습니다.");
   }
 });
 

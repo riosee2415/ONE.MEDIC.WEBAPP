@@ -425,7 +425,9 @@ const Address = ({}) => {
             >
               {addressList &&
                 (addressList.lenght === 0 ? (
-                  <Empty />
+                  <Wrapper>
+                    <Empty description={`주소가 없습니다.`} />
+                  </Wrapper>
                 ) : (
                   addressList.map((data) => {
                     return (
@@ -533,6 +535,7 @@ const Address = ({}) => {
                 ))}
             </Wrapper>
 
+            {/* CREATE . UPDATE MODAL */}
             <CustomModal
               visible={addressModal}
               footer={null}
@@ -557,7 +560,7 @@ const Address = ({}) => {
                 <Form.Item
                   name="username"
                   rules={[
-                    { required: true, message: "고객명을 입랙해주세요." },
+                    { required: true, message: "고객명을 입력해주세요." },
                   ]}
                 >
                   <Input placeholder="고객명을 입력해주세요." />
@@ -566,7 +569,7 @@ const Address = ({}) => {
                 <Form.Item
                   name="tel"
                   rules={[
-                    { required: true, message: "전화번호를 입랙해주세요." },
+                    { required: true, message: "전화번호를 입력해주세요." },
                   ]}
                 >
                   <Input placeholder="전화번호를 입력해주세요." type="tel" />
@@ -574,7 +577,7 @@ const Address = ({}) => {
                 <Text>주소</Text>
                 <Form.Item
                   name="address"
-                  rules={[{ required: true, message: "주소를 입랙해주세요." }]}
+                  rules={[{ required: true, message: "주소를 입력해주세요." }]}
                 >
                   <Input
                     placeholder="주소를 입력해주세요."
@@ -586,7 +589,7 @@ const Address = ({}) => {
                 <Form.Item
                   name="detailAddress"
                   rules={[
-                    { required: true, message: "상세주소를 입랙해주세요." },
+                    { required: true, message: "상세주소를 입력해주세요." },
                   ]}
                 >
                   <Input placeholder="상세주소를 입력해주세요." />
@@ -603,6 +606,7 @@ const Address = ({}) => {
               </Form>
             </CustomModal>
 
+            {/* ADDRESS MODAL */}
             <Modal
               width={`500px`}
               style={{ top: 200 }}
@@ -626,6 +630,7 @@ const Address = ({}) => {
               />
             </Modal>
 
+            {/* DELETE MODAL */}
             <CustomModal
               visible={addressDeleteModal}
               footer={null}

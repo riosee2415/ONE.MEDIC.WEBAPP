@@ -297,6 +297,11 @@ const AppHeader = ({ children, width }) => {
       router: "/find/findPw",
       title: "비밀번호 찾기",
     },
+
+    {
+      router: "/request",
+      title: "나의 요청사항",
+    },
   ];
   return (
     <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>

@@ -2,6 +2,7 @@ import produce from "../util/produce";
 
 export const initailState = {
   requestList: [],
+  requestLastPage: 1,
   //
   st_requestListLoading: false,
   st_requestListDone: false,
@@ -49,7 +50,8 @@ const reducer = (state = initailState, action) =>
         draft.st_requestListLoading = false;
         draft.st_requestListDone = true;
         draft.st_requestListError = null;
-        draft.requestList = action.data;
+        draft.requestList = action.data.list;
+        draft.requestLastPage = action.data.lastPage;
         break;
       }
       case REQUEST_LIST_FAILURE: {
@@ -91,7 +93,7 @@ const reducer = (state = initailState, action) =>
       case REQUEST_UPDATE_SUCCESS: {
         draft.st_requestUpdateLoading = false;
         draft.st_requestUpdateDone = true;
-        draft.st_requestUpdateDone = null;
+        draft.st_requestUpdateError = null;
         break;
       }
       case REQUEST_UPDATE_FAILURE: {
