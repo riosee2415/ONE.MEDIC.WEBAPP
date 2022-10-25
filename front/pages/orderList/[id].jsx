@@ -168,7 +168,6 @@ const Index = ({}) => {
                     보내는 사람
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {console.log(detailData)}
                     {detailData && detailData.sendUser}
                   </Text>
                 </Wrapper>

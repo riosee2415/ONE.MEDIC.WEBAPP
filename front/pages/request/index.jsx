@@ -278,7 +278,6 @@ const Request = () => {
   // 페이지 네이션 - 페이지 교체
   const pageChangeHandler = useCallback(
     (page) => {
-      console.log(page);
       setCurrentPage(page);
     },
     [currentPage]

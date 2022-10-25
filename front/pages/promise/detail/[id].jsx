@@ -304,8 +304,6 @@ const PromiseDetail = () => {
     });
   }, [temporaryDatum, me, product, totalPayment, unit.value]);
 
-  console.log(unit);
-
   ////// DATAVIEW //////
 
   return (
@@ -327,7 +325,9 @@ const PromiseDetail = () => {
               <Text color={Theme.grey_C} fontWeight={`bold`}>
                 {product && product.title}
               </Text>
-              <ProductSlider topSlider={topSlider} />
+              {topSlider && (
+                <ProductSlider topSlider={topSlider.filter((data) => data)} />
+              )}
 
               <Text
                 color={Theme.grey_C}
@@ -593,7 +593,7 @@ const PromiseDetail = () => {
                 cursor={`pointer`}
                 onClick={createPaymentRequestHandler}
               >
-                주문하기
+                장바구니 담기
               </CommonButton>
             </Wrapper>
           </RsWrapper>

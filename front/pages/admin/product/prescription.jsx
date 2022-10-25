@@ -332,7 +332,6 @@ const UserDeliAddress = ({}) => {
   // 단위 모달 - 포장 선택
   const unitPackIdSelectHandler = useCallback(
     (id) => {
-      console.log(id);
       dispatch({
         type: PRODUCT_UNIT_LIST_REQUEST,
         data: { id: parseInt(id) },

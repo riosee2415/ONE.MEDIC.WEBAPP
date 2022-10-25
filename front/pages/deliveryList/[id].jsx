@@ -189,7 +189,6 @@ const Index = ({}) => {
                       margin={`0 0 7px`}
                     >
                       {detailData && detailData.viewDeliveryStatus}
-                      {console.log(detailData)}
                     </Text>
 
                     {/* RECIVE DATA */}

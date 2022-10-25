@@ -313,7 +313,6 @@ const Home = ({}) => {
                                 주문내역
                               </Wrapper>
 
-                              {console.log(data)}
                               <Wrapper
                                 width={`calc(100% / 3)`}
                                 cursor={`pointer`}

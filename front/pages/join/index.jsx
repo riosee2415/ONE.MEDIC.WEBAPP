@@ -146,7 +146,6 @@ const Join = () => {
 
   const isCheckCodeHandler = useCallback(
     (data) => {
-      console.log(data);
       if (data.checkCode === checkCode) {
         setIsCheckCode(true);
         return message.success("인증되었습니다.");

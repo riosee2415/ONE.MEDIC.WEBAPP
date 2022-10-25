@@ -564,7 +564,6 @@ const OrderRequestList = () => {
           </Wrapper>
         </Wrapper>
 
-        {/* {console.log(paymentRequest)} */}
         <Table
           columns={
             isComplete === 2 || isComplete === 3 ? completeColumns : columns
@@ -698,7 +697,6 @@ const OrderRequestList = () => {
       </Modal>
 
       {/* PAYMENT DETAIL MODAL */}
-      {console.log("paymentDetail", paymentDetail)}
 
       <Modal
         title="주문상세"
