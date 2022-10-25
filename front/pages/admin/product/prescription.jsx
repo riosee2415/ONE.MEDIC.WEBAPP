@@ -1028,6 +1028,7 @@ const UserDeliAddress = ({}) => {
           style={{ width: `100%` }}
           placeholder={`포장을 선택해주세요.`}
           onChange={unitPackIdSelectHandler}
+          value={unitPackId}
         >
           {packList &&
             packList.map((data) => {
@@ -1045,7 +1046,7 @@ const UserDeliAddress = ({}) => {
           loading={st_productUnitListLoading}
           rowKey="id"
           columns={columnsUnit}
-          dataSource={unitList}
+          dataSource={unitPackId ? unitList : []}
           size="small"
         />
       </Modal>
