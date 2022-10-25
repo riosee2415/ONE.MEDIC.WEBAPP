@@ -14,6 +14,7 @@ import {
   TextInput,
   CommonButton,
   Image,
+  GuideLi,
 } from "../../../components/commonComponents";
 import useWidth from "../../../hooks/useWidth";
 import Theme from "../../../components/Theme";
@@ -30,7 +31,8 @@ import {
   PAYMENT_DETAIL_REQUEST,
 } from "../../../reducers/paymentRequest";
 import { useRouter } from "next/router";
-import { message } from "antd";
+import { Form, message, Modal, Select } from "antd";
+import { REQUEST_ALL_LIST_REQUEST } from "../../../reducers/userRequest";
 
 const CheckdButton = styled.button`
   padding: 5px 10px;
@@ -56,13 +58,47 @@ const CheckdButton = styled.button`
     color: ${Theme.white_C};
   }
 `;
+
+const CustomCommonButton = styled(CommonButton)`
+  border: 0px;
+`;
+
+const CustomModal = styled(Modal)`
+  & .ant-modal-close-x {
+    display: none;
+  }
+
+  & .ant-modal-content {
+    border-radius: 20px;
+  }
+`;
+
+const CustomForm = styled(Form)`
+  width: 100%;
+
+  & .ant-form-item {
+    width: 100%;
+  }
+`;
+
+const ComboBox = styled(Select)`
+  width: 100%;
+  border: 0px;
+
+  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border: 0px;
+    border-bottom: 1px solid ${Theme.grey2_C};
+    padding: 0px;
+  }
+
+  &.ant-select-selector {
+    padding: 0;
+  }
+`;
+
 const PromiseDetail = () => {
   ////// GLOBAL STATE //////
   const { me } = useSelector((state) => state.user);
-
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
 
   const { typeList, packList, unitList, product } = useSelector(
     (state) => state.prescription
@@ -76,19 +112,28 @@ const PromiseDetail = () => {
     st_paymentRequestCreateError,
   } = useSelector((state) => state.paymentRequest);
 
+  const { requestAllList } = useSelector((state) => state.userRequest);
+
   ////// HOOKS //////
   const width = useWidth();
+
+  const { Option } = Select;
 
   const type = useInput("");
   const pack = useInput("");
   const unit = useInput("");
   const qntInput = useInput(0);
 
+  const [rForm] = Form.useForm();
+
   const [totalPayment, setTotalPayment] = useState(null);
   const [topSlider, setTopSlider] = useState(null);
   const [temporaryDatum, setTemporaryDatum] = useState([]);
   const [temporaryId, setTemporaryId] = useState(1);
   const [qntSelect, setQntSelect] = useState(null);
+
+  const [rData, setRData] = useState(null);
+  const [rModal, setRModal] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -101,7 +146,7 @@ const PromiseDetail = () => {
     if (temporaryDatum) {
       let total = 0;
       for (let i = 0; i < temporaryDatum.length; i++) {
-        total += temporaryDatum[i].payment;
+        total += temporaryDatum[i].payment * temporaryDatum[i].cnt;
       }
 
       setTotalPayment(total);
@@ -197,6 +242,11 @@ const PromiseDetail = () => {
     }
   }, [st_paymentRequestCreateDone]);
   ////// TOGGLE //////
+
+  const rModalToggle = useCallback(() => {
+    setRModal((prev) => !prev);
+  }, [rModal]);
+
   ////// HANDLER //////
 
   const typeChangeHandler = useCallback(
@@ -345,6 +395,25 @@ const PromiseDetail = () => {
 
     setQntSelect(null);
   }, [temporaryDatum, qntSelect, qntInput.value]);
+
+  // 요청사항 선택
+  const requestChangeHandler = useCallback((data) => {
+    const jsonData = data ? JSON.parse(data) : null;
+
+    if (jsonData) {
+      rForm.setFieldsValue(jsonData);
+    }
+  }, []);
+
+  // 요청사항 설정
+  const requestSetHandler = useCallback(
+    (data) => {
+      setRData(data);
+
+      setRModal(false);
+    },
+    [rData, rModal]
+  );
 
   ////// DATAVIEW //////
 
@@ -531,6 +600,40 @@ const PromiseDetail = () => {
             </Wrapper>
 
             <Wrapper
+              border={rData && `2px solid ${Theme.basicTheme_C}`}
+              bgColor={rData && Theme.subTheme4_C}
+              padding={`10px`}
+              al={`flex-end`}
+              margin={`0 0 20px`}
+            >
+              <Wrapper dr={`row`} ju={`space-between`}>
+                <Text fontWeight={`600`}>{rData && rData.title}</Text>
+                <CommonButton
+                  margin={
+                    width < 800
+                      ? rData
+                        ? `0 -2px 0 0`
+                        : `0`
+                      : rData
+                      ? `0 23px`
+                      : `0 25px`
+                  }
+                  onClick={rModalToggle}
+                >
+                  요청사항설정
+                </CommonButton>
+              </Wrapper>
+
+              {rData && (
+                <Wrapper al={`flex-start`} margin={`5px 0 0`}>
+                  <Text margin={`10px 0 0`}>{rData.receiverName}</Text>
+                  <Text margin={`10px 0 0`}>{rData.medication}</Text>
+                  <Text margin={`10px 0 0`}>{rData.content}</Text>
+                </Wrapper>
+              )}
+            </Wrapper>
+
+            <Wrapper
               dr={`row`}
               ju={`flex-start`}
               al={`flex-start`}
@@ -658,6 +761,105 @@ const PromiseDetail = () => {
             </Wrapper>
           </RsWrapper>
         </WholeWrapper>
+
+        {/* REQUEST MODAL */}
+        <CustomModal
+          width={`450px`}
+          visible={rModal}
+          onCancel={rModalToggle}
+          footer={null}
+        >
+          <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+            <Text fontSize={`20px`} fontWeight={`bold`}>
+              요청사항 설정
+            </Text>
+          </Wrapper>
+
+          <Wrapper margin={`0 0 30px`} al={`flex-start`}>
+            <Text>요청사항</Text>
+            <ComboBox
+              placeholder={`요청사항을 선택해주세요.`}
+              onChange={requestChangeHandler}
+            >
+              {requestAllList &&
+                requestAllList.map((data) => {
+                  return (
+                    <Option key={data.id} value={JSON.stringify(data)}>
+                      {data.title} - {data.receiverName}
+                    </Option>
+                  );
+                })}
+            </ComboBox>
+            <GuideLi isImpo>
+              요청사항을 선택시 정보들이 자동으로 들어갑니다.
+            </GuideLi>
+          </Wrapper>
+
+          <Form form={rForm} onFinish={requestSetHandler}>
+            <Text>처방명</Text>
+            <Form.Item
+              name={`title`}
+              rules={[{ required: true, message: "처방명을 입력해주세요." }]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`처방명을 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Text>환자이름</Text>
+            <Form.Item
+              name={`receiverName`}
+              rules={[{ required: true, message: "환자이름을 입력해주세요." }]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`환자이름을 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Text>복약지도</Text>
+            <Form.Item
+              name={`medication`}
+              rules={[{ required: true, message: "복약지도를 입력해주세요." }]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`복약지도를 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Text>추가요청사항</Text>
+            <Form.Item
+              name={`content`}
+              rules={[
+                { required: true, message: "추가요청사항을 입력해주세요." },
+              ]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`추가요청사항을 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Wrapper dr={`row`} ju={`flex-end`}>
+              <CustomCommonButton
+                kindOf={`white`}
+                width={`90px`}
+                height={`40px`}
+                margin={`0 5px 0 0`}
+                border={`1px solid ${Theme.white_C}`}
+                shadow={`0px`}
+                onClick={rModalToggle}
+              >
+                취소
+              </CustomCommonButton>
+              <CommonButton width={`90px`} height={`40px`} htmlType="submit">
+                설정
+              </CommonButton>
+            </Wrapper>
+          </Form>
+        </CustomModal>
       </ClientLayout>
     </>
   );
@@ -676,6 +878,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: REQUEST_ALL_LIST_REQUEST,
     });
 
     // 구현부 종료

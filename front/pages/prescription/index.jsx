@@ -91,16 +91,6 @@ const ComboBox = styled(Select)`
   }
 `;
 
-const RadioBox = styled(Radio)`
-  .ant-radio-inner::after {
-    background-color: ${Theme.subTheme_C};
-  }
-
-  .ant-radio-checked .ant-radio-inner {
-    border-color: ${Theme.subTheme_C};
-  }
-`;
-
 const Prescription = ({}) => {
   const width = useWidth();
 
