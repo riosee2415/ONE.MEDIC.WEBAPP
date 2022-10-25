@@ -6,7 +6,7 @@ module.exports = class SearchMaterial extends Model {
     return super.init(
       {
         qnt: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.FLOAT,
           defaultValue: 1,
           allowNull: false, //필수
         },

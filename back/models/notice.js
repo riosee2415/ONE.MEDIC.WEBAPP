@@ -7,12 +7,12 @@ module.exports = class Notice extends Model {
       {
         // id가 기본적으로 들어있다.
         title: {
-          type: DataTypes.STRING(300), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(300),
           allowNull: false, // 필수
         },
         type: {
           // ["공지사항", "새소식"]
-          type: DataTypes.STRING(30), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(30),
           allowNull: false, // 필수
           defaultValue: "공지사항",
         },
@@ -36,7 +36,7 @@ module.exports = class Notice extends Model {
           defaultValue: 0,
         },
         file: {
-          type: DataTypes.STRING(600), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(600),
           allowNull: true,
         },
         isDelete: {

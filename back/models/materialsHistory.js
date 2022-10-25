@@ -6,7 +6,7 @@ module.exports = class MaterialsHistory extends Model {
     return super.init(
       {
         useQnt: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.FLOAT,
           allowNull: false, // 필수
         },
         useUnit: {

@@ -7,7 +7,7 @@ module.exports = class AcceptRecord extends Model {
       {
         // id가 기본적으로 들어있다.
         ip: {
-          type: DataTypes.STRING(50), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(50),
           allowNull: false, // 필수
         },
       },

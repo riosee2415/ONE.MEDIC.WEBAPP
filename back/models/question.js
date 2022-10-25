@@ -7,7 +7,7 @@ module.exports = class Question extends Model {
       {
         // id가 기본적으로 들어있다.
         title: {
-          type: DataTypes.STRING(200), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(200),
           allowNull: false, // 필수
         },
         content: {
@@ -20,7 +20,7 @@ module.exports = class Question extends Model {
           defaultValue: false,
         },
         answer: {
-          type: DataTypes.TEXT, // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.TEXT,
           allowNull: true,
         },
         answerdAt: {

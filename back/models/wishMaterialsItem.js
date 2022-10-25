@@ -19,7 +19,7 @@ module.exports = class WishMaterialsItem extends Model {
           allowNull: false, // 필수
         },
         qnt: {
-          type: DataTypes.INTEGER, // 수량
+          type: DataTypes.FLOAT, // 수량
           defaultValue: 1,
           allowNull: false, // 필수
         },

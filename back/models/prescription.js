@@ -8,7 +8,7 @@ module.exports = class Prescription extends Model {
       {
         // id가 기본적으로 들어있다.
         title: {
-          type: DataTypes.STRING(300), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(300),
           allowNull: false, // 필수
         },
         price: {
@@ -16,19 +16,19 @@ module.exports = class Prescription extends Model {
           allowNull: true, // 필수
         },
         imageURL1: {
-          type: DataTypes.STRING(500), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(500),
           allowNull: true, // 필수
         },
         imageURL2: {
-          type: DataTypes.STRING(500), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(500),
           allowNull: true, // 필수
         },
         imageURL3: {
-          type: DataTypes.STRING(500), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(500),
           allowNull: true, // 필수
         },
         imageURL4: {
-          type: DataTypes.STRING(500), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(500),
           allowNull: true, // 필수
         },
         description: {

@@ -9,13 +9,13 @@ module.exports = class User extends Model {
       {
         // id가 기본적으로 들어있다.
         email: {
-          type: DataTypes.STRING(60), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(60),
           allowNull: false, // 필수
           unique: true, // 고유한 값
         },
         username: {
           // 대표자명
-          type: DataTypes.STRING(30), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(30),
           allowNull: false, // 필수
         },
         nickname: {

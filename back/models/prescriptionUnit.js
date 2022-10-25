@@ -8,7 +8,7 @@ module.exports = class PrescriptionUnit extends Model {
       {
         // id가 기본적으로 들어있다.
         name: {
-          type: DataTypes.STRING(300), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(300),
           allowNull: false, // 필수
         },
         addPrice: {

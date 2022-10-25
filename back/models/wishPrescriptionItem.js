@@ -34,7 +34,7 @@ module.exports = class WishPrescriptionItem extends Model {
           defaultValue: 1,
         },
         qnt: {
-          type: DataTypes.INTEGER, // 수량
+          type: DataTypes.FLOAT, // 수량
           defaultValue: 1,
           allowNull: false, // 필수
         },

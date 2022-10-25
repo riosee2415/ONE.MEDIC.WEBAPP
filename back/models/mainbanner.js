@@ -7,7 +7,7 @@ module.exports = class MainBanner extends Model {
       {
         // id가 기본적으로 들어있다.
         title: {
-          type: DataTypes.STRING(200), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(200),
           allowNull: true, // 필수
         },
         content: {

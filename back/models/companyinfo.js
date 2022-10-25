@@ -7,7 +7,7 @@ module.exports = class CompanyInfo extends Model {
       {
         // id가 기본적으로 들어있다.
         name: {
-          type: DataTypes.STRING(30), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(30),
           allowNull: false, // 필수
           unique: true, // 고유한 값
         },

@@ -20,7 +20,7 @@ module.exports = class Materials extends Model {
           defaultValue: false,
         },
         stock: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.FLOAT,
           allowNull: false, // 필수
         },
         unit: {

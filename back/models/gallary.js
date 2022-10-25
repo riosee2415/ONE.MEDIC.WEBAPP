@@ -7,11 +7,11 @@ module.exports = class Gallery extends Model {
       {
         // id가 기본적으로 들어있다.
         thumbnail: {
-          type: DataTypes.STRING(400), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(400),
           allowNull: true,
         },
         title: {
-          type: DataTypes.STRING(300), // STRING, TEXT, BOOLEAN, INTEGER, FLOAT, DATETIME
+          type: DataTypes.STRING(300),
           allowNull: false, // 필수
         },
         content: {
