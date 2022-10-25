@@ -16,6 +16,10 @@ import {
   REQUEST_DELETE_REQUEST,
   REQUEST_DELETE_SUCCESS,
   REQUEST_DELETE_FAILURE,
+  //
+  REQUEST_ALL_LIST_REQUEST,
+  REQUEST_ALL_LIST_SUCCESS,
+  REQUEST_ALL_LIST_FAILURE,
 } from "../reducers/userRequest";
 
 // ******************************************************************************************************************
@@ -130,6 +134,34 @@ function* requestDelete(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function requestAllListAPI(data) {
+  return await axios.post(`/api/userRequest/allList`, data);
+}
+
+function* requestAllList(action) {
+  try {
+    const result = yield call(requestAllListAPI, action.data);
+
+    yield put({
+      type: REQUEST_ALL_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: REQUEST_ALL_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchRequestList() {
@@ -140,12 +172,16 @@ function* watchRequestCreate() {
   yield takeLatest(REQUEST_CREATE_REQUEST, requestCreate);
 }
 
-function* watchRequestDelete() {
+function* watchRequestUpdate() {
   yield takeLatest(REQUEST_UPDATE_REQUEST, requestUpdate);
 }
 
-function* watchRequestUpdate() {
+function* watchRequestDelete() {
   yield takeLatest(REQUEST_DELETE_REQUEST, requestDelete);
+}
+
+function* watchRequestAllList() {
+  yield takeLatest(REQUEST_ALL_LIST_REQUEST, requestAllList);
 }
 
 //////////////////////////////////////////////////////////////
@@ -153,7 +189,8 @@ export default function* requestSaga() {
   yield all([
     fork(watchRequestList),
     fork(watchRequestCreate),
-    fork(watchRequestDelete),
     fork(watchRequestUpdate),
+    fork(watchRequestDelete),
+    fork(watchRequestAllList),
   ]);
 }

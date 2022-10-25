@@ -17,6 +17,7 @@ import {
   CommonButton,
   SpanText,
   TextInput,
+  GuideLi,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
@@ -34,6 +35,7 @@ import {
 } from "../../reducers/prescriptionPaymentRequest";
 
 import useInput from "../../hooks/useInput";
+import { REQUEST_ALL_LIST_REQUEST } from "../../reducers/userRequest";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -118,6 +120,8 @@ const Prescription = ({}) => {
 
   const { me } = useSelector((state) => state.user);
 
+  const { requestAllList } = useSelector((state) => state.userRequest);
+
   ////// HOOKS //////
   const router = useRouter();
 
@@ -143,11 +147,14 @@ const Prescription = ({}) => {
   const [materialArr, setMaterialArr] = useState(null);
 
   // 수량 선택 수정
+  const qntInput = useInput(0);
+  const [qntForm] = Form.useForm();
   const [qntSelect, setQntSelect] = useState(null);
 
-  const qntInput = useInput(0);
-
-  const [qntForm] = Form.useForm();
+  // 요청사항 모달
+  const [rForm] = Form.useForm();
+  const [rData, setRData] = useState(null);
+  const [rModal, setRModal] = useState(false);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -298,6 +305,17 @@ const Prescription = ({}) => {
     [qntSelect, qntInput.value]
   );
 
+  // 요청사항 모달
+  const rModalToggle = useCallback(() => {
+    if (rData) {
+      rForm.setFieldsValue(rData);
+    } else {
+      rForm.resetFields();
+    }
+
+    setRModal((prev) => !prev);
+  }, [rData, rModal]);
+
   ////// HANDLER //////
 
   // 약재 선택
@@ -438,6 +456,25 @@ const Prescription = ({}) => {
     packSelect,
     volumnSelect,
   ]);
+
+  // 요청사항 선택
+  const requestChangeHandler = useCallback((data) => {
+    const jsonData = data ? JSON.parse(data) : null;
+
+    if (jsonData) {
+      rForm.setFieldsValue(jsonData);
+    }
+  }, []);
+
+  // 요청사항 설정
+  const requestSetHandler = useCallback(
+    (data) => {
+      setRData(data);
+
+      setRModal(false);
+    },
+    [rData, rModal]
+  );
 
   ////// DATAVIEW //////
 
@@ -594,8 +631,23 @@ const Prescription = ({}) => {
               >
                 <Wrapper dr={`row`} ju={`space-between`}>
                   <Text color={Theme.grey_C}>요청사항</Text>
-                  <CommonButton>설정하기</CommonButton>
+                  <CommonButton onClick={rModalToggle}>설정하기</CommonButton>
                 </Wrapper>
+
+                {rData && (
+                  <Wrapper al={`flex-start`} margin={`10px 0 0`}>
+                    <Text width={`100%`}>{rData.title}</Text>
+                    <Text width={`100%`} margin={`10px 0 0`}>
+                      {rData.receiverName}
+                    </Text>
+                    <Text width={`100%`} margin={`10px 0 0`}>
+                      {rData.medication}
+                    </Text>
+                    <Text width={`100%`} margin={`10px 0 0`}>
+                      {rData.content}
+                    </Text>
+                  </Wrapper>
+                )}
               </Wrapper>
               {/* 요청사항 SELECT AREA END */}
 
@@ -955,12 +1007,103 @@ const Prescription = ({}) => {
             </Wrapper>
           </Wrapper>
         </CustomModal>
-
         {/* REQUEST MODAL */}
-        <CustomModal title={`요청사항 설정하기`} footer={null}>
-          <Wrapper>
-            <ComboBox></ComboBox>
+        <CustomModal
+          width={`450px`}
+          visible={rModal}
+          onCancel={rModalToggle}
+          footer={null}
+        >
+          <Wrapper al={`flex-start`} margin={`0 0 30px`}>
+            <Text fontSize={`20px`} fontWeight={`bold`}>
+              요청사항 설정
+            </Text>
           </Wrapper>
+
+          <Wrapper margin={`0 0 30px`} al={`flex-start`}>
+            <Text>요청사항</Text>
+            <ComboBox
+              placeholder={`요청사항을 선택해주세요.`}
+              onChange={requestChangeHandler}
+            >
+              {requestAllList &&
+                requestAllList.map((data) => {
+                  return (
+                    <Option key={data.id} value={JSON.stringify(data)}>
+                      {data.title} - {data.receiverName}
+                    </Option>
+                  );
+                })}
+            </ComboBox>
+            <GuideLi isImpo>
+              요청사항을 선택시 정보들이 자동으로 들어갑니다.
+            </GuideLi>
+          </Wrapper>
+
+          <Form form={rForm} onFinish={requestSetHandler}>
+            <Text>처방명</Text>
+            <Form.Item
+              name={`title`}
+              rules={[{ required: true, message: "처방명을 입력해주세요." }]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`처방명을 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Text>환자이름</Text>
+            <Form.Item
+              name={`receiverName`}
+              rules={[{ required: true, message: "환자이름을 입력해주세요." }]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`환자이름을 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Text>복약지도</Text>
+            <Form.Item
+              name={`medication`}
+              rules={[{ required: true, message: "복약지도를 입력해주세요." }]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`복약지도를 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Text>추가요청사항</Text>
+            <Form.Item
+              name={`content`}
+              rules={[
+                { required: true, message: "추가요청사항을 입력해주세요." },
+              ]}
+            >
+              <TextInput
+                width={`100%`}
+                placeholder={`추가요청사항을 입력해주세요.`}
+              />
+            </Form.Item>
+
+            <Wrapper dr={`row`} ju={`flex-end`}>
+              <CustomCommonButton
+                kindOf={`white`}
+                width={`90px`}
+                height={`40px`}
+                margin={`0 5px 0 0`}
+                border={`1px solid ${Theme.white_C}`}
+                shadow={`0px`}
+                onClick={rModalToggle}
+              >
+                취소
+              </CustomCommonButton>
+              <CommonButton width={`90px`} height={`40px`} htmlType="submit">
+                설정
+              </CommonButton>
+            </Wrapper>
+          </Form>
         </CustomModal>
       </ClientLayout>
     </>
@@ -995,6 +1138,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: PP_GET_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: REQUEST_ALL_LIST_REQUEST,
     });
 
     // 구현부 종료
