@@ -82,12 +82,13 @@ const PromiseDetail = () => {
   const type = useInput("");
   const pack = useInput("");
   const unit = useInput("");
-  const otherInput = useInput("");
+  const qntInput = useInput(0);
 
   const [totalPayment, setTotalPayment] = useState(null);
   const [topSlider, setTopSlider] = useState(null);
   const [temporaryDatum, setTemporaryDatum] = useState([]);
-  const [temporaryId, setTemporaryId] = useState(0);
+  const [temporaryId, setTemporaryId] = useState(1);
+  const [qntSelect, setQntSelect] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -305,12 +306,52 @@ const PromiseDetail = () => {
     });
   }, [temporaryDatum, me, product, totalPayment, unit.value]);
 
+  // 수량 선택
+  const qntSelectHandler = useCallback(
+    (data) => {
+      if (qntSelect === data.id) {
+        setQntSelect(null);
+        qntInput.setValue(0);
+        return;
+      }
+
+      qntInput.setValue(data.qnt);
+      setQntSelect(data.id);
+    },
+    [qntSelect, qntInput.value]
+  );
+
+  // 약제 용량 수정
+  const qntSaveHandler = useCallback(() => {
+    if (
+      !qntSelect ||
+      temporaryDatum.find((item) => item.id === qntSelect).cnt ===
+        parseInt(qntInput.value) ||
+      !qntInput.value ||
+      parseInt(qntInput.value) === 0
+    ) {
+      return;
+    }
+
+    let temporaryArr = temporaryDatum.map((data) => data);
+
+    const datumFindIndex = temporaryArr.findIndex(
+      (data) => data.id === qntSelect
+    );
+
+    temporaryArr[datumFindIndex].cnt = parseInt(qntInput.value);
+
+    setTemporaryDatum(temporaryArr);
+
+    setQntSelect(null);
+  }, [temporaryDatum, qntSelect, qntInput.value]);
+
   ////// DATAVIEW //////
 
   return (
     <>
       <ClientLayout>
-        <WholeWrapper>
+        <WholeWrapper onClick={qntSaveHandler}>
           <RsWrapper
             minHeight={`calc(100vh - 64px)`}
             ju={`flex-start`}
@@ -532,11 +573,29 @@ const PromiseDetail = () => {
                         ju={`space-between`}
                         margin={`10px 0 0`}
                       >
-                        <Wrapper width={`auto`} dr={`row`}>
+                        <Wrapper
+                          width={`auto`}
+                          dr={`row`}
+                          cursor={`pointer`}
+                          onClick={() => !qntSelect && qntSelectHandler(data)}
+                        >
                           <Text>수량</Text>
-                          <Text width={`100px`} textAlign={`center`}>
-                            {data.cnt}
-                          </Text>
+
+                          {qntSelect && qntSelect === data.id ? (
+                            <TextInput
+                              width={`100px`}
+                              placeholder={`수량`}
+                              type={`number`}
+                              {...qntInput}
+                              onKeyPress={(e) =>
+                                e.key === "Enter" && qntSaveHandler()
+                              }
+                            />
+                          ) : (
+                            <Text width={`100px`} textAlign={`center`}>
+                              {data.cnt}
+                            </Text>
+                          )}
                         </Wrapper>
                         <Wrapper width={`auto`} dr={`row`}>
                           <Text fontSize={`12px`}>총 {data.cnt}개</Text>
@@ -546,7 +605,7 @@ const PromiseDetail = () => {
                             margin={`0 0 0 15px`}
                             color={Theme.basicTheme_C}
                           >
-                            {String(data.payment).replace(
+                            {String(data.payment * data.cnt).replace(
                               /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
                               ","
                             )}

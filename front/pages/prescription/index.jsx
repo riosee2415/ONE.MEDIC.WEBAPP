@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
@@ -25,7 +24,6 @@ import styled from "styled-components";
 import { numberWithCommas } from "../../components/commonUtils";
 
 import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
 import { SEARCH_LIST_REQUEST } from "../../reducers/search";
 import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
 import { MATERIAL_USER_ADD } from "../../reducers/material";
@@ -480,48 +478,6 @@ const Prescription = ({}) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper onClick={qntSaveHandler}>
           <RsWrapper
@@ -727,7 +683,11 @@ const Prescription = ({}) => {
                                     <TextInput
                                       width={`100%`}
                                       placeholder={`용량`}
+                                      type={`number`}
                                       {...qntInput}
+                                      onKeyPress={(e) =>
+                                        e.key === "Enter" && qntSaveHandler()
+                                      }
                                     />
                                   </Wrapper>
                                   &nbsp;{data.unit}
@@ -1123,10 +1083,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     context.store.dispatch({
