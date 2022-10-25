@@ -253,6 +253,7 @@ const PromiseDetail = () => {
       packVolumn: type.value.name ? type.value.name : type.value,
       typeVolumn: pack.value.name ? pack.value.name : pack.value,
       unitVolumn: unit.value.name ? unit.value.name : unit.value,
+      cnt: 1,
       // otherRequest: otherInput.value,
     });
 
@@ -534,11 +535,11 @@ const PromiseDetail = () => {
                         <Wrapper width={`auto`} dr={`row`}>
                           <Text>수량</Text>
                           <Text width={`100px`} textAlign={`center`}>
-                            1
+                            {data.cnt}
                           </Text>
                         </Wrapper>
                         <Wrapper width={`auto`} dr={`row`}>
-                          <Text fontSize={`12px`}>총 {data.unitVolumn}</Text>
+                          <Text fontSize={`12px`}>총 {data.cnt}개</Text>
                           <Text
                             fontSize={`20px`}
                             fontWeight={`bold`}
