@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import useInput from "../../../hooks/useInput";
 import ClientLayout from "../../../components/ClientLayout";
 import axios from "axios";
@@ -22,9 +18,7 @@ import {
 import useWidth from "../../../hooks/useWidth";
 import Theme from "../../../components/Theme";
 import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../../reducers/seo";
 import ProductSlider from "../../../components/slide/ProductSlider";
-import Head from "next/head";
 import {
   PRODUCT_PACK_LIST_REQUEST,
   PRODUCT_TYPE_LIST_REQUEST,
@@ -152,12 +146,6 @@ const PromiseDetail = () => {
   useEffect(() => {
     if (router.query) {
       dispatch({
-        type: PRODUCT_UNIT_LIST_REQUEST,
-        data: {
-          id: router.query.id,
-        },
-      });
-      dispatch({
         type: PRODUCT_PACK_LIST_REQUEST,
         data: {
           id: router.query.id,
@@ -219,6 +207,13 @@ const PromiseDetail = () => {
 
   const packChangeHandler = useCallback(
     (value) => {
+      dispatch({
+        type: PRODUCT_UNIT_LIST_REQUEST,
+        data: {
+          id: value.id,
+        },
+      });
+
       pack.setValue(value);
     },
     [pack.value]
@@ -313,48 +308,6 @@ const PromiseDetail = () => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper
@@ -479,12 +432,7 @@ const PromiseDetail = () => {
               <Wrapper dr={`row`} ju={`flex-start`}>
                 {unitList &&
                   (unitList.length === 0 ? (
-                    <TextInput
-                      placeholder="직접입력"
-                      type={`text`}
-                      width={`100%`}
-                      {...unit}
-                    />
+                    <Text>포장을 선택해주세요.</Text>
                   ) : (
                     unitList.map((data) => {
                       return (
@@ -665,10 +613,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     // 구현부 종료

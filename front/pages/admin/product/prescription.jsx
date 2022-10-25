@@ -28,6 +28,7 @@ import {
   ModalBtn,
   GuideUl,
   GuideLi,
+  Text,
 } from "../../../components/commonComponents";
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import {
@@ -93,6 +94,9 @@ const UserDeliAddress = ({}) => {
     previewImage2,
     previewImage3,
     previewImage4,
+    st_productTypeLoading,
+    st_productPackListLoading,
+    st_productUnitListLoading,
     st_productTypeAddDone,
     st_productTypeDeleteDone,
     st_productPackAddDone,
@@ -121,6 +125,8 @@ const UserDeliAddress = ({}) => {
   const previewImageRef4 = useRef();
 
   const [currentId, setCurrentId] = useState(null);
+
+  const [unitPackId, setUnitPackId] = useState(null);
 
   const moveLinkHandler = useCallback((link) => {
     router.push(link);
@@ -226,7 +232,7 @@ const UserDeliAddress = ({}) => {
       message.success("단위 데이터가 추가 되었습니다.");
       dispatch({
         type: PRODUCT_UNIT_LIST_REQUEST,
-        data: { id: currentId },
+        data: { id: unitPackId },
       });
 
       unitCreateForm.resetFields();
@@ -250,7 +256,7 @@ const UserDeliAddress = ({}) => {
       message.success("단위 데이터가 삭제 되었습니다.");
       dispatch({
         type: PRODUCT_UNIT_LIST_REQUEST,
-        data: { id: currentId },
+        data: { id: unitPackId },
       });
 
       unitCreateForm.resetFields();
@@ -308,18 +314,33 @@ const UserDeliAddress = ({}) => {
     [currentId]
   );
 
+  // 단위 생성
   const unitCreateFormHandler = useCallback(
     (data) => {
       dispatch({
         type: PRODUCT_UNIT_ADD_REQUEST,
         data: {
-          prescriptionId: currentId,
+          PrescriptionPackId: unitPackId,
           name: data.name,
           addPrice: data.addPrice,
         },
       });
     },
-    [currentId]
+    [unitPackId]
+  );
+
+  // 단위 모달 - 포장 선택
+  const unitPackIdSelectHandler = useCallback(
+    (id) => {
+      console.log(id);
+      dispatch({
+        type: PRODUCT_UNIT_LIST_REQUEST,
+        data: { id: parseInt(id) },
+      });
+
+      setUnitPackId(parseInt(id));
+    },
+    [unitPackId]
   );
 
   const guideModalToggle = useCallback(() => {
@@ -328,6 +349,7 @@ const UserDeliAddress = ({}) => {
     });
   }, [guideModal]);
 
+  // 종류 모달
   const typeModalToggle = useCallback(
     (id = null) => {
       if (id) {
@@ -346,6 +368,7 @@ const UserDeliAddress = ({}) => {
     [typeModal]
   );
 
+  // 포장 모달
   const packModalToggle = useCallback(
     (id = null) => {
       if (id) {
@@ -365,23 +388,25 @@ const UserDeliAddress = ({}) => {
     [packModal]
   );
 
+  // 단위 모달
   const unitModalToggle = useCallback(
     (id = null) => {
       if (id) {
         setCurrentId(id);
 
         dispatch({
-          type: PRODUCT_UNIT_LIST_REQUEST,
+          type: PRODUCT_PACK_LIST_REQUEST,
           data: { id: id },
         });
       }
 
+      setUnitPackId(null);
       unitCreateForm.resetFields();
       dispatch({
         type: UNIT_MODAL_TOGGLE,
       });
     },
-    [unitModal]
+    [unitPackId, unitModal]
   );
 
   const createModalToggle = useCallback(() => {
@@ -869,7 +894,9 @@ const UserDeliAddress = ({}) => {
         </Form>
         <br />
         {/*  */}
+
         <Table
+          loading={st_productTypeLoading}
           rowKey="id"
           columns={columnsType}
           dataSource={typeList}
@@ -932,7 +959,9 @@ const UserDeliAddress = ({}) => {
         </Form>
         <br />
         {/*  */}
+
         <Table
+          loading={st_productPackListLoading}
           rowKey="id"
           columns={columnsPack}
           dataSource={packList}
@@ -953,6 +982,7 @@ const UserDeliAddress = ({}) => {
           <GuideLi isImpo={true}>
             결제금액의 소급적용을 방지하기 위해 데이터 수정은 불가능 합니다.
           </GuideLi>
+          <GuideLi isImpo={true}>포장 선택시 단위 리스트가 나옵니다.</GuideLi>
           <GuideLi>
             이름을 기준으로 정렬됩니다. 구매자 화면에도 같은 순서로 보여지게
             됩니다.
@@ -995,7 +1025,25 @@ const UserDeliAddress = ({}) => {
         </Form>
         <br />
         {/*  */}
+        <Select
+          style={{ width: `100%` }}
+          placeholder={`포장을 선택해주세요.`}
+          onChange={unitPackIdSelectHandler}
+        >
+          {packList &&
+            packList.map((data) => {
+              return (
+                <Select.Option key={data.id} value={data.id}>
+                  <Wrapper dr={`row`} ju={`space-between`}>
+                    <Text>{data.name}</Text>
+                    <Text>{data.viewAddPrice}</Text>
+                  </Wrapper>
+                </Select.Option>
+              );
+            })}
+        </Select>
         <Table
+          loading={st_productUnitListLoading}
           rowKey="id"
           columns={columnsUnit}
           dataSource={unitList}

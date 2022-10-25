@@ -50,9 +50,5 @@ module.exports = class Prescription extends Model {
       }
     );
   }
-  static associate(db) {
-    db.Prescription.hasMany(db.PrescriptionPack);
-    db.Prescription.hasMany(db.PrescriptionType);
-    db.Prescription.hasMany(db.PrescriptionUnit);
-  }
+  static associate(db) {}
 };

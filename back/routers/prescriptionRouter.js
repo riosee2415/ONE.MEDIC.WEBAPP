@@ -371,7 +371,7 @@ router.get("/unit/list/:id", async (req, res, next) => {
             addPrice                           AS  originAddPrice,
             CONCAT(FORMAT(addPrice, 0), "원")   AS  viewAddPrice
       FROM	prescriptionUnits
-     WHERE	PrescriptionId  = ${id}
+     WHERE	PrescriptionPackId  = ${id}
        AND  isDelete = false
      ORDER  BY  name  ASC
   `;
@@ -388,9 +388,9 @@ router.get("/unit/list/:id", async (req, res, next) => {
 });
 
 router.post("/unit/add", isAdminCheck, async (req, res, next) => {
-  const { prescriptionId, name, addPrice } = req.body;
+  const { PrescriptionPackId, name, addPrice } = req.body;
 
-  if (isNanCheck(prescriptionId)) {
+  if (isNanCheck(PrescriptionPackId)) {
     return res.status(403).send("올바른 요청이 아닙니다. 다시 시도해주세요.");
   }
 
@@ -398,7 +398,7 @@ router.post("/unit/add", isAdminCheck, async (req, res, next) => {
     await PrescriptionUnit.create({
       name,
       addPrice: parseInt(addPrice),
-      PrescriptionId: parseInt(prescriptionId),
+      PrescriptionPackId: parseInt(PrescriptionPackId),
     });
 
     return res.status(201).json({ result: true });

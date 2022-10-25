@@ -31,6 +31,6 @@ module.exports = class PrescriptionUnit extends Model {
     );
   }
   static associate(db) {
-    db.PrescriptionUnit.belongsTo(db.Prescription);
+    db.PrescriptionUnit.belongsTo(db.PrescriptionPack);
   }
 };
