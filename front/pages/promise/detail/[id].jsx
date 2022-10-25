@@ -233,7 +233,8 @@ const PromiseDetail = () => {
     if (!pack.value) {
       return message.error("포장을 선택해주세요.");
     }
-    if (!unit.value) {
+
+    if (unitList && unitList.length > 0 && !unit.value) {
       return message.error("단위을 선택해주세요.");
     }
 
@@ -252,7 +253,7 @@ const PromiseDetail = () => {
       packVolumn: type.value.name ? type.value.name : type.value,
       typeVolumn: pack.value.name ? pack.value.name : pack.value,
       unitVolumn: unit.value.name ? unit.value.name : unit.value,
-      otherRequest: otherInput.value,
+      // otherRequest: otherInput.value,
     });
 
     await setTemporaryDatum(temporayArr);
@@ -260,7 +261,8 @@ const PromiseDetail = () => {
     type.value,
     pack.value,
     unit.value,
-    otherInput.value,
+    // otherInput.value,
+    unitList,
     temporaryDatum,
     temporaryId,
   ]);
@@ -350,11 +352,12 @@ const PromiseDetail = () => {
                           key={data.id}
                           shadow={`0`}
                           width={
-                            width < 700
-                              ? typeList.length === 1
-                                ? `calc(100% - 4px)`
-                                : `calc(100% / 2 - 4px)`
-                              : typeList.length >= 4
+                            // width < 700
+                            //   ?
+                            typeList.length === 1
+                              ? `calc(100% - 4px)`
+                              : // : `calc(100% / 2 - 4px)`
+                              typeList.length >= 4
                               ? `calc(100% / 4 - 4px)`
                               : typeList.length === 3
                               ? `calc(100% / 3 - 4px)`
@@ -398,11 +401,12 @@ const PromiseDetail = () => {
                           key={data.id}
                           shadow={`0`}
                           width={
-                            width < 700
-                              ? packList.length === 1
-                                ? `calc(100% - 4px)`
-                                : `calc(100% / 2 - 4px)`
-                              : packList.length >= 4
+                            // width < 700
+                            //   ?
+                            packList.length === 1
+                              ? `calc(100% - 4px)`
+                              : // : `calc(100% / 2 - 4px)`
+                              packList.length >= 4
                               ? `calc(100% / 4 - 4px)`
                               : packList.length === 3
                               ? `calc(100% / 3 - 4px)`
@@ -422,29 +426,28 @@ const PromiseDetail = () => {
                     })
                   ))}
               </Wrapper>
-              <Text
-                color={Theme.grey_C}
-                fontWeight={`bold`}
-                margin={`20px 0 10px`}
-              >
-                단위
-              </Text>
-              <Wrapper dr={`row`} ju={`flex-start`}>
-                {unitList &&
-                  (unitList.length === 0 ? (
-                    <Text>포장을 선택해주세요.</Text>
-                  ) : (
-                    unitList.map((data) => {
+              {unitList && unitList.length > 0 && (
+                <>
+                  <Text
+                    color={Theme.grey_C}
+                    fontWeight={`bold`}
+                    margin={`20px 0 10px`}
+                  >
+                    단위
+                  </Text>
+                  <Wrapper dr={`row`} ju={`flex-start`}>
+                    {unitList.map((data) => {
                       return (
                         <CheckdButton
                           key={data.id}
                           shadow={`0`}
                           width={
-                            width < 700
-                              ? unitList.length === 1
-                                ? `calc(100% - 4px)`
-                                : `calc(100% / 2 - 4px)`
-                              : unitList.length >= 4
+                            // width < 700
+                            //   ?
+                            unitList.length === 1
+                              ? `calc(100% - 4px)`
+                              : // : `calc(100% / 2 - 4px)`
+                              unitList.length >= 4
                               ? `calc(100% / 4 - 4px)`
                               : unitList.length === 3
                               ? `calc(100% / 3 - 4px)`
@@ -461,18 +464,19 @@ const PromiseDetail = () => {
                           {data.name}
                         </CheckdButton>
                       );
-                    })
-                  ))}
-              </Wrapper>
+                    })}
+                  </Wrapper>
+                </>
+              )}
 
-              <Text
+              {/* <Text
                 color={Theme.grey_C}
                 fontWeight={`bold`}
                 margin={`20px 0 10px`}
               >
                 추가요청사항
               </Text>
-              <TextInput type={`text`} width={`100%`} {...otherInput} />
+              <TextInput type={`text`} width={`100%`} {...otherInput} /> */}
             </Wrapper>
             <Wrapper
               al={`flex-end`}
@@ -512,8 +516,7 @@ const PromiseDetail = () => {
                       <Wrapper dr={`row`} ju={`space-between`}>
                         <Text color={Theme.grey2_C}>
                           {data.typeVolumn}&nbsp;|&nbsp;{data.packVolumn}
-                          &nbsp;|&nbsp;
-                          {data.unitVolumn}
+                          {data.unitVolumn && ` | ${data.unitVolumn}`}
                         </Text>
                         <Image
                           cursor={`pointer`}
