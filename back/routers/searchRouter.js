@@ -39,7 +39,15 @@ router.get("/list", async (req, res, next) => {
       },
     });
 
-    return res.status(200).json({ searchRecipe, searchMaterial });
+    const filterResult = await searchRecipe.map((data) => ({
+      id: data.id,
+      name: data.name,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      SearchMaterials: data.SearchMaterials.filter((value) => !value.isDelete),
+    }));
+
+    return res.status(200).json({ searchRecipe: filterResult, searchMaterial });
   } catch (e) {
     console.error(e);
     return res.status(400).send("잘못된 요청입니다.");
@@ -68,7 +76,15 @@ router.get("/recipe/list", async (req, res, next) => {
       ],
     });
 
-    return res.status(200).json(result);
+    const filterResult = await result.map((data) => ({
+      id: data.id,
+      name: data.name,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      SearchMaterials: data.SearchMaterials.filter((value) => !value.isDelete),
+    }));
+
+    return res.status(200).json(filterResult);
   } catch (e) {
     console.error(e);
     return res.status(400).send("레시피를 검색할 수 없습니다.");
@@ -228,6 +244,7 @@ router.post("/material/create", isAdminCheck, async (req, res, next) => {
       where: {
         MaterialId: materialId,
         SearchRecipeId: searchRecipeId,
+        isDelete: false,
       },
     });
 
@@ -236,7 +253,7 @@ router.post("/material/create", isAdminCheck, async (req, res, next) => {
     }
 
     await SearchMaterial.create({
-      qnt: parseInt(qnt),
+      qnt: Math.round(parseFloat(qnt) * 100) / 100,
       unit,
       price: parseInt(price),
       MaterialId: materialId,
@@ -260,6 +277,7 @@ router.delete(
       const exMaterial = await SearchMaterial.findOne({
         where: {
           id: materialId,
+          isDelete: false,
         },
       });
 

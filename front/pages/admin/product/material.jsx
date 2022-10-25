@@ -273,7 +273,7 @@ const Material = () => {
       data: {
         name: data.name,
         price: data.price,
-        stock: data.stock,
+        stock: Math.round(parseFloat(data.stock) * 100) / 100,
         unit: data.unit,
       },
     });
@@ -287,7 +287,7 @@ const Material = () => {
           id: updateData.id,
           name: data.name,
           price: data.price,
-          stock: data.stock,
+          stock: Math.round(parseFloat(data.stock) * 100) / 100,
           unit: data.unit,
         },
       });
@@ -438,7 +438,7 @@ const Material = () => {
               onClick={priceModalToggle}
               loading={st_ppUpdateLoading}
             >
-              팩 가격
+              가격설정
             </ModalBtn>
 
             <ModalBtn
@@ -501,6 +501,12 @@ const Material = () => {
             <GuideUl>
               <GuideLi isImpo={true}>
                 가격과 개수는 숫자만 입력해주세요.
+              </GuideLi>
+              <GuideLi isImpo={true}>
+                0.01개수의 기준으로 가격을 입력해주세요
+              </GuideLi>
+              <GuideLi isImpo={true}>
+                개수는 소수점 둘쨰자리까지 설정가능합니다.
               </GuideLi>
               <GuideLi isImpo={true}>
                 단위는 g, kg, ml 등과 유사한 단위를 입력해주세요.

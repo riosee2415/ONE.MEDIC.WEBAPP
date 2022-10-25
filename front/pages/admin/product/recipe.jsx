@@ -324,7 +324,7 @@ const UserDeliAddress = ({}) => {
       dispatch({
         type: SEARCH_MATERIAL_CREATE_REQUEST,
         data: {
-          qnt: data.qnt,
+          qnt: Math.round(parseFloat(data.qnt) * 100) / 100,
           unit: data.unit,
           materialId: JSON.parse(data.materialId).id,
           searchRecipeId: materialData.id,
@@ -542,12 +542,27 @@ const UserDeliAddress = ({}) => {
           form={materialForm}
           onFinish={materialCreateHandler}
         >
+          <Wrapper margin={`0 0 0 10px`}>
+            <GuideUl>
+              <GuideLi isImpo={true}>사용재고는 숫자만 입력해주세요.</GuideLi>
+              <GuideLi isImpo={true}>
+                사용재고는 소수점 둘쨰자리까지 설정가능합니다.
+              </GuideLi>
+              <GuideLi isImpo={true}>
+                단위는 g, kg, ml 등과 유사한 단위를 입력해주세요.
+              </GuideLi>
+            </GuideUl>
+          </Wrapper>
+
           <Form.Item
             label="재료"
             name="materialId"
             rules={[{ required: true, message: "재료를 선택해주세요." }]}
           >
-            <Select onChange={materialSelectHandler}>
+            <Select
+              onChange={materialSelectHandler}
+              placeholder={`재료를 선택해주세요.`}
+            >
               {materials &&
                 materials.map((data) => (
                   <Select.Option value={JSON.stringify(data)}>
@@ -561,14 +576,18 @@ const UserDeliAddress = ({}) => {
             name="qnt"
             rules={[{ required: true, message: "사용재고를 입력해주세요." }]}
           >
-            <Input type="number" />
+            <Input
+              type="number"
+              step="0.01"
+              placeholder="사용재고를 입력해주세요."
+            />
           </Form.Item>
           <Form.Item
             label="단위"
             name="unit"
             rules={[{ required: true, message: "단위를 입력해주세요." }]}
           >
-            <Input readOnly />
+            <Input readOnly placeholder="단위를 입력해주세요." disabled />
           </Form.Item>
 
           <Wrapper al={`flex-end`} margin={`0 0 50px`}>

@@ -97,9 +97,6 @@ const Prescription = ({}) => {
   const { Option } = Select;
 
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
   const { userMaterials } = useSelector((state) => state.material);
   const { price } = useSelector((state) => state.prescriptionPrice);
   const { pprId, pprDetail, st_pprCreateDone, st_pprCreateError } = useSelector(
@@ -348,9 +345,9 @@ const Prescription = ({}) => {
     if (
       !qntSelect ||
       userMaterials.find((item) => item.id === qntSelect).qnt ===
-        parseInt(qntInput.value) ||
+        Math.round(parseFloat(qntInput.value) * 100) / 100 ||
       !qntInput.value ||
-      parseInt(qntInput.value) === 0
+      Math.round(parseFloat(qntInput.value) * 100) / 100 === 0
     ) {
       return;
     }
@@ -361,7 +358,7 @@ const Prescription = ({}) => {
           id: item.id,
           name: item.name,
           price: item.price,
-          qnt: parseInt(qntInput.value),
+          qnt: Math.round(parseFloat(qntInput.value) * 100) / 100,
           unit: item.unit,
         };
       } else {
@@ -386,7 +383,7 @@ const Prescription = ({}) => {
             id: item.id,
             name: item.name,
             price: item.price,
-            qnt: parseInt(data.qnt),
+            qnt: Math.round(parseFloat(data.qnt) * 100) / 100,
             unit: item.unit,
           };
         } else {
@@ -701,7 +698,8 @@ const Prescription = ({}) => {
                                 color={`${Theme.black_C}`}
                                 fontSize={width < 600 ? `16px` : `18px`}
                               >
-                                {numberWithCommas(data.price * data.qnt)}원
+                                {numberWithCommas(data.price * data.qnt * 100)}
+                                원
                               </Text>
                             </Wrapper>
                           </ListWrapper>
@@ -737,7 +735,10 @@ const Prescription = ({}) => {
                 {packTotalPrice &&
                   (materialTotalPrice ? (
                     <Text fontWeight={`bold`}>
-                      {numberWithCommas(materialTotalPrice + packTotalPrice)}원
+                      {numberWithCommas(
+                        materialTotalPrice * 100 + packTotalPrice
+                      )}
+                      원
                     </Text>
                   ) : (
                     <Text fontWeight={`bold`}>

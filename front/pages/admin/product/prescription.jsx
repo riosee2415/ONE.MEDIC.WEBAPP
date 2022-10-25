@@ -317,6 +317,10 @@ const UserDeliAddress = ({}) => {
   // 단위 생성
   const unitCreateFormHandler = useCallback(
     (data) => {
+      if (!unitPackId) {
+        return message.error("포장을 선택해주세요.");
+      }
+
       dispatch({
         type: PRODUCT_UNIT_ADD_REQUEST,
         data: {
