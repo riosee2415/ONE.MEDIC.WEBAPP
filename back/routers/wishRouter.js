@@ -65,6 +65,9 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
           CONCAT(FORMAT(totalPrice, 0), "원")        AS viewTotalPrice,
           totalQun,
           CONCAT(FORMAT(totalQun, 0), "원")          AS viewTotalQun,
+          medication,
+          receiverName,
+          content,
           createdAt,
           updatedAt,
           DATE_FORMAT(createdAt, "%Y년 %m월 %d일")    AS viewCreatedAt,
@@ -82,7 +85,6 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
           pack,
           type,
           unit,
-          otherRequest,
           qnt,
           createdAt,
           updatedAt,
@@ -113,7 +115,15 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 /// 장바구니에 상품 추가
 /// 바로 wishList에 추가됨 (약속처방)
 router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
-  const { productname, totalPrice, totalQun, items } = req.body;
+  const {
+    productname,
+    totalPrice,
+    totalQun,
+    medication,
+    receiverName,
+    content,
+    items,
+  } = req.body;
 
   if (!Array.isArray(items)) {
     return res.status(401).send("잘못된 요청입니다.");
@@ -127,9 +137,8 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
   //   pack,
   //   type,
   //   unit,
-  //   qnt,
-  //   otherRequest
-  //   -----------------------
+  //   qnt
+  //   ------------------------
 
   const findWishList = `
   SELECT  id
@@ -167,6 +176,9 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
       productname,
       totalPrice,
       totalQun,
+      medication,
+      receiverName,
+      content,
       createdAt,
       updatedAt,
       WishListId
@@ -176,6 +188,9 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
       "${productname}",
       ${totalPrice},
       ${totalQun},
+      ${medication ? `"${medication}"` : null},
+      "${receiverName}",
+      ${content ? `"${content}"` : null},
       NOW(),
       NOW(),
       ${
@@ -236,13 +251,25 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
 
 // 장바구니 상품 수정
 router.post("/payment/container/update", isLoggedIn, async (req, res, next) => {
-  const { containerId, productname, totalPrice, totalQun } = req.body;
+  const {
+    containerId,
+    productname,
+    totalPrice,
+    totalQun,
+    medication,
+    receiverName,
+    content,
+  } = req.body;
 
   const updateQuery = `
   UPDATE  wishPaymentContainer
      SET  productname = "${productname}",
           totalPrice = ${totalPrice},
-          totalQun = ${totalQun}
+          totalQun = ${totalQun},
+          medication = ${medication ? `"${medication}"` : null},
+          receiverName = "${receiverName}",
+          content = ${content ? `"${content}"` : null},
+          updatedAt = NOW()
    WHERE  id = ${containerId}
   `;
 
@@ -298,17 +325,8 @@ router.post("/payment/container/delete", isLoggedIn, async (req, res, next) => {
 
 // container 안에 상품 추가 (약속처방)
 router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
-  const {
-    containerId,
-    paymentId,
-    title,
-    price,
-    pack,
-    type,
-    unit,
-    qnt,
-    otherRequest,
-  } = req.body;
+  const { containerId, paymentId, title, price, pack, type, unit, qnt } =
+    req.body;
 
   const insertQuery = `
   INSERT  INTO    wishPaymentItem
@@ -319,7 +337,6 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
       pack,
       type,
       unit,
-      otherRequest,
       createdAt,
       updatedAt,
       qnt,
@@ -333,7 +350,6 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
       "${pack}",
       "${type}",
       "${unit}",
-      "${otherRequest}",
       NOW(),
       NOW(),
       ${qnt},
@@ -353,7 +369,7 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
 
 // container안에 상품 수정(약속처방)
 router.post("/payment/item/update", isLoggedIn, async (req, res, next) => {
-  const { wishPaymentItemId, price, pack, type, unit, otherRequest } = req.body;
+  const { wishPaymentItemId, price, pack, type, unit } = req.body;
 
   const updateQuery = `
   UPDATE    wishPaymentItem
@@ -361,7 +377,6 @@ router.post("/payment/item/update", isLoggedIn, async (req, res, next) => {
             pack = "${pack}",
             type = "${type}",
             unit = "${unit}",
-            otherRequest = "${otherRequest}",
             updatedAt = NOW()
    WHERE    id = ${wishPaymentItemId}
   `;

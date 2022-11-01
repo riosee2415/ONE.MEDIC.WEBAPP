@@ -20,6 +20,18 @@ module.exports = class WishPaymentContainer extends Model {
           allowNull: false,
           defaultValue: 0,
         },
+        medication: {
+          type: DataTypes.STRING(600), // 복약지도
+          allowNull: true,
+        },
+        receiverName: {
+          type: DataTypes.STRING(100), // 환자이름
+          allowNull: false,
+        },
+        content: {
+          type: DataTypes.STRING(500),
+          allowNull: true,
+        },
       },
       {
         modelName: "WishPaymentContainer",

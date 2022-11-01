@@ -30,10 +30,6 @@ module.exports = class WishPaymentItem extends Model {
           type: DataTypes.STRING(100),
           allowNull: false,
         },
-        otherRequest: {
-          type: DataTypes.STRING(2000),
-          allowNull: false,
-        },
         qnt: {
           type: DataTypes.FLOAT, // 수량
           defaultValue: 1,
