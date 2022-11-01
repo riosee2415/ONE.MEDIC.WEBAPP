@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   KAKAO_LOGIN_REQUEST,
@@ -22,23 +22,32 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { Checkbox, Empty, message } from "antd";
+import { Checkbox, Empty, message, Popconfirm } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { RightOutlined } from "@ant-design/icons";
-import { WISH_LIST_REQUEST } from "../../reducers/wish";
+import { WISH_DELETE_REQUEST, WISH_LIST_REQUEST } from "../../reducers/wish";
 
 const Cart = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
   const { me } = useSelector((state) => state.user);
 
-  const { wishList, st_wishListError } = useSelector((state) => state.wish);
+  const {
+    wishList,
+    st_wishListError,
+    //
+    st_wishDeleteLoading,
+    st_wishDeleteDone,
+    st_wishDeleteError,
+  } = useSelector((state) => state.wish);
 
   ////// HOOKS //////
   const router = useRouter();
 
-  const dispacth = useDispatch();
+  const dispatch = useDispatch();
+
+  const [itemSelect, setItemSelect] = useState([]);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -50,14 +59,60 @@ const Cart = ({}) => {
     }
   }, [me]);
 
+  // 리스트
   useEffect(() => {
     if (me && st_wishListError) {
       return message.error(st_wishListError);
     }
   }, [st_wishListError]);
 
+  // 삭제
+
+  useEffect(() => {
+    if (st_wishDeleteDone) {
+      dispatch({
+        type: WISH_LIST_REQUEST,
+      });
+
+      setItemSelect([]);
+
+      return message.success("삭제되었습니다.");
+    }
+  }, [st_wishDeleteDone]);
+
+  useEffect(() => {
+    if (st_wishDeleteError) {
+      return message.error(st_wishDeleteError);
+    }
+  }, [st_wishDeleteError]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
+
+  const itemSelectHandler = useCallback(
+    (data) => {
+      let itemSelectArr = itemSelect.map((data) => data);
+
+      if (itemSelectArr.find((value) => value.id === data.id)) {
+        setItemSelect(itemSelectArr.filter((value) => value.id !== data.id));
+        return;
+      }
+
+      itemSelectArr.push(data);
+
+      setItemSelect(itemSelectArr);
+    },
+    [itemSelect]
+  );
+
+  const deleteHandler = useCallback(() => {
+    dispatch({
+      type: WISH_DELETE_REQUEST,
+      data: {
+        idArr: itemSelect,
+      },
+    });
+  }, [itemSelect]);
 
   ////// DATAVIEW //////
 
@@ -136,11 +191,20 @@ const Cart = ({}) => {
                 <Text color={Theme.grey_C} fontWeight={`bold`}>
                   장바구니
                 </Text>
-                <Image
-                  alt="icon"
-                  src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/garbage.png`}
-                  width={`16px`}
-                />
+                <Popconfirm
+                  placement="topRight"
+                  title={`정말 삭제하시겠습니까?`}
+                  okText={`삭제`}
+                  cancelText={`취소`}
+                  onConfirm={deleteHandler}
+                  okButtonProps={{ loading: st_wishDeleteLoading }}
+                >
+                  <Image
+                    alt="icon"
+                    src={`https://4leaf-s3.s3.ap-northeast-2.amazonaws.com/oneMedic/assets/comp_icon/garbage.png`}
+                    width={`16px`}
+                  />
+                </Popconfirm>
               </Wrapper>
 
               <Wrapper
@@ -179,6 +243,19 @@ const Cart = ({}) => {
                               <Wrapper dr={`row`} width={`auto`}>
                                 <CommonCheckBox
                                   style={{ alignItems: "center" }}
+                                  checked={itemSelect.find(
+                                    (value) =>
+                                      value.id === data.id &&
+                                      (data.isPayment
+                                        ? "payment" === value.type
+                                        : "pre" === value.type)
+                                  )}
+                                  onChange={() =>
+                                    itemSelectHandler({
+                                      id: data.id,
+                                      type: data.isPayment ? "payment" : "pre",
+                                    })
+                                  }
                                 >
                                   <Wrapper
                                     width={`auto`}

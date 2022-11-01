@@ -12,14 +12,14 @@ export const initailState = {
   st_wishPaymentCreateLoading: false,
   st_wishPaymentCreateDone: false,
   st_wishPaymentCreateError: null,
-  // 장바구니 상품 삭제(약속처방)
-  st_wishPaymentDeleteLoading: false,
-  st_wishPaymentDeleteDone: false,
-  st_wishPaymentDeleteError: null,
   // 장바구니에 상품 추가(탕전처방)
   st_wishPreCreateLoading: false,
   st_wishPreCreateDone: false,
   st_wishPreCreateError: null,
+  // 장바구니 상품 삭제
+  st_wishDeleteLoading: false,
+  st_wishDeleteDone: false,
+  st_wishDeleteError: null,
 };
 
 // 장바구니에 리스트
@@ -32,15 +32,15 @@ export const WISH_PAYMENT_CREATE_REQUEST = "WISH_PAYMENT_CREATE_REQUEST";
 export const WISH_PAYMENT_CREATE_SUCCESS = "WISH_PAYMENT_CREATE_SUCCESS";
 export const WISH_PAYMENT_CREATE_FAILURE = "WISH_PAYMENT_CREATE_FAILURE";
 
-// 장바구니에 상품 삭제(약속처방)
-export const WISH_PAYMENT_DELETE_REQUEST = "WISH_PAYMENT_DELETE_REQUEST";
-export const WISH_PAYMENT_DELETE_SUCCESS = "WISH_PAYMENT_DELETE_SUCCESS";
-export const WISH_PAYMENT_DELETE_FAILURE = "WISH_PAYMENT_DELETE_FAILURE";
-
 // 장바구니에 상품 추가(탕전처방)
 export const WISH_PRE_CREATE_REQUEST = "WISH_PRE_CREATE_REQUEST";
 export const WISH_PRE_CREATE_SUCCESS = "WISH_PRE_CREATE_SUCCESS";
 export const WISH_PRE_CREATE_FAILURE = "WISH_PRE_CREATE_FAILURE";
+
+// 장바구니에 상품 삭제
+export const WISH_DELETE_REQUEST = "WISH_DELETE_REQUEST";
+export const WISH_DELETE_SUCCESS = "WISH_DELETE_SUCCESS";
+export const WISH_DELETE_FAILURE = "WISH_DELETE_FAILURE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -86,26 +86,6 @@ const reducer = (state = initailState, action) =>
         break;
       }
 
-      /////////////////////////////////////////////////////// 장바구니에 상품 삭제(약속처방)
-      case WISH_PAYMENT_DELETE_REQUEST: {
-        draft.st_wishPaymentDeleteLoading = true;
-        draft.st_wishPaymentDeleteDone = false;
-        draft.st_wishPaymentDeleteError = null;
-        break;
-      }
-      case WISH_PAYMENT_DELETE_SUCCESS: {
-        draft.st_wishPaymentDeleteLoading = false;
-        draft.st_wishPaymentDeleteDone = true;
-        draft.st_wishPaymentDeleteError = null;
-        break;
-      }
-      case WISH_PAYMENT_DELETE_FAILURE: {
-        draft.st_wishPaymentDeleteLoading = false;
-        draft.st_wishPaymentDeleteDone = false;
-        draft.st_wishPaymentDeleteError = action.error;
-        break;
-      }
-
       /////////////////////////////////////////////////////// 장바구니에 상품 추가(탕전처방)
       case WISH_PRE_CREATE_REQUEST: {
         draft.st_wishPreCreateLoading = true;
@@ -126,7 +106,25 @@ const reducer = (state = initailState, action) =>
         break;
       }
 
-      ///////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////// 장바구니에 상품 삭제
+      case WISH_DELETE_REQUEST: {
+        draft.st_wishDeleteLoading = true;
+        draft.st_wishDeleteDone = false;
+        draft.st_wishDeleteError = null;
+        break;
+      }
+      case WISH_DELETE_SUCCESS: {
+        draft.st_wishDeleteLoading = false;
+        draft.st_wishDeleteDone = true;
+        draft.st_wishDeleteError = null;
+        break;
+      }
+      case WISH_DELETE_FAILURE: {
+        draft.st_wishDeleteLoading = false;
+        draft.st_wishDeleteDone = false;
+        draft.st_wishDeleteError = action.error;
+        break;
+      }
 
       default:
         break;

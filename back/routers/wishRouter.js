@@ -281,47 +281,83 @@ router.post("/payment/container/update", isLoggedIn, async (req, res, next) => {
 });
 
 // 장바구니 상품 삭제
-router.post("/payment/container/delete", isLoggedIn, async (req, res, next) => {
-  const { containerId } = req.body;
+router.post("/delete", isLoggedIn, async (req, res, next) => {
+  const { idArr } = req.body;
 
-  if (!Array.isArray(containerId)) {
+  if (!Array.isArray(idArr)) {
     return res.status(401).send("잘못된 요청입니다.");
   }
 
   try {
     await Promise.all(
-      containerId.map(async (data) => {
-        const findContainerQuery = `
-        SELECT  id
-          FROM  wishPaymentContainer
-         WHERE  id = ${data}
-        `;
+      idArr.map(async (data) => {
+        if (data.type === "payment") {
+          // 약속처방
+          const findContainerQuery = `
+          SELECT  id
+            FROM  wishPaymentContainer
+           WHERE  id = ${data.id}
+          `;
 
-        const findData = await models.sequelize.query(findContainerQuery);
+          const findData = await models.sequelize.query(findContainerQuery);
 
-        if (findData[0].length === 0) {
-          return res.status(401).send("존재하지 않는 상품 정보입니다.");
+          if (findData[0].length === 0) {
+            return res.status(401).send("존재하지 않는 상품 정보입니다.");
+          }
+        } else if (data.type === "pre") {
+          // 탕전처방
+          const findQuery = `
+          SELECT  id
+            FROM  wishPrescriptionItem
+           WHERE  id = ${data.id}
+          `;
+
+          const findData = await models.sequelize.query(findQuery);
+
+          if (findData[0].length === 0) {
+            return res.status(401).send("존재하지 않는 상품 정보입니다.");
+          }
         }
       })
     );
 
     await Promise.all(
-      containerId.map(async (data) => {
-        const deleteQuery1 = `
-        DELETE
+      idArr.map(async (data) => {
+        if (data.type === "payment") {
+          // 약속처방
+          const deleteQuery1 = `
+          DELETE
           FROM  wishPaymentContainer
-         WHERE  id = ${data}
-        `;
+          WHERE  id = ${data.id}
+          `;
 
-        const deleteQuery2 = `
-        DELETE
+          const deleteQuery2 = `
+          DELETE
           FROM  wishPaymentItem
-         WHERE  WishPaymentContainerId = ${data}
-        `;
+          WHERE  WishPaymentContainerId = ${data.id}
+          `;
 
-        await models.sequelize.query(deleteQuery2);
+          await models.sequelize.query(deleteQuery2);
 
-        await models.sequelize.query(deleteQuery1);
+          await models.sequelize.query(deleteQuery1);
+        } else if (data.type === "pre") {
+          // 탕전처방
+          const deleteQuery1 = `
+          DELETE
+            FROM  wishPrescriptionItem
+           WHERE  id = ${data.id}
+          `;
+
+          const deleteQuery2 = `
+          DELETE
+            FROM  wishMaterialsItem
+           WHERE  WishPrescriptionItemId = ${data.id}
+          `;
+
+          await models.sequelize.query(deleteQuery2);
+
+          await models.sequelize.query(deleteQuery1);
+        }
       })
     );
 
@@ -655,45 +691,6 @@ router.post("/pre/item/update", isLoggedIn, async (req, res, next) => {
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니 상품을 수정할 수 없습니다.");
-  }
-});
-
-router.post("/pre/item/delete", isLoggedIn, async (req, res, next) => {
-  const { itemId } = req.body;
-
-  const findQuery = `
-  SELECT  id
-    FROM  wishPrescriptionItem
-   WHERE  id = ${itemId}
-  `;
-
-  const deleteQuery1 = `
-DELETE
-  FROM  wishPrescriptionItem
- WHERE  id = ${itemId}
-`;
-
-  const deleteQuery2 = `
-  DELETE
-    FROM  wishMaterialsItem
-   WHERE  WishPrescriptionItemId = ${itemId}
-  `;
-
-  try {
-    const findData = await models.sequelize.query(findQuery);
-
-    if (findData[0].length === 0) {
-      return res.status(401).send("존재하지 않는 상품 정보입니다.");
-    }
-
-    await models.sequelize.query(deleteQuery2);
-
-    await models.sequelize.query(deleteQuery1);
-
-    return res.status(200).json({ result: true });
-  } catch (error) {
-    console.error(error);
-    return res.status(401).send("장바구니 상품을 삭제할 수 없습니다.");
   }
 });
 
