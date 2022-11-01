@@ -36,7 +36,8 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
   `;
 
   const itemQuery = `
-  SELECT  paymentId,
+  SELECT  id,
+          paymentId,
           title,
           price,
           CONCAT(FORMAT(price, 0), "원")             AS viewPrice,
@@ -175,11 +176,11 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
             ${data.price},
             "${data.pack}",
             "${data.type}",
-            ${data.unit},
+            "${data.unit}",
             "${data.otherRequest}",
             NOW(),
             NOW(),
-            ${qnt},
+            ${data.qnt},
             ${containerInsertResult[0].insertId}
         )
         `;
@@ -208,7 +209,7 @@ router.post("/payment/container/update", isLoggedIn, async (req, res, next) => {
   `;
 
   try {
-    const updateResult = await models.sequelize.queru(updateQuery);
+    const updateResult = await models.sequelize.query(updateQuery);
 
     return res.status(200).json({ result: true });
   } catch (error) {
@@ -236,7 +237,7 @@ router.post("/payment/container/delete", isLoggedIn, async (req, res, next) => {
   const deleteQuery2 = `
   DELETE
     FROM  wishPaymentItem
-   WHERE  wishPaymentContainerId = ${containerId}
+   WHERE  WishPaymentContainerId = ${containerId}
   `;
 
   try {
@@ -246,8 +247,9 @@ router.post("/payment/container/delete", isLoggedIn, async (req, res, next) => {
       return res.status(401).send("존재하지 않는 상품 정보입니다.");
     }
 
-    await models.sequelize.query(deleteQuery1);
     await models.sequelize.query(deleteQuery2);
+
+    await models.sequelize.query(deleteQuery1);
 
     return res.status(200).json({ result: true });
   } catch (error) {
@@ -292,7 +294,7 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
       ${price},
       "${pack}",
       "${type}",
-      ${unit},
+      "${unit}",
       "${otherRequest}",
       NOW(),
       NOW(),
@@ -320,7 +322,7 @@ router.post("/payment/item/update", isLoggedIn, async (req, res, next) => {
      SET    price = ${price},
             pack = "${pack}",
             type = "${type}",
-            unit = ${unit},
+            unit = "${unit}",
             otherRequest = "${otherRequest}",
             updatedAt = NOW()
    WHERE    id = ${wishPaymentItemId}
@@ -436,6 +438,23 @@ router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
     materials,
   } = req.body;
 
+  // "materials": [
+  //     {
+  //         "materialId": 1,
+  //         "name": "재료이름",
+  //         "price": 10000,
+  //         "qnt": 3.0,
+  //         "unit": "단위"
+  //     },
+  //     {
+  //         "materialId": 2,
+  //         "name": "재료이름2",
+  //         "price": 10000,
+  //         "qnt": 0.5,
+  //         "unit": "단위"
+  //     }
+  // ]
+
   if (!Array.isArray(materials)) {
     return res.status(401).send("잘못된 요청입니다.");
   }
@@ -496,9 +515,9 @@ router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
       ${pack},
       ${unit},
       ${qnt},
-      ${medication ? medication`"${medication}"` : null},
+      ${medication ? `"${medication}"` : null},
       "${receiverName}",
-      ${content ? content`"${content}"` : null},
+      ${content ? `"${content}"` : null},
       NOW(),
       NOW(),
       ${
@@ -568,16 +587,17 @@ router.post("/pre/item/update", isLoggedIn, async (req, res, next) => {
 
   const updateQuery = `
   UPDATE  wishPrescriptionItem
-     SET  prescriptionId = ${prescriptionId}
-          title = "${title}"
-          totalPrice = ${totalPrice}
-          cheob = ${cheob}
-          pack = ${pack}
-          unit = ${unit}
-          qnt = ${qnt}
-          medication = "${medication}"
-          receiverName = "${receiverName}"
-          content = "${content}"
+     SET  prescriptionId = ${prescriptionId},
+          title = "${title}",
+          totalPrice = ${totalPrice},
+          cheob = ${cheob},
+          pack = ${pack},
+          unit = ${unit},
+          qnt = ${qnt},
+          medication = "${medication}",
+          receiverName = "${receiverName}",
+          content = "${content}",
+          updatedAt = NOW()
    WHERE  id = ${itemId}
   `;
 
@@ -595,7 +615,7 @@ router.post("/pre/item/delete", isLoggedIn, async (req, res, next) => {
   const { itemId } = req.body;
 
   const findQuery = `
-  SELETE  id
+  SELECT  id
     FROM  wishPrescriptionItem
    WHERE  id = ${itemId}
   `;
@@ -603,7 +623,7 @@ router.post("/pre/item/delete", isLoggedIn, async (req, res, next) => {
   const deleteQuery1 = `
 DELETE
   FROM  wishPrescriptionItem
- WHERE  id =${itemId}
+ WHERE  id = ${itemId}
 `;
 
   const deleteQuery2 = `
@@ -619,8 +639,9 @@ DELETE
       return res.status(401).send("존재하지 않는 상품 정보입니다.");
     }
 
-    await models.sequelize.query(deleteQuery1);
     await models.sequelize.query(deleteQuery2);
+
+    await models.sequelize.query(deleteQuery1);
 
     return res.status(200).json({ result: true });
   } catch (error) {
