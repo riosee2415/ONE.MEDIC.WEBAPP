@@ -1,10 +1,47 @@
 import { all, call, delay, fork, put, takeLatest } from "redux-saga/effects";
 import axios from "axios";
 import {
+  // 장바구니에 리스트
+  WISH_LIST_REQUEST,
+  WISH_LIST_SUCCESS,
+  WISH_LIST_FAILURE,
+  // 장바구니에 상품 추가(약속처방)
   WISH_PAYMENT_CREATE_REQUEST,
   WISH_PAYMENT_CREATE_SUCCESS,
   WISH_PAYMENT_CREATE_FAILURE,
+  // 장바구니에 상품 삭제(약속처방)
+  WISH_PAYMENT_DELETE_REQUEST,
+  WISH_PAYMENT_DELETE_SUCCESS,
+  WISH_PAYMENT_DELETE_FAILURE,
 } from "../reducers/wish";
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishListAPI(data) {
+  return await axios.post(`/api/wish/list/view`, data);
+}
+
+function* wishList(action) {
+  try {
+    const result = yield call(wishListAPI, action.data);
+
+    yield put({
+      type: WISH_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
 
 // ******************************************************************************************************************
 // SAGA AREA ********************************************************************************************************
@@ -34,10 +71,46 @@ function* wishPaymentCreate(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPaymentDeleteAPI(data) {
+  return await axios.post(`/api/wish/payment/container/delete`, data);
+}
+
+function* wishPaymentDelete(action) {
+  try {
+    const result = yield call(wishPaymentDeleteAPI, action.data);
+
+    yield put({
+      type: WISH_PAYMENT_DELETE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PAYMENT_DELETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
+
+function* watchWishList() {
+  yield takeLatest(WISH_LIST_REQUEST, wishList);
+}
 
 function* watchWishPaymentCreate() {
   yield takeLatest(WISH_PAYMENT_CREATE_REQUEST, wishPaymentCreate);
+}
+
+function* watchWishPaymentDelete() {
+  yield takeLatest(WISH_PAYMENT_DELETE_REQUEST, wishPaymentDelete);
 }
 
 //////////////////////////////////////////////////////////////
@@ -45,6 +118,8 @@ function* watchWishPaymentCreate() {
 export default function* wishSaga() {
   yield all([
     //
+    fork(watchWishList),
     fork(watchWishPaymentCreate),
+    fork(watchWishPaymentDelete),
   ]);
 }

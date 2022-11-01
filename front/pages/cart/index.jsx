@@ -22,19 +22,18 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
-import Head from "next/head";
-import { Checkbox } from "antd";
+import { Checkbox, Empty, message } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { RightOutlined } from "@ant-design/icons";
+import { WISH_LIST_REQUEST } from "../../reducers/wish";
 
 const Cart = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
+  const { me } = useSelector((state) => state.user);
+
+  const { wishList, st_wishListError } = useSelector((state) => state.wish);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -44,6 +43,19 @@ const Cart = ({}) => {
   ////// REDUX //////
   ////// USEEFFECT //////
 
+  useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+  }, [me]);
+
+  useEffect(() => {
+    if (me && st_wishListError) {
+      return message.error(st_wishListError);
+    }
+  }, [st_wishListError]);
+
   ////// TOGGLE //////
   ////// HANDLER //////
 
@@ -51,48 +63,6 @@ const Cart = ({}) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper
@@ -172,58 +142,109 @@ const Cart = ({}) => {
                   width={`16px`}
                 />
               </Wrapper>
+
               <Wrapper
-                radius={`20px`}
-                shadow={Theme.shadow_C}
-                padding={`15px`}
-                al={`flex-start`}
-                margin={`0 0 15px`}
+                minHeight={`calc(100vh - 185px - 75px)`}
+                ju={`flex-start`}
               >
-                <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
-                  <Wrapper dr={`row`} width={`auto`}>
-                    <CommonCheckBox style={{ alignItems: "center" }}>
-                      <Wrapper
-                        width={`auto`}
-                        al={`flex-start`}
-                        margin={`0 0 0 15px`}
-                      >
-                        <Text fontSize={`18px`} fontWeight={`bold`}>
-                          고객명
-                        </Text>
-                        <Text color={Theme.basicTheme_C}>
-                          서울 성동구 성수이로6길 13
-                        </Text>
+                <Wrapper dr={`row`} ju={`flex-start`} al={`flex-start`}>
+                  {wishList &&
+                    (wishList.length === 0 ? (
+                      <Wrapper>
+                        <Empty description={`담겨있는 상품이 없습니다.`} />
                       </Wrapper>
-                    </CommonCheckBox>
-                  </Wrapper>
-                  <Wrapper
-                    dr={`row`}
-                    width={`auto`}
-                    fontSize={width < 800 ? `16px` : `18px`}
-                  >
-                    <Text fontWeight={`bold`}>68,960</Text>
-                    <Text margin={`0 0 0 3px`}>원</Text>
-                  </Wrapper>
-                </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  color={Theme.grey_C}
-                  borderTop={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0 0`}
-                >
-                  <Wrapper width={`calc(100% / 3)`}>약재구성</Wrapper>
-                  <Wrapper
-                    width={`calc(100% / 3)`}
-                    borderRight={`1px solid ${Theme.grey2_C}`}
-                    borderLeft={`1px solid ${Theme.grey2_C}`}
-                  >
-                    탕전설정
-                  </Wrapper>
-                  <Link href={`/prescription-history`}>
-                    <ATag width={`calc(100% / 3)`}>
-                      <Wrapper>내역확인</Wrapper>
-                    </ATag>
-                  </Link>
+                    ) : (
+                      wishList.map((data, idx) => {
+                        return (
+                          <Wrapper
+                            width={
+                              width < 1100
+                                ? width < 700
+                                  ? `100%`
+                                  : `calc(100% / 2 - 16px)`
+                                : `calc(100% / 3 - 16px)`
+                            }
+                            key={idx}
+                            radius={`20px`}
+                            shadow={Theme.shadow_C}
+                            padding={`15px`}
+                            al={`flex-start`}
+                            margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
+                          >
+                            <Wrapper
+                              dr={`row`}
+                              ju={`space-between`}
+                              margin={`15px 0`}
+                            >
+                              <Wrapper dr={`row`} width={`auto`}>
+                                <CommonCheckBox
+                                  style={{ alignItems: "center" }}
+                                >
+                                  <Wrapper
+                                    width={`auto`}
+                                    al={`flex-start`}
+                                    margin={`0 0 0 15px`}
+                                  >
+                                    <Text fontSize={`18px`} fontWeight={`bold`}>
+                                      {data.title}
+                                    </Text>
+                                    <Text fontSize={`16px`}>{data.qnt}개</Text>
+                                  </Wrapper>
+                                </CommonCheckBox>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                width={`auto`}
+                                fontSize={width < 800 ? `16px` : `18px`}
+                              >
+                                <Text fontWeight={`bold`}>
+                                  {data.viewTotalPrice}
+                                </Text>
+                              </Wrapper>
+                            </Wrapper>
+                            {data.isPayment ? (
+                              <Wrapper
+                                dr={`row`}
+                                color={Theme.grey_C}
+                                borderTop={`1px solid ${Theme.grey2_C}`}
+                                padding={`10px 0 0`}
+                              >
+                                <Wrapper
+                                  width={`calc(100% / 2)`}
+                                  borderRight={`1px solid ${Theme.grey2_C}`}
+                                >
+                                  주문수정
+                                </Wrapper>
+                                <Link href={`/prescription-history`}>
+                                  <ATag width={`calc(100% / 2)`}>
+                                    <Wrapper>내역확인</Wrapper>
+                                  </ATag>
+                                </Link>
+                              </Wrapper>
+                            ) : (
+                              <Wrapper
+                                dr={`row`}
+                                color={Theme.grey_C}
+                                borderTop={`1px solid ${Theme.grey2_C}`}
+                                padding={`10px 0 0`}
+                              >
+                                <Wrapper
+                                  width={`calc(100% / 2)`}
+                                  borderRight={`1px solid ${Theme.grey2_C}`}
+                                >
+                                  약재수정
+                                </Wrapper>
+                                <Link href={`/prescription-history`}>
+                                  <ATag width={`calc(100% / 2)`}>
+                                    <Wrapper>내역확인</Wrapper>
+                                  </ATag>
+                                </Link>
+                              </Wrapper>
+                            )}
+                          </Wrapper>
+                        );
+                      })
+                    ))}
                 </Wrapper>
               </Wrapper>
             </Wrapper>
@@ -282,7 +303,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     });
 
     context.store.dispatch({
-      type: SEO_LIST_REQUEST,
+      type: WISH_LIST_REQUEST,
     });
 
     // 구현부 종료

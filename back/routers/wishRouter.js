@@ -19,18 +19,18 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
     }
 
     const selcetQuery = `
-SELECT	id				AS paymentId,	
-    		productname,
+SELECT	id,	
+    		productname                          AS title,
     		totalPrice,
     		CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,
-    		totalQun,
+    		totalQun                              AS qnt,
     		WishListId,
     		1				  AS isPayment
   FROM	wishPaymentContainer
  WHERE	WishListId = ${findWishList[0][0].id}
  UNION
    ALL
- SELECT	id				AS preId,
+ SELECT	id,
    			title,
    			totalPrice,
         CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,		
@@ -282,34 +282,46 @@ router.post("/payment/container/update", isLoggedIn, async (req, res, next) => {
 router.post("/payment/container/delete", isLoggedIn, async (req, res, next) => {
   const { containerId } = req.body;
 
-  const findContainerQuery = `
-  SELECT  id
-    FROM  wishPaymentContainer
-   WHERE  id = ${containerId}
-  `;
-
-  const deleteQuery1 = `
-  DELETE
-    FROM  wishPaymentContainer
-   WHERE  id = ${containerId}
-  `;
-
-  const deleteQuery2 = `
-  DELETE
-    FROM  wishPaymentItem
-   WHERE  WishPaymentContainerId = ${containerId}
-  `;
+  if (!Array.isArray(containerId)) {
+    return res.status(401).send("잘못된 요청입니다.");
+  }
 
   try {
-    const findData = await models.sequelize.query(findContainerQuery);
+    await Promise.all(
+      containerId.map(async (data) => {
+        const findContainerQuery = `
+        SELECT  id
+          FROM  wishPaymentContainer
+         WHERE  id = ${data}
+        `;
 
-    if (findData[0].length === 0) {
-      return res.status(401).send("존재하지 않는 상품 정보입니다.");
-    }
+        const findData = await models.sequelize.query(findContainerQuery);
 
-    await models.sequelize.query(deleteQuery2);
+        if (findData[0].length === 0) {
+          return res.status(401).send("존재하지 않는 상품 정보입니다.");
+        }
+      })
+    );
 
-    await models.sequelize.query(deleteQuery1);
+    await Promise.all(
+      containerId.map(async (data) => {
+        const deleteQuery1 = `
+        DELETE
+          FROM  wishPaymentContainer
+         WHERE  id = ${data}
+        `;
+
+        const deleteQuery2 = `
+        DELETE
+          FROM  wishPaymentItem
+         WHERE  WishPaymentContainerId = ${data}
+        `;
+
+        await models.sequelize.query(deleteQuery2);
+
+        await models.sequelize.query(deleteQuery1);
+      })
+    );
 
     return res.status(200).json({ result: true });
   } catch (error) {
