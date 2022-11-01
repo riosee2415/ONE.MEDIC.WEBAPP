@@ -29,11 +29,6 @@ module.exports = class WishPrescriptionItem extends Model {
           allowNull: false,
           defaultValue: 1,
         },
-        qnt: {
-          type: DataTypes.FLOAT, // 수량
-          defaultValue: 1,
-          allowNull: false, // 필수
-        },
         medication: {
           type: DataTypes.STRING(600), // 복약지도
           allowNull: true,
