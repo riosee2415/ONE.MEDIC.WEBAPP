@@ -188,7 +188,9 @@ const Cart = ({}) => {
                                     <Text fontSize={`18px`} fontWeight={`bold`}>
                                       {data.title}
                                     </Text>
-                                    <Text fontSize={`16px`}>{data.qnt}개</Text>
+                                    <Text fontSize={`16px`}>
+                                      {data.receiverName}
+                                    </Text>
                                   </Wrapper>
                                 </CommonCheckBox>
                               </Wrapper>

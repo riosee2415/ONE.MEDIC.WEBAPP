@@ -13,6 +13,10 @@ import {
   WISH_PAYMENT_DELETE_REQUEST,
   WISH_PAYMENT_DELETE_SUCCESS,
   WISH_PAYMENT_DELETE_FAILURE,
+  // 장바구니에 상품 추가(탕전처방)
+  WISH_PRE_CREATE_REQUEST,
+  WISH_PRE_CREATE_SUCCESS,
+  WISH_PRE_CREATE_FAILURE,
 } from "../reducers/wish";
 
 // ******************************************************************************************************************
@@ -99,6 +103,34 @@ function* wishPaymentDelete(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPreCreateAPI(data) {
+  return await axios.post(`/api/wish/pre/item/create`, data);
+}
+
+function* wishPreCreate(action) {
+  try {
+    const result = yield call(wishPreCreateAPI, action.data);
+
+    yield put({
+      type: WISH_PRE_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PRE_CREATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchWishList() {
@@ -113,6 +145,10 @@ function* watchWishPaymentDelete() {
   yield takeLatest(WISH_PAYMENT_DELETE_REQUEST, wishPaymentDelete);
 }
 
+function* watchWishPreCreate() {
+  yield takeLatest(WISH_PRE_CREATE_REQUEST, wishPreCreate);
+}
+
 //////////////////////////////////////////////////////////////
 
 export default function* wishSaga() {
@@ -121,5 +157,6 @@ export default function* wishSaga() {
     fork(watchWishList),
     fork(watchWishPaymentCreate),
     fork(watchWishPaymentDelete),
+    fork(watchWishPreCreate),
   ]);
 }

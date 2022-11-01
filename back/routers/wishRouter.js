@@ -25,6 +25,7 @@ SELECT	id,
     		CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,
     		totalQun                              AS qnt,
     		WishListId,
+        receiverName,
     		1				  AS isPayment
   FROM	wishPaymentContainer
  WHERE	WishListId = ${findWishList[0][0].id}
@@ -34,8 +35,9 @@ SELECT	id,
    			title,
    			totalPrice,
         CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,		
-   			qnt,
+   			1                                     AS qnt,
    			WishListId,
+        receiverName,
    			0				AS isPayment
    FROM	wishPrescriptionItem
   WHERE	WishListId = ${findWishList[0][0].id}

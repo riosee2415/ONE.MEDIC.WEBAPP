@@ -372,11 +372,6 @@ const PromiseDetail = () => {
     //   },
     // });
 
-    console.log(
-      temporaryDatum &&
-        temporaryDatum.map((data) => data.qnt).reduce((a, b) => a + b)
-    );
-
     dispatch({
       type: WISH_PAYMENT_CREATE_REQUEST,
       data: {

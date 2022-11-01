@@ -16,6 +16,10 @@ export const initailState = {
   st_wishPaymentDeleteLoading: false,
   st_wishPaymentDeleteDone: false,
   st_wishPaymentDeleteError: null,
+  // 장바구니에 상품 추가(탕전처방)
+  st_wishPreCreateLoading: false,
+  st_wishPreCreateDone: false,
+  st_wishPreCreateError: null,
 };
 
 // 장바구니에 리스트
@@ -32,6 +36,11 @@ export const WISH_PAYMENT_CREATE_FAILURE = "WISH_PAYMENT_CREATE_FAILURE";
 export const WISH_PAYMENT_DELETE_REQUEST = "WISH_PAYMENT_DELETE_REQUEST";
 export const WISH_PAYMENT_DELETE_SUCCESS = "WISH_PAYMENT_DELETE_SUCCESS";
 export const WISH_PAYMENT_DELETE_FAILURE = "WISH_PAYMENT_DELETE_FAILURE";
+
+// 장바구니에 상품 추가(탕전처방)
+export const WISH_PRE_CREATE_REQUEST = "WISH_PRE_CREATE_REQUEST";
+export const WISH_PRE_CREATE_SUCCESS = "WISH_PRE_CREATE_SUCCESS";
+export const WISH_PRE_CREATE_FAILURE = "WISH_PRE_CREATE_FAILURE";
 
 const reducer = (state = initailState, action) =>
   produce(state, (draft) => {
@@ -77,7 +86,7 @@ const reducer = (state = initailState, action) =>
         break;
       }
 
-      /////////////////////////////////////////////////////// 장바구니에 상품 추가(약속처방)
+      /////////////////////////////////////////////////////// 장바구니에 상품 삭제(약속처방)
       case WISH_PAYMENT_DELETE_REQUEST: {
         draft.st_wishPaymentDeleteLoading = true;
         draft.st_wishPaymentDeleteDone = false;
@@ -97,7 +106,25 @@ const reducer = (state = initailState, action) =>
         break;
       }
 
-      ///////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////// 장바구니에 상품 추가(탕전처방)
+      case WISH_PRE_CREATE_REQUEST: {
+        draft.st_wishPreCreateLoading = true;
+        draft.st_wishPreCreateDone = false;
+        draft.st_wishPreCreateError = null;
+        break;
+      }
+      case WISH_PRE_CREATE_SUCCESS: {
+        draft.st_wishPreCreateLoading = false;
+        draft.st_wishPreCreateDone = true;
+        draft.st_wishPreCreateError = null;
+        break;
+      }
+      case WISH_PRE_CREATE_FAILURE: {
+        draft.st_wishPreCreateLoading = false;
+        draft.st_wishPreCreateDone = false;
+        draft.st_wishPreCreateError = action.error;
+        break;
+      }
 
       ///////////////////////////////////////////////////////
 

@@ -34,6 +34,7 @@ import {
 
 import useInput from "../../hooks/useInput";
 import { REQUEST_ALL_LIST_REQUEST } from "../../reducers/userRequest";
+import { WISH_PRE_CREATE_REQUEST } from "../../reducers/wish";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -102,6 +103,12 @@ const Prescription = ({}) => {
   const { pprId, pprDetail, st_pprCreateDone, st_pprCreateError } = useSelector(
     (state) => state.prescriptionPaymentRequest
   );
+
+  const {
+    st_wishPreCreateLoading,
+    st_wishPreCreateDone,
+    st_wishPreCreateError,
+  } = useSelector((state) => state.wish);
 
   const { me } = useSelector((state) => state.user);
 
@@ -238,15 +245,17 @@ const Prescription = ({}) => {
   // 주문하기
 
   useEffect(() => {
-    if (st_pprCreateDone && pprId) {
-      router.push(`/deliveryInfo/${pprId}?type=ppr`);
+    if (st_wishPreCreateDone) {
+      router.push("/cart");
+      return message.success("장바구니에 담겼습니다.");
     }
-  }, [st_pprCreateDone, pprId]);
+  }, [st_wishPreCreateDone]);
+
   useEffect(() => {
-    if (st_pprCreateError) {
-      return message.error(st_pprCreateError);
+    if (st_wishPreCreateError) {
+      return message.error(st_wishPreCreateError);
     }
-  }, [st_pprCreateError]);
+  }, [st_wishPreCreateError]);
 
   ////// TOGGLE //////
 
@@ -415,25 +424,47 @@ const Prescription = ({}) => {
     );
     const recipeName = sessionStorage.getItem("recipeName");
 
+    if (!rData) {
+      return message.error("요청사항을 설정해주세요.");
+    }
+
     for (let i = 0; i < userMaterials.length; i++) {
       if (userMaterials[i].qnt === 0) {
         return message.error("용량이 0인 약재가 있습니다.");
       }
     }
 
+    // dispatch({
+    //   type: PPR_CREATE_REQUEST,
+    //   data: {
+    //     useMaterialData: userMaterials,
+    //     totalPrice: materialTotalPrice + packTotalPrice,
+    //     name: recipeName
+    //       ? recipeName
+    //       : `${userMaterials[0].name}${
+    //           userMaterials.length > 1 ? `외 ${userMaterials.length - 1}개` : ""
+    //         }`,
+    //   },
+    // });
+
     dispatch({
-      type: PPR_CREATE_REQUEST,
+      type: WISH_PRE_CREATE_REQUEST,
       data: {
-        useMaterialData: userMaterials,
+        title: rData.title,
         totalPrice: materialTotalPrice + packTotalPrice,
-        name: recipeName
-          ? recipeName
-          : `${userMaterials[0].name}${
-              userMaterials.length > 1 ? `외 ${userMaterials.length - 1}개` : ""
-            }`,
+        cheob: chubSelect,
+        pack: packSelect,
+        unit: volumnSelect,
+        receiverName: rData.receiverName,
+        content: rData.content,
+        medication: rData.medication,
+        materials: userMaterials.map((data) => {
+          return { materialId: data.id, ...data };
+        }),
       },
     });
   }, [
+    rData,
     userMaterials,
     materialTotalPrice,
     packTotalPrice,
@@ -753,6 +784,7 @@ const Prescription = ({}) => {
                 radius={`0`}
                 cursor={`pointer`}
                 onClick={paymentCreateHandler}
+                loading={st_wishPreCreateLoading}
               >
                 장바구니 담기
               </CommonButton>
