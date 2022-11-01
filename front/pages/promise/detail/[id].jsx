@@ -33,6 +33,7 @@ import {
 import { useRouter } from "next/router";
 import { Form, message, Modal, Select } from "antd";
 import { REQUEST_ALL_LIST_REQUEST } from "../../../reducers/userRequest";
+import { WISH_PAYMENT_CREATE_REQUEST } from "../../../reducers/wish";
 
 const CheckdButton = styled.button`
   padding: 5px 10px;
@@ -112,6 +113,12 @@ const PromiseDetail = () => {
     st_paymentRequestCreateError,
   } = useSelector((state) => state.paymentRequest);
 
+  const {
+    st_wishPaymentCreateLoading,
+    st_wishPaymentCreateDone,
+    st_wishPaymentCreateError,
+  } = useSelector((state) => state.wish);
+
   const { requestAllList } = useSelector((state) => state.userRequest);
 
   ////// HOOKS //////
@@ -146,7 +153,7 @@ const PromiseDetail = () => {
     if (temporaryDatum) {
       let total = 0;
       for (let i = 0; i < temporaryDatum.length; i++) {
-        total += temporaryDatum[i].payment * temporaryDatum[i].cnt;
+        total += temporaryDatum[i].price * temporaryDatum[i].qnt;
       }
 
       setTotalPayment(total);
@@ -175,11 +182,12 @@ const PromiseDetail = () => {
       for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
         paymentArr.push({
           id: paymentDetail.PaymentRequest[i].id,
-          payment: paymentDetail.PaymentRequest[i].payment,
-          packVolumn: paymentDetail.PaymentRequest[i].packVolumn,
-          typeVolumn: paymentDetail.PaymentRequest[i].typeVolumn,
-          unitVolumn: paymentDetail.PaymentRequest[i].unitVolumn,
-          otherRequest: paymentDetail.PaymentRequest[i].otherRequest,
+          paymentId: router.query && router.query.id,
+          price: paymentDetail.PaymentRequest[i].payment,
+          pack: paymentDetail.PaymentRequest[i].packVolumn,
+          type: paymentDetail.PaymentRequest[i].typeVolumn,
+          unit: paymentDetail.PaymentRequest[i].unitVolumn,
+          qnt: 1,
         });
       }
 
@@ -231,16 +239,18 @@ const PromiseDetail = () => {
   }, [typeList, packList, unitList, product]);
 
   useEffect(() => {
-    if (st_paymentRequestCreateError) {
-      return message.error(st_paymentRequestCreateError);
+    if (st_wishPaymentCreateDone) {
+      router.push("/cart");
+      return message.success("장바구니에 담겼습니다.");
     }
-  }, [st_paymentRequestCreateError]);
+  }, [st_wishPaymentCreateDone]);
 
   useEffect(() => {
-    if (st_paymentRequestCreateDone) {
-      return router.push(`/deliveryInfo/${paymentId}?type=payment`);
+    if (st_wishPaymentCreateError) {
+      return message.error(st_wishPaymentCreateError);
     }
-  }, [st_paymentRequestCreateDone]);
+  }, [st_wishPaymentCreateError]);
+
   ////// TOGGLE //////
 
   const rModalToggle = useCallback(() => {
@@ -295,16 +305,17 @@ const PromiseDetail = () => {
 
     temporayArr.push({
       id: temporaryId,
-      payment:
+      paymentId: router.query && router.query.id,
+      price:
         product &&
         product.price +
           (type.value.originAddPrice ? type.value.originAddPrice : 0) +
           (pack.value.originAddPrice ? pack.value.originAddPrice : 0) +
           (unit.value.originAddPrice ? unit.value.originAddPrice : 0),
-      packVolumn: type.value.name ? type.value.name : type.value,
-      typeVolumn: pack.value.name ? pack.value.name : pack.value,
-      unitVolumn: unit.value.name ? unit.value.name : unit.value,
-      cnt: 1,
+      pack: type.value.name ? type.value.name : type.value,
+      type: pack.value.name ? pack.value.name : pack.value,
+      unit: unit.value.name ? unit.value.name : unit.value,
+      qnt: 1,
       // otherRequest: otherInput.value,
     });
 
@@ -314,6 +325,7 @@ const PromiseDetail = () => {
     pack.value,
     unit.value,
     // otherInput.value,
+    router.query,
     unitList,
     temporaryDatum,
     temporaryId,
@@ -337,24 +349,49 @@ const PromiseDetail = () => {
     if (!temporaryDatum) {
       return message.error("주문을 추가해주세요.");
     }
+
+    if (!rData) {
+      return message.error("요청사항을 설정해주세요.");
+    }
+
+    // dispatch({
+    //   type: PAYMENTREQUEST_CREATE_REQUEST,
+    //   data: {
+    //     userId: me.id,
+    //     productName:
+    //       temporaryDatum.length > 1
+    //         ? `${product.title} ${
+    //             unit.value.name ? unit.value.name : unit.value
+    //           } 외 ${temporaryDatum.length - 1}개`
+    //         : `${product.title} ${
+    //             unit.value.name ? unit.value.name : unit.value
+    //           }`,
+    //     paymentRequestDatum: temporaryDatum,
+    //     totalPrice: totalPayment,
+    //     prescriptionId: product.id,
+    //   },
+    // });
+
+    console.log(
+      temporaryDatum &&
+        temporaryDatum.map((data) => data.qnt).reduce((a, b) => a + b)
+    );
+
     dispatch({
-      type: PAYMENTREQUEST_CREATE_REQUEST,
+      type: WISH_PAYMENT_CREATE_REQUEST,
       data: {
-        userId: me.id,
-        productName:
-          temporaryDatum.length > 1
-            ? `${product.title} ${
-                unit.value.name ? unit.value.name : unit.value
-              } 외 ${temporaryDatum.length - 1}개`
-            : `${product.title} ${
-                unit.value.name ? unit.value.name : unit.value
-              }`,
-        paymentRequestDatum: temporaryDatum,
+        productname: product && product.title,
         totalPrice: totalPayment,
-        prescriptionId: product.id,
+        totalQun:
+          temporaryDatum &&
+          temporaryDatum.map((data) => data.qnt).reduce((a, b) => a + b),
+        medication: rData.medication,
+        receiverName: rData.receiverName,
+        content: rData.content,
+        items: temporaryDatum,
       },
     });
-  }, [temporaryDatum, me, product, totalPayment, unit.value]);
+  }, [temporaryDatum, me, product, totalPayment, rData]);
 
   // 수량 선택
   const qntSelectHandler = useCallback(
@@ -375,7 +412,7 @@ const PromiseDetail = () => {
   const qntSaveHandler = useCallback(() => {
     if (
       !qntSelect ||
-      temporaryDatum.find((item) => item.id === qntSelect).cnt ===
+      temporaryDatum.find((item) => item.id === qntSelect).qnt ===
         parseInt(qntInput.value) ||
       !qntInput.value ||
       parseInt(qntInput.value) === 0
@@ -389,7 +426,7 @@ const PromiseDetail = () => {
       (data) => data.id === qntSelect
     );
 
-    temporaryArr[datumFindIndex].cnt = parseInt(qntInput.value);
+    temporaryArr[datumFindIndex].qnt = parseInt(qntInput.value);
 
     setTemporaryDatum(temporaryArr);
 
@@ -607,7 +644,7 @@ const PromiseDetail = () => {
               margin={`0 0 20px`}
             >
               <Wrapper dr={`row`} ju={`space-between`}>
-                <Text fontWeight={`600`}>{rData && rData.title}</Text>
+                <Text fontWeight={`600`}>{rData && rData.receiverName}</Text>
                 <CommonButton
                   margin={
                     width < 800
@@ -626,7 +663,6 @@ const PromiseDetail = () => {
 
               {rData && (
                 <Wrapper al={`flex-start`} margin={`5px 0 0`}>
-                  <Text margin={`10px 0 0`}>{rData.receiverName}</Text>
                   <Text margin={`10px 0 0`}>{rData.medication}</Text>
                   <Text margin={`10px 0 0`}>{rData.content}</Text>
                 </Wrapper>
@@ -660,8 +696,8 @@ const PromiseDetail = () => {
                     >
                       <Wrapper dr={`row`} ju={`space-between`}>
                         <Text color={Theme.grey2_C}>
-                          {data.typeVolumn}&nbsp;|&nbsp;{data.packVolumn}
-                          {data.unitVolumn && ` | ${data.unitVolumn}`}
+                          {data.type}&nbsp;|&nbsp;{data.pack}
+                          {data.unit && ` | ${data.unit}`}
                         </Text>
                         <Image
                           cursor={`pointer`}
@@ -696,19 +732,19 @@ const PromiseDetail = () => {
                             />
                           ) : (
                             <Text width={`100px`} textAlign={`center`}>
-                              {data.cnt}
+                              {data.qnt}
                             </Text>
                           )}
                         </Wrapper>
                         <Wrapper width={`auto`} dr={`row`}>
-                          <Text fontSize={`12px`}>총 {data.cnt}개</Text>
+                          <Text fontSize={`12px`}>총 {data.qnt}개</Text>
                           <Text
                             fontSize={`20px`}
                             fontWeight={`bold`}
                             margin={`0 0 0 15px`}
                             color={Theme.basicTheme_C}
                           >
-                            {String(data.payment * data.cnt).replace(
+                            {String(data.price * data.qnt).replace(
                               /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
                               ","
                             )}
@@ -755,6 +791,7 @@ const PromiseDetail = () => {
                 radius={`0`}
                 cursor={`pointer`}
                 onClick={createPaymentRequestHandler}
+                loading={st_wishPaymentCreateLoading}
               >
                 장바구니 담기
               </CommonButton>
@@ -796,17 +833,6 @@ const PromiseDetail = () => {
           </Wrapper>
 
           <Form form={rForm} onFinish={requestSetHandler}>
-            <Text>처방명</Text>
-            <Form.Item
-              name={`title`}
-              rules={[{ required: true, message: "처방명을 입력해주세요." }]}
-            >
-              <TextInput
-                width={`100%`}
-                placeholder={`처방명을 입력해주세요.`}
-              />
-            </Form.Item>
-
             <Text>환자이름</Text>
             <Form.Item
               name={`receiverName`}

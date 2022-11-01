@@ -18,6 +18,7 @@ import addressSaga from "./address";
 import searchSaga from "./search";
 import prescriptionPriceSaga from "./prescriptionPrice";
 import userRequestSaga from "./userRequest";
+import wishSaga from "./wish";
 
 //
 import axios from "axios";
@@ -47,5 +48,6 @@ export default function* rootSaga() {
     fork(searchSaga),
     fork(prescriptionPriceSaga),
     fork(userRequestSaga),
+    fork(wishSaga),
   ]);
 }
