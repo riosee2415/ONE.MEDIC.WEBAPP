@@ -5,7 +5,45 @@ const models = require("../models");
 const router = express.Router();
 
 router.post("/list/view", isLoggedIn, async (req, res, next) => {
+  const findQuery = `
+  SELECT  id
+    FROM  wishLists
+   WHERE  UserId = ${req.user.id}
+  `;
+
   try {
+    const findWishList = await models.sequelize.query(findQuery);
+
+    if (findWishList[0].length === 0) {
+      return res.status(200).json([]);
+    }
+
+    const selcetQuery = `
+SELECT	id				AS paymentId,	
+    		productname,
+    		totalPrice,
+    		CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,
+    		totalQun,
+    		WishListId,
+    		1				  AS isPayment
+  FROM	wishPaymentContainer
+ WHERE	WishListId = ${findWishList[0][0].id}
+ UNION
+   ALL
+ SELECT	id				AS preId,
+   			title,
+   			totalPrice,
+        CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,		
+   			qnt,
+   			WishListId,
+   			0				AS isPayment
+   FROM	wishPrescriptionItem
+  WHERE	WishListId = ${findWishList[0][0].id}
+    `;
+
+    const wishListData = await models.sequelize.query(selcetQuery);
+
+    return res.status(200).json(wishListData[0]);
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니 목록을 불러올 수 없습니다.");
