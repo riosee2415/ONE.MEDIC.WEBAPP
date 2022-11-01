@@ -27,7 +27,7 @@ module.exports = class WishPaymentItem extends Model {
           allowNull: false,
         },
         unit: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.STRING(100),
           allowNull: false,
         },
         otherRequest: {

@@ -37,5 +37,7 @@ module.exports = class WishMaterialsItem extends Model {
       }
     );
   }
-  static associate(db) {}
+  static associate(db) {
+    db.WishMaterialsItem.belongsTo(db.WishPrescriptionItem);
+  }
 };

@@ -31,6 +31,6 @@ module.exports = class WishPaymentContainer extends Model {
     );
   }
   static associate(db) {
-    db.WishPaymentContainer.hasMany(db.WishPrescriptionItem);
+    db.WishPaymentContainer.hasMany(db.WishPaymentItem);
   }
 };
