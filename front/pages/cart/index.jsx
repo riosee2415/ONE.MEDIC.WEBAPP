@@ -294,7 +294,11 @@ const Cart = ({}) => {
                                 >
                                   주문수정
                                 </Wrapper>
-                                <Link href={`/prescription-history`}>
+                                <Link
+                                  href={`/prescription-history/${
+                                    data.id
+                                  }?type=${data.isPayment ? "payment" : "pre"}`}
+                                >
                                   <ATag width={`calc(100% / 2)`}>
                                     <Wrapper>내역확인</Wrapper>
                                   </ATag>
@@ -313,7 +317,11 @@ const Cart = ({}) => {
                                 >
                                   약재수정
                                 </Wrapper>
-                                <Link href={`/prescription-history`}>
+                                <Link
+                                  href={`/prescription-history/${
+                                    data.id
+                                  }?type=${data.isPayment ? "payment" : "pre"}`}
+                                >
                                   <ATag width={`calc(100% / 2)`}>
                                     <Wrapper>내역확인</Wrapper>
                                   </ATag>

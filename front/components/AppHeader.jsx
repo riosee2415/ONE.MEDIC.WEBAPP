@@ -302,6 +302,11 @@ const AppHeader = ({ children, width }) => {
       router: "/request",
       title: "나의 요청사항",
     },
+
+    {
+      router: "/prescription-history/[id]",
+      title: "내역확인",
+    },
   ];
   return (
     <WholeWrapper height={`64px`} zIndex={`100`} position={`relative`}>
