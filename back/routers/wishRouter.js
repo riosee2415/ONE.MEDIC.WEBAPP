@@ -132,7 +132,6 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
   //   item informations
   //   -----------------------
   //   paymentId,
-  //   title,
   //   price,
   //   pack,
   //   type,
@@ -211,12 +210,10 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
         INSERT  INTO    wishPaymentItem
         (
             paymentId,
-            title,
             price,
             pack,
             type,
             unit,
-            otherRequest,
             createdAt,
             updatedAt,
             qnt,
@@ -225,12 +222,10 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
         VALUES
         (
             ${data.paymentId},
-            "${data.title}",
             ${data.price},
             "${data.pack}",
             "${data.type}",
             "${data.unit}",
-            "${data.otherRequest}",
             NOW(),
             NOW(),
             ${data.qnt},
@@ -325,14 +320,12 @@ router.post("/payment/container/delete", isLoggedIn, async (req, res, next) => {
 
 // container 안에 상품 추가 (약속처방)
 router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
-  const { containerId, paymentId, title, price, pack, type, unit, qnt } =
-    req.body;
+  const { containerId, paymentId, price, pack, type, unit, qnt } = req.body;
 
   const insertQuery = `
   INSERT  INTO    wishPaymentItem
   (
       paymentId,
-      title,
       price,
       pack,
       type,
@@ -345,7 +338,6 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
   VALUES
   (
       ${paymentId},
-      "${title}",
       ${price},
       "${pack}",
       "${type}",

@@ -10,10 +10,6 @@ module.exports = class WishPaymentItem extends Model {
           type: DataTypes.INTEGER,
           allowNull: false,
         },
-        title: {
-          type: DataTypes.STRING(300),
-          allowNull: false,
-        },
         price: {
           type: DataTypes.INTEGER,
           allowNull: false,
