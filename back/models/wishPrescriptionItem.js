@@ -6,10 +6,6 @@ module.exports = class WishPrescriptionItem extends Model {
   static init(sequelize) {
     return super.init(
       {
-        prescriptionId: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
         title: {
           type: DataTypes.STRING(300), // 처방명
           allowNull: false,

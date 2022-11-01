@@ -424,7 +424,6 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
 
   const detailQuery = `
   SELECT	id,
-          prescriptionId,
           title,
           totalPrice,
           CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,
@@ -482,7 +481,6 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
 /// 바로 wishList에 추가됨 (탕전처방)
 router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
   const {
-    prescriptionId,
     title,
     totalPrice,
     cheob,
@@ -549,7 +547,6 @@ router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
     const preScriptionItemCreateQuery = `
     INSERT  INTO  wishPrescriptionItem
     (
-      prescriptionId,
       title,
       totalPrice,
       cheob,
@@ -565,7 +562,6 @@ router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
     )
     VALUES
     (
-      ${prescriptionId},
       "${title}",
       ${totalPrice},
       ${cheob},
@@ -630,7 +626,6 @@ router.post("/pre/item/create", isLoggedIn, async (req, res, next) => {
 router.post("/pre/item/update", isLoggedIn, async (req, res, next) => {
   const {
     itemId,
-    prescriptionId,
     title,
     totalPrice,
     cheob,
@@ -644,8 +639,7 @@ router.post("/pre/item/update", isLoggedIn, async (req, res, next) => {
 
   const updateQuery = `
   UPDATE  wishPrescriptionItem
-     SET  prescriptionId = ${prescriptionId},
-          title = "${title}",
+     SET  title = "${title}",
           totalPrice = ${totalPrice},
           cheob = ${cheob},
           pack = ${pack},
