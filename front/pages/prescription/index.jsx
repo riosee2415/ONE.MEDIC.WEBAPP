@@ -34,7 +34,12 @@ import {
 
 import useInput from "../../hooks/useInput";
 import { REQUEST_ALL_LIST_REQUEST } from "../../reducers/userRequest";
-import { WISH_PRE_CREATE_REQUEST } from "../../reducers/wish";
+import {
+  WISH_PRE_CREATE_REQUEST,
+  WISH_PRE_DETAIL_REQUEST,
+  WISH_PRE_ITEM_DELETE_REQUEST,
+  WISH_PRE_UPDATE_REQUEST,
+} from "../../reducers/wish";
 
 const CustomCommonButton = styled(CommonButton)`
   border: 0px;
@@ -100,14 +105,22 @@ const Prescription = ({}) => {
   ////// GLOBAL STATE //////
   const { userMaterials } = useSelector((state) => state.material);
   const { price } = useSelector((state) => state.prescriptionPrice);
-  const { pprId, pprDetail, st_pprCreateDone, st_pprCreateError } = useSelector(
+  const { pprDetail } = useSelector(
     (state) => state.prescriptionPaymentRequest
   );
 
   const {
+    wishPreDetail,
+    //
     st_wishPreCreateLoading,
     st_wishPreCreateDone,
     st_wishPreCreateError,
+    //
+    st_wishPreUpdateDone,
+    st_wishPreUpdateError,
+    //
+    st_wishPreItemDeleteDone,
+    st_wishPreItemDeleteError,
   } = useSelector((state) => state.wish);
 
   const { me } = useSelector((state) => state.user);
@@ -178,21 +191,71 @@ const Prescription = ({}) => {
     setPackSelectArr(packArr);
     setVolumnSelectArr(volumnArr);
 
-    const rePprData = sessionStorage.getItem("rePprData")
-      ? JSON.parse(sessionStorage.getItem("rePprData"))
-      : null;
+    if (router.query) {
+      if (router.query.type === "update") {
+        // 장바구니 수정
+        const updateData = sessionStorage.getItem("preUpdate")
+          ? JSON.parse(sessionStorage.getItem("preUpdate"))
+          : null;
 
-    if (rePprData) {
-      dispatch({
-        type: PPR_DETAIL_REQUEST,
-        data: {
-          pprId: rePprData.id,
-        },
-      });
+        if (updateData) {
+          dispatch({
+            type: WISH_PRE_DETAIL_REQUEST,
+            data: {
+              wishPrescriptrionId: updateData.id,
+            },
+          });
+        }
+      } else {
+        // 재 처방
+        const rePprData = sessionStorage.getItem("rePprData")
+          ? JSON.parse(sessionStorage.getItem("rePprData"))
+          : null;
+
+        if (rePprData) {
+          dispatch({
+            type: PPR_DETAIL_REQUEST,
+            data: {
+              pprId: rePprData.id,
+            },
+          });
+        }
+      }
     }
-    return;
   }, [router.query]);
 
+  // 장바구니 수정
+  useEffect(() => {
+    if (wishPreDetail) {
+      setChubSelect(wishPreDetail.cheob);
+      setPackSelect(wishPreDetail.pack);
+      setVolumnSelect(wishPreDetail.unit);
+
+      setRData({
+        title: wishPreDetail.title,
+        medication: wishPreDetail.medication,
+        receiverName: wishPreDetail.receiverName,
+        content: wishPreDetail.content,
+      });
+
+      dispatch({
+        type: MATERIAL_USER_ADD,
+        data: wishPreDetail.materials.map((data) => ({
+          id: data.id,
+          name: data.name,
+          qnt: data.qnt,
+          unit: data.unit,
+          price: data.price,
+        })),
+      });
+
+      sessionStorage.removeItem("preUpdate");
+
+      return;
+    }
+  }, [wishPreDetail]);
+
+  // 재 처방
   useEffect(() => {
     if (pprDetail) {
       dispatch({
@@ -243,7 +306,6 @@ const Prescription = ({}) => {
   }, [userMaterials]);
 
   // 주문하기
-
   useEffect(() => {
     if (st_wishPreCreateDone) {
       router.push("/cart");
@@ -256,6 +318,46 @@ const Prescription = ({}) => {
       return message.error(st_wishPreCreateError);
     }
   }, [st_wishPreCreateError]);
+
+  // 재료 삭제
+  useEffect(() => {
+    if (st_wishPreUpdateDone) {
+      dispatch({
+        type: WISH_PRE_DETAIL_REQUEST,
+        data: {
+          wishPrescriptrionId: wishPreDetail && wishPreDetail.id,
+        },
+      });
+
+      return message.success("정보를 수정하셨습니다.");
+    }
+  }, [st_wishPreUpdateDone]);
+
+  useEffect(() => {
+    if (st_wishPreUpdateError) {
+      return message.error(st_wishPreUpdateError);
+    }
+  }, [st_wishPreUpdateError]);
+
+  // 재료 삭제
+  useEffect(() => {
+    if (st_wishPreItemDeleteDone) {
+      dispatch({
+        type: WISH_PRE_DETAIL_REQUEST,
+        data: {
+          wishPrescriptrionId: wishPreDetail && wishPreDetail.id,
+        },
+      });
+
+      return message.success("재료가 삭제되었습니다.");
+    }
+  }, [st_wishPreItemDeleteDone]);
+
+  useEffect(() => {
+    if (st_wishPreItemDeleteError) {
+      return message.error(st_wishPreItemDeleteError);
+    }
+  }, [st_wishPreItemDeleteError]);
 
   ////// TOGGLE //////
 
@@ -320,33 +422,68 @@ const Prescription = ({}) => {
     [selectMaterial]
   );
 
+  console.log(selectMaterial);
+
   // 약재 삭제
   const deleteMaterialHandler = useCallback(() => {
-    if (!selectMaterial) {
-      return message.error("재료를 선택해주세요.");
+    if (router.query) {
+      if (router.query.type === "update") {
+        // 장바구니 수정
+
+        dispatch({
+          type: WISH_PRE_ITEM_DELETE_REQUEST,
+          data: {
+            wishMaterialsItemId: selectMaterial.id,
+          },
+        });
+      } else {
+        // 재 처방
+        if (!selectMaterial) {
+          return message.error("재료를 선택해주세요.");
+        }
+
+        dispatch({
+          type: MATERIAL_USER_ADD,
+          data: materialArr.filter((data) => data.id !== selectMaterial.id),
+        });
+
+        setMaterialArr(
+          materialArr.filter((data) => data.id !== selectMaterial.id)
+        );
+      }
+      setSelectMaterial(null);
+      setIsModalVisible2(false);
     }
-
-    dispatch({
-      type: MATERIAL_USER_ADD,
-      data: materialArr.filter((data) => data.id !== selectMaterial.id),
-    });
-
-    setMaterialArr(materialArr.filter((data) => data.id !== selectMaterial.id));
-
-    setSelectMaterial(null);
-    setIsModalVisible2(false);
-  }, [materialArr, selectMaterial, isModalVisible2]);
+  }, [materialArr, selectMaterial, isModalVisible2, router.query]);
 
   // 종류 선택
   const selectHandler = useCallback(
     (data) => {
-      setChubSelect(data.chub ? data.chub : chubSelect);
-      setPackSelect(data.pack ? data.pack : packSelect);
-      setVolumnSelect(data.volumn ? data.volumn : volumnSelect);
+      if (router.query) {
+        if (router.query.type === "update") {
+          dispatch({
+            type: WISH_PRE_UPDATE_REQUEST,
+            data: {
+              itemId: wishPreDetail && wishPreDetail.id,
+              cheob: data.chub ? data.chub : chubSelect,
+              pack: data.pack ? data.pack : packSelect,
+              unit: data.volumn ? data.volumn : volumnSelect,
+              title: wishPreDetail && wishPreDetail.title,
+              medication: wishPreDetail && wishPreDetail.medication,
+              receiverName: wishPreDetail && wishPreDetail.receiverName,
+              content: wishPreDetail && wishPreDetail.content,
+            },
+          });
+        } else {
+          setChubSelect(data.chub ? data.chub : chubSelect);
+          setPackSelect(data.pack ? data.pack : packSelect);
+          setVolumnSelect(data.volumn ? data.volumn : volumnSelect);
+        }
+      }
 
       setIsModalVisible1(!isModalVisible1);
     },
-    [chubSelect, packSelect, volumnSelect, isModalVisible1]
+    [wishPreDetail, chubSelect, packSelect, volumnSelect, isModalVisible1]
   );
 
   // 약제 용량 수정
@@ -472,11 +609,33 @@ const Prescription = ({}) => {
   // 요청사항 설정
   const requestSetHandler = useCallback(
     (data) => {
-      setRData(data);
-
-      setRModal(false);
+      if (router.query) {
+        if (router.query.type === "update") {
+          dispatch({
+            type: WISH_PRE_UPDATE_REQUEST,
+            data: {
+              itemId: wishPreDetail && wishPreDetail.id,
+              cheob: chubSelect,
+              pack: packSelect,
+              unit: volumnSelect,
+              ...data,
+            },
+          });
+        } else {
+          setRData(data);
+        }
+        setRModal(false);
+      }
     },
-    [rData, rModal]
+    [
+      wishPreDetail,
+      chubSelect,
+      packSelect,
+      volumnSelect,
+      router.query,
+      rData,
+      rModal,
+    ]
   );
 
   ////// DATAVIEW //////
@@ -764,17 +923,21 @@ const Prescription = ({}) => {
                     </Text>
                   ))}
               </Wrapper>
-              <CommonButton
-                shadow={`0`}
-                width={width < 800 ? `130px` : `170px`}
-                height={`100%`}
-                radius={`0`}
-                cursor={`pointer`}
-                onClick={paymentCreateHandler}
-                loading={st_wishPreCreateLoading}
-              >
-                장바구니 담기
-              </CommonButton>
+              <Wrapper width={width < 800 ? `130px` : `170px`}>
+                {router.query && router.query.type !== "update" && (
+                  <CommonButton
+                    shadow={`0`}
+                    width={`100%`}
+                    height={`100%`}
+                    radius={`0`}
+                    cursor={`pointer`}
+                    onClick={paymentCreateHandler}
+                    loading={st_wishPreCreateLoading}
+                  >
+                    장바구니 담기
+                  </CommonButton>
+                )}
+              </Wrapper>
             </Wrapper>
             {/* FOOTER AREA END */}
           </RsWrapper>

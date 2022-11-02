@@ -58,6 +58,26 @@ export const initailState = {
   st_wishPreCreateDone: false,
   st_wishPreCreateError: null,
 
+  // 장바구니에 상품 수정(탕전처방)
+  st_wishPreUpdateLoading: false,
+  st_wishPreUpdateDone: false,
+  st_wishPreUpdateError: null,
+
+  // 장바구니 안에 상품 생성(탕전처방)
+  st_wishPreItemCreateLoading: false,
+  st_wishPreItemCreateDone: false,
+  st_wishPreItemCreateError: null,
+
+  // 장바구니 안에 상품 수정(탕전처방)
+  st_wishPreItemUpdateLoading: false,
+  st_wishPreItemUpdateDone: false,
+  st_wishPreItemUpdateError: null,
+
+  // 장바구니 안에 상품 삭제(탕전처방)
+  st_wishPreItemDeleteLoading: false,
+  st_wishPreItemDeleteDone: false,
+  st_wishPreItemDeleteError: null,
+
   // 장바구니 상품 삭제
   st_wishDeleteLoading: false,
   st_wishDeleteDone: false,
@@ -122,6 +142,26 @@ export const WISH_PRE_DETAIL_FAILURE = "WISH_PRE_DETAIL_FAILURE";
 export const WISH_PRE_CREATE_REQUEST = "WISH_PRE_CREATE_REQUEST";
 export const WISH_PRE_CREATE_SUCCESS = "WISH_PRE_CREATE_SUCCESS";
 export const WISH_PRE_CREATE_FAILURE = "WISH_PRE_CREATE_FAILURE";
+
+// 장바구니에 상품 수정(탕전처방)
+export const WISH_PRE_UPDATE_REQUEST = "WISH_PRE_UPDATE_REQUEST";
+export const WISH_PRE_UPDATE_SUCCESS = "WISH_PRE_UPDATE_SUCCESS";
+export const WISH_PRE_UPDATE_FAILURE = "WISH_PRE_UPDATE_FAILURE";
+
+// 장바구니 안에 상품 생성(탕전처방)
+export const WISH_PRE_ITEM_CREATE_REQUEST = "WISH_PRE_ITEM_CREATE_REQUEST";
+export const WISH_PRE_ITEM_CREATE_SUCCESS = "WISH_PRE_ITEM_CREATE_SUCCESS";
+export const WISH_PRE_ITEM_CREATE_FAILURE = "WISH_PRE_ITEM_CREATE_FAILURE";
+
+// 장바구니 안에 상품 수정(탕전처방)
+export const WISH_PRE_ITEM_UPDATE_REQUEST = "WISH_PRE_ITEM_UPDATE_REQUEST";
+export const WISH_PRE_ITEM_UPDATE_SUCCESS = "WISH_PRE_ITEM_UPDATE_SUCCESS";
+export const WISH_PRE_ITEM_UPDATE_FAILURE = "WISH_PRE_ITEM_UPDATE_FAILURE";
+
+// 장바구니 안에 상품 삭제(탕전처방)
+export const WISH_PRE_ITEM_DELETE_REQUEST = "WISH_PRE_ITEM_DELETE_REQUEST";
+export const WISH_PRE_ITEM_DELETE_SUCCESS = "WISH_PRE_ITEM_DELETE_SUCCESS";
+export const WISH_PRE_ITEM_DELETE_FAILURE = "WISH_PRE_ITEM_DELETE_FAILURE";
 
 // 장바구니에 상품 삭제
 export const WISH_DELETE_REQUEST = "WISH_DELETE_REQUEST";
@@ -335,6 +375,82 @@ const reducer = (state = initailState, action) =>
         break;
       }
 
+      /////////////////////////////////////////////////////// 장바구니에 상품 수정(탕전처방)
+      case WISH_PRE_UPDATE_REQUEST: {
+        draft.st_wishPreUpdateLoading = true;
+        draft.st_wishPreUpdateDone = false;
+        draft.st_wishPreUpdateError = null;
+        break;
+      }
+      case WISH_PRE_UPDATE_SUCCESS: {
+        draft.st_wishPreUpdateLoading = false;
+        draft.st_wishPreUpdateDone = true;
+        draft.st_wishPreUpdateError = null;
+        break;
+      }
+      case WISH_PRE_UPDATE_FAILURE: {
+        draft.st_wishPreUpdateLoading = false;
+        draft.st_wishPreUpdateDone = false;
+        draft.st_wishPreUpdateError = action.error;
+        break;
+      }
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 생성(탕전처방)
+      case WISH_PRE_ITEM_CREATE_REQUEST: {
+        draft.st_wishPreItemCreateLoading = true;
+        draft.st_wishPreItemCreateDone = false;
+        draft.st_wishPreItemCreateError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_CREATE_SUCCESS: {
+        draft.st_wishPreItemCreateLoading = false;
+        draft.st_wishPreItemCreateDone = true;
+        draft.st_wishPreItemCreateError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_CREATE_FAILURE: {
+        draft.st_wishPreItemCreateLoading = false;
+        draft.st_wishPreItemCreateDone = false;
+        draft.st_wishPreItemCreateError = action.error;
+        break;
+      }
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 수정(탕전처방)
+      case WISH_PRE_ITEM_UPDATE_REQUEST: {
+        draft.st_wishPreItemUpdateLoading = true;
+        draft.st_wishPreItemUpdateDone = false;
+        draft.st_wishPreItemUpdateError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_UPDATE_SUCCESS: {
+        draft.st_wishPreItemUpdateLoading = false;
+        draft.st_wishPreItemUpdateDone = true;
+        draft.st_wishPreItemUpdateError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_UPDATE_FAILURE: {
+        draft.st_wishPreItemUpdateLoading = false;
+        draft.st_wishPreItemUpdateDone = false;
+        draft.st_wishPreItemUpdateError = action.error;
+        break;
+      }
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 삭제(탕전처방)
+      case WISH_PRE_ITEM_DELETE_REQUEST: {
+        draft.st_wishPreItemDeleteLoading = true;
+        draft.st_wishPreItemDeleteDone = false;
+        draft.st_wishPreItemDeleteError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_DELETE_SUCCESS: {
+        draft.st_wishPreItemDeleteLoading = false;
+        draft.st_wishPreItemDeleteDone = true;
+        draft.st_wishPreItemDeleteError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_DELETE_FAILURE: {
+        draft.st_wishPreItemDeleteLoading = false;
+        draft.st_wishPreItemDeleteDone = false;
+        draft.st_wishPreItemDeleteError = action.error;
+        break;
+      }
       /////////////////////////////////////////////////////// 장바구니에 상품 삭제
       case WISH_DELETE_REQUEST: {
         draft.st_wishDeleteLoading = true;

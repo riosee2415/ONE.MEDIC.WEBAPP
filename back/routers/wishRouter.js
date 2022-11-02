@@ -30,11 +30,26 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
                LIMIT  1
             )										AS paymentId,
             1				  						AS isPayment,
-            FORMAT((
-              SELECT  ROUND(SUM(B.price * B.qnt))
+            CASE
+              WHEN 
+                !ISNULL((
+                  SELECT  ROUND(SUM(B.price * B.qnt))
+                    FROM  wishPaymentItem B 
+                   WHERE  A.id = B.WishPaymentContainerId
+                ))
+              THEN
+                FORMAT((
+                  SELECT  ROUND(SUM(B.price * B.qnt))
+                    FROM  wishPaymentItem B 
+                  WHERE  A.id = B.WishPaymentContainerId
+                ), 0)
+              ELSE 0
+            END AS totalPrice,
+            (
+              SELECT  COUNT(id)
                 FROM  wishPaymentItem B 
                WHERE  A.id = B.WishPaymentContainerId
-            ), 0)										AS totalPrice
+            )                      AS length
       FROM	wishPaymentContainer    A
      WHERE	WishListId = ${findWishList[0][0].id}
      UNION
@@ -45,11 +60,25 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
             receiverName,
             1                                       AS paymentId,
             0										AS isPayment,
-            FORMAT((
-              SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
+            CASE
+              WHEN 
+                !ISNULL((
+                  SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
+                    FROM  wishMaterialsItem B 
+                   WHERE  A.id = B.WishPrescriptionItemId
+                )) 
+              THEN FORMAT((
+                  SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
+                    FROM  wishMaterialsItem B 
+                   WHERE  A.id = B.WishPrescriptionItemId
+                  ), 0)
+              ELSE A.packPrice
+            END                                  AS totalPrice,
+            (
+              SELECT  COUNT(id)
                 FROM  wishMaterialsItem B 
-                WHERE  A.id = B.WishPrescriptionItemId
-            ), 0)										AS totalPrice
+               WHERE  A.id = B.WishPrescriptionItemId
+            )                      AS length
       FROM	wishPrescriptionItem					A
      WHERE	WishListId = ${findWishList[0][0].id}
     `;
