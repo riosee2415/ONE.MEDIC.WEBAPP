@@ -20,8 +20,8 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
 
     const selcetQuery = `
     SELECT	id,	
-        		productname                          AS title,
-        		WishListId,
+            productname                          	AS title,
+            WishListId,
             receiverName,
             (
               SELECT  paymentId
@@ -29,18 +29,28 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
                WHERE  A.id = B.WishPaymentContainerId
                LIMIT  1
             )										AS paymentId,
-        		1				  AS isPayment
+            1				  						AS isPayment,
+            FORMAT((
+              SELECT  ROUND(SUM(B.price * B.qnt))
+                FROM  wishPaymentItem B 
+               WHERE  A.id = B.WishPaymentContainerId
+            ), 0)										AS totalPrice
       FROM	wishPaymentContainer    A
      WHERE	WishListId = ${findWishList[0][0].id}
      UNION
        ALL
     SELECT	id,
-      			title,	
-      			WishListId,
+            title,	
+            WishListId,
             receiverName,
-            1                                     AS paymentId,
-      			0				AS isPayment
-      FROM	wishPrescriptionItem
+            1                                       AS paymentId,
+            0										AS isPayment,
+            FORMAT((
+              SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
+                FROM  wishMaterialsItem B 
+                WHERE  A.id = B.WishPrescriptionItemId
+            ), 0)										AS totalPrice
+      FROM	wishPrescriptionItem					A
      WHERE	WishListId = ${findWishList[0][0].id}
     `;
 

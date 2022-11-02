@@ -434,27 +434,14 @@ const Prescription = ({}) => {
       }
     }
 
-    // dispatch({
-    //   type: PPR_CREATE_REQUEST,
-    //   data: {
-    //     useMaterialData: userMaterials,
-    //     totalPrice: materialTotalPrice + packTotalPrice,
-    //     name: recipeName
-    //       ? recipeName
-    //       : `${userMaterials[0].name}${
-    //           userMaterials.length > 1 ? `외 ${userMaterials.length - 1}개` : ""
-    //         }`,
-    //   },
-    // });
-
     dispatch({
       type: WISH_PRE_CREATE_REQUEST,
       data: {
         title: rData.title,
-        totalPrice: materialTotalPrice * 100 + packTotalPrice,
         cheob: chubSelect,
         pack: packSelect,
         unit: volumnSelect,
+        packPrice: packTotalPrice,
         receiverName: rData.receiverName,
         content: rData.content,
         medication: rData.medication,

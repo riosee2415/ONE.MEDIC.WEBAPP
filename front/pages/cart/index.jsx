@@ -290,8 +290,9 @@ const Cart = ({}) => {
                                 fontSize={width < 800 ? `16px` : `18px`}
                               >
                                 <Text fontWeight={`bold`}>
-                                  {data.viewTotalPrice}
+                                  {data.totalPrice}
                                 </Text>
+                                <Text>원</Text>
                               </Wrapper>
                             </Wrapper>
                             {data.isPayment ? (

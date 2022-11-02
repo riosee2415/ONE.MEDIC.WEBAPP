@@ -27,7 +27,7 @@ module.exports = class WishPaymentItem extends Model {
           allowNull: false,
         },
         qnt: {
-          type: DataTypes.FLOAT, // 수량
+          type: DataTypes.INTEGER, // 수량
           defaultValue: 1,
           allowNull: false, // 필수
         },
