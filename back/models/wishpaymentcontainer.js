@@ -32,6 +32,10 @@ module.exports = class WishPaymentContainer extends Model {
           type: DataTypes.STRING(500),
           allowNull: true,
         },
+        paymentId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
       },
       {
         modelName: "WishPaymentContainer",

@@ -23,6 +23,7 @@ import {
   WISH_PAYMENT_DETAIL_REQUEST,
   WISH_PRE_DETAIL_REQUEST,
 } from "../../reducers/wish";
+import { numberWithCommas } from "../../components/commonUtils";
 
 const PrescriptionHistory = ({}) => {
   const width = useWidth();
@@ -31,8 +32,8 @@ const PrescriptionHistory = ({}) => {
   const { me } = useSelector((state) => state.user);
 
   const {
-    paymentDetail,
-    preDetail,
+    wishPaymentDetail,
+    wishPreDetail,
     //
     st_wishPaymentDetailError,
     st_wishPreDetailError,
@@ -46,8 +47,8 @@ const PrescriptionHistory = ({}) => {
   ////// REDUX //////
   ////// USEEFFECT //////
 
-  console.log(paymentDetail);
-  console.log(preDetail);
+  console.log(wishPaymentDetail);
+  console.log(wishPreDetail);
 
   useEffect(() => {
     if (!me) {
@@ -108,7 +109,7 @@ const PrescriptionHistory = ({}) => {
             >
               <Wrapper>
                 {router.query &&
-                  (router.query.type === "payment" ? (
+                  (router.query.type === "payment" && wishPaymentDetail ? (
                     // 약속처방
                     <>
                       <Wrapper
@@ -122,24 +123,18 @@ const PrescriptionHistory = ({}) => {
                             fontSize={width < 800 ? `16px` : `18px`}
                             fontWeight={`bold`}
                           >
-                            내역 정보
+                            요청사항
                           </Text>
-                          <Text>
-                            {paymentDetail && paymentDetail.productname}
-                          </Text>
+                          <Text>{wishPaymentDetail.productname}</Text>
                         </Wrapper>
                         <Wrapper dr={`row`} ju={`flex-end`}>
-                          <Text>
-                            {paymentDetail && paymentDetail.receiverName}
-                          </Text>
+                          <Text>{wishPaymentDetail.receiverName}</Text>
                         </Wrapper>
                         <Wrapper dr={`row`} ju={`flex-end`}>
-                          <Text>
-                            {paymentDetail && paymentDetail.medication}
-                          </Text>
+                          <Text>{wishPaymentDetail.medication}</Text>
                         </Wrapper>
                         <Wrapper dr={`row`} ju={`flex-end`}>
-                          <Text>{paymentDetail && paymentDetail.content}</Text>
+                          <Text>{wishPaymentDetail.content}</Text>
                         </Wrapper>
                       </Wrapper>
                       <Wrapper
@@ -157,43 +152,105 @@ const PrescriptionHistory = ({}) => {
                           목록
                         </Wrapper>
                         <Wrapper width={`calc(100% - 70px)`}>
-                          {paymentDetail &&
-                            paymentDetail.items.map((data) => {
-                              return (
-                                <Wrapper
-                                  dr={`row`}
-                                  ju={`space-between`}
-                                  color={Theme.grey_C}
+                          {wishPaymentDetail.items.map((data) => {
+                            return (
+                              <Wrapper
+                                dr={`row`}
+                                ju={`space-between`}
+                                color={Theme.grey_C}
+                              >
+                                <Text
+                                  width={`calc(100% / 2)`}
+                                  textAlign={`start`}
                                 >
-                                  <Text
-                                    width={`calc(100% / 3)`}
-                                    textAlign={`start`}
-                                  >
-                                    {data.pack}&nbsp;/&nbsp;{data.type}
-                                    &nbsp;/&nbsp;{data.unit}
-                                  </Text>
-                                  <Text
-                                    width={`calc(100% / 3)`}
-                                    textAlign={`center`}
-                                  >
-                                    {data.qnt}
-                                  </Text>
-                                  <Text
-                                    width={`calc(100% / 3)`}
-                                    textAlign={`end`}
-                                  >
-                                    {data.viewPrice}
-                                  </Text>
-                                </Wrapper>
-                              );
-                            })}
+                                  {data.pack}&nbsp;/&nbsp;{data.type}
+                                  &nbsp;/&nbsp;{data.unit}
+                                </Text>
+                                <Text width={`50px`} textAlign={`center`}>
+                                  {data.qnt}
+                                </Text>
+                                <Text
+                                  width={`calc(100% / 2 - 50px)`}
+                                  textAlign={`end`}
+                                >
+                                  {data.viewPrice}
+                                </Text>
+                              </Wrapper>
+                            );
+                          })}
                         </Wrapper>
                       </Wrapper>
                     </>
                   ) : (
-                    router.query.type === "pre" && (
+                    router.query.type === "pre" &&
+                    wishPreDetail && (
                       //탕전처방
                       <>
+                        <Wrapper
+                          borderBottom={`1px solid ${Theme.grey2_C}`}
+                          padding={`10px 0`}
+                          al={`flex-start`}
+                          ju={`flex-start`}
+                        >
+                          <Wrapper dr={`row`} ju={`space-between`}>
+                            <Text
+                              fontSize={width < 800 ? `16px` : `18px`}
+                              fontWeight={`bold`}
+                            >
+                              요청사항
+                            </Text>
+                            <Text>{wishPreDetail.title}</Text>
+                          </Wrapper>
+                          <Wrapper dr={`row`} ju={`flex-end`}>
+                            <Text>{wishPreDetail.receiverName}</Text>
+                          </Wrapper>
+                          <Wrapper dr={`row`} ju={`flex-end`}>
+                            <Text>{wishPreDetail.medication}</Text>
+                          </Wrapper>
+                          <Wrapper dr={`row`} ju={`flex-end`}>
+                            <Text>{wishPreDetail.content}</Text>
+                          </Wrapper>
+                        </Wrapper>
+                        <Wrapper
+                          borderBottom={`1px solid ${Theme.grey2_C}`}
+                          padding={`10px 0`}
+                          dr={`row`}
+                          al={`flex-start`}
+                        >
+                          <Wrapper
+                            width={`70px`}
+                            al={`flex-start`}
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            fontWeight={`bold`}
+                          >
+                            종류
+                          </Wrapper>
+                          <Wrapper width={`calc(100% - 70px)`}>
+                            <Wrapper
+                              dr={`row`}
+                              ju={`space-between`}
+                              color={Theme.grey_C}
+                            >
+                              <Text
+                                width={`calc(100% / 2)`}
+                                textAlign={`start`}
+                              >
+                                {wishPreDetail.cheob}첩&nbsp;/&nbsp;
+                                {wishPreDetail.pack}팩&nbsp;/&nbsp;
+                                {wishPreDetail.unit}ml
+                              </Text>
+                              <Text width={`calc(100% / 2)`} textAlign={`end`}>
+                                {numberWithCommas(
+                                  wishPreDetail.totalPrice -
+                                    wishPreDetail.materials
+                                      .map((data) => data.price)
+                                      .reduce((a, b) => a + b)
+                                )}
+                                원
+                              </Text>
+                            </Wrapper>
+                          </Wrapper>
+                        </Wrapper>
                         <Wrapper
                           borderBottom={`1px solid ${Theme.grey2_C}`}
                           padding={`10px 0`}
@@ -209,36 +266,35 @@ const PrescriptionHistory = ({}) => {
                             재료
                           </Wrapper>
                           <Wrapper width={`calc(100% - 70px)`}>
-                            {preDetail &&
-                              preDetail.materials.map((data) => {
-                                return (
-                                  <Wrapper
-                                    dr={`row`}
-                                    ju={`space-between`}
-                                    color={Theme.grey_C}
+                            {wishPreDetail.materials.map((data) => {
+                              return (
+                                <Wrapper
+                                  dr={`row`}
+                                  ju={`space-between`}
+                                  color={Theme.grey_C}
+                                >
+                                  <Text
+                                    width={`calc(100% / 3)`}
+                                    textAlign={`start`}
                                   >
-                                    <Text
-                                      width={`calc(100% / 3)`}
-                                      textAlign={`start`}
-                                    >
-                                      {data.name}
-                                    </Text>
-                                    <Text
-                                      width={`calc(100% / 3)`}
-                                      textAlign={`center`}
-                                    >
-                                      {data.qnt}
-                                      {data.unit}
-                                    </Text>
-                                    <Text
-                                      width={`calc(100% / 3)`}
-                                      textAlign={`end`}
-                                    >
-                                      {data.viewPrice}
-                                    </Text>
-                                  </Wrapper>
-                                );
-                              })}
+                                    {data.name}
+                                  </Text>
+                                  <Text
+                                    width={`calc(100% / 3)`}
+                                    textAlign={`center`}
+                                  >
+                                    {data.qnt}
+                                    {data.unit}
+                                  </Text>
+                                  <Text
+                                    width={`calc(100% / 3)`}
+                                    textAlign={`end`}
+                                  >
+                                    {data.viewPrice}
+                                  </Text>
+                                </Wrapper>
+                              );
+                            })}
                           </Wrapper>
                         </Wrapper>
                       </>
@@ -254,10 +310,10 @@ const PrescriptionHistory = ({}) => {
                   <Text fontWeight={`bold`}>
                     {router.query &&
                       (router.query.type === "payment"
-                        ? paymentDetail && paymentDetail.viewTotalPrice
+                        ? wishPaymentDetail && wishPaymentDetail.viewTotalPrice
                         : router.query.type === "pre" &&
-                          preDetail &&
-                          preDetail.viewTotalPrice)}
+                          wishPreDetail &&
+                          wishPreDetail.viewTotalPrice)}
                   </Text>
                 </Wrapper>
               </Wrapper>

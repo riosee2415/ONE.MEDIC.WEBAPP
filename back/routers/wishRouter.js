@@ -19,28 +19,35 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
     }
 
     const selcetQuery = `
-SELECT	id,	
-    		productname                          AS title,
-    		totalPrice,
-    		CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,
-    		totalQun                              AS qnt,
-    		WishListId,
-        receiverName,
-    		1				  AS isPayment
-  FROM	wishPaymentContainer
- WHERE	WishListId = ${findWishList[0][0].id}
- UNION
-   ALL
- SELECT	id,
-   			title,
-   			totalPrice,
-        CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,		
-   			1                                     AS qnt,
-   			WishListId,
-        receiverName,
-   			0				AS isPayment
-   FROM	wishPrescriptionItem
-  WHERE	WishListId = ${findWishList[0][0].id}
+    SELECT	id,	
+        		productname                          AS title,
+        		totalPrice,
+        		CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,
+        		totalQun                              AS qnt,
+        		WishListId,
+            receiverName,
+            (
+              SELECT  paymentId
+                FROM  wishPaymentItem B
+               WHERE  A.id = B.WishPaymentContainerId
+               LIMIT  1
+            )										AS paymentId,
+        		1				  AS isPayment
+      FROM	wishPaymentContainer    A
+     WHERE	WishListId = ${findWishList[0][0].id}
+     UNION
+       ALL
+    SELECT	id,
+      			title,
+      			totalPrice,
+            CONCAT(FORMAT(totalPrice, 0), "원")   AS viewTotalPrice,		
+      			1                                     AS qnt,
+      			WishListId,
+            receiverName,
+            1                                     AS paymentId,
+      			0				AS isPayment
+      FROM	wishPrescriptionItem
+     WHERE	WishListId = ${findWishList[0][0].id}
     `;
 
     const wishListData = await models.sequelize.query(selcetQuery);

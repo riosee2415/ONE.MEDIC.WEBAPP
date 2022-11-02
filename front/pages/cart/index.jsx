@@ -114,6 +114,19 @@ const Cart = ({}) => {
     });
   }, [itemSelect]);
 
+  const updateHandler = useCallback((data, link) => {
+    if (data.isPayment) {
+      sessionStorage.setItem("paymentUpdate", JSON.stringify(data));
+    } else {
+      sessionStorage.setItem("preUpdate", JSON.stringify(data));
+    }
+    router.push(link);
+  }, []);
+
+  const moveLinkHandler = useCallback((link) => {
+    router.push(link);
+  }, []);
+
   ////// DATAVIEW //////
 
   return (
@@ -291,6 +304,13 @@ const Cart = ({}) => {
                                 <Wrapper
                                   width={`calc(100% / 2)`}
                                   borderRight={`1px solid ${Theme.grey2_C}`}
+                                  cursor={`pointer`}
+                                  onClick={() =>
+                                    updateHandler(
+                                      data,
+                                      `/promise/detail/${data.paymentId}?type=update`
+                                    )
+                                  }
                                 >
                                   주문수정
                                 </Wrapper>
@@ -314,6 +334,13 @@ const Cart = ({}) => {
                                 <Wrapper
                                   width={`calc(100% / 2)`}
                                   borderRight={`1px solid ${Theme.grey2_C}`}
+                                  cursor={`pointer`}
+                                  onClick={() =>
+                                    updateHandler(
+                                      data,
+                                      `/prescription?type=update`
+                                    )
+                                  }
                                 >
                                   약재수정
                                 </Wrapper>

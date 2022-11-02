@@ -4,9 +4,9 @@ export const initailState = {
   // 장바구니 리스트
   wishList: [],
   // 약속처방 상세
-  paymentDetail: null,
+  wishPaymentDetail: null,
   // 탕전처방 상세
-  preDetail: null,
+  wishPreDetail: null,
 
   // 장바구니에 리스트
   st_wishListLoading: false,
@@ -104,7 +104,7 @@ const reducer = (state = initailState, action) =>
         draft.st_wishPaymentDetailLoading = false;
         draft.st_wishPaymentDetailDone = true;
         draft.st_wishPaymentDetailError = null;
-        draft.paymentDetail = action.data;
+        draft.wishPaymentDetail = action.data;
         break;
       }
       case WISH_PAYMENT_DETAIL_FAILURE: {
@@ -145,9 +145,10 @@ const reducer = (state = initailState, action) =>
         draft.st_wishPreDetailLoading = false;
         draft.st_wishPreDetailDone = true;
         draft.st_wishPreDetailError = null;
-        draft.preDetail = action.data;
+        draft.wishPreDetail = action.data;
         break;
       }
+
       case WISH_PRE_DETAIL_FAILURE: {
         draft.st_wishPreDetailLoading = false;
         draft.st_wishPreDetailDone = false;

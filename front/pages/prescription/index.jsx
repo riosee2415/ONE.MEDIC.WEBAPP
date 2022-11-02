@@ -451,7 +451,7 @@ const Prescription = ({}) => {
       type: WISH_PRE_CREATE_REQUEST,
       data: {
         title: rData.title,
-        totalPrice: materialTotalPrice + packTotalPrice,
+        totalPrice: materialTotalPrice * 100 + packTotalPrice,
         cheob: chubSelect,
         pack: packSelect,
         unit: volumnSelect,
