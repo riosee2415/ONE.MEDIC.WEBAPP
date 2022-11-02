@@ -23,6 +23,31 @@ export const initailState = {
   st_wishPaymentCreateDone: false,
   st_wishPaymentCreateError: null,
 
+  // 장바구니에 상품 수정(약속처방)
+  st_wishPaymentUpdateLoading: false,
+  st_wishPaymentUpdateDone: false,
+  st_wishPaymentUpdateError: null,
+
+  // 장바구니 안에 상품 생성(약속처방)
+  st_wishPaymentItemCreateLoading: false,
+  st_wishPaymentItemCreateDone: false,
+  st_wishPaymentItemCreateError: null,
+
+  // 장바구니 안에 상품 수정(약속처방)
+  st_wishPaymentItemUpdateLoading: false,
+  st_wishPaymentItemUpdateDone: false,
+  st_wishPaymentItemUpdateError: null,
+
+  // 장바구니 안에 상품 삭제(약속처방)
+  st_wishPaymentItemDeleteLoading: false,
+  st_wishPaymentItemDeleteDone: false,
+  st_wishPaymentItemDeleteError: null,
+
+  // 장바구니 안에 상품 수량 수정(약속처방)
+  st_wishPaymentItemQntLoading: false,
+  st_wishPaymentItemQntDone: false,
+  st_wishPaymentItemQntError: null,
+
   // 장바구니에 상품 상세(탕전처방)
   st_wishPreDetailLoading: false,
   st_wishPreDetailDone: false,
@@ -53,6 +78,40 @@ export const WISH_PAYMENT_DETAIL_FAILURE = "WISH_PAYMENT_DETAIL_FAILURE";
 export const WISH_PAYMENT_CREATE_REQUEST = "WISH_PAYMENT_CREATE_REQUEST";
 export const WISH_PAYMENT_CREATE_SUCCESS = "WISH_PAYMENT_CREATE_SUCCESS";
 export const WISH_PAYMENT_CREATE_FAILURE = "WISH_PAYMENT_CREATE_FAILURE";
+
+// 장바구니에 상품 수정(약속처방)
+export const WISH_PAYMENT_UPDATE_REQUEST = "WISH_PAYMENT_UPDATE_REQUEST";
+export const WISH_PAYMENT_UPDATE_SUCCESS = "WISH_PAYMENT_UPDATE_SUCCESS";
+export const WISH_PAYMENT_UPDATE_FAILURE = "WISH_PAYMENT_UPDATE_FAILURE";
+
+// 장바구니 안에 상품 생성(약속처방)
+export const WISH_PAYMENT_ITEM_CREATE_REQUEST =
+  "WISH_PAYMENT_ITEM_CREATE_REQUEST";
+export const WISH_PAYMENT_ITEM_CREATE_SUCCESS =
+  "WISH_PAYMENT_ITEM_CREATE_SUCCESS";
+export const WISH_PAYMENT_ITEM_CREATE_FAILURE =
+  "WISH_PAYMENT_ITEM_CREATE_FAILURE";
+
+// 장바구니 안에 상품 수정(약속처방)
+export const WISH_PAYMENT_ITEM_UPDATE_REQUEST =
+  "WISH_PAYMENT_ITEM_UPDATE_REQUEST";
+export const WISH_PAYMENT_ITEM_UPDATE_SUCCESS =
+  "WISH_PAYMENT_ITEM_UPDATE_SUCCESS";
+export const WISH_PAYMENT_ITEM_UPDATE_FAILURE =
+  "WISH_PAYMENT_ITEM_UPDATE_FAILURE";
+
+// 장바구니 안에 상품 삭제(약속처방)
+export const WISH_PAYMENT_ITEM_DELETE_REQUEST =
+  "WISH_PAYMENT_ITEM_DELETE_REQUEST";
+export const WISH_PAYMENT_ITEM_DELETE_SUCCESS =
+  "WISH_PAYMENT_ITEM_DELETE_SUCCESS";
+export const WISH_PAYMENT_ITEM_DELETE_FAILURE =
+  "WISH_PAYMENT_ITEM_DELETE_FAILURE";
+
+// 장바구니 안에 상품 수량 수정(약속처방)
+export const WISH_PAYMENT_ITEM_QNT_REQUEST = "WISH_PAYMENT_ITEM_QNT_REQUEST";
+export const WISH_PAYMENT_ITEM_QNT_SUCCESS = "WISH_PAYMENT_ITEM_QNT_SUCCESS";
+export const WISH_PAYMENT_ITEM_QNT_FAILURE = "WISH_PAYMENT_ITEM_QNT_FAILURE";
 
 // 장바구니에 상품 상세(탕전처방)
 export const WISH_PRE_DETAIL_REQUEST = "WISH_PRE_DETAIL_REQUEST";
@@ -131,6 +190,106 @@ const reducer = (state = initailState, action) =>
         draft.st_wishPaymentCreateLoading = false;
         draft.st_wishPaymentCreateDone = false;
         draft.st_wishPaymentCreateError = action.error;
+        break;
+      }
+
+      /////////////////////////////////////////////////////// 장바구니에 상품 수정(약속처방)
+      case WISH_PAYMENT_UPDATE_REQUEST: {
+        draft.st_wishPaymentUpdateLoading = true;
+        draft.st_wishPaymentUpdateDone = false;
+        draft.st_wishPaymentUpdateError = null;
+        break;
+      }
+      case WISH_PAYMENT_UPDATE_SUCCESS: {
+        draft.st_wishPaymentUpdateLoading = false;
+        draft.st_wishPaymentUpdateDone = true;
+        draft.st_wishPaymentUpdateError = null;
+        break;
+      }
+      case WISH_PAYMENT_UPDATE_FAILURE: {
+        draft.st_wishPaymentUpdateLoading = false;
+        draft.st_wishPaymentUpdateDone = false;
+        draft.st_wishPaymentUpdateError = action.error;
+        break;
+      }
+
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 추가(약속처방)
+      case WISH_PAYMENT_ITEM_CREATE_REQUEST: {
+        draft.st_wishPaymentItemCreateLoading = true;
+        draft.st_wishPaymentItemCreateDone = false;
+        draft.st_wishPaymentItemCreateError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_CREATE_SUCCESS: {
+        draft.st_wishPaymentItemCreateLoading = false;
+        draft.st_wishPaymentItemCreateDone = true;
+        draft.st_wishPaymentItemCreateError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_CREATE_FAILURE: {
+        draft.st_wishPaymentItemCreateLoading = false;
+        draft.st_wishPaymentItemCreateDone = false;
+        draft.st_wishPaymentItemCreateError = action.error;
+        break;
+      }
+
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 수정(약속처방)
+      case WISH_PAYMENT_ITEM_UPDATE_REQUEST: {
+        draft.st_wishPaymentItemUpdateLoading = true;
+        draft.st_wishPaymentItemUpdateDone = false;
+        draft.st_wishPaymentItemUpdateError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_UPDATE_SUCCESS: {
+        draft.st_wishPaymentItemUpdateLoading = false;
+        draft.st_wishPaymentItemUpdateDone = true;
+        draft.st_wishPaymentItemUpdateError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_UPDATE_FAILURE: {
+        draft.st_wishPaymentItemUpdateLoading = false;
+        draft.st_wishPaymentItemUpdateDone = false;
+        draft.st_wishPaymentItemUpdateError = action.error;
+        break;
+      }
+
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 삭제(약속처방)
+      case WISH_PAYMENT_ITEM_DELETE_REQUEST: {
+        draft.st_wishPaymentItemDeleteLoading = true;
+        draft.st_wishPaymentItemDeleteDone = false;
+        draft.st_wishPaymentItemDeleteError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_DELETE_SUCCESS: {
+        draft.st_wishPaymentItemDeleteLoading = false;
+        draft.st_wishPaymentItemDeleteDone = true;
+        draft.st_wishPaymentItemDeleteError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_DELETE_FAILURE: {
+        draft.st_wishPaymentItemDeleteLoading = false;
+        draft.st_wishPaymentItemDeleteDone = false;
+        draft.st_wishPaymentItemDeleteError = action.error;
+        break;
+      }
+
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 삭제(약속처방)
+      case WISH_PAYMENT_ITEM_QNT_REQUEST: {
+        draft.st_wishPaymentItemQntLoading = true;
+        draft.st_wishPaymentItemQntDone = false;
+        draft.st_wishPaymentItemQntError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_QNT_SUCCESS: {
+        draft.st_wishPaymentItemQntLoading = false;
+        draft.st_wishPaymentItemQntDone = true;
+        draft.st_wishPaymentItemQntError = null;
+        break;
+      }
+      case WISH_PAYMENT_ITEM_QNT_FAILURE: {
+        draft.st_wishPaymentItemQntLoading = false;
+        draft.st_wishPaymentItemQntDone = false;
+        draft.st_wishPaymentItemQntError = action.error;
         break;
       }
 

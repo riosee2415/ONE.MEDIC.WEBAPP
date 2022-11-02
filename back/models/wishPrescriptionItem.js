@@ -10,10 +10,6 @@ module.exports = class WishPrescriptionItem extends Model {
           type: DataTypes.STRING(300), // 처방명
           allowNull: false,
         },
-        totalPrice: {
-          type: DataTypes.INTEGER, // 총가격
-          allowNull: false,
-        },
         cheob: {
           type: DataTypes.INTEGER, // 첩
           allowNull: false,
@@ -28,6 +24,10 @@ module.exports = class WishPrescriptionItem extends Model {
           type: DataTypes.INTEGER, // 용량
           allowNull: false,
           defaultValue: 1,
+        },
+        packPrice: {
+          type: DataTypes.INTEGER, // 팩가격
+          allowNull: false,
         },
         medication: {
           type: DataTypes.STRING(600), // 복약지도

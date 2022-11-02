@@ -10,16 +10,6 @@ module.exports = class WishPaymentContainer extends Model {
           type: DataTypes.STRING(100),
           allowNull: false,
         },
-        totalPrice: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          defaultValue: 0,
-        },
-        totalQun: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          defaultValue: 0,
-        },
         medication: {
           type: DataTypes.STRING(600), // 복약지도
           allowNull: true,

@@ -5,22 +5,52 @@ import {
   WISH_LIST_REQUEST,
   WISH_LIST_SUCCESS,
   WISH_LIST_FAILURE,
+
   // 장바구니에 상품 상세(약속처방)
   WISH_PAYMENT_DETAIL_REQUEST,
   WISH_PAYMENT_DETAIL_SUCCESS,
   WISH_PAYMENT_DETAIL_FAILURE,
+
   // 장바구니에 상품 추가(약속처방)
   WISH_PAYMENT_CREATE_REQUEST,
   WISH_PAYMENT_CREATE_SUCCESS,
   WISH_PAYMENT_CREATE_FAILURE,
+
+  // 장바구니에 상품 수정(약속처방)
+  WISH_PAYMENT_UPDATE_REQUEST,
+  WISH_PAYMENT_UPDATE_SUCCESS,
+  WISH_PAYMENT_UPDATE_FAILURE,
+
+  // 장바구니에 안에 상품 추가(약속처방)
+  WISH_PAYMENT_ITEM_CREATE_REQUEST,
+  WISH_PAYMENT_ITEM_CREATE_SUCCESS,
+  WISH_PAYMENT_ITEM_CREATE_FAILURE,
+
+  // 장바구니에 안에 상품 수정(약속처방)
+  WISH_PAYMENT_ITEM_UPDATE_REQUEST,
+  WISH_PAYMENT_ITEM_UPDATE_SUCCESS,
+  WISH_PAYMENT_ITEM_UPDATE_FAILURE,
+
+  // 장바구니에 안에 상품 삭제(약속처방)
+  WISH_PAYMENT_ITEM_DELETE_REQUEST,
+  WISH_PAYMENT_ITEM_DELETE_SUCCESS,
+  WISH_PAYMENT_ITEM_DELETE_FAILURE,
+
+  // 장바구니에 안에 상품 수량 수정(약속처방)
+  WISH_PAYMENT_ITEM_QNT_REQUEST,
+  WISH_PAYMENT_ITEM_QNT_SUCCESS,
+  WISH_PAYMENT_ITEM_QNT_FAILURE,
+
   // 장바구니에 상품 상세(탕전처방)
   WISH_PRE_DETAIL_REQUEST,
   WISH_PRE_DETAIL_SUCCESS,
   WISH_PRE_DETAIL_FAILURE,
+
   // 장바구니에 상품 추가(탕전처방)
   WISH_PRE_CREATE_REQUEST,
   WISH_PRE_CREATE_SUCCESS,
   WISH_PRE_CREATE_FAILURE,
+
   // 장바구니에 상품 삭제
   WISH_DELETE_REQUEST,
   WISH_DELETE_SUCCESS,
@@ -74,6 +104,146 @@ function* wishPaymentDetail(action) {
     console.error(err);
     yield put({
       type: WISH_PAYMENT_DETAIL_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPaymentUpdateAPI(data) {
+  return await axios.post(`/api/wish/payment/container/update`, data);
+}
+
+function* wishPaymentUpdate(action) {
+  try {
+    const result = yield call(wishPaymentUpdateAPI, action.data);
+
+    yield put({
+      type: WISH_PAYMENT_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PAYMENT_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPaymentItemCreateAPI(data) {
+  return await axios.post(`/api/wish/payment/item/create`, data);
+}
+
+function* wishPaymentItemCreate(action) {
+  try {
+    const result = yield call(wishPaymentItemCreateAPI, action.data);
+
+    yield put({
+      type: WISH_PAYMENT_ITEM_CREATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PAYMENT_ITEM_CREATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPaymentItemUpdateAPI(data) {
+  return await axios.post(`/api/wish/payment/item/update`, data);
+}
+
+function* wishPaymentItemUpdate(action) {
+  try {
+    const result = yield call(wishPaymentItemUpdateAPI, action.data);
+
+    yield put({
+      type: WISH_PAYMENT_ITEM_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PAYMENT_ITEM_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPaymentItemDeleteAPI(data) {
+  return await axios.post(`/api/wish/payment/item/delete`, data);
+}
+
+function* wishPaymentItemDelete(action) {
+  try {
+    const result = yield call(wishPaymentItemDeleteAPI, action.data);
+
+    yield put({
+      type: WISH_PAYMENT_ITEM_DELETE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PAYMENT_ITEM_DELETE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function wishPaymentItemQntAPI(data) {
+  return await axios.post(`/api/wish/payment/item/qnt`, data);
+}
+
+function* wishPaymentItemQnt(action) {
+  try {
+    const result = yield call(wishPaymentItemQntAPI, action.data);
+
+    yield put({
+      type: WISH_PAYMENT_ITEM_QNT_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PAYMENT_ITEM_QNT_FAILURE,
       error: err.response.data,
     });
   }
@@ -208,6 +378,26 @@ function* watchWishPaymentCreate() {
   yield takeLatest(WISH_PAYMENT_CREATE_REQUEST, wishPaymentCreate);
 }
 
+function* watchWishPaymentUpdate() {
+  yield takeLatest(WISH_PAYMENT_UPDATE_REQUEST, wishPaymentUpdate);
+}
+
+function* watchWishPaymentItemCreate() {
+  yield takeLatest(WISH_PAYMENT_ITEM_CREATE_REQUEST, wishPaymentItemCreate);
+}
+
+function* watchWishPaymentItemUpdate() {
+  yield takeLatest(WISH_PAYMENT_ITEM_UPDATE_REQUEST, wishPaymentItemUpdate);
+}
+
+function* watchWishPaymentItemDelete() {
+  yield takeLatest(WISH_PAYMENT_ITEM_DELETE_REQUEST, wishPaymentItemDelete);
+}
+
+function* watchWishPaymentItemQnt() {
+  yield takeLatest(WISH_PAYMENT_ITEM_QNT_REQUEST, wishPaymentItemQnt);
+}
+
 function* watchWishPreDetail() {
   yield takeLatest(WISH_PRE_DETAIL_REQUEST, wishPreDetail);
 }
@@ -228,6 +418,11 @@ export default function* wishSaga() {
     fork(watchWishList),
     fork(watchWishPaymentDetail),
     fork(watchWishPaymentCreate),
+    fork(watchWishPaymentUpdate),
+    fork(watchWishPaymentItemCreate),
+    fork(watchWishPaymentItemUpdate),
+    fork(watchWishPaymentItemDelete),
+    fork(watchWishPaymentItemQnt),
     fork(watchWishPreDetail),
     fork(watchWishPreCreate),
     fork(watchWishPaymentDelete),

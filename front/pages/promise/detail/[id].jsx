@@ -33,7 +33,14 @@ import {
 import { useRouter } from "next/router";
 import { Form, message, Modal, Select } from "antd";
 import { REQUEST_ALL_LIST_REQUEST } from "../../../reducers/userRequest";
-import { WISH_PAYMENT_CREATE_REQUEST } from "../../../reducers/wish";
+import {
+  WISH_PAYMENT_CREATE_REQUEST,
+  WISH_PAYMENT_DETAIL_REQUEST,
+  WISH_PAYMENT_ITEM_CREATE_REQUEST,
+  WISH_PAYMENT_ITEM_DELETE_REQUEST,
+  WISH_PAYMENT_ITEM_QNT_REQUEST,
+  WISH_PAYMENT_UPDATE_REQUEST,
+} from "../../../reducers/wish";
 
 const CheckdButton = styled.button`
   padding: 5px 10px;
@@ -105,18 +112,26 @@ const PromiseDetail = () => {
     (state) => state.prescription
   );
 
-  const {
-    paymentId,
-
-    paymentDetail,
-    st_paymentRequestCreateDone,
-    st_paymentRequestCreateError,
-  } = useSelector((state) => state.paymentRequest);
+  const { paymentDetail } = useSelector((state) => state.paymentRequest);
 
   const {
+    wishPaymentDetail,
+    //
     st_wishPaymentCreateLoading,
     st_wishPaymentCreateDone,
     st_wishPaymentCreateError,
+    //
+    st_wishPaymentUpdateDone,
+    st_wishPaymentUpdateError,
+    //
+    st_wishPaymentItemCreateDone,
+    st_wishPaymentItemCreateError,
+    //
+    st_wishPaymentItemDeleteDone,
+    st_wishPaymentItemDeleteError,
+    //
+    st_wishPaymentItemQntDone,
+    st_wishPaymentItemQntError,
   } = useSelector((state) => state.wish);
 
   const { requestAllList } = useSelector((state) => state.userRequest);
@@ -161,41 +176,38 @@ const PromiseDetail = () => {
   }, [temporaryDatum]);
 
   useEffect(() => {
-    const rePaymentData = sessionStorage.getItem("rePaymentData")
-      ? JSON.parse(sessionStorage.getItem("rePaymentData"))
-      : null;
+    if (router.query) {
+      if (router.query.type === "update") {
+        // 수정하기
+        const updateData = sessionStorage.getItem("paymentUpdate")
+          ? JSON.parse(sessionStorage.getItem("paymentUpdate"))
+          : null;
 
-    if (rePaymentData) {
-      dispatch({
-        type: PAYMENT_DETAIL_REQUEST,
-        data: {
-          paymentId: rePaymentData.id,
-        },
-      });
-    }
-  }, []);
+        if (updateData) {
+          dispatch({
+            type: WISH_PAYMENT_DETAIL_REQUEST,
+            data: {
+              containerId: updateData.id,
+            },
+          });
+        }
+      } else {
+        // 재 주문
+        const rePaymentData = sessionStorage.getItem("rePaymentData")
+          ? JSON.parse(sessionStorage.getItem("rePaymentData"))
+          : null;
 
-  useEffect(() => {
-    if (paymentDetail) {
-      const paymentArr = [];
-
-      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
-        paymentArr.push({
-          id: paymentDetail.PaymentRequest[i].id,
-          paymentId: router.query && router.query.id,
-          price: paymentDetail.PaymentRequest[i].payment,
-          pack: paymentDetail.PaymentRequest[i].packVolumn,
-          type: paymentDetail.PaymentRequest[i].typeVolumn,
-          unit: paymentDetail.PaymentRequest[i].unitVolumn,
-          qnt: 1,
-        });
+        if (rePaymentData) {
+          dispatch({
+            type: PAYMENT_DETAIL_REQUEST,
+            data: {
+              paymentId: rePaymentData.id,
+            },
+          });
+        }
       }
-
-      setTemporaryDatum(paymentArr);
-
-      sessionStorage.removeItem("rePaymentData");
     }
-  }, [paymentDetail]);
+  }, [router.query]);
 
   useEffect(() => {
     if (router.query) {
@@ -221,6 +233,64 @@ const PromiseDetail = () => {
     }
   }, [router.query]);
 
+  // 수정하기
+  useEffect(() => {
+    if (wishPaymentDetail) {
+      const paymentArr = [];
+
+      for (let i = 0; i < wishPaymentDetail.items.length; i++) {
+        paymentArr.push({
+          id: wishPaymentDetail.items[i].id,
+          paymentId: router.query && router.query.id,
+          price: wishPaymentDetail.items[i].price,
+          pack: wishPaymentDetail.items[i].pack,
+          type: wishPaymentDetail.items[i].type,
+          unit: wishPaymentDetail.items[i].unit,
+          qnt: wishPaymentDetail.items[i].qnt,
+        });
+      }
+
+      setRData({
+        receiverName: wishPaymentDetail.receiverName,
+        medication: wishPaymentDetail.medication,
+        content: wishPaymentDetail.content,
+      });
+
+      rForm.setFieldsValue({
+        receiverName: wishPaymentDetail.receiverName,
+        medication: wishPaymentDetail.medication,
+        content: wishPaymentDetail.content,
+      });
+
+      setTemporaryDatum(paymentArr);
+
+      sessionStorage.removeItem("paymentUpdate");
+    }
+  }, [wishPaymentDetail]);
+
+  // 재 주문
+  useEffect(() => {
+    if (paymentDetail) {
+      const paymentArr = [];
+
+      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
+        paymentArr.push({
+          id: paymentDetail.PaymentRequest[i].id,
+          paymentId: router.query && router.query.id,
+          price: paymentDetail.PaymentRequest[i].payment,
+          pack: paymentDetail.PaymentRequest[i].packVolumn,
+          type: paymentDetail.PaymentRequest[i].typeVolumn,
+          unit: paymentDetail.PaymentRequest[i].unitVolumn,
+          qnt: 1,
+        });
+      }
+
+      setTemporaryDatum(paymentArr);
+
+      sessionStorage.removeItem("rePaymentData");
+    }
+  }, [paymentDetail]);
+
   useEffect(() => {
     if (typeList) {
       if (typeList.length > 0) {
@@ -238,6 +308,7 @@ const PromiseDetail = () => {
     }
   }, [typeList, packList, unitList, product]);
 
+  // 장바구니 담기
   useEffect(() => {
     if (st_wishPaymentCreateDone) {
       router.push("/cart");
@@ -250,6 +321,86 @@ const PromiseDetail = () => {
       return message.error(st_wishPaymentCreateError);
     }
   }, [st_wishPaymentCreateError]);
+
+  // 장바구니 수정
+  useEffect(() => {
+    if (st_wishPaymentUpdateDone) {
+      dispatch({
+        type: WISH_PAYMENT_DETAIL_REQUEST,
+        data: {
+          containerId: wishPaymentDetail.id,
+        },
+      });
+
+      return message.success("요청사항을 수정했습니다");
+    }
+  }, [st_wishPaymentUpdateDone]);
+
+  useEffect(() => {
+    if (st_wishPaymentUpdateError) {
+      return message.error(st_wishPaymentUpdateError);
+    }
+  }, [st_wishPaymentUpdateError]);
+
+  // 장바구니 안의 상품 생성하기
+  useEffect(() => {
+    if (st_wishPaymentItemCreateDone) {
+      dispatch({
+        type: WISH_PAYMENT_DETAIL_REQUEST,
+        data: {
+          containerId: wishPaymentDetail.id,
+        },
+      });
+
+      return message.success("장바구니에 추가되었습니다.");
+    }
+  }, [st_wishPaymentItemCreateDone]);
+
+  useEffect(() => {
+    if (st_wishPaymentItemCreateError) {
+      return message.error(st_wishPaymentItemCreateError);
+    }
+  }, [st_wishPaymentItemCreateError]);
+
+  // 장바구니 안의 상품 삭제하기
+  useEffect(() => {
+    if (st_wishPaymentItemDeleteDone) {
+      dispatch({
+        type: WISH_PAYMENT_DETAIL_REQUEST,
+        data: {
+          containerId: wishPaymentDetail.id,
+        },
+      });
+
+      return message.success("장바구니에서 삭제되었습니다.");
+    }
+  }, [st_wishPaymentItemDeleteDone]);
+
+  useEffect(() => {
+    if (st_wishPaymentItemDeleteError) {
+      return message.error(st_wishPaymentItemDeleteError);
+    }
+  }, [st_wishPaymentItemDeleteError]);
+
+  // 장바구니 안의 상품 수량 수정
+  useEffect(() => {
+    if (st_wishPaymentItemQntDone) {
+      dispatch({
+        type: WISH_PAYMENT_DETAIL_REQUEST,
+        data: {
+          containerId: wishPaymentDetail.id,
+        },
+      });
+
+      return message.success("수량이 수정되었습니다.");
+    }
+  }, [st_wishPaymentItemQntDone]);
+
+  useEffect(() => {
+    if (st_wishPaymentItemQntError) {
+      return message.error(st_wishPaymentItemQntError);
+    }
+  }, [st_wishPaymentItemQntError]);
 
   ////// TOGGLE //////
 
@@ -276,6 +427,7 @@ const PromiseDetail = () => {
       });
 
       pack.setValue(value);
+      unit.setValue("");
     },
     [pack.value]
   );
@@ -299,45 +451,79 @@ const PromiseDetail = () => {
       return message.error("단위을 선택해주세요.");
     }
 
-    let temporayArr = temporaryDatum.map((data) => data);
+    if (router.query) {
+      if (router.query.type === "update") {
+        dispatch({
+          type: WISH_PAYMENT_ITEM_CREATE_REQUEST,
+          data: {
+            paymentId: router.query && router.query.id,
+            containerId: wishPaymentDetail && wishPaymentDetail.id,
+            price:
+              product &&
+              product.price +
+                (type.value.originAddPrice ? type.value.originAddPrice : 0) +
+                (pack.value.originAddPrice ? pack.value.originAddPrice : 0) +
+                (unit.value.originAddPrice ? unit.value.originAddPrice : 0),
+            pack: type.value.name ? type.value.name : type.value,
+            type: pack.value.name ? pack.value.name : pack.value,
+            unit: unit.value.name ? unit.value.name : unit.value,
+            qnt: 1,
+          },
+        });
+      } else {
+        let temporayArr = temporaryDatum.map((data) => data);
 
-    setTemporaryId(temporaryId + 1);
+        setTemporaryId(temporaryId + 1);
 
-    temporayArr.push({
-      id: temporaryId,
-      paymentId: router.query && router.query.id,
-      price:
-        product &&
-        product.price +
-          (type.value.originAddPrice ? type.value.originAddPrice : 0) +
-          (pack.value.originAddPrice ? pack.value.originAddPrice : 0) +
-          (unit.value.originAddPrice ? unit.value.originAddPrice : 0),
-      pack: type.value.name ? type.value.name : type.value,
-      type: pack.value.name ? pack.value.name : pack.value,
-      unit: unit.value.name ? unit.value.name : unit.value,
-      qnt: 1,
-      // otherRequest: otherInput.value,
-    });
+        temporayArr.push({
+          id: temporaryId,
+          paymentId: router.query && router.query.id,
+          price:
+            product &&
+            product.price +
+              (type.value.originAddPrice ? type.value.originAddPrice : 0) +
+              (pack.value.originAddPrice ? pack.value.originAddPrice : 0) +
+              (unit.value.originAddPrice ? unit.value.originAddPrice : 0),
+          pack: type.value.name ? type.value.name : type.value,
+          type: pack.value.name ? pack.value.name : pack.value,
+          unit: unit.value.name ? unit.value.name : unit.value,
+          qnt: 1,
+          // otherRequest: otherInput.value,
+        });
 
-    await setTemporaryDatum(temporayArr);
+        await setTemporaryDatum(temporayArr);
+      }
+    }
   }, [
     type.value,
     pack.value,
     unit.value,
-    // otherInput.value,
     router.query,
     unitList,
     temporaryDatum,
+    paymentDetail,
+    wishPaymentDetail,
     temporaryId,
   ]);
 
   const deletePaymentArrHadnler = useCallback(
     async (id) => {
-      let temporayArr = temporaryDatum.map((data) => data);
+      if (router.query) {
+        if (router.query.type === "update") {
+          dispatch({
+            type: WISH_PAYMENT_ITEM_DELETE_REQUEST,
+            data: {
+              wishPaymentItemId: id,
+            },
+          });
+        } else {
+          let temporayArr = temporaryDatum.map((data) => data);
 
-      await setTemporaryDatum(temporayArr.filter((data) => data.id !== id));
+          await setTemporaryDatum(temporayArr.filter((data) => data.id !== id));
+        }
+      }
     },
-    [temporaryDatum]
+    [temporaryDatum, router.query]
   );
 
   const createPaymentRequestHandler = useCallback(() => {
@@ -353,24 +539,6 @@ const PromiseDetail = () => {
     if (!rData) {
       return message.error("요청사항을 설정해주세요.");
     }
-
-    // dispatch({
-    //   type: PAYMENTREQUEST_CREATE_REQUEST,
-    //   data: {
-    //     userId: me.id,
-    //     productName:
-    //       temporaryDatum.length > 1
-    //         ? `${product.title} ${
-    //             unit.value.name ? unit.value.name : unit.value
-    //           } 외 ${temporaryDatum.length - 1}개`
-    //         : `${product.title} ${
-    //             unit.value.name ? unit.value.name : unit.value
-    //           }`,
-    //     paymentRequestDatum: temporaryDatum,
-    //     totalPrice: totalPayment,
-    //     prescriptionId: product.id,
-    //   },
-    // });
 
     dispatch({
       type: WISH_PAYMENT_CREATE_REQUEST,
@@ -415,18 +583,38 @@ const PromiseDetail = () => {
       return;
     }
 
-    let temporaryArr = temporaryDatum.map((data) => data);
+    if (router.query) {
+      if (router.query.type === "update") {
+        dispatch({
+          type: WISH_PAYMENT_ITEM_QNT_REQUEST,
+          data: {
+            wishPaymentItemId: qntSelect,
+            qnt: parseInt(qntInput.value),
+          },
+        });
 
-    const datumFindIndex = temporaryArr.findIndex(
-      (data) => data.id === qntSelect
-    );
+        setQntSelect(null);
+      } else {
+        let temporaryArr = temporaryDatum.map((data) => data);
 
-    temporaryArr[datumFindIndex].qnt = parseInt(qntInput.value);
+        const datumFindIndex = temporaryArr.findIndex(
+          (data) => data.id === qntSelect
+        );
 
-    setTemporaryDatum(temporaryArr);
+        temporaryArr[datumFindIndex].qnt = parseInt(qntInput.value);
 
-    setQntSelect(null);
-  }, [temporaryDatum, qntSelect, qntInput.value]);
+        setTemporaryDatum(temporaryArr);
+
+        setQntSelect(null);
+      }
+    }
+  }, [
+    router.query,
+    wishPaymentDetail,
+    temporaryDatum,
+    qntSelect,
+    qntInput.value,
+  ]);
 
   // 요청사항 선택
   const requestChangeHandler = useCallback((data) => {
@@ -440,7 +628,19 @@ const PromiseDetail = () => {
   // 요청사항 설정
   const requestSetHandler = useCallback(
     (data) => {
-      setRData(data);
+      if (router.query) {
+        if (router.query.type === "update") {
+          dispatch({
+            type: WISH_PAYMENT_UPDATE_REQUEST,
+            data: {
+              containerId: wishPaymentDetail && wishPaymentDetail.id,
+              ...data,
+            },
+          });
+        } else {
+          setRData(data);
+        }
+      }
 
       setRModal(false);
     },
@@ -779,17 +979,21 @@ const PromiseDetail = () => {
                   &nbsp;원
                 </Text>
               </Wrapper>
-              <CommonButton
-                shadow={`0`}
-                width={width < 800 ? `130px` : `170px`}
-                height={`100%`}
-                radius={`0`}
-                cursor={`pointer`}
-                onClick={createPaymentRequestHandler}
-                loading={st_wishPaymentCreateLoading}
-              >
-                장바구니 담기
-              </CommonButton>
+              <Wrapper width={width < 800 ? `130px` : `170px`}>
+                {router.query && router.query.type !== "update" && (
+                  <CommonButton
+                    shadow={`0`}
+                    width={`100%`}
+                    height={`100%`}
+                    radius={`0`}
+                    cursor={`pointer`}
+                    onClick={createPaymentRequestHandler}
+                    loading={st_wishPaymentCreateLoading}
+                  >
+                    장바구니 담기
+                  </CommonButton>
+                )}
+              </Wrapper>
             </Wrapper>
           </RsWrapper>
         </WholeWrapper>
