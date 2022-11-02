@@ -66,7 +66,6 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
           totalPrice,
           CONCAT(FORMAT(totalPrice, 0), "원")        AS viewTotalPrice,
           totalQun,
-          CONCAT(FORMAT(totalQun, 0), "원")          AS viewTotalQun,
           medication,
           receiverName,
           content,
@@ -81,7 +80,6 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
   const itemQuery = `
   SELECT  id,
           paymentId,
-          title,
           price,
           CONCAT(FORMAT(price, 0), "원")             AS viewPrice,
           pack,
@@ -105,9 +103,7 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 
     const itemData = await models.sequelize.query(itemQuery);
 
-    return res
-      .status(200)
-      .json({ detailData: detailData[0][0], items: itemData[0] });
+    return res.status(200).json({ ...detailData[0][0], items: itemData[0] });
   } catch (error) {
     console.error(error);
     return res.status(401).send("상품 정보를 불러올 수 없습니다.");
@@ -507,7 +503,7 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ detailData: detailData[0][0], materials: materialData[0] });
+      .json({ ...detailData[0][0], materials: materialData[0] });
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니 상품 정보를 불러올 수 없습니다.");

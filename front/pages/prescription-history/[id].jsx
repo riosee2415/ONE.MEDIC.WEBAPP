@@ -1,10 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import ClientLayout from "../../components/ClientLayout";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
@@ -20,25 +16,79 @@ import {
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
 import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
-import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { message } from "antd";
+import {
+  WISH_PAYMENT_DETAIL_REQUEST,
+  WISH_PRE_DETAIL_REQUEST,
+} from "../../reducers/wish";
 
 const PrescriptionHistory = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
+
+  const { me } = useSelector((state) => state.user);
+
+  const {
+    paymentDetail,
+    preDetail,
+    //
+    st_wishPaymentDetailError,
+    st_wishPreDetailError,
+  } = useSelector((state) => state.wish);
 
   ////// HOOKS //////
   const router = useRouter();
 
-  const dispacth = useDispatch();
+  const dispatch = useDispatch();
 
   ////// REDUX //////
   ////// USEEFFECT //////
+
+  console.log(paymentDetail);
+  console.log(preDetail);
+
+  useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+  }, [me]);
+
+  useEffect(() => {
+    if (router.query) {
+      if (router.query.type === "payment") {
+        dispatch({
+          type: WISH_PAYMENT_DETAIL_REQUEST,
+          data: {
+            containerId: router.query.id,
+          },
+        });
+      } else if (router.query.type === "pre") {
+        dispatch({
+          type: WISH_PRE_DETAIL_REQUEST,
+          data: {
+            wishPrescriptrionId: router.query.id,
+          },
+        });
+      }
+    }
+  }, [router.query]);
+
+  // 약속처방 상세
+  useEffect(() => {
+    if (me && st_wishPaymentDetailError) {
+      return message.error(st_wishPaymentDetailError);
+    }
+  }, [st_wishPaymentDetailError]);
+
+  // 탕전처방 상세
+  useEffect(() => {
+    if (me && st_wishPreDetailError) {
+      return message.error(st_wishPreDetailError);
+    }
+  }, [st_wishPreDetailError]);
 
   ////// TOGGLE //////
   ////// HANDLER //////
@@ -47,48 +97,6 @@ const PrescriptionHistory = ({}) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper ju={`flex-start`} position={`relative`} padding={`0`}>
@@ -99,76 +107,158 @@ const PrescriptionHistory = ({}) => {
               al={`flex-start`}
             >
               <Wrapper>
-                <Wrapper
-                  borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0`}
-                  dr={`row`}
-                  al={`flex-start`}
-                >
-                  <Wrapper
-                    width={`70px`}
-                    al={`flex-start`}
-                    fontSize={width < 800 ? `16px` : `18px`}
-                    fontWeight={`bold`}
-                  >
-                    약재
-                  </Wrapper>
-                  <Wrapper width={`calc(100% - 70px)`}>
-                    <Wrapper
-                      dr={`row`}
-                      ju={`space-between`}
-                      color={Theme.grey_C}
-                    >
-                      <Text>진피</Text>
-                      <Text>160.0g</Text>
-                      <Text>22,000</Text>
-                    </Wrapper>
-                    <Wrapper
-                      dr={`row`}
-                      ju={`space-between`}
-                      color={Theme.grey_C}
-                    >
-                      <Text>진피</Text>
-                      <Text>160.0g</Text>
-                      <Text>22,000</Text>
-                    </Wrapper>
-                  </Wrapper>
-                </Wrapper>
+                {router.query &&
+                  (router.query.type === "payment" ? (
+                    // 약속처방
+                    <>
+                      <Wrapper
+                        borderBottom={`1px solid ${Theme.grey2_C}`}
+                        padding={`10px 0`}
+                        al={`flex-start`}
+                        ju={`flex-start`}
+                      >
+                        <Wrapper dr={`row`} ju={`space-between`}>
+                          <Text
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            fontWeight={`bold`}
+                          >
+                            내역 정보
+                          </Text>
+                          <Text>
+                            {paymentDetail && paymentDetail.productname}
+                          </Text>
+                        </Wrapper>
+                        <Wrapper dr={`row`} ju={`flex-end`}>
+                          <Text>
+                            {paymentDetail && paymentDetail.receiverName}
+                          </Text>
+                        </Wrapper>
+                        <Wrapper dr={`row`} ju={`flex-end`}>
+                          <Text>
+                            {paymentDetail && paymentDetail.medication}
+                          </Text>
+                        </Wrapper>
+                        <Wrapper dr={`row`} ju={`flex-end`}>
+                          <Text>{paymentDetail && paymentDetail.content}</Text>
+                        </Wrapper>
+                      </Wrapper>
+                      <Wrapper
+                        borderBottom={`1px solid ${Theme.grey2_C}`}
+                        padding={`10px 0`}
+                        dr={`row`}
+                        al={`flex-start`}
+                      >
+                        <Wrapper
+                          width={`70px`}
+                          al={`flex-start`}
+                          fontSize={width < 800 ? `16px` : `18px`}
+                          fontWeight={`bold`}
+                        >
+                          목록
+                        </Wrapper>
+                        <Wrapper width={`calc(100% - 70px)`}>
+                          {paymentDetail &&
+                            paymentDetail.items.map((data) => {
+                              return (
+                                <Wrapper
+                                  dr={`row`}
+                                  ju={`space-between`}
+                                  color={Theme.grey_C}
+                                >
+                                  <Text
+                                    width={`calc(100% / 3)`}
+                                    textAlign={`start`}
+                                  >
+                                    {data.pack}&nbsp;/&nbsp;{data.type}
+                                    &nbsp;/&nbsp;{data.unit}
+                                  </Text>
+                                  <Text
+                                    width={`calc(100% / 3)`}
+                                    textAlign={`center`}
+                                  >
+                                    {data.qnt}
+                                  </Text>
+                                  <Text
+                                    width={`calc(100% / 3)`}
+                                    textAlign={`end`}
+                                  >
+                                    {data.viewPrice}
+                                  </Text>
+                                </Wrapper>
+                              );
+                            })}
+                        </Wrapper>
+                      </Wrapper>
+                    </>
+                  ) : (
+                    router.query.type === "pre" && (
+                      //탕전처방
+                      <>
+                        <Wrapper
+                          borderBottom={`1px solid ${Theme.grey2_C}`}
+                          padding={`10px 0`}
+                          dr={`row`}
+                          al={`flex-start`}
+                        >
+                          <Wrapper
+                            width={`70px`}
+                            al={`flex-start`}
+                            fontSize={width < 800 ? `16px` : `18px`}
+                            fontWeight={`bold`}
+                          >
+                            재료
+                          </Wrapper>
+                          <Wrapper width={`calc(100% - 70px)`}>
+                            {preDetail &&
+                              preDetail.materials.map((data) => {
+                                return (
+                                  <Wrapper
+                                    dr={`row`}
+                                    ju={`space-between`}
+                                    color={Theme.grey_C}
+                                  >
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`start`}
+                                    >
+                                      {data.name}
+                                    </Text>
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`center`}
+                                    >
+                                      {data.qnt}
+                                      {data.unit}
+                                    </Text>
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`end`}
+                                    >
+                                      {data.viewPrice}
+                                    </Text>
+                                  </Wrapper>
+                                );
+                              })}
+                          </Wrapper>
+                        </Wrapper>
+                      </>
+                    )
+                  ))}
 
-                <Wrapper
-                  borderBottom={`1px solid ${Theme.grey2_C}`}
-                  padding={`10px 0`}
-                  dr={`row`}
-                  al={`flex-start`}
-                >
-                  <Wrapper
-                    width={`70px`}
-                    al={`flex-start`}
-                    fontSize={width < 800 ? `16px` : `18px`}
-                    fontWeight={`bold`}
-                  >
-                    조제
-                  </Wrapper>
-                  <Wrapper width={`calc(100% - 70px)`}>
-                    <Wrapper
-                      dr={`row`}
-                      ju={`space-between`}
-                      color={Theme.grey_C}
-                    >
-                      <Text>진피</Text>
-                      <Text>160.0g</Text>
-                      <Text>22,000</Text>
-                    </Wrapper>
-                  </Wrapper>
-                </Wrapper>
                 <Wrapper
                   dr={`row`}
                   margin={`10px 0 0`}
                   ju={`flex-end`}
                   fontSize={width < 800 ? `16px` : `18px`}
                 >
-                  <Text fontWeight={`bold`}>195,840</Text>
-                  <Text>원</Text>
+                  <Text fontWeight={`bold`}>
+                    {router.query &&
+                      (router.query.type === "payment"
+                        ? paymentDetail && paymentDetail.viewTotalPrice
+                        : router.query.type === "pre" &&
+                          preDetail &&
+                          preDetail.viewTotalPrice)}
+                  </Text>
                 </Wrapper>
               </Wrapper>
             </Wrapper>
@@ -214,10 +304,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     // 구현부 종료
