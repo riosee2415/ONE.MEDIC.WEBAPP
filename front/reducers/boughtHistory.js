@@ -1,0 +1,113 @@
+import produce from "../util/produce";
+
+export const initialState = {
+  // 아이디
+  boughtId: null,
+
+  // 상세 정보
+  boughtDetail: null,
+
+  // 구매하기 - 배송정보
+  st_boughtDeliveryLoading: false,
+  st_boughtDeliveryDone: false,
+  st_boughtDeliveryError: null,
+
+  // 구매하기 - 결제정보
+  st_boughtPayLoading: false,
+  st_boughtPayDone: false,
+  st_boughtPayError: null,
+
+  // 구매하기 - 상세정보
+  st_boughtDetailLoading: false,
+  st_boughtDetailDone: false,
+  st_boughtDetailError: null,
+};
+
+export const BOUGHT_DELIVERY_REQUEST = "BOUGHT_DELIVERY_REQUEST";
+export const BOUGHT_DELIVERY_SUCCESS = "BOUGHT_DELIVERY_SUCCESS";
+export const BOUGHT_DELIVERY_FAILURE = "BOUGHT_DELIVERY_FAILURE";
+
+export const BOUGHT_PAY_REQUEST = "BOUGHT_PAY_REQUEST";
+export const BOUGHT_PAY_SUCCESS = "BOUGHT_PAY_SUCCESS";
+export const BOUGHT_PAY_FAILURE = "BOUGHT_PAY_FAILURE";
+
+export const BOUGHT_DETAIL_REQUEST = "BOUGHT_DETAIL_REQUEST";
+export const BOUGHT_DETAIL_SUCCESS = "BOUGHT_DETAIL_SUCCESS";
+export const BOUGHT_DETAIL_FAILURE = "BOUGHT_DETAIL_FAILURE";
+
+const reducer = (state = initialState, action) =>
+  produce(state, (draft) => {
+    switch (action.type) {
+      //////////////////////////////////////////////
+
+      case BOUGHT_DELIVERY_REQUEST: {
+        draft.st_boughtDeliveryLoading = true;
+        draft.st_boughtDeliveryDone = false;
+        draft.st_boughtDeliveryError = null;
+        break;
+      }
+      case BOUGHT_DELIVERY_SUCCESS: {
+        draft.st_boughtDeliveryLoading = false;
+        draft.st_boughtDeliveryDone = true;
+        draft.st_boughtDeliveryError = null;
+        draft.boughtId = action.data.id;
+        break;
+      }
+      case BOUGHT_DELIVERY_FAILURE: {
+        draft.st_boughtDeliveryLoading = false;
+        draft.st_boughtDeliveryDone = false;
+        draft.st_boughtDeliveryError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_PAY_REQUEST: {
+        draft.st_boughtPayLoading = true;
+        draft.st_boughtPayDone = false;
+        draft.st_boughtPayError = null;
+        break;
+      }
+      case BOUGHT_PAY_SUCCESS: {
+        draft.st_boughtPayLoading = false;
+        draft.st_boughtPayDone = true;
+        draft.st_boughtPayError = null;
+        break;
+      }
+      case BOUGHT_PAY_FAILURE: {
+        draft.st_boughtPayLoading = false;
+        draft.st_boughtPayDone = false;
+        draft.st_boughtPayError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_DETAIL_REQUEST: {
+        draft.st_boughtDetailLoading = true;
+        draft.st_boughtDetailDone = false;
+        draft.st_boughtDetailError = null;
+        break;
+      }
+      case BOUGHT_DETAIL_SUCCESS: {
+        draft.st_boughtDetailLoading = false;
+        draft.st_boughtDetailDone = true;
+        draft.st_boughtDetailError = null;
+        draft.boughtDetail = action.data;
+        break;
+      }
+      case BOUGHT_DETAIL_FAILURE: {
+        draft.st_boughtDetailLoading = false;
+        draft.st_boughtDetailDone = false;
+        draft.st_boughtDetailError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      default:
+        break;
+    }
+  });
+
+export default reducer;

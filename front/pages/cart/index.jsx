@@ -136,7 +136,14 @@ const Cart = ({}) => {
     if (
       itemSelect.length !== itemSelect.filter((data) => data.isPayment).length
     ) {
-      return message.info("약속처방과 일반처방은 별도의 주문을 필요로 합니다.");
+      if (
+        itemSelect.length !==
+        itemSelect.filter((data) => !data.isPayment).length
+      ) {
+        return message.info(
+          "약속처방과 일반처방은 별도의 주문을 필요로 합니다."
+        );
+      }
     }
 
     const isPayment = itemSelect[0].isPayment;

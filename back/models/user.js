@@ -167,5 +167,6 @@ module.exports = class User extends Model {
     db.User.hasMany(db.UserAddress);
     db.User.hasMany(db.PrescriptionPaymentRequest);
     db.User.hasMany(db.UserRequest);
+    db.User.hasMany(db.BoughtHistory);
   }
 };

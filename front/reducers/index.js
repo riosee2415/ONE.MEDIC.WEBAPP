@@ -20,6 +20,7 @@ import search from "./search";
 import prescriptionPrice from "./prescriptionPrice";
 import userRequest from "./userRequest";
 import wish from "./wish";
+import boughtHistory from "./boughtHistory";
 
 const rootReducer = (state, action) => {
   switch (action.type) {
@@ -49,6 +50,7 @@ const rootReducer = (state, action) => {
           prescriptionPrice,
           userRequest,
           wish,
+          boughtHistory,
         });
         return combinedReducer(state, action);
       }

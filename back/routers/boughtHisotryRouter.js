@@ -40,7 +40,7 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
         sendAddress,
         sendDetailAddress,
         deliveryMessage,
-        createdAt
+        createdAt,
         updatedAt
     )
     VALUES
@@ -72,6 +72,8 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
              SET  BoughtHistoryId = ${insertResult[0].insertId}
            WHERE  id = ${data}
           `;
+
+          const updateResult = await models.sequelize.query(updateQuery);
         })
       );
     } else {
@@ -83,11 +85,13 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
              SET  BoughtHistoryId = ${insertResult[0].insertId}
            WHERE  id = ${data}
           `;
+
+          const updateResult = await models.sequelize.query(updateQuery);
         })
       );
     }
 
-    return res.status(200).json({ result: true });
+    return res.status(200).json({ result: true, id: insertResult[0].insertId });
   } catch (e) {
     console.error(e);
     return res.status(401).send("배송정보를 등록할수 없습니다.");
@@ -96,14 +100,26 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
 
 // 결제 정보
 router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
-  const { id, isMonth, isPay, payInfo, totalPrice } = req.body;
+  const {
+    id,
+    isMonth,
+    isPay,
+    payInfo,
+    totalPrice,
+    pharmacyPrice,
+    tangjeonPrice,
+    deliveryPrice,
+  } = req.body;
 
   const updateQuery = `
     UPDATE  boughtHistory
        SET  isMonth = ${isMonth},
             isPay = ${isPay},
             payInfo = '${payInfo}',
-            totalPrice = ${totalPrice}
+            totalPrice = ${totalPrice},
+            pharmacyPrice = ${pharmacyPrice},
+            tangjeonPrice = ${tangjeonPrice},
+            deliveryPrice = ${deliveryPrice}
      WHERE  id = ${id}
     `;
 
@@ -114,6 +130,47 @@ router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("구매할 수 업습니다.");
+  }
+});
+
+router.post("/detail", isLoggedIn, async (req, res, next) => {
+  const { id } = req.body;
+
+  const detailQuery = `
+  SELECT  A.id,
+          A.receiveUser,
+          A.receiveMobile,
+          A.receiveAddress,
+          A.receiveDetailAddress,
+          A.sendUser,
+          A.sendMobile,
+          A.sendAddress,
+          A.sendDetailAddress,
+          A.deliveryMessage,
+          A.pharmacyPrice,
+          A.tangjeonPrice,
+          A.deliveryPrice,
+          B.id				wishPaymentId,
+          C.id				wishPreId
+    FROM  boughtHistory   A
+    LEFT
+   OUTER
+    JOIN  wishPaymentContainer B
+      ON  B.BoughtHistoryId = A.id
+    LEFT
+   OUTER
+    JOIN  wishPrescriptionItem C
+      ON  C.BoughtHistoryId = A.id
+   WHERE  A.id = ${id};
+    `;
+
+  try {
+    const detailResult = await models.sequelize.query(detailQuery);
+
+    return res.status(200).json(detailResult[0][0]);
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("상세정보를 불러올수 없습니다.");
   }
 });
 

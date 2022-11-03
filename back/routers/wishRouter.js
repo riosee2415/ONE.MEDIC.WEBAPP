@@ -521,6 +521,8 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
           cheob,
           pack,
           unit,
+          packPrice,
+          CONCAT(FORMAT(packPrice, 0), "원")       AS viewPackPrice,
           medication,
           receiverName,
           content,
@@ -537,13 +539,15 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
           materialId,
           name,
           price,
-          CONCAT(FORMAT(price, 0), "원")           AS viewPrice,
+          CONCAT(FORMAT(price, 0), "원")             AS viewPrice,
+          ROUND(price * qnt * 100)                   AS totalPrice,
+          CONCAT(FORMAT(price * qnt * 100, 0), "원") AS viewTotalPrice,            
           qnt,
           unit,
           createdAt,
           updatedAt,
-          DATE_FORMAT(createdAt, "%Y년 %m월 %d일")  AS viewCreatedAt,
-          DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")  AS viewUpdatedAt,
+          DATE_FORMAT(createdAt, "%Y년 %m월 %d일")    AS viewCreatedAt,
+          DATE_FORMAT(updatedAt, "%Y년 %m월 %d일")    AS viewUpdatedAt,
           WishPrescriptionItemId 
     FROM	wishMaterialsItem
    WHERE  WishPrescriptionItemId = ${wishPrescriptrionId}

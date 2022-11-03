@@ -35,6 +35,11 @@ import {
 } from "../../reducers/prescriptionPaymentRequest";
 import { numberWithCommas } from "../../components/commonUtils";
 import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
+import { BOUGHT_DETAIL_REQUEST } from "../../reducers/boughtHistory";
+import {
+  WISH_PAYMENT_DETAIL_REQUEST,
+  WISH_PRE_DETAIL_REQUEST,
+} from "../../reducers/wish";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -88,6 +93,12 @@ const Index = ({}) => {
     st_pprIsPayMentError,
   } = useSelector((state) => state.prescriptionPaymentRequest);
 
+  const { boughtDetail } = useSelector((state) => state.boughtHistory);
+
+  const { wishPaymentDetail, wishPreDetail } = useSelector(
+    (state) => state.wish
+  );
+
   const { price } = useSelector((state) => state.prescriptionPrice);
 
   ////// HOOKS //////
@@ -135,43 +146,62 @@ const Index = ({}) => {
   }, [userDiscount, productPayment]);
 
   useEffect(() => {
-    if (router.query.type === "payment") {
+    if (router.query) {
       dispatch({
-        type: PAYMENT_DETAIL_REQUEST,
+        type: BOUGHT_DETAIL_REQUEST,
         data: {
-          paymentId: router.query.id,
-        },
-      });
-    } else if (router.query.type === "ppr") {
-      dispatch({
-        type: PPR_DETAIL_REQUEST,
-        data: {
-          pprId: router.query.id,
+          id: router.query.id,
         },
       });
     }
   }, [router.query]);
 
   useEffect(() => {
-    if (router.query) {
-      if (router.query.type === "payment") {
-        // 약속처방
-        if (paymentDetail) {
-          let total = 0;
-          for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
-            total += paymentDetail.PaymentRequest[i].payment;
-          }
+    if (boughtDetail) {
+      if (boughtDetail.wishPaymentId) {
+        dispatch({
+          type: WISH_PAYMENT_DETAIL_REQUEST,
+          data: {
+            containerId: boughtDetail.wishPaymentId,
+          },
+        });
+      } else {
+        dispatch({
+          type: WISH_PRE_DETAIL_REQUEST,
+          data: {
+            wishPrescriptrionId: boughtDetail.wishPreId,
+          },
+        });
+      }
+    }
+  }, [boughtDetail]);
 
-          setProductPayment(total);
+  useEffect(() => {
+    if (boughtDetail) {
+      if (boughtDetail.wishPaymentId) {
+        // 약속처방
+        if (wishPaymentDetail) {
+          setProductPayment(
+            wishPaymentDetail.items
+              .map((data) => data.price)
+              .reduce((a, b) => a + b)
+          );
         }
       } else {
         // 탕전처방
-        if (pprDetail) {
-          setProductPayment(pprDetail.totalPrice);
+        if (wishPreDetail) {
+          setProductPayment(
+            wishPreDetail.materials
+              .map((data) => data.totalPrice)
+              .reduce((a, b) => a + b) +
+              wishPreDetail.packPrice +
+              price.pharmacyPrice +
+              price.tangjeonPrice
+          );
         }
       }
     }
-  }, [paymentDetail, pprDetail, router.query]);
+  }, [wishPaymentDetail, wishPreDetail, boughtDetail]);
 
   // 약속처방 결제
 
@@ -492,28 +522,23 @@ const Index = ({}) => {
                     color={Theme.black_C}
                     margin={`0 0 12px`}
                   >
-                    {router.query && router.query.type === "payment"
-                      ? paymentDetail && paymentDetail.receiveUser
-                      : pprDetail && pprDetail.receiveUser}
+                    {boughtDetail && boughtDetail.receiveUser}
                   </Text>
                   <Text
                     fontSize={`16px`}
                     color={Theme.grey_C}
                     margin={`0 0 12px`}
                   >
-                    {router.query && router.query.type === "payment"
-                      ? paymentDetail && paymentDetail.receiveMobile
-                      : pprDetail && pprDetail.receiveMobile}
+                    {boughtDetail && boughtDetail.receiveMobile}
                   </Text>
                   <Text fontSize={`16px`} color={Theme.grey_C}>
-                    {router.query && router.query.type === "payment"
-                      ? paymentDetail && paymentDetail.receiveAddress
-                      : pprDetail && pprDetail.receiveAddress}
+                    {boughtDetail && boughtDetail.receiveAddress}
                   </Text>
                   <Text fontSize={`16px`} color={Theme.grey_C}>
-                    {router.query && router.query.type === "payment"
-                      ? paymentDetail && paymentDetail.receiveDetailAddress
-                      : pprDetail && pprDetail.receiveDetailAddress}
+                    {boughtDetail && boughtDetail.receiveDetailAddress}
+                  </Text>
+                  <Text fontSize={`16px`} color={Theme.grey_C}>
+                    {boughtDetail && boughtDetail.deliveryMessage}
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -532,19 +557,75 @@ const Index = ({}) => {
                   >
                     요청사항
                   </Text>
-                  <Text
-                    fontSize={`18px`}
-                    color={Theme.black_C}
-                    margin={`0 0 12px`}
-                  >
-                    {router.query && router.query.type === "payment"
-                      ? paymentDetail && paymentDetail.deliveryMessage
-                        ? paymentDetail.deliveryMessage
-                        : "요청사항이 없습니다."
-                      : pprDetail && pprDetail.deliveryMessage
-                      ? pprDetail.deliveryMessage
-                      : "요청사항이 없습니다."}
-                  </Text>
+
+                  {boughtDetail &&
+                    (boughtDetail.wishPaymentId
+                      ? wishPaymentDetail && (
+                          // 약속처방
+                          <>
+                            <Text
+                              fontSize={`18px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPaymentDetail.productname}
+                            </Text>
+                            <Text
+                              fontSize={`16px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPaymentDetail.receiverName}
+                            </Text>
+                            <Text
+                              fontSize={`16px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPaymentDetail.medication}
+                            </Text>
+                            <Text
+                              fontSize={`16px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPaymentDetail.content}
+                            </Text>
+                          </>
+                        )
+                      : wishPreDetail && (
+                          // 탕전처방
+                          <>
+                            <Text
+                              fontSize={`18px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPreDetail.title}
+                            </Text>
+                            <Text
+                              fontSize={`16px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPreDetail.receiverName}
+                            </Text>
+                            <Text
+                              fontSize={`16px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPreDetail.medication}
+                            </Text>
+                            <Text
+                              fontSize={`16px`}
+                              color={Theme.black_C}
+                              margin={`0 0 12px`}
+                            >
+                              {wishPreDetail.content}
+                            </Text>
+                          </>
+                        ))}
                 </Wrapper>
               </Wrapper>
 
@@ -589,70 +670,94 @@ const Index = ({}) => {
                   borderBottom={`1px solid ${Theme.grey_C}`}
                   margin={`0 0 20px`}
                 >
-                  {router.query &&
-                    (router.query.type === "payment"
-                      ? paymentDetail && (
+                  {boughtDetail &&
+                    (boughtDetail.wishPaymentId
+                      ? wishPaymentDetail && (
                           // 약속처방
                           <>
-                            <Wrapper
-                              dr={`row`}
-                              ju={`space-between`}
-                              margin={`0 0 20px`}
-                            >
-                              <Text color={Theme.gray_C} fontSize={`16px`}>
-                                가격
-                              </Text>
-                              <Text fontSize={`18px`} color={Theme.grey_C}>
-                                {String(productPayment).replace(
-                                  /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-                                  ","
-                                )}
-                              </Text>
-                            </Wrapper>
+                            {wishPaymentDetail.items.map((data) => {
+                              return (
+                                <Wrapper
+                                  dr={`row`}
+                                  ju={`space-between`}
+                                  margin={`0 0 20px`}
+                                >
+                                  <Text color={Theme.gray_C} fontSize={`16px`}>
+                                    {data.pack}/{data.type}/{data.unit}
+                                  </Text>
+                                  <Text fontSize={`18px`} color={Theme.grey_C}>
+                                    {data.viewPrice}
+                                  </Text>
+                                </Wrapper>
+                              );
+                            })}
                           </>
                         )
-                      : pprDetail && (
+                      : wishPreDetail && (
                           // 탕전처방
                           <>
-                            {pprDetail.materialDatum.map((data) => (
+                            {wishPreDetail.materials.map((data) => (
                               <Wrapper
                                 dr={`row`}
                                 ju={`space-between`}
                                 margin={`0 0 20px`}
                               >
-                                <Text color={Theme.gray_C} fontSize={`16px`}>
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`start`}
+                                  color={Theme.gray_C}
+                                  fontSize={`16px`}
+                                >
                                   {data.name}
                                 </Text>
-                                <Text fontSize={`18px`} color={Theme.grey_C}>
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                  fontSize={`18px`}
+                                  color={Theme.grey_C}
+                                >
                                   {data.qnt}
                                   {data.unit}
                                 </Text>
-                                <Text fontSize={`18px`} color={Theme.grey_C}>
-                                  {numberWithCommas(data.buyPrice * data.qnt)}원
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`end`}
+                                  fontSize={`18px`}
+                                  color={Theme.grey_C}
+                                >
+                                  {data.viewTotalPrice}
                                 </Text>
                               </Wrapper>
                             ))}
-
-                            <Wrapper
-                              dr={`row`}
-                              ju={`space-between`}
-                              margin={`0 0 20px`}
-                            >
-                              <Text color={Theme.gray_C} fontSize={`16px`}>
-                                탕전
-                              </Text>
-                              <Text fontSize={`18px`} color={Theme.grey_C}>
-                                {numberWithCommas(
-                                  pprDetail.totalPrice -
-                                    pprDetail.materialDatum
-                                      .map((data) => data.buyPrice * data.qnt)
-                                      .reduce((a, b) => a + b)
-                                )}
-                                원
-                              </Text>
-                            </Wrapper>
                           </>
                         ))}
+
+                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
+                    <Text color={Theme.gray_C} fontSize={`16px`}>
+                      종류
+                    </Text>
+                    <Text fontSize={`18px`} color={Theme.grey_C}>
+                      {wishPreDetail && wishPreDetail.viewPackPrice}
+                    </Text>
+                  </Wrapper>
+
+                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
+                    <Text color={Theme.gray_C} fontSize={`16px`}>
+                      탕전
+                    </Text>
+                    <Text fontSize={`18px`} color={Theme.grey_C}>
+                      {price && price.viewTangjeonPrice}
+                    </Text>
+                  </Wrapper>
+
+                  <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
+                    <Text color={Theme.gray_C} fontSize={`16px`}>
+                      조제
+                    </Text>
+                    <Text fontSize={`18px`} color={Theme.grey_C}>
+                      {price && price.viewPharmacyPrice}
+                    </Text>
+                  </Wrapper>
 
                   <Wrapper dr={`row`} ju={`space-between`} margin={`0 0 20px`}>
                     <Text color={Theme.gray_C} fontSize={`16px`}>

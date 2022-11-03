@@ -983,7 +983,7 @@ const Prescription = ({}) => {
                     </Text>
                   ))}
               </Wrapper>
-              <Wrapper width={width < 800 ? `130px` : `170px`}>
+              <Wrapper width={width < 800 ? `130px` : `170px`} height={`100%`}>
                 {router.query && router.query.type !== "update" && (
                   <CommonButton
                     shadow={`0`}

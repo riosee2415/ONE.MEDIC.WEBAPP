@@ -42,6 +42,7 @@ import {
   PPR_ADDRESS_UPDATE_REQUEST,
   PPR_DETAIL_REQUEST,
 } from "../../reducers/prescriptionPaymentRequest";
+import { BOUGHT_DELIVERY_REQUEST } from "../../reducers/boughtHistory";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -112,22 +113,12 @@ const Index = ({}) => {
   );
 
   const {
-    paymentDetail,
-    sendDeliveryModal,
-    receiveDeliveryModal,
+    boughtId,
     //
-    st_paymentDeliveryDone,
-    st_paymentDeliveryError,
-  } = useSelector((state) => state.paymentRequest);
-
-  const {
-    pprDetail,
-    //
-    st_pprDetailError,
-    //
-    st_pprAddressUpdateDone,
-    st_pprAddressUpdateError,
-  } = useSelector((state) => state.prescriptionPaymentRequest);
+    st_boughtDeliveryLoading,
+    st_boughtDeliveryDone,
+    st_boughtDeliveryError,
+  } = useSelector((state) => state.boughtHistory);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -145,6 +136,12 @@ const Index = ({}) => {
   const [isMeterialData2, setIsMeterialData2] = useState([]);
 
   const [dRequest, setDRequest] = useState(""); // 배송시 요청사항
+
+  const [boughtData, setBoughtData] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  const [sendDeliveryModal, setSendDeliveryModal] = useState(false);
+  const [receiveDeliveryModal, setReceiveDeliveryModal] = useState(false);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -167,70 +164,41 @@ const Index = ({}) => {
     }
   }, []);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (router.query.type === "payment") {
-      dispatch({
-        type: PAYMENT_DETAIL_REQUEST,
-        data: {
-          paymentId: router.query.id,
-        },
-      });
-    } else {
-      dispatch({
-        type: PPR_DETAIL_REQUEST,
-        data: {
-          pprId: router.query.id,
-        },
-      });
-    }
-  }, [router.query]);
+      const paymentData = sessionStorage.getItem("paymentBought")
+        ? JSON.parse(sessionStorage.getItem("paymentBought"))
+        : null;
 
-  useEffect(() => {
-    if (paymentDetail) {
-      let price = 0;
-      for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
-        price += paymentDetail.PaymentRequest[i].payment;
+      if (!paymentData) {
+        router.push("/cart");
+        return message.error("잘못된 경로입니다.");
+      }
+      setBoughtData(paymentData);
+
+      setTotalPrice(
+        paymentData.map((data) => data.originTotalPrice).reduce((a, b) => a + b)
+      );
+
+      await sessionStorage.removeItem("paymentBought");
+    } else {
+      const preData = sessionStorage.getItem("preBought")
+        ? JSON.parse(sessionStorage.getItem("preBought"))
+        : null;
+
+      if (!preData) {
+        router.push("/cart");
+        return message.error("잘못된 경로입니다.");
       }
 
-      setPayment(price);
-    }
-  }, [paymentDetail]);
-
-  useEffect(() => {
-    if (pprDetail) {
-      setPayment(pprDetail.totalPrice);
-    }
-  }, [pprDetail]);
-
-  // 약속처방 - 배송정보저장
-  useEffect(() => {
-    if (st_paymentDeliveryDone) {
-      return router.push(
-        `/payInfo/${router.query.id}?type=${router.query.type}`
+      setBoughtData(preData);
+      setTotalPrice(
+        preData.map((data) => data.originTotalPrice).reduce((a, b) => a + b)
       );
-    }
-  }, [st_paymentDeliveryDone]);
 
-  useEffect(() => {
-    if (st_paymentDeliveryError) {
-      return message.error(st_paymentDeliveryError);
+      await sessionStorage.removeItem("preBought");
     }
-  }, [st_paymentDeliveryError]);
-
-  // 탕전처방 - 배송정보 저장
-  useEffect(() => {
-    if (st_pprAddressUpdateDone) {
-      return router.push(
-        `/payInfo/${router.query.id}?type=${router.query.type}`
-      );
-    }
-  }, [st_pprAddressUpdateDone]);
-
-  useEffect(() => {
-    if (st_pprAddressUpdateError) {
-      return message.error(st_pprAddressUpdateError);
-    }
-  }, [st_pprAddressUpdateError]);
+  }, [router.query]);
 
   useEffect(() => {
     if (searchInput && me) {
@@ -243,25 +211,34 @@ const Index = ({}) => {
     }
   }, [searchInput.value]);
 
+  // 주문하기
+
   useEffect(() => {
-    if (st_pprDetailError) {
-      return message.error(st_pprDetailError);
+    if (st_boughtDeliveryDone) {
+      router.push(`/payInfo/${boughtId}`);
+
+      return message.success("배송정보가 등록되었습니다.");
     }
-  }, [st_pprDetailError]);
+  }, [st_boughtDeliveryDone]);
+
+  useEffect(() => {
+    if (st_boughtDeliveryError) {
+      return message.error(st_boughtDeliveryError);
+    }
+  }, [st_boughtDeliveryError]);
 
   ////// TOGGLE //////
 
-  const deliveryModalToggle = useCallback((type) => {
-    if (type === "receive") {
-      dispatch({
-        type: RECEIVE_DELIVERY_MODAL_TOGGLE,
-      });
-    } else {
-      dispatch({
-        type: SEND_DELIVERY_MODAL_TOGGLE,
-      });
-    }
-  }, []);
+  const deliveryModalToggle = useCallback(
+    (type) => {
+      if (type === "receive") {
+        setReceiveDeliveryModal((prev) => !prev);
+      } else {
+        setSendDeliveryModal((prev) => !prev);
+      }
+    },
+    [receiveDeliveryModal, sendDeliveryModal]
+  );
 
   const addressListModalToggle = useCallback((type) => {
     if (type) {
@@ -294,53 +271,27 @@ const Index = ({}) => {
         return message.error("전화번호를 정확하게 입력해주세요.");
       }
 
-      if (router.query.type === "payment") {
-        dispatch({
-          type: PAYMENT_DELIVERY_REQUEST,
-          data: {
-            id: parseInt(router.query.id),
-            receiveUser: data.ruser,
-            receiveMobile: data.rmobile,
-            receiveAddress: data.raddress,
-            receiveDetailAddress: data.rdetailAddress,
-            sendUser: data.suser,
-            sendMobile: data.smobile,
-            sendAddress: data.saddress,
-            sendDetailAddress: data.sdetailAddress,
-            deliveryMessage: data.deliveryMessage,
-            deliveryRequest: data.deliveryRequest,
-          },
-        });
+      dispatch({
+        type: BOUGHT_DELIVERY_REQUEST,
+        data: {
+          idItems: boughtData.map((data) => data.id),
+          type: router.query.type === "payment" ? 1 : 2,
+          receiveUser: data.ruser,
+          receiveMobile: data.rmobile,
+          receiveAddress: data.raddress,
+          receiveDetailAddress: data.rdetailAddress,
+          sendUser: data.suser,
+          sendMobile: data.smobile,
+          sendAddress: data.saddress,
+          sendDetailAddress: data.sdetailAddress,
+          deliveryMessage:
+            data.deliveryMessage === "직접입력"
+              ? data.deliveryRequest
+              : data.deliveryMessage,
+        },
+      });
 
-        dispatch({
-          type: ADDRESS_CREATE_REQUEST,
-          data: {
-            postCode: data.raddress.split("(")[1].substring(0, 5),
-            address: data.raddress.split("(")[0],
-            detailAddress: data.rdetailAddress,
-            userId: me.id,
-            username: data.ruser,
-            userMobile: data.rmobile,
-          },
-        });
-      } else {
-        dispatch({
-          type: PPR_ADDRESS_UPDATE_REQUEST,
-          data: {
-            id: parseInt(router.query.id),
-            receiveUser: data.ruser,
-            receiveMobile: data.rmobile,
-            receiveAddress: data.raddress,
-            receiveDetailAddress: data.rdetailAddress,
-            sendUser: data.suser,
-            sendMobile: data.smobile,
-            sendAddress: data.saddress,
-            sendDetailAddress: data.sdetailAddress,
-            deliveryMessage: data.deliveryMessage,
-            deliveryRequest: data.deliveryRequest,
-          },
-        });
-
+      if (data.raddress.split("(")[1]) {
         dispatch({
           type: ADDRESS_CREATE_REQUEST,
           data: {
@@ -354,8 +305,10 @@ const Index = ({}) => {
         });
       }
     },
-    [router.query.id, router.query.type, me]
+    [router.query, boughtData, me]
   );
+
+  console.log(boughtData);
 
   const selectAddressHandler = useCallback((data) => {
     formRef.current.setFieldsValue({
@@ -889,12 +842,9 @@ const Index = ({}) => {
                 >
                   <Wrapper dr={`row`} width={`auto`}>
                     <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                    {payment && (
-                      <Text fontWeight={`bold`}>
-                        {numberWithCommas(payment)}
-                        {/* {numberWithCommas(String(payment))} */}
-                      </Text>
-                    )}
+                    <Text fontWeight={`bold`}>
+                      {totalPrice && numberWithCommas(totalPrice)}
+                    </Text>
                   </Wrapper>
 
                   {router.query && router.query.type !== "payment" && (
@@ -913,6 +863,7 @@ const Index = ({}) => {
                   radius={`0`}
                   cursor={`pointer`}
                   htmlType="submit"
+                  loading={st_boughtDeliveryLoading}
                 >
                   주문하기
                 </CommonButton>
@@ -969,7 +920,7 @@ const Index = ({}) => {
           </Modal>
 
           {/* 주문하기 옆 모달 */}
-          <CustomModal footer={null} visible={oModal} onCancel={oModalToggle}>
+          {/* <CustomModal footer={null} visible={oModal} onCancel={oModalToggle}>
             <Wrapper
               padding={`20px`}
               shadow={Theme.shadow_C}
@@ -1044,7 +995,7 @@ const Index = ({}) => {
                 })}
               </Wrapper>
             </Wrapper>
-          </CustomModal>
+          </CustomModal> */}
 
           {/* SEARCH ADDRESS MODAL */}
 
@@ -1082,7 +1033,7 @@ const Index = ({}) => {
                 {addressList &&
                   (addressList.length === 0 ? (
                     <Wrapper margin={`20px 0 0`}>
-                      <Empty />
+                      <Empty description={`주소가 없습니다.`} />
                     </Wrapper>
                   ) : (
                     addressList.map((data) => {

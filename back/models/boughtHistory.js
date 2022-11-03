@@ -143,6 +143,27 @@ module.exports = class BoughtHistory extends Model {
           type: DataTypes.INTEGER,
           allowNull: true,
         },
+
+        // 조제 금액
+        pharmacyPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
+
+        // 탕전 금액
+        tangjeonPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
+
+        // 배송비
+        deliveryPrice: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
       },
       {
         modelName: "BoughtHistory",
