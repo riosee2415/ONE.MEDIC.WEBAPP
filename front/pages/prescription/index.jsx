@@ -38,6 +38,7 @@ import {
   WISH_PRE_CREATE_REQUEST,
   WISH_PRE_DETAIL_REQUEST,
   WISH_PRE_ITEM_DELETE_REQUEST,
+  WISH_PRE_ITEM_QNT_REQUEST,
   WISH_PRE_UPDATE_REQUEST,
 } from "../../reducers/wish";
 
@@ -121,6 +122,9 @@ const Prescription = ({}) => {
     //
     st_wishPreItemDeleteDone,
     st_wishPreItemDeleteError,
+    //
+    st_wishPreItemQntDone,
+    st_wishPreItemQntError,
   } = useSelector((state) => state.wish);
 
   const { me } = useSelector((state) => state.user);
@@ -359,6 +363,26 @@ const Prescription = ({}) => {
     }
   }, [st_wishPreItemDeleteError]);
 
+  // 재료 수량
+  useEffect(() => {
+    if (st_wishPreItemQntDone) {
+      dispatch({
+        type: WISH_PRE_DETAIL_REQUEST,
+        data: {
+          wishPrescriptrionId: wishPreDetail && wishPreDetail.id,
+        },
+      });
+
+      return message.success("재료 수량이 변경되었습니다.");
+    }
+  }, [st_wishPreItemQntDone]);
+
+  useEffect(() => {
+    if (st_wishPreItemQntError) {
+      return message.error(st_wishPreItemQntError);
+    }
+  }, [st_wishPreItemQntError]);
+
   ////// TOGGLE //////
 
   // 종류 변경 모달
@@ -498,24 +522,36 @@ const Prescription = ({}) => {
       return;
     }
 
-    const updateArr = userMaterials.map((item) => {
-      if (item.id === qntSelect) {
-        return {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          qnt: Math.round(parseFloat(qntInput.value) * 100) / 100,
-          unit: item.unit,
-        };
+    if (router.query) {
+      if (router.query.type === "update") {
+        dispatch({
+          type: WISH_PRE_ITEM_QNT_REQUEST,
+          data: {
+            wishMaterialsItemId: qntSelect,
+            qnt: Math.round(parseFloat(qntInput.value) * 100) / 100,
+          },
+        });
       } else {
-        return item;
-      }
-    });
+        const updateArr = userMaterials.map((item) => {
+          if (item.id === qntSelect) {
+            return {
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              qnt: Math.round(parseFloat(qntInput.value) * 100) / 100,
+              unit: item.unit,
+            };
+          } else {
+            return item;
+          }
+        });
 
-    dispatch({
-      type: MATERIAL_USER_ADD,
-      data: updateArr,
-    });
+        dispatch({
+          type: MATERIAL_USER_ADD,
+          data: updateArr,
+        });
+      }
+    }
 
     setQntSelect(null);
   }, [userMaterials, qntSelect, qntInput.value]);

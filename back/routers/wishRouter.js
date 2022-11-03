@@ -23,12 +23,7 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
             productname                          	AS title,
             WishListId,
             receiverName,
-            (
-              SELECT  paymentId
-                FROM  wishPaymentItem B
-               WHERE  A.id = B.WishPaymentContainerId
-               LIMIT  1
-            )										AS paymentId,
+            paymentId,
             1				  						AS isPayment,
             CASE
               WHEN 
@@ -102,6 +97,7 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 
   const detailQuery = `
   SELECT  id,
+          paymentId,
           productname,
           medication,
           receiverName,
@@ -116,7 +112,6 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 
   const itemQuery = `
   SELECT  id,
-          paymentId,
           price,
           CONCAT(FORMAT(price, 0), "원")             AS viewPrice,
           pack,
@@ -150,7 +145,8 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 /// 장바구니에 상품 추가
 /// 바로 wishList에 추가됨 (약속처방)
 router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
-  const { productname, medication, receiverName, content, items } = req.body;
+  const { paymentId, productname, medication, receiverName, content, items } =
+    req.body;
 
   if (!Array.isArray(items)) {
     return res.status(401).send("잘못된 요청입니다.");
@@ -158,7 +154,6 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
 
   //   item informations
   //   -----------------------
-  //   paymentId,
   //   price,
   //   pack,
   //   type,
@@ -199,6 +194,7 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
     const containerInsertQuery = `
     INSERT  INTO  wishPaymentContainer
     (
+      paymentId,
       productname,
       medication,
       receiverName,
@@ -209,6 +205,7 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
     )
     VALUES
     (
+      ${paymentId},
       "${productname}",
       ${medication ? `"${medication}"` : null},
       "${receiverName}",
@@ -232,7 +229,6 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
         const insertQuery = `
         INSERT  INTO    wishPaymentItem
         (
-            paymentId,
             price,
             pack,
             type,
@@ -244,7 +240,6 @@ router.post("/payment/container/create", isLoggedIn, async (req, res, next) => {
         )
         VALUES
         (
-            ${data.paymentId},
             ${data.price},
             "${data.pack}",
             "${data.type}",
@@ -380,12 +375,11 @@ router.post("/delete", isLoggedIn, async (req, res, next) => {
 
 // container 안에 상품 추가 (약속처방)
 router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
-  const { containerId, paymentId, price, pack, type, unit, qnt } = req.body;
+  const { containerId, price, pack, type, unit, qnt } = req.body;
 
   const insertQuery = `
   INSERT  INTO    wishPaymentItem
   (
-      paymentId,
       price,
       pack,
       type,
@@ -397,7 +391,6 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
   )
   VALUES
   (
-      ${paymentId},
       ${price},
       "${pack}",
       "${type}",
@@ -463,6 +456,7 @@ router.post("/payment/item/delete", isLoggedIn, async (req, res, next) => {
   }
 });
 
+//container 안에 상품 수량(약속처방)
 router.post("/payment/item/qnt", isLoggedIn, async (req, res, next) => {
   const { wishPaymentItemId, qnt } = req.body;
 
@@ -778,6 +772,26 @@ router.post("/pre/material/update", isLoggedIn, async (req, res, next) => {
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니 상품을 추가할 수 없습니다.");
+  }
+});
+
+//item 안에 상품 수량(탕전처방)
+router.post("/payment/material/qnt", isLoggedIn, async (req, res, next) => {
+  const { wishMaterialsItemId, qnt } = req.body;
+
+  const qntUpdateQuery = `
+  UPDATE  wishMaterialsItem
+     SET  qnt = ${qnt}
+   WHERE  id = ${wishMaterialsItemId}
+  `;
+
+  try {
+    const qntUpdate = await models.sequelize.query(qntUpdateQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("수량을 수정할 수 업습니다.");
   }
 });
 

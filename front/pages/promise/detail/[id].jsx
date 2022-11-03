@@ -456,7 +456,6 @@ const PromiseDetail = () => {
         dispatch({
           type: WISH_PAYMENT_ITEM_CREATE_REQUEST,
           data: {
-            paymentId: router.query && router.query.id,
             containerId: wishPaymentDetail && wishPaymentDetail.id,
             price:
               product &&
@@ -477,7 +476,6 @@ const PromiseDetail = () => {
 
         temporayArr.push({
           id: temporaryId,
-          paymentId: router.query && router.query.id,
           price:
             product &&
             product.price +
@@ -543,6 +541,7 @@ const PromiseDetail = () => {
     dispatch({
       type: WISH_PAYMENT_CREATE_REQUEST,
       data: {
+        paymentId: router.query && router.query.id,
         productname: product && product.title,
         totalPrice: totalPayment,
         totalQun:
@@ -554,7 +553,7 @@ const PromiseDetail = () => {
         items: temporaryDatum,
       },
     });
-  }, [temporaryDatum, me, product, totalPayment, rData]);
+  }, [router.query, temporaryDatum, me, product, totalPayment, rData]);
 
   // 수량 선택
   const qntSelectHandler = useCallback(

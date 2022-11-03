@@ -71,6 +71,11 @@ import {
   WISH_PRE_ITEM_DELETE_SUCCESS,
   WISH_PRE_ITEM_DELETE_FAILURE,
 
+  // 장바구니 안에 상품 수량(탕전처방)
+  WISH_PRE_ITEM_QNT_REQUEST,
+  WISH_PRE_ITEM_QNT_SUCCESS,
+  WISH_PRE_ITEM_QNT_FAILURE,
+
   // 장바구니에 상품 삭제
   WISH_DELETE_REQUEST,
   WISH_DELETE_SUCCESS,
@@ -467,6 +472,34 @@ function* wishPreItemDelete(action) {
 // ******************************************************************************************************************
 // SAGA AREA ********************************************************************************************************
 // ******************************************************************************************************************
+async function wishPreItemQntAPI(data) {
+  return await axios.post(`/api/wish/pre/material/qnt`, data);
+}
+
+function* wishPreItemQnt(action) {
+  try {
+    const result = yield call(wishPreItemQntAPI, action.data);
+
+    yield put({
+      type: WISH_PRE_ITEM_QNT_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: WISH_PRE_ITEM_QNT_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
 async function wishDeleteAPI(data) {
   return await axios.post(`/api/wish/delete`, data);
 }
@@ -550,6 +583,10 @@ function* watchWishPreItemDelete() {
   yield takeLatest(WISH_PRE_ITEM_DELETE_REQUEST, wishPreItemDelete);
 }
 
+function* watchWishPreItemQnt() {
+  yield takeLatest(WISH_PRE_ITEM_QNT_REQUEST, wishPreItemQnt);
+}
+
 function* watchWishPaymentDelete() {
   yield takeLatest(WISH_DELETE_REQUEST, wishDelete);
 }
@@ -573,6 +610,7 @@ export default function* wishSaga() {
     fork(watchWishPreItemCreate),
     fork(watchWishPreItemUpdate),
     fork(watchWishPreItemDelete),
+    fork(watchWishPreItemQnt),
     fork(watchWishPaymentDelete),
   ]);
 }

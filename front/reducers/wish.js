@@ -78,6 +78,11 @@ export const initailState = {
   st_wishPreItemDeleteDone: false,
   st_wishPreItemDeleteError: null,
 
+  // 장바구니 안에 상품 수량(탕전처방)
+  st_wishPreItemQntLoading: false,
+  st_wishPreItemQntDone: false,
+  st_wishPreItemQntError: null,
+
   // 장바구니 상품 삭제
   st_wishDeleteLoading: false,
   st_wishDeleteDone: false,
@@ -162,6 +167,11 @@ export const WISH_PRE_ITEM_UPDATE_FAILURE = "WISH_PRE_ITEM_UPDATE_FAILURE";
 export const WISH_PRE_ITEM_DELETE_REQUEST = "WISH_PRE_ITEM_DELETE_REQUEST";
 export const WISH_PRE_ITEM_DELETE_SUCCESS = "WISH_PRE_ITEM_DELETE_SUCCESS";
 export const WISH_PRE_ITEM_DELETE_FAILURE = "WISH_PRE_ITEM_DELETE_FAILURE";
+
+// 장바구니 안에 상품 수량(탕전처방)
+export const WISH_PRE_ITEM_QNT_REQUEST = "WISH_PRE_ITEM_QNT_REQUEST";
+export const WISH_PRE_ITEM_QNT_SUCCESS = "WISH_PRE_ITEM_QNT_SUCCESS";
+export const WISH_PRE_ITEM_QNT_FAILURE = "WISH_PRE_ITEM_QNT_FAILURE";
 
 // 장바구니에 상품 삭제
 export const WISH_DELETE_REQUEST = "WISH_DELETE_REQUEST";
@@ -449,6 +459,25 @@ const reducer = (state = initailState, action) =>
         draft.st_wishPreItemDeleteLoading = false;
         draft.st_wishPreItemDeleteDone = false;
         draft.st_wishPreItemDeleteError = action.error;
+        break;
+      }
+      /////////////////////////////////////////////////////// 장바구니 안에 상품 삭제(탕전처방)
+      case WISH_PRE_ITEM_QNT_REQUEST: {
+        draft.st_wishPreItemQntLoading = true;
+        draft.st_wishPreItemQntDone = false;
+        draft.st_wishPreItemQntError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_QNT_SUCCESS: {
+        draft.st_wishPreItemQntLoading = false;
+        draft.st_wishPreItemQntDone = true;
+        draft.st_wishPreItemQntError = null;
+        break;
+      }
+      case WISH_PRE_ITEM_QNT_FAILURE: {
+        draft.st_wishPreItemQntLoading = false;
+        draft.st_wishPreItemQntDone = false;
+        draft.st_wishPreItemQntError = action.error;
         break;
       }
       /////////////////////////////////////////////////////// 장바구니에 상품 삭제

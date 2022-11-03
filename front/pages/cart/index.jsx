@@ -264,16 +264,10 @@ const Cart = ({}) => {
                                         : "pre" === value.type)
                                   )}
                                   onChange={() =>
-                                    data.length === 0
-                                      ? data.isPayment
-                                        ? message.info("주문를 선택해주세요.")
-                                        : message.info("약재를 선택해주세요.")
-                                      : itemSelectHandler({
-                                          id: data.id,
-                                          type: data.isPayment
-                                            ? "payment"
-                                            : "pre",
-                                        })
+                                    itemSelectHandler({
+                                      id: data.id,
+                                      type: data.isPayment ? "payment" : "pre",
+                                    })
                                   }
                                 >
                                   <Wrapper
