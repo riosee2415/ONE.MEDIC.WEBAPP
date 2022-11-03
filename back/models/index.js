@@ -30,6 +30,7 @@ const wishPrescriptionItem = require("./wishPrescriptionItem");
 const wishMaterialsItem = require("./wishMaterialsItem");
 const wishList = require("./wishList");
 const userRequest = require("./userRequest");
+const boughtHistory = require("./boughtHistory");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -67,6 +68,7 @@ db.Payment = payment;
 db.SearchRecipe = searchRecipe;
 db.SearchMaterial = searchMaterial;
 db.PrescriptionPrice = prescriptionPrice;
+db.BoughtHistory = boughtHistory;
 db.WishPaymentContainer = wishpaymentcontainer;
 db.WishPaymentItem = wishPaymentItem;
 db.WishPrescriptionItem = wishPrescriptionItem;

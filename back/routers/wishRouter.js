@@ -33,13 +33,28 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
                    WHERE  A.id = B.WishPaymentContainerId
                 ))
               THEN
+                (
+                  SELECT  ROUND(SUM(B.price * B.qnt))
+                    FROM  wishPaymentItem B 
+                  WHERE  A.id = B.WishPaymentContainerId
+                )
+              ELSE 0
+            END AS originTotalPrice,
+            CASE
+              WHEN 
+                !ISNULL((
+                  SELECT  ROUND(SUM(B.price * B.qnt))
+                    FROM  wishPaymentItem B 
+                   WHERE  A.id = B.WishPaymentContainerId
+                ))
+              THEN
                 FORMAT((
                   SELECT  ROUND(SUM(B.price * B.qnt))
                     FROM  wishPaymentItem B 
                   WHERE  A.id = B.WishPaymentContainerId
                 ), 0)
               ELSE 0
-            END AS totalPrice,
+            END AS viewTotalPrice,
             (
               SELECT  COUNT(id)
                 FROM  wishPaymentItem B 
@@ -47,6 +62,7 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
             )                      AS length
       FROM	wishPaymentContainer    A
      WHERE	WishListId = ${findWishList[0][0].id}
+       AND  BoughtHistoryId IS NULL
      UNION
        ALL
     SELECT	id,
@@ -62,13 +78,29 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
                     FROM  wishMaterialsItem B 
                    WHERE  A.id = B.WishPrescriptionItemId
                 )) 
-              THEN FORMAT((
+              THEN 
+                (
                   SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
                     FROM  wishMaterialsItem B 
                    WHERE  A.id = B.WishPrescriptionItemId
-                  ), 0)
+                )
               ELSE A.packPrice
-            END                                  AS totalPrice,
+            END                                  AS originTotalPrice,
+            CASE
+              WHEN 
+                !ISNULL((
+                  SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
+                    FROM  wishMaterialsItem B 
+                   WHERE  A.id = B.WishPrescriptionItemId
+                )) 
+              THEN 
+                FORMAT((
+                  SELECT  ROUND(SUM(B.price * B.qnt * 100) + A.packPrice)
+                    FROM  wishMaterialsItem B 
+                   WHERE  A.id = B.WishPrescriptionItemId
+                ), 0)
+              ELSE FORMAT(A.packPrice, 0)
+            END                                  AS viewTotalPrice,
             (
               SELECT  COUNT(id)
                 FROM  wishMaterialsItem B 
@@ -76,6 +108,7 @@ router.post("/list/view", isLoggedIn, async (req, res, next) => {
             )                      AS length
       FROM	wishPrescriptionItem					A
      WHERE	WishListId = ${findWishList[0][0].id}
+       AND  BoughtHistoryId IS NULL
     `;
 
     const wishListData = await models.sequelize.query(selcetQuery);
@@ -404,7 +437,7 @@ router.post("/payment/item/create", isLoggedIn, async (req, res, next) => {
 
   try {
     const insertResult = await models.sequelize.query(insertQuery);
-
+    // insertResult[0].insertId -> create된 id값임
     return res.status(201).json({ result: true });
   } catch (error) {
     console.error(error);

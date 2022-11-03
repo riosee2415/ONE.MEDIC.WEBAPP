@@ -305,7 +305,7 @@ const AppHeader = ({ children, width }) => {
       title: "처방하기",
     },
     {
-      router: "/deliveryInfo/[id]",
+      router: "/deliveryInfo",
       title: "배송정보",
     },
     {

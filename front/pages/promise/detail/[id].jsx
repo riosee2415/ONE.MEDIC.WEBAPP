@@ -241,7 +241,7 @@ const PromiseDetail = () => {
       for (let i = 0; i < wishPaymentDetail.items.length; i++) {
         paymentArr.push({
           id: wishPaymentDetail.items[i].id,
-          paymentId: router.query && router.query.id,
+
           price: wishPaymentDetail.items[i].price,
           pack: wishPaymentDetail.items[i].pack,
           type: wishPaymentDetail.items[i].type,
@@ -276,7 +276,6 @@ const PromiseDetail = () => {
       for (let i = 0; i < paymentDetail.PaymentRequest.length; i++) {
         paymentArr.push({
           id: paymentDetail.PaymentRequest[i].id,
-          paymentId: router.query && router.query.id,
           price: paymentDetail.PaymentRequest[i].payment,
           pack: paymentDetail.PaymentRequest[i].packVolumn,
           type: paymentDetail.PaymentRequest[i].typeVolumn,
@@ -978,7 +977,7 @@ const PromiseDetail = () => {
                   &nbsp;원
                 </Text>
               </Wrapper>
-              <Wrapper width={width < 800 ? `130px` : `170px`}>
+              <Wrapper width={width < 800 ? `130px` : `170px`} height={`100%`}>
                 {router.query && router.query.type !== "update" && (
                   <CommonButton
                     shadow={`0`}

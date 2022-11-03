@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { RightOutlined } from "@ant-design/icons";
 import { WISH_DELETE_REQUEST, WISH_LIST_REQUEST } from "../../reducers/wish";
+import { numberWithCommas } from "../../components/commonUtils";
 
 const Cart = ({}) => {
   const width = useWidth();
@@ -48,6 +49,8 @@ const Cart = ({}) => {
   const dispatch = useDispatch();
 
   const [itemSelect, setItemSelect] = useState([]);
+
+  console.log(itemSelect);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -114,6 +117,7 @@ const Cart = ({}) => {
     });
   }, [itemSelect]);
 
+  // 주문수정 / 약재수정
   const updateHandler = useCallback((data, link) => {
     if (data.isPayment) {
       sessionStorage.setItem("paymentUpdate", JSON.stringify(data));
@@ -123,9 +127,32 @@ const Cart = ({}) => {
     router.push(link);
   }, []);
 
-  const moveLinkHandler = useCallback((link) => {
-    router.push(link);
-  }, []);
+  // 주문하기
+  const buyHandler = useCallback(() => {
+    if (itemSelect.length === 0) {
+      return message.info("주문하실 처방을 선택해주세요.");
+    }
+
+    if (
+      itemSelect.length !== itemSelect.filter((data) => data.isPayment).length
+    ) {
+      return message.info("약속처방과 일반처방은 별도의 주문을 필요로 합니다.");
+    }
+
+    const isPayment = itemSelect[0].isPayment;
+
+    if (isPayment) {
+      // 약속처방
+      sessionStorage.setItem("paymentBought", JSON.stringify(itemSelect));
+      router.push("/deliveryInfo?type=payment");
+      return;
+    } else {
+      // 탕전처방
+      sessionStorage.setItem("preBought", JSON.stringify(itemSelect));
+      router.push("/deliveryInfo?type=pre");
+      return;
+    }
+  }, [itemSelect]);
 
   ////// DATAVIEW //////
 
@@ -265,7 +292,7 @@ const Cart = ({}) => {
                                   )}
                                   onChange={() =>
                                     itemSelectHandler({
-                                      id: data.id,
+                                      ...data,
                                       type: data.isPayment ? "payment" : "pre",
                                     })
                                   }
@@ -290,7 +317,7 @@ const Cart = ({}) => {
                                 fontSize={width < 800 ? `16px` : `18px`}
                               >
                                 <Text fontWeight={`bold`}>
-                                  {data.totalPrice}
+                                  {data.viewTotalPrice}
                                 </Text>
                                 <Text>원</Text>
                               </Wrapper>
@@ -383,7 +410,16 @@ const Cart = ({}) => {
                 fontSize={width < 800 ? `15px` : `20px`}
               >
                 <Text fontWeight={`bold`}>총 주문금액 : </Text>
-                <Text fontWeight={`bold`}> 432,000</Text>
+                <Text fontWeight={`bold`}>
+                  {itemSelect.length > 0
+                    ? numberWithCommas(
+                        itemSelect
+                          .map((data) => data.originTotalPrice)
+                          .reduce((a, b) => a + b)
+                      )
+                    : 0}
+                  원
+                </Text>
               </Wrapper>
               <CommonButton
                 shadow={`0`}
@@ -391,6 +427,7 @@ const Cart = ({}) => {
                 height={`100%`}
                 radius={`0`}
                 cursor={`pointer`}
+                onClick={buyHandler}
               >
                 주문하기
               </CommonButton>

@@ -6,10 +6,6 @@ module.exports = class WishPaymentItem extends Model {
   static init(sequelize) {
     return super.init(
       {
-        paymentId: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
         price: {
           type: DataTypes.INTEGER,
           allowNull: false,
