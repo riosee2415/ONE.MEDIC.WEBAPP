@@ -120,6 +120,9 @@ const Prescription = ({}) => {
     st_wishPreUpdateDone,
     st_wishPreUpdateError,
     //
+    st_wishPreItemCreateDone,
+    st_wishPreItemCreateError,
+    //
     st_wishPreItemDeleteDone,
     st_wishPreItemDeleteError,
     //
@@ -323,7 +326,7 @@ const Prescription = ({}) => {
     }
   }, [st_wishPreCreateError]);
 
-  // 재료 삭제
+  // 탕전 수정
   useEffect(() => {
     if (st_wishPreUpdateDone) {
       dispatch({
@@ -342,6 +345,27 @@ const Prescription = ({}) => {
       return message.error(st_wishPreUpdateError);
     }
   }, [st_wishPreUpdateError]);
+
+  // 재료 추가
+
+  useEffect(() => {
+    if (st_wishPreItemCreateDone) {
+      dispatch({
+        type: WISH_PRE_DETAIL_REQUEST,
+        data: {
+          wishPrescriptrionId: wishPreDetail && wishPreDetail.id,
+        },
+      });
+
+      return message.success("재료를 추가하였습니다.");
+    }
+  }, [st_wishPreItemCreateDone]);
+
+  useEffect(() => {
+    if (st_wishPreItemCreateError) {
+      return message.error(st_wishPreItemCreateError);
+    }
+  }, [st_wishPreItemCreateError]);
 
   // 재료 삭제
   useEffect(() => {

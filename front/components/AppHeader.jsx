@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT_REQUEST } from "../reducers/user";
 import { MATERIAL_LIST_REQUEST, MATERIAL_USER_ADD } from "../reducers/material";
 import { SEARCH_LIST_REQUEST } from "../reducers/search";
+import { WISH_PRE_ITEM_CREATE_REQUEST } from "../reducers/wish";
 
 const CustomForm = styled(Form)`
   width: 100%;
@@ -75,6 +76,7 @@ const AppHeader = ({ children, width }) => {
 
   const { searchRecipe, searchMaterial } = useSelector((state) => state.search);
   const { userMaterials } = useSelector((state) => state.material);
+  const { wishPreDetail } = useSelector((state) => state.wish);
 
   const [headerScroll, setHeaderScroll] = useState(false);
   const [pageY, setPageY] = useState(0);
@@ -131,53 +133,111 @@ const AppHeader = ({ children, width }) => {
 
   const materialAddHandler = useCallback(
     (data) => {
-      let seleteMaterialArr = userMaterials.map((data) => data);
+      if (router.query) {
+        if (router.query.type === "update") {
+          // 장바구니 수정
 
-      let checkArr = [];
+          let seleteMaterialArr = wishPreDetail.materials.map((data) => data);
 
-      for (let i = 0; i < seleteMaterialArr.length; i++) {
-        if (data.SearchMaterials) {
-          for (let v = 0; v < data.SearchMaterials.length; v++) {
-            if (
-              seleteMaterialArr[i].id === data.SearchMaterials[v].MaterialId
-            ) {
-              checkArr.push("true");
+          let checkArr = [];
+
+          for (let i = 0; i < seleteMaterialArr.length; i++) {
+            if (data.SearchMaterials) {
+              for (let v = 0; v < data.SearchMaterials.length; v++) {
+                if (
+                  seleteMaterialArr[i].materialId ===
+                  data.SearchMaterials[v].MaterialId
+                ) {
+                  checkArr.push("true");
+                }
+              }
+            } else {
+              if (seleteMaterialArr[i].materialId === data.id) {
+                checkArr.push("true");
+              }
             }
           }
-        } else {
-          if (seleteMaterialArr[i].id === data.id) {
-            checkArr.push("true");
+
+          if (checkArr.length === 0) {
+            data.SearchMaterials
+              ? (sessionStorage.setItem("recipeName", data.name),
+                data.SearchMaterials.map((value) =>
+                  dispatch({
+                    type: WISH_PRE_ITEM_CREATE_REQUEST,
+                    data: {
+                      materialId: value.MaterialId,
+                      name: value.Material.name,
+                      price: value.Material.price,
+                      qnt: value.qnt,
+                      unit: value.unit,
+                      wishPrescriptionItemId: wishPreDetail && wishPreDetail.id,
+                    },
+                  })
+                ))
+              : dispatch({
+                  type: WISH_PRE_ITEM_CREATE_REQUEST,
+                  data: {
+                    materialId: data.id,
+                    name: data.name,
+                    price: data.price,
+                    qnt: 0,
+                    unit: data.unit,
+                    wishPrescriptionItemId: wishPreDetail && wishPreDetail.id,
+                  },
+                });
+          } else {
+            return message.error("이미 있는 재료입니다.");
           }
+        } else {
+          let seleteMaterialArr = userMaterials.map((data) => data);
+
+          let checkArr = [];
+
+          for (let i = 0; i < seleteMaterialArr.length; i++) {
+            if (data.SearchMaterials) {
+              for (let v = 0; v < data.SearchMaterials.length; v++) {
+                if (
+                  seleteMaterialArr[i].id === data.SearchMaterials[v].MaterialId
+                ) {
+                  checkArr.push("true");
+                }
+              }
+            } else {
+              if (seleteMaterialArr[i].id === data.id) {
+                checkArr.push("true");
+              }
+            }
+          }
+
+          if (checkArr.length === 0) {
+            data.SearchMaterials
+              ? (sessionStorage.setItem("recipeName", data.name),
+                data.SearchMaterials.map((value) =>
+                  seleteMaterialArr.push({
+                    id: value.MaterialId,
+                    name: value.Material.name,
+                    qnt: value.qnt,
+                    unit: value.unit,
+                    price: value.Material.price,
+                  })
+                ))
+              : seleteMaterialArr.push({
+                  id: data.id,
+                  name: data.name,
+                  qnt: 0,
+                  unit: data.unit,
+                  price: data.price,
+                });
+          } else {
+            return message.error("이미 있는 재료입니다.");
+          }
+
+          setUserMaterialsArr(seleteMaterialArr);
         }
       }
-
-      if (checkArr.length === 0) {
-        data.SearchMaterials
-          ? (sessionStorage.setItem("recipeName", data.name),
-            data.SearchMaterials.map((value) =>
-              seleteMaterialArr.push({
-                id: value.MaterialId,
-                name: value.Material.name,
-                qnt: value.qnt,
-                unit: value.unit,
-                price: value.Material.price,
-              })
-            ))
-          : seleteMaterialArr.push({
-              id: data.id,
-              name: data.name,
-              qnt: 0,
-              unit: data.unit,
-              price: data.price,
-            });
-      } else {
-        return message.error("이미 있는 재료입니다.");
-      }
-
-      setUserMaterialsArr(seleteMaterialArr);
       setDrawar(false);
     },
-    [userMaterialsArr, userMaterials, drawar]
+    [userMaterialsArr, userMaterials, drawar, router.query, wishPreDetail]
   );
 
   const backHandler = useCallback(() => {
