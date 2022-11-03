@@ -45,6 +45,13 @@ module.exports = class BoughtHistory extends Model {
           defaultValue: false,
         },
 
+        // 월간 결제 처리
+        isMonth: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false, // 필수
+          defaultValue: false,
+        },
+
         // 결제 여부
         isPay: {
           type: DataTypes.BOOLEAN,
