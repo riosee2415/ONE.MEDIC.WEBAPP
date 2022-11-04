@@ -7,6 +7,9 @@ export const initialState = {
   // 상세 정보
   boughtDetail: null,
 
+  // 주문목록
+  boughtList: [],
+
   // 구매하기 - 배송정보
   st_boughtDeliveryLoading: false,
   st_boughtDeliveryDone: false,
@@ -21,6 +24,11 @@ export const initialState = {
   st_boughtDetailLoading: false,
   st_boughtDetailDone: false,
   st_boughtDetailError: null,
+
+  // 주문목록
+  st_boughtListLoading: false,
+  st_boughtListDone: false,
+  st_boughtListError: null,
 };
 
 export const BOUGHT_DELIVERY_REQUEST = "BOUGHT_DELIVERY_REQUEST";
@@ -34,6 +42,10 @@ export const BOUGHT_PAY_FAILURE = "BOUGHT_PAY_FAILURE";
 export const BOUGHT_DETAIL_REQUEST = "BOUGHT_DETAIL_REQUEST";
 export const BOUGHT_DETAIL_SUCCESS = "BOUGHT_DETAIL_SUCCESS";
 export const BOUGHT_DETAIL_FAILURE = "BOUGHT_DETAIL_FAILURE";
+
+export const BOUGHT_LIST_REQUEST = "BOUGHT_LIST_REQUEST";
+export const BOUGHT_LIST_SUCCESS = "BOUGHT_LIST_SUCCESS";
+export const BOUGHT_LIST_FAILURE = "BOUGHT_LIST_FAILURE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -100,6 +112,28 @@ const reducer = (state = initialState, action) =>
         draft.st_boughtDetailLoading = false;
         draft.st_boughtDetailDone = false;
         draft.st_boughtDetailError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_LIST_REQUEST: {
+        draft.st_boughtListLoading = true;
+        draft.st_boughtListDone = false;
+        draft.st_boughtListError = null;
+        break;
+      }
+      case BOUGHT_LIST_SUCCESS: {
+        draft.st_boughtListLoading = false;
+        draft.st_boughtListDone = true;
+        draft.st_boughtListError = null;
+        draft.boughtList = action.data;
+        break;
+      }
+      case BOUGHT_LIST_FAILURE: {
+        draft.st_boughtListLoading = false;
+        draft.st_boughtListDone = false;
+        draft.st_boughtListError = action.error;
         break;
       }
 

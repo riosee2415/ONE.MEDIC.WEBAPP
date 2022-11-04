@@ -164,6 +164,18 @@ module.exports = class BoughtHistory extends Model {
           allowNull: false,
           defaultValue: 0,
         },
+
+        // 아임포트
+        impUid: {
+          type: DataTypes.STRING(400),
+          allowNull: true,
+        },
+
+        // 아임포트
+        merchantUid: {
+          type: DataTypes.STRING(400),
+          allowNull: true,
+        },
       },
       {
         modelName: "BoughtHistory",

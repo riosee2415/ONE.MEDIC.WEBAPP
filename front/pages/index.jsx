@@ -30,6 +30,7 @@ import {
   TextInput,
 } from "../components/commonComponents";
 import Theme from "../components/Theme";
+import { BOUGHT_LIST_REQUEST } from "../reducers/boughtHistory";
 
 const TagBtn = styled(Wrapper)`
   width: 85px;
@@ -52,6 +53,10 @@ const Home = ({}) => {
   const router = useRouter();
 
   const { me, userBoughtList } = useSelector((state) => state.user);
+
+  const { boughtList } = useSelector((state) => state.boughtHistory);
+
+  console.log(boughtList);
 
   ////// HOOKS //////
 
@@ -240,13 +245,13 @@ const Home = ({}) => {
                   ju={`flex-start`}
                   al={`flex-start`}
                 >
-                  {userBoughtList &&
-                    (userBoughtList.length === 0 ? (
+                  {boughtList &&
+                    (boughtList.length === 0 ? (
                       <Wrapper>
                         <Empty description="주문목록이 없습니다." />
                       </Wrapper>
                     ) : (
-                      userBoughtList.map((data, idx) => {
+                      boughtList.map((data, idx) => {
                         return (
                           <Wrapper
                             width={
@@ -273,7 +278,7 @@ const Home = ({}) => {
                             >
                               <Wrapper width={`auto`} al={`flex-start`}>
                                 <Text fontSize={`18px`} fontWeight={`bold`}>
-                                  {data.productName}
+                                  {data.title}
                                 </Text>
                                 <Text color={Theme.grey_C}>
                                   {data.sendUser}
@@ -361,6 +366,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
         endDate: "",
         productName: "",
       },
+    });
+
+    context.store.dispatch({
+      type: BOUGHT_LIST_REQUEST,
     });
     // 구현부 종료
     context.store.dispatch(END);

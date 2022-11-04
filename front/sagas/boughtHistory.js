@@ -12,6 +12,10 @@ import {
   BOUGHT_DETAIL_REQUEST,
   BOUGHT_DETAIL_SUCCESS,
   BOUGHT_DETAIL_FAILURE,
+  //
+  BOUGHT_LIST_REQUEST,
+  BOUGHT_LIST_SUCCESS,
+  BOUGHT_LIST_FAILURE,
 } from "../reducers/boughtHistory";
 
 // ******************************************************************************************************************
@@ -98,6 +102,34 @@ function* boughtDetail(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function boughtListAPI(data) {
+  return await axios.post(`/api/bought/list`, data);
+}
+
+function* boughtList(action) {
+  try {
+    const result = yield call(boughtListAPI, action.data);
+
+    yield put({
+      type: BOUGHT_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: BOUGHT_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchBoughtDelivery() {
@@ -112,12 +144,17 @@ function* watchBoughtDetail() {
   yield takeLatest(BOUGHT_DETAIL_REQUEST, boughtDetail);
 }
 
+function* watchBoughtList() {
+  yield takeLatest(BOUGHT_LIST_REQUEST, boughtList);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* boughtHistorySaga() {
   yield all([
     fork(watchBoughtDelivery),
     fork(watchBoughtPay),
     fork(watchBoughtDetail),
+    fork(watchBoughtList),
     //
   ]);
 }

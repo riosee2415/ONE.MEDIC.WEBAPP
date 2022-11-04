@@ -35,7 +35,10 @@ import {
 } from "../../reducers/prescriptionPaymentRequest";
 import { numberWithCommas } from "../../components/commonUtils";
 import { PP_GET_REQUEST } from "../../reducers/prescriptionPrice";
-import { BOUGHT_DETAIL_REQUEST } from "../../reducers/boughtHistory";
+import {
+  BOUGHT_DETAIL_REQUEST,
+  BOUGHT_PAY_REQUEST,
+} from "../../reducers/boughtHistory";
 import {
   WISH_PAYMENT_DETAIL_REQUEST,
   WISH_PRE_DETAIL_REQUEST,
@@ -95,9 +98,13 @@ const Index = ({}) => {
 
   const { boughtDetail } = useSelector((state) => state.boughtHistory);
 
-  const { wishPaymentDetail, wishPreDetail } = useSelector(
-    (state) => state.wish
-  );
+  const {
+    wishPaymentDetail,
+    wishPreDetail,
+
+    st_boughtPayDone,
+    st_boughtPayError,
+  } = useSelector((state) => state.wish);
 
   const { price } = useSelector((state) => state.prescriptionPrice);
 
@@ -203,35 +210,20 @@ const Index = ({}) => {
     }
   }, [wishPaymentDetail, wishPreDetail, boughtDetail]);
 
-  // 약속처방 결제
+  // 결제
 
   useEffect(() => {
-    if (st_paymentIsPaymentDone) {
+    if (st_boughtPayDone) {
       message.success("주문되었습니다.");
       return router.push("/");
     }
-  }, [st_paymentIsPaymentDone]);
+  }, [st_boughtPayDone]);
 
   useEffect(() => {
-    if (st_paymentIsPaymentError) {
-      return message.error(st_paymentIsPaymentError);
+    if (st_boughtPayError) {
+      return message.error(st_boughtPayError);
     }
-  }, [st_paymentIsPaymentError]);
-
-  // 탕전처방 결제
-
-  useEffect(() => {
-    if (st_pprIsPayMentDone) {
-      message.success("주문되었습니다.");
-      return router.push("/");
-    }
-  }, [st_pprIsPayMentDone]);
-
-  useEffect(() => {
-    if (st_pprIsPayMentError) {
-      return message.error(st_pprIsPayMentError);
-    }
-  }, [st_pprIsPayMentError]);
+  }, [st_boughtPayError]);
 
   useEffect(() => {
     if (st_pprDetailError) {
@@ -291,129 +283,79 @@ const Index = ({}) => {
       const IMP = window.IMP;
 
       if (me) {
-        if (router.query.type === "payment") {
-          if (paymentDetail) {
-            if (paymentType === "nobank") {
-              dispatch({
-                type: PAYMENT_ISPAYMENT_REQUEST,
-                data: {
-                  paymentId: router.query.id,
-                  isCard: "0",
-                  totalPrice:
-                    productPayment - discount + (price && price.deliveryPrice),
-                  payInfo: paymentType,
-                  userPayinfo: isAgree1 ? paymentType : null,
-                  name: paymentDetail.productName,
-                },
-              });
-            } else {
-              IMP.request_pay(
-                {
-                  pg: paymentType === "phone" ? "danal" : "danal_tpay",
-                  pay_method: paymentType,
-                  merchant_uid: orderPK,
-                  name: paymentDetail.productName,
-                  amount:
-                    productPayment - discount + (price && price.deliveryPrice),
-                  // amount: 150,
-                  buyer_name: me.username,
-                  buyer_tel: me.mobile.replace(
-                    /^(\d{2,3})(\d{3,4})(\d{4})$/,
-                    `$1-$2-$3`
-                  ),
-                  buyer_email: me.email,
-                  buyer_addr: paymentDetail.receiveAddress,
-                  buyer_postcode: paymentDetail.receiveAddress.substring(
-                    paymentDetail.receiveAddress.length - 6,
-                    paymentDetail.receiveAddress.length - 1
-                  ),
-                },
-                async (rsp) => {
-                  if (rsp.success) {
-                    dispatch({
-                      type: PAYMENT_ISPAYMENT_REQUEST,
-                      data: {
-                        paymentId: router.query.id,
-                        isCard: "0",
-                        totalPrice:
-                          productPayment -
-                          discount +
-                          (price && price.deliveryPrice),
-                        payInfo: paymentType,
-                        userPayinfo: isAgree1 ? paymentType : null,
-                        name: paymentDetail.productName,
-                      },
-                    });
-                  } else {
-                    console.log(rsp);
-                    return console.log("결제실패");
-                  }
+        if (boughtDetail) {
+          if (paymentType === "nobank") {
+            dispatch({
+              type: BOUGHT_PAY_REQUEST,
+              data: {
+                id: router.query.id,
+                isMonth: 0,
+                isPay: 1,
+                payInfo: paymentType,
+                totalPrice: productPayment + (price && price.deliveryPrice),
+                pharmacyPrice: price && price.pharmacyPrice,
+                tangjeonPrice: price && price.tangjeonPrice,
+                deliveryPrice: price && price.deliveryPrice,
+                impUid: null,
+                merchantUid: null,
+              },
+            });
+          } else {
+            IMP.request_pay(
+              {
+                pg: paymentType === "phone" ? "danal" : "danal_tpay",
+                pay_method: paymentType,
+                merchant_uid: orderPK,
+                name: boughtDetail.wishPaymentId
+                  ? wishPaymentDetail.productName
+                  : wishPreDetail.title,
+                // amount: productPayment + (price && price.deliveryPrice),
+                amount: 150,
+                buyer_name: me.username,
+                buyer_tel: me.mobile.replace(
+                  /^(\d{2,3})(\d{3,4})(\d{4})$/,
+                  `$1-$2-$3`
+                ),
+                buyer_email: me.email,
+                buyer_addr: boughtDetail.wishPaymentId
+                  ? wishPaymentDetail.receiveAddress
+                  : wishPreDetail.receiveAddress,
+
+                // buyer_postcode: boughtDetail.wishPaymentId
+                //   ? wishPaymentDetail.receiveAddress.substring(
+                //       wishPaymentDetail.receiveAddress.length - 6,
+                //       wishPaymentDetail.receiveAddress.length - 1
+                //     )
+                //   : wishPreDetail.receiveAddress.substring(
+                //       wishPreDetail.receiveAddress.length - 6,
+                //       wishPreDetail.receiveAddress.length - 1
+                //     ),
+              },
+              async (rsp) => {
+                if (rsp.success) {
+                  console.log(rsp);
+                  dispatch({
+                    type: BOUGHT_PAY_REQUEST,
+                    data: {
+                      id: router.query.id,
+                      isMonth: 0,
+                      isPay: 1,
+                      payInfo: paymentType,
+                      totalPrice:
+                        productPayment + (price && price.deliveryPrice),
+                      pharmacyPrice: price && price.pharmacyPrice,
+                      tangjeonPrice: price && price.tangjeonPrice,
+                      deliveryPrice: price && price.deliveryPrice,
+                      impUid: rsp.imp_uid,
+                      merchantUid: rsp.merchant_uid,
+                    },
+                  });
+                } else {
+                  console.log(rsp);
+                  return console.log("결제실패");
                 }
-              );
-            }
-          }
-        } else {
-          if (pprDetail) {
-            if (paymentType === "nobank") {
-              dispatch({
-                type: PPR_ISPAYMENT_REQUEST,
-                data: {
-                  pprId: router.query.id,
-                  isCard: "0",
-                  totalPrice:
-                    productPayment - discount + (price && price.deliveryPrice),
-                  payInfo: paymentType,
-                  userPayinfo: isAgree1 ? paymentType : null,
-                },
-              });
-            } else {
-              IMP.request_pay(
-                {
-                  pg: paymentType === "phone" ? "danal" : "danal_tpay",
-                  pay_method: paymentType,
-                  merchant_uid: orderPK,
-                  name: `${pprDetail.materialDatum[0].name}${
-                    pprDetail.materialDatum.length > 1
-                      ? `외 ${pprDetail.materialDatum.length}개`
-                      : ""
-                  }`,
-                  amount:
-                    productPayment - discount + (price && price.deliveryPrice),
-                  // amount: 150,
-                  buyer_name: me.username,
-                  buyer_tel: me.mobile.replace(
-                    /^(\d{2,3})(\d{3,4})(\d{4})$/,
-                    `$1-$2-$3`
-                  ),
-                  buyer_email: me.email,
-                  buyer_addr: pprDetail.receiveAddress,
-                  buyer_postcode: pprDetail.receiveAddress.substring(
-                    pprDetail.receiveAddress.length - 6,
-                    pprDetail.receiveAddress.length - 1
-                  ),
-                },
-                async (rsp) => {
-                  if (rsp.success) {
-                    dispatch({
-                      type: PPR_ISPAYMENT_REQUEST,
-                      data: {
-                        pprId: router.query.id,
-                        isCard: "0",
-                        totalPrice:
-                          productPayment -
-                          discount +
-                          (price && price.deliveryPrice),
-                        payInfo: paymentType,
-                        userPayinfo: isAgree1 ? paymentType : null,
-                      },
-                    });
-                  } else {
-                    console.log(rsp);
-                    return console.log("결제실패");
-                  }
-                }
-              );
-            }
+              }
+            );
           }
         }
       }
@@ -425,8 +367,9 @@ const Index = ({}) => {
     router.query,
     paymentType,
     me,
-    pprDetail,
     isAgree1,
+    wishPaymentDetail,
+    wishPreDetail,
   ]);
 
   ////// DATAVIEW //////

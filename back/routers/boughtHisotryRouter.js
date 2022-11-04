@@ -41,7 +41,8 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
         sendDetailAddress,
         deliveryMessage,
         createdAt,
-        updatedAt
+        updatedAt,
+        UserId
     )
     VALUES
     (
@@ -56,7 +57,8 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
         '${sendDetailAddress}',
         '${deliveryMessage}',
         NOW(),
-        NOW()
+        NOW(),
+        ${req.user.id}
     )
     `;
 
@@ -102,6 +104,7 @@ router.post("/create/delivery", isLoggedIn, async (req, res, next) => {
 router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
   const {
     id,
+    type,
     isMonth,
     isPay,
     payInfo,
@@ -109,22 +112,63 @@ router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
     pharmacyPrice,
     tangjeonPrice,
     deliveryPrice,
+    impUid,
+    merchantUid,
   } = req.body;
 
   const updateQuery = `
-    UPDATE  boughtHistory
-       SET  isMonth = ${isMonth},
-            isPay = ${isPay},
-            payInfo = '${payInfo}',
-            totalPrice = ${totalPrice},
-            pharmacyPrice = ${pharmacyPrice},
-            tangjeonPrice = ${tangjeonPrice},
-            deliveryPrice = ${deliveryPrice}
-     WHERE  id = ${id}
-    `;
+  UPDATE  boughtHistory
+     SET  isMonth = ${isMonth},
+          isPay = ${isPay},
+          payInfo = '${payInfo}',
+          totalPrice = ${totalPrice},
+          pharmacyPrice = ${pharmacyPrice},
+          tangjeonPrice = ${tangjeonPrice},
+          deliveryPrice = ${deliveryPrice},
+          impUid = '${impUid}',
+          merchantUid = '${merchantUid}'
+   WHERE  id = ${id}
+  `;
 
   try {
-    const udpateResult = await models.sequelize.query(updateQuery);
+    const updateResult = await models.sequelize.query(updateQuery);
+
+    if (type === 2) {
+      const selectQuery = `
+      SELECT  B.id
+        FROM  boughtHistory             A
+       INNER
+        JOIN  wishPrescriptionItem      B
+          ON  A.id = B.BoughtHistoryId
+       WHERE  id = ${id}
+      `;
+      const selectResult = await models.sequelize.query(selectQuery);
+
+      if (selectResult[0][0]) {
+        const materialQuery = `
+        SELECT  A.materialId,
+                A.qnt,
+                B.stock       
+          FROM  wishMaterialsItem       A
+         INNER
+          JOIN  materials               B
+            ON  A.materialId = B.id
+         WHERE  wishPrescriptionItemId = ${selectResult[0][0].id}
+        `;
+
+        const materialResult = await models.sequelize.query(materialQuery);
+
+        for (let i = 0; i < materialResult[0].length; i++) {
+          const updateQuery = `
+            UPDATE  materials
+               SET  stock = ${
+                 materialResult[0][i].stock - materialResult[0][i].qnt
+               }
+             WHERE  id = ${materialResult[0][i].materialId}
+            `;
+        }
+      }
+    }
 
     return res.status(200).json({ result: true });
   } catch (e) {
@@ -133,6 +177,7 @@ router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
   }
 });
 
+// 상세정보
 router.post("/detail", isLoggedIn, async (req, res, next) => {
   const { id } = req.body;
 
@@ -171,6 +216,86 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("상세정보를 불러올수 없습니다.");
+  }
+});
+
+// 리스트
+router.post("/list", isLoggedIn, async (req, res, next) => {
+  const listQuery = `
+    SELECT  id,
+		        CASE 
+		        	WHEN    type = 1 THEN '약속처방'
+		        	ELSE    '탕전처방'
+		        END											AS viewType,
+		        type,
+		        CASE 
+		        	WHEN	type = 1 
+		        	THEN	(
+		        				SELECT  B.productname
+		        				  FROM  wishPaymentContainer B
+		        				 WHERE  A.id = B.BoughtHistoryId
+		        			)
+		        	WHEN    type = 2
+		        	THEN	(
+		        				SELECT  B.title
+		        				  FROM  wishPrescriptionItem B
+		        				 WHERE  A.id = B.BoughtHistoryId
+		        			)
+		        END											AS title,
+		        isRefuse,
+		        refuseContent
+		        isCompleted,
+		        isNobank,
+		        isMonth,
+		        isPay,
+		        deliveryCompany,
+		        deliveryNo,
+		        receiveUser,
+		        receiveMobile,
+		        receiveAddress,
+		        receiveDetailAddress,
+		        sendUser,
+		        sendMobile,
+		        sendAddress,
+		        sendDetailAddress,
+		        deliveryMessage,
+		        payInfo,
+		        totalPrice,
+		        pharmacyPrice,
+		        tangjeonPrice,
+		        deliveryPrice,
+		        CASE
+                WHEN	payInfo = 'card' THEN "신용카드"
+                WHEN	payInfo = 'phone' THEN "휴대폰 결제"
+                WHEN	payInfo = 'nobank' THEN "무통장입금"
+                WHEN	payInfo = 'simpleCard' THEN "간편 카드 결제"
+                WHEN	payInfo = 'trans' THEN "계좌 간편 결제"
+                ELSE	payInfo
+            END	                                                    AS viewPayInfo,
+            CASE
+                WHEN	deliveryStatus = 0 AND isPay = 1 THEN "결제 승인"
+                WHEN	deliveryStatus = 0 AND isPay = 0 AND payInfo = "nobank" THEN "입금 대기"
+                WHEN	deliveryStatus = 0 AND isPay = 0 THEN "결제 미승인"
+                WHEN	deliveryStatus = 1 THEN "배송 준비중"
+                WHEN	deliveryStatus = 2 THEN "집화 완료"
+                WHEN	deliveryStatus = 3 THEN "배송 중"
+                WHEN	deliveryStatus = 4 THEN "지점 도착"
+                WHEN	deliveryStatus = 5 THEN "배송 출발"
+                WHEN	deliveryStatus = 6 THEN "배송 완료"
+               	ELSE	deliveryStatus
+            END	                                                    AS viewDeliveryStatus,
+            DATE_FORMAT(createdAt, '%Y년 %m월 %d일')		AS viewCreatedAt
+      FROM  boughtHistory   A
+     WHERE  UserId = ${req.user.id}
+    `;
+
+  try {
+    const listResult = await models.sequelize.query(listQuery);
+
+    return res.status(200).json(listResult[0]);
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("주문목록을 불러올 수 없습니다.");
   }
 });
 
