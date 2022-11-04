@@ -78,7 +78,7 @@ const Home = ({}) => {
 
   useEffect(() => {
     dispatch({
-      type: USER_BOUGHT_LIST_REQUEST,
+      type: BOUGHT_LIST_REQUEST,
       data: {
         startDate: searchDate[0],
         endDate: searchDate[1],

@@ -221,6 +221,12 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
 
 // 리스트
 router.post("/list", isLoggedIn, async (req, res, next) => {
+  const { startDate, endDate, productName } = req.body;
+
+  const _startDate = startDate || null;
+  const _endDate = endDate || null;
+  const _productName = productName || "";
+
   const listQuery = `
     SELECT  id,
 		        CASE 
@@ -287,6 +293,34 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
             DATE_FORMAT(createdAt, '%Y년 %m월 %d일')		AS viewCreatedAt
       FROM  boughtHistory   A
      WHERE  UserId = ${req.user.id}
+       AND  (
+            SELECT  CASE 
+                       WHEN	type = 1 
+                       THEN	(
+                             SELECT  B.productname
+                               FROM  wishPaymentContainer B
+                              WHERE  A.id = B.BoughtHistoryId
+                           )
+                       WHEN    type = 2
+                       THEN	(
+                             SELECT  B.title
+                               FROM  wishPrescriptionItem B
+                              WHERE  A.id = B.BoughtHistoryId
+                            )
+                    END											AS title
+              FROM  boughtHistory C
+             WHERE  C.id = A.id
+            ) LIKE '%${_productName}%'
+        ${
+          _startDate
+            ? `AND  DATE_FORMAT(createdAt, '%Y-%m-%d') >= DATE_FORMAT('${_startDate}', '%Y-%m-%d') `
+            : ``
+        }
+        ${
+          _endDate
+            ? `AND  DATE_FORMAT(createdAt, '%Y-%m-%d') <= DATE_FORMAT('${_endDate}', '%Y-%m-%d') `
+            : ``
+        }
     `;
 
   try {
