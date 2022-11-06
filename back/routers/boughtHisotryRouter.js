@@ -4,6 +4,7 @@ const { AcceptRecord } = require("../models");
 const { Op } = require("sequelize");
 const models = require("../models");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+const axios = require("axios");
 
 const router = express.Router();
 
@@ -321,6 +322,7 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
             ? `AND  DATE_FORMAT(createdAt, '%Y-%m-%d') <= DATE_FORMAT('${_endDate}', '%Y-%m-%d') `
             : ``
         }
+        ORDER BY createdAt DESC
     `;
 
   try {
@@ -330,6 +332,181 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("주문목록을 불러올 수 없습니다.");
+  }
+});
+
+// 관리자 리스트
+router.post("/admin/list", isAdminCheck, async (req, res, next) => {
+  const { isComplete, date, type } = req.body;
+
+  const dateCondition =
+    date === 1
+      ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
+      : date === 2
+      ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
+      : "";
+
+  const completedCondition =
+    isComplete === 1
+      ? `AND  A.isCompleted = false`
+      : isComplete === 2
+      ? `AND  A.isCompleted = true`
+      : isComplete === 3
+      ? `AND  A.isRefuse = true`
+      : "";
+
+  const typeCondition =
+    type === 1 ? `AND A.type = 1` : type === 2 ? `AND A.type = 2` : ``;
+
+  const listQuery = `
+    SELECT  A.id,
+		        CASE 
+		        	WHEN    A.type = 1 THEN '약속'
+		        	ELSE    '탕전'
+		        END											AS viewType,
+            C.username,
+            C.mobile,
+            C.email,
+            C.companyName,
+            C.companyNo,
+		        A.type,
+		        CASE 
+		        	WHEN	A.type = 1 
+		        	THEN	(
+		        				SELECT  B.productname
+		        				  FROM  wishPaymentContainer B
+		        				 WHERE  A.id = B.BoughtHistoryId
+		        			)
+		        	WHEN  A.type = 2
+		        	THEN	(
+		        				SELECT  B.title
+		        				  FROM  wishPrescriptionItem B
+		        				 WHERE  A.id = B.BoughtHistoryId
+		        			)
+		        END											AS title,
+            CASE 
+            WHEN	A.type = 1 
+            THEN	(
+                  SELECT  B.id
+                    FROM  wishPaymentContainer B
+                   WHERE  A.id = B.BoughtHistoryId
+                )
+            WHEN  A.type = 2
+            THEN	(
+                  SELECT  B.id
+                    FROM  wishPrescriptionItem B
+                   WHERE  A.id = B.BoughtHistoryId
+                )
+            END											AS typeId,
+		        A.isRefuse,
+		        A.refuseContent,
+		        A.isCompleted,
+		        A.isNobank,
+		        A.isMonth,
+		        A.isPay,
+		        A.deliveryCompany,
+		        A.deliveryNo,
+		        A.receiveUser,
+		        A.receiveMobile,
+		        A.receiveAddress,
+		        A.receiveDetailAddress,
+		        A.sendUser,
+		        A.sendMobile,
+		        A.sendAddress,
+		        A.sendDetailAddress,
+		        A.deliveryMessage,
+		        A.payInfo,
+		        A.totalPrice,
+		        CONCAT(FORMAT(A.totalPrice, 0), '원')     AS viewTotalPrice,
+		        A.pharmacyPrice,
+		        A.tangjeonPrice,
+		        A.deliveryPrice,
+            CONCAT(FORMAT(A.pharmacyPrice, 0),'원')   AS viewPharmacyPrice,
+            CONCAT(FORMAT(A.tangjeonPrice, 0),'원')   AS viewTangjeonPrice,
+            CONCAT(FORMAT(A.deliveryPrice, 0),'원')   AS viewDeliveryPrice,
+		        CASE
+                WHEN	A.payInfo = 'card' THEN "신용카드"
+                WHEN	A.payInfo = 'phone' THEN "휴대폰 결제"
+                WHEN	A.payInfo = 'nobank' THEN "무통장입금"
+                WHEN	A.payInfo = 'simpleCard' THEN "간편 카드 결제"
+                WHEN	A.payInfo = 'trans' THEN "계좌 간편 결제"
+                ELSE	A.payInfo
+            END	                                                    AS viewPayInfo,
+            CASE
+                WHEN	A.deliveryStatus = 0 AND A.isPay = 1 THEN "결제 승인"
+                WHEN	A.deliveryStatus = 0 AND A.isPay = 0 AND A.payInfo = "nobank" THEN "입금 대기"
+                WHEN	A.deliveryStatus = 0 AND A.isPay = 0 THEN "결제 미승인"
+                WHEN	A.deliveryStatus = 1 THEN "배송 준비중"
+                WHEN	A.deliveryStatus = 2 THEN "집화 완료"
+                WHEN	A.deliveryStatus = 3 THEN "배송 중"
+                WHEN	A.deliveryStatus = 4 THEN "지점 도착"
+                WHEN	A.deliveryStatus = 5 THEN "배송 출발"
+                WHEN	A.deliveryStatus = 6 THEN "배송 완료"
+               	ELSE	A.deliveryStatus
+            END	                                                    AS viewDeliveryStatus,
+            DATE_FORMAT(A.createdAt, '%Y년 %m월 %d일')		AS viewCreatedAt
+      FROM  boughtHistory   A
+     INNER
+      JOIN  users           C
+        ON  A.UserId = C.id
+     WHERE  1 = 1
+       AND  A.isPay = 1 && A.payInfo != 'nobank'
+       ${dateCondition}
+       ${completedCondition}
+       ${typeCondition}
+    `;
+
+  try {
+    const listResult = await models.sequelize.query(listQuery);
+
+    return res.status(200).json(listResult[0]);
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("주문목록을 불러올 수 없습니다.");
+  }
+});
+
+router.post("/delivery/update", isAdminCheck, async (req, res, next) => {
+  const { id, deliveryCompany, deliveryNo } = req.body;
+
+  try {
+    let newCom = "";
+
+    if (deliveryCompany === "CJ대한통운") {
+      newCom = "04";
+    } else if (deliveryCompany === "한진택배") {
+      newCom = "05";
+    } else if (deliveryCompany === "로젠택배") {
+      newCom = "06";
+    } else if (deliveryCompany === "롯데택배") {
+      newCom = "08";
+    } else if (deliveryCompany === "경동택배") {
+      newCom = "23";
+    }
+
+    const value = await axios({
+      url: `https://info.sweettracker.co.kr/api/v1/trackingInfo?t_key=${process.env.SWEET_TRACKER_KEY}&t_code=${newCom}&t_invoice=${deliveryNo}`,
+      method: "get",
+    });
+
+    if (!value.data.level) {
+      return res.status(401).send(`${value.data.msg}`);
+    }
+
+    const updateQuery = `
+    UPDATE  boughtHistory
+       SET  deliveryCompany = '${deliveryCompany}',
+            deliveryNo = ${deliveryNo},
+            deliveryStatus = ${value.data.level},
+            updatedAt = NOW()
+     WHERE  id = ${id}
+    `;
+    const updateResult = await models.sequelize.query(updateQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("배송정보를 수정할 수 없습니다.");
   }
 });
 

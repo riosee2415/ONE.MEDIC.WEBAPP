@@ -180,12 +180,12 @@ const AdminMenu = () => {
           title="주문 관리"
           onTitleClick={titleClickHandler("sub9")}
         >
-          <Menu.Item key="/admin/order/orderRequestList">
-            <MenuName>약속처방 주문 관리</MenuName>
+          <Menu.Item key="/admin/order/orderList">
+            <MenuName>주문 리스트</MenuName>
           </Menu.Item>
-          <Menu.Item key="/admin/order/combiOrderRequest">
+          {/* <Menu.Item key="/admin/order/combiOrderRequest">
             <MenuName>탕전처방 주문 관리</MenuName>
-          </Menu.Item>
+          </Menu.Item> */}
         </SubMenu>
       </Menu>
     </>

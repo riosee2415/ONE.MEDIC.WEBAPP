@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import Head from "next/head";
 import { useRouter } from "next/router";
 
 import axios from "axios";
@@ -12,11 +11,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 import wrapper from "../store/configureStore";
-import {
-  LOAD_MY_INFO_REQUEST,
-  USER_BOUGHT_LIST_REQUEST,
-} from "../reducers/user";
-import { SEO_LIST_REQUEST } from "../reducers/seo";
+import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
 
 import useInput from "../hooks/useInput";
 import useWidth from "../hooks/useWidth";
@@ -46,17 +41,11 @@ const Home = ({}) => {
   const width = useWidth();
   const { RangePicker } = DatePicker;
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
-
   const router = useRouter();
 
-  const { me, userBoughtList } = useSelector((state) => state.user);
+  const { me } = useSelector((state) => state.user);
 
   const { boughtList } = useSelector((state) => state.boughtHistory);
-
-  console.log(boughtList);
 
   ////// HOOKS //////
 
@@ -125,48 +114,6 @@ const Home = ({}) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper
@@ -353,19 +300,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: USER_BOUGHT_LIST_REQUEST,
-      data: {
-        startDate: "",
-        endDate: "",
-        productName: "",
-      },
     });
 
     context.store.dispatch({

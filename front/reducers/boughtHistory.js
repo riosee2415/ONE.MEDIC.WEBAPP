@@ -10,6 +10,9 @@ export const initialState = {
   // 주문목록
   boughtList: [],
 
+  // 관리자 주문목록
+  adminBoughtList: [],
+
   // 구매하기 - 배송정보
   st_boughtDeliveryLoading: false,
   st_boughtDeliveryDone: false,
@@ -29,6 +32,16 @@ export const initialState = {
   st_boughtListLoading: false,
   st_boughtListDone: false,
   st_boughtListError: null,
+
+  // 관리자 주문목록
+  st_boughtAdminListLoading: false,
+  st_boughtAdminListDone: false,
+  st_boughtAdminListError: null,
+
+  // 배송정보 수정
+  st_boughtDeliveryUpdateLoading: false,
+  st_boughtDeliveryUpdateDone: false,
+  st_boughtDeliveryUpdateError: null,
 };
 
 export const BOUGHT_DELIVERY_REQUEST = "BOUGHT_DELIVERY_REQUEST";
@@ -46,6 +59,14 @@ export const BOUGHT_DETAIL_FAILURE = "BOUGHT_DETAIL_FAILURE";
 export const BOUGHT_LIST_REQUEST = "BOUGHT_LIST_REQUEST";
 export const BOUGHT_LIST_SUCCESS = "BOUGHT_LIST_SUCCESS";
 export const BOUGHT_LIST_FAILURE = "BOUGHT_LIST_FAILURE";
+
+export const BOUGHT_ADMIN_LIST_REQUEST = "BOUGHT_ADMIN_LIST_REQUEST";
+export const BOUGHT_ADMIN_LIST_SUCCESS = "BOUGHT_ADMIN_LIST_SUCCESS";
+export const BOUGHT_ADMIN_LIST_FAILURE = "BOUGHT_ADMIN_LIST_FAILURE";
+
+export const BOUGHT_DELIVERY_UPDATE_REQUEST = "BOUGHT_DELIVERY_UPDATE_REQUEST";
+export const BOUGHT_DELIVERY_UPDATE_SUCCESS = "BOUGHT_DELIVERY_UPDATE_SUCCESS";
+export const BOUGHT_DELIVERY_UPDATE_FAILURE = "BOUGHT_DELIVERY_UPDATE_FAILURE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -134,6 +155,49 @@ const reducer = (state = initialState, action) =>
         draft.st_boughtListLoading = false;
         draft.st_boughtListDone = false;
         draft.st_boughtListError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_ADMIN_LIST_REQUEST: {
+        draft.st_boughtAdminListLoading = true;
+        draft.st_boughtAdminListDone = false;
+        draft.st_boughtAdminListError = null;
+        break;
+      }
+      case BOUGHT_ADMIN_LIST_SUCCESS: {
+        draft.st_boughtAdminListLoading = false;
+        draft.st_boughtAdminListDone = true;
+        draft.st_boughtAdminListError = null;
+        draft.adminBoughtList = action.data;
+        break;
+      }
+      case BOUGHT_ADMIN_LIST_FAILURE: {
+        draft.st_boughtAdminListLoading = false;
+        draft.st_boughtAdminListDone = false;
+        draft.st_boughtAdminListError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_DELIVERY_UPDATE_REQUEST: {
+        draft.st_boughtDeliveryUpdateLoading = true;
+        draft.st_boughtDeliveryUpdateDone = false;
+        draft.st_boughtDeliveryUpdateError = null;
+        break;
+      }
+      case BOUGHT_DELIVERY_UPDATE_SUCCESS: {
+        draft.st_boughtDeliveryUpdateLoading = false;
+        draft.st_boughtDeliveryUpdateDone = true;
+        draft.st_boughtDeliveryUpdateError = null;
+        break;
+      }
+      case BOUGHT_DELIVERY_UPDATE_FAILURE: {
+        draft.st_boughtDeliveryUpdateLoading = false;
+        draft.st_boughtDeliveryUpdateDone = false;
+        draft.st_boughtDeliveryUpdateError = action.error;
         break;
       }
 

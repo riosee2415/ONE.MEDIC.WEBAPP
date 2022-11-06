@@ -16,6 +16,14 @@ import {
   BOUGHT_LIST_REQUEST,
   BOUGHT_LIST_SUCCESS,
   BOUGHT_LIST_FAILURE,
+  //
+  BOUGHT_ADMIN_LIST_REQUEST,
+  BOUGHT_ADMIN_LIST_SUCCESS,
+  BOUGHT_ADMIN_LIST_FAILURE,
+  //
+  BOUGHT_DELIVERY_UPDATE_REQUEST,
+  BOUGHT_DELIVERY_UPDATE_SUCCESS,
+  BOUGHT_DELIVERY_UPDATE_FAILURE,
 } from "../reducers/boughtHistory";
 
 // ******************************************************************************************************************
@@ -130,6 +138,62 @@ function* boughtList(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function boughtAdminListAPI(data) {
+  return await axios.post(`/api/bought/admin/list`, data);
+}
+
+function* boughtAdminList(action) {
+  try {
+    const result = yield call(boughtAdminListAPI, action.data);
+
+    yield put({
+      type: BOUGHT_ADMIN_LIST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: BOUGHT_ADMIN_LIST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function boughtDeliveryUpdateAPI(data) {
+  return await axios.post(`/api/bought/delivery/update`, data);
+}
+
+function* boughtDeliveryUpdate(action) {
+  try {
+    const result = yield call(boughtDeliveryUpdateAPI, action.data);
+
+    yield put({
+      type: BOUGHT_DELIVERY_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: BOUGHT_DELIVERY_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchBoughtDelivery() {
@@ -148,6 +212,14 @@ function* watchBoughtList() {
   yield takeLatest(BOUGHT_LIST_REQUEST, boughtList);
 }
 
+function* watchBoughtAdminList() {
+  yield takeLatest(BOUGHT_ADMIN_LIST_REQUEST, boughtAdminList);
+}
+
+function* watchBoughtDeliveryUpdate() {
+  yield takeLatest(BOUGHT_DELIVERY_UPDATE_REQUEST, boughtDeliveryUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* boughtHistorySaga() {
   yield all([
@@ -155,6 +227,8 @@ export default function* boughtHistorySaga() {
     fork(watchBoughtPay),
     fork(watchBoughtDetail),
     fork(watchBoughtList),
+    fork(watchBoughtAdminList),
+    fork(watchBoughtDeliveryUpdate),
     //
   ]);
 }
