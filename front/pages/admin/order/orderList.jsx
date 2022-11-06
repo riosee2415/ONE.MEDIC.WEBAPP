@@ -31,6 +31,7 @@ import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import {
   BOUGHT_ADMIN_LIST_REQUEST,
   BOUGHT_DELIVERY_UPDATE_REQUEST,
+  BOUGHT_DETAIL_REQUEST,
 } from "../../../reducers/boughtHistory";
 import Theme from "../../../components/Theme";
 import { CSVLink } from "react-csv";
@@ -65,7 +66,7 @@ const UserDeliAddress = ({}) => {
 
   const {
     adminBoughtList,
-
+    boughtDetail,
     //
     st_boughtAdminListLoading,
     st_boughtAdminListError,
@@ -189,21 +190,27 @@ const UserDeliAddress = ({}) => {
       if (data) {
         setDetailData(data);
 
-        if (data.type === 1) {
-          dispatch({
-            type: WISH_PAYMENT_DETAIL_REQUEST,
-            data: {
-              containerId: data.typeId,
-            },
-          });
-        } else {
-          dispatch({
-            type: WISH_PRE_DETAIL_REQUEST,
-            data: {
-              wishPrescriptrionId: data.typeId,
-            },
-          });
-        }
+        // if (data.type === 1) {
+        //   dispatch({
+        //     type: WISH_PAYMENT_DETAIL_REQUEST,
+        //     data: {
+        //       containerId: data.typeId,
+        //     },
+        //   });
+        // } else {
+        //   dispatch({
+        //     type: WISH_PRE_DETAIL_REQUEST,
+        //     data: {
+        //       wishPrescriptrionId: data.typeId,
+        //     },
+        //   });
+        // }
+        dispatch({
+          type: BOUGHT_DETAIL_REQUEST,
+          data: {
+            id: data.id,
+          },
+        });
       } else {
         setDetailData(null);
       }
@@ -948,146 +955,197 @@ const UserDeliAddress = ({}) => {
               </Wrapper>
             </Wrapper>
 
-            {console.log(wishPreDetail)}
-
             {/* 상품정보 */}
             <Text margin={`20px 0 10px`} fontSize={`16px`} fontWeight={`600`}>
               상품정보 - {detailData.viewType}처방
             </Text>
+            {console.log(boughtDetail)}
 
-            {detailData.type === 1 && wishPaymentDetail ? (
+            {boughtDetail && (
               <>
-                <Wrapper>{wishPaymentDetail.productname}</Wrapper>
-              </>
-            ) : (
-              wishPreDetail && (
-                <>
-                  <Wrapper
-                    dr={`row`}
-                    borderTop={`1px solid ${Theme.subTheme5_C}`}
-                    height={`50px`}
-                  >
-                    <Wrapper dr={`row`} width={`50%`} height={`100%`}>
-                      <Wrapper
-                        width={`100px`}
-                        height={`100%`}
-                        bgColor={Theme.subTheme5_C}
-                        color={Theme.white_C}
-                        borderBottom={`1px solid ${Theme.white_C}`}
-                      >
-                        처방명
-                      </Wrapper>
-                      <Wrapper
-                        width={`calc(100% - 100px)`}
-                        height={`100%`}
-                        borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                      >
-                        {wishPreDetail.title}
-                      </Wrapper>
-                    </Wrapper>
-
-                    <Wrapper dr={`row`} width={`50%`} height={`100%`}>
-                      <Wrapper
-                        width={`100px`}
-                        height={`100%`}
-                        bgColor={Theme.subTheme5_C}
-                        color={Theme.white_C}
-                        borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                      >
-                        환자이름
-                      </Wrapper>
-                      <Wrapper
-                        width={`calc(100% - 100px)`}
-                        height={`100%`}
-                        borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                      >
-                        {wishPreDetail.receiverName}
-                      </Wrapper>
-                    </Wrapper>
-                  </Wrapper>
-
-                  <Wrapper dr={`row`} height={`100px`}>
+                {boughtDetail.lists.map((data) => {
+                  return (
                     <Wrapper
-                      width={`100px`}
-                      height={`100%`}
-                      bgColor={Theme.subTheme5_C}
-                      color={Theme.white_C}
-                      borderBottom={`1px solid ${Theme.white_C}`}
-                    >
-                      복약지도
-                    </Wrapper>
-                    <Wrapper
-                      width={`calc(100% - 100px)`}
-                      height={`100%`}
-                      borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                      key={data.id}
                       padding={`10px`}
-                      ju={`flex-start`}
+                      border={`1px solid ${Theme.subTheme5_C}`}
                       al={`flex-start`}
+                      margin={`0 0 10px`}
                     >
-                      {wishPreDetail.medication}
-                    </Wrapper>
-                  </Wrapper>
+                      <Wrapper
+                        dr={`row`}
+                        borderTop={`1px solid ${Theme.subTheme5_C}`}
+                        height={`50px`}
+                      >
+                        <Wrapper dr={`row`} width={`50%`} height={`100%`}>
+                          <Wrapper
+                            width={`100px`}
+                            height={`100%`}
+                            bgColor={Theme.subTheme5_C}
+                            color={Theme.white_C}
+                            borderBottom={`1px solid ${Theme.white_C}`}
+                          >
+                            처방명
+                          </Wrapper>
+                          <Wrapper
+                            width={`calc(100% - 100px)`}
+                            height={`100%`}
+                            borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          >
+                            {data.title}
+                          </Wrapper>
+                        </Wrapper>
 
-                  <Wrapper dr={`row`} height={`100px`}>
-                    <Wrapper
-                      width={`100px`}
-                      height={`100%`}
-                      bgColor={Theme.subTheme5_C}
-                      color={Theme.white_C}
-                      borderBottom={`1px solid ${Theme.white_C}`}
-                    >
-                      요청사항
-                    </Wrapper>
-                    <Wrapper
-                      width={`calc(100% - 100px)`}
-                      height={`100%`}
-                      borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                      padding={`10px`}
-                      ju={`flex-start`}
-                      al={`flex-start`}
-                    >
-                      {wishPreDetail.content}
-                    </Wrapper>
-                  </Wrapper>
+                        <Wrapper dr={`row`} width={`50%`} height={`100%`}>
+                          <Wrapper
+                            width={`100px`}
+                            height={`100%`}
+                            bgColor={Theme.subTheme5_C}
+                            color={Theme.white_C}
+                            borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          >
+                            환자이름
+                          </Wrapper>
+                          <Wrapper
+                            width={`calc(100% - 100px)`}
+                            height={`100%`}
+                            borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          >
+                            {data.receiverName}
+                          </Wrapper>
+                        </Wrapper>
+                      </Wrapper>
 
-                  <Text
-                    margin={`20px 0 10px`}
-                    fontSize={`16px`}
-                    fontWeight={`600`}
-                  >
-                    상품정보 - 재료
-                  </Text>
+                      <Wrapper dr={`row`} height={`100px`}>
+                        <Wrapper
+                          width={`100px`}
+                          height={`100%`}
+                          bgColor={Theme.subTheme5_C}
+                          color={Theme.white_C}
+                          borderBottom={`1px solid ${Theme.white_C}`}
+                        >
+                          복약지도
+                        </Wrapper>
+                        <Wrapper
+                          width={`calc(100% - 100px)`}
+                          height={`100%`}
+                          borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          padding={`10px`}
+                          ju={`flex-start`}
+                          al={`flex-start`}
+                        >
+                          {data.medication}
+                        </Wrapper>
+                      </Wrapper>
 
-                  <Wrapper
-                    dr={`row`}
-                    bgColor={Theme.subTheme5_C}
-                    color={Theme.white_C}
-                    padding={`5px 0`}
-                  >
-                    <Wrapper width={`calc(100% / 3)`}>재료명</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}>수량</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}>가격</Wrapper>
-                  </Wrapper>
+                      <Wrapper dr={`row`} height={`100px`}>
+                        <Wrapper
+                          width={`100px`}
+                          height={`100%`}
+                          bgColor={Theme.subTheme5_C}
+                          color={Theme.white_C}
+                          borderBottom={`1px solid ${Theme.white_C}`}
+                        >
+                          요청사항
+                        </Wrapper>
+                        <Wrapper
+                          width={`calc(100% - 100px)`}
+                          height={`100%`}
+                          borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          padding={`10px`}
+                          ju={`flex-start`}
+                          al={`flex-start`}
+                        >
+                          {data.content}
+                        </Wrapper>
+                      </Wrapper>
 
-                  <Wrapper
-                    height={`230px`}
-                    overflowY={`auto`}
-                    ju={`flex-start`}
-                    borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                  >
-                    <Wrapper height={`auto`} ju={`flex-start`}>
-                      {wishPreDetail.materials.map((data) => {
-                        return (
+                      <Text
+                        margin={`20px 0 10px`}
+                        fontSize={`16px`}
+                        fontWeight={`600`}
+                      >
+                        상품정보
+                      </Text>
+                      {detailData.type === 1 ? (
+                        <>
+                          <Wrapper
+                            dr={`row`}
+                            bgColor={Theme.subTheme5_C}
+                            color={Theme.white_C}
+                            padding={`5px 0`}
+                          >
+                            <Wrapper width={`calc(100% / 3)`}>종류</Wrapper>
+                            <Wrapper width={`calc(100% / 3)`}>수량</Wrapper>
+                            <Wrapper width={`calc(100% / 3)`}>가격</Wrapper>
+                          </Wrapper>
+
+                          <Wrapper
+                            height={`230px`}
+                            overflowY={`auto`}
+                            ju={`flex-start`}
+                            borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          >
+                            <Wrapper height={`auto`} ju={`flex-start`}>
+                              {boughtDetail.items
+                                .filter(
+                                  (value) =>
+                                    value.WishPaymentContainerId === data.id
+                                )
+                                .map((item) => {
+                                  return (
+                                    <Wrapper
+                                      key={data.id}
+                                      dr={`row`}
+                                      padding={`5px 0`}
+                                      borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                                    >
+                                      <Wrapper width={`calc(100% / 3)`}>
+                                        {item.pack}
+                                        &nbsp;/&nbsp;
+                                        {item.type}
+                                        &nbsp;/&nbsp;
+                                        {item.unit}
+                                      </Wrapper>
+                                      <Wrapper width={`calc(100% / 3)`}>
+                                        {item.qnt}개
+                                      </Wrapper>
+                                      <Wrapper
+                                        width={`calc(100% / 3)`}
+                                        al={`flex-end`}
+                                        padding={`0 5px 0 0`}
+                                      >
+                                        {item.viewPrice}
+                                      </Wrapper>
+                                    </Wrapper>
+                                  );
+                                })}
+                            </Wrapper>
+                          </Wrapper>
+                        </>
+                      ) : (
+                        <>
+                          <Wrapper
+                            dr={`row`}
+                            padding={`5px 0`}
+                            bgColor={Theme.subTheme5_C}
+                            color={Theme.white_C}
+                          >
+                            <Wrapper width={`calc(100% / 3)`}>이름</Wrapper>
+                            <Wrapper width={`calc(100% / 3)`}>종류</Wrapper>
+                            <Wrapper width={`calc(100% / 3)`}>가격</Wrapper>
+                          </Wrapper>
+
                           <Wrapper
                             dr={`row`}
                             padding={`5px 0`}
                             borderBottom={`1px solid ${Theme.subTheme5_C}`}
                           >
+                            <Wrapper width={`calc(100% / 3)`}>종류</Wrapper>
                             <Wrapper width={`calc(100% / 3)`}>
-                              {data.name}
-                            </Wrapper>
-                            <Wrapper width={`calc(100% / 3)`}>
-                              {data.qnt}
+                              {data.cheob}&nbsp;/&nbsp;
+                              {data.pack}
+                              &nbsp;/&nbsp;
                               {data.unit}
                             </Wrapper>
                             <Wrapper
@@ -1095,112 +1153,142 @@ const UserDeliAddress = ({}) => {
                               al={`flex-end`}
                               padding={`0 5px 0 0`}
                             >
-                              {data.viewTotalPrice}
+                              {data.viewPackPrice}
                             </Wrapper>
                           </Wrapper>
-                        );
-                      })}
-                    </Wrapper>
-                  </Wrapper>
 
-                  {/* 상품 가격 */}
-                  <Text
-                    margin={`20px 0 10px`}
-                    fontSize={`16px`}
-                    fontWeight={`600`}
-                  >
-                    상품가격
-                  </Text>
-                  <Wrapper
-                    dr={`row`}
-                    padding={`5px 0`}
-                    bgColor={Theme.subTheme5_C}
-                    color={Theme.white_C}
-                  >
-                    <Wrapper width={`calc(100% / 3)`}>이름</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}>종류</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}>가격</Wrapper>
-                  </Wrapper>
+                          <Wrapper
+                            dr={`row`}
+                            bgColor={Theme.subTheme5_C}
+                            color={Theme.white_C}
+                            padding={`5px 0`}
+                          >
+                            <Wrapper width={`calc(100% / 3)`}>재료명</Wrapper>
+                            <Wrapper width={`calc(100% / 3)`}>수량</Wrapper>
+                            <Wrapper width={`calc(100% / 3)`}>가격</Wrapper>
+                          </Wrapper>
 
-                  <Wrapper
-                    dr={`row`}
-                    padding={`5px 0`}
-                    borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                  >
-                    <Wrapper width={`calc(100% / 3)`}>종류</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}>
-                      {wishPreDetail.cheob}&nbsp;/&nbsp;{wishPreDetail.pack}
-                      &nbsp;/&nbsp;
-                      {wishPreDetail.unit}
+                          <Wrapper
+                            height={`230px`}
+                            overflowY={`auto`}
+                            ju={`flex-start`}
+                            borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                          >
+                            <Wrapper height={`auto`} ju={`flex-start`}>
+                              {boughtDetail.items
+                                .filter(
+                                  (value) =>
+                                    value.WishPrescriptionItemId === data.id
+                                )
+                                .map((item) => {
+                                  return (
+                                    <Wrapper
+                                      key={data.id}
+                                      dr={`row`}
+                                      padding={`5px 0`}
+                                      borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                                    >
+                                      <Wrapper width={`calc(100% / 3)`}>
+                                        {item.name}
+                                      </Wrapper>
+                                      <Wrapper width={`calc(100% / 3)`}>
+                                        {item.qnt}
+                                        {item.unit}
+                                      </Wrapper>
+                                      <Wrapper
+                                        width={`calc(100% / 3)`}
+                                        al={`flex-end`}
+                                        padding={`0 5px 0 0`}
+                                      >
+                                        {item.viewPrice}
+                                      </Wrapper>
+                                    </Wrapper>
+                                  );
+                                })}
+                            </Wrapper>
+                          </Wrapper>
+                        </>
+                      )}
                     </Wrapper>
+                  );
+                })}
+
+                {/* 상품 가격 */}
+                <Text
+                  margin={`20px 0 10px`}
+                  fontSize={`16px`}
+                  fontWeight={`600`}
+                >
+                  상품가격
+                </Text>
+                <Wrapper
+                  dr={`row`}
+                  padding={`5px 0`}
+                  bgColor={Theme.subTheme5_C}
+                  color={Theme.white_C}
+                >
+                  <Wrapper width={`calc(100% / 2)`}>이름</Wrapper>
+                  <Wrapper width={`calc(100% / 2)`}>가격</Wrapper>
+                </Wrapper>
+
+                {detailData.type === 2 && (
+                  <>
                     <Wrapper
-                      width={`calc(100% / 3)`}
-                      al={`flex-end`}
-                      padding={`0 5px 0 0`}
+                      dr={`row`}
+                      padding={`5px 0`}
+                      borderBottom={`1px solid ${Theme.subTheme5_C}`}
                     >
-                      {wishPreDetail.viewPackPrice}
+                      <Wrapper width={`calc(100% / 2)`}>탕전</Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 2)`}
+                        al={`flex-end`}
+                        padding={`0 5px 0 0`}
+                      >
+                        {detailData.viewTangjeonPrice}
+                      </Wrapper>
                     </Wrapper>
-                  </Wrapper>
 
-                  <Wrapper
-                    dr={`row`}
-                    padding={`5px 0`}
-                    borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                  >
-                    <Wrapper width={`calc(100% / 3)`}>탕전</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}></Wrapper>
                     <Wrapper
-                      width={`calc(100% / 3)`}
-                      al={`flex-end`}
-                      padding={`0 5px 0 0`}
+                      dr={`row`}
+                      padding={`5px 0`}
+                      borderBottom={`1px solid ${Theme.subTheme5_C}`}
                     >
-                      {detailData.viewTangjeonPrice}
+                      <Wrapper width={`calc(100% / 2)`}>조제</Wrapper>
+                      <Wrapper
+                        width={`calc(100% / 2)`}
+                        al={`flex-end`}
+                        padding={`0 5px 0 0`}
+                      >
+                        {detailData.viewPharmacyPrice}
+                      </Wrapper>
                     </Wrapper>
-                  </Wrapper>
-
+                  </>
+                )}
+                <Wrapper
+                  dr={`row`}
+                  padding={`5px 0`}
+                  borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                >
+                  <Wrapper width={`calc(100% / 2)`}>배송비</Wrapper>
                   <Wrapper
-                    dr={`row`}
-                    padding={`5px 0`}
-                    borderBottom={`1px solid ${Theme.subTheme5_C}`}
+                    width={`calc(100% / 2)`}
+                    al={`flex-end`}
+                    padding={`0 5px 0 0`}
                   >
-                    <Wrapper width={`calc(100% / 3)`}>조제</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}></Wrapper>
-                    <Wrapper
-                      width={`calc(100% / 3)`}
-                      al={`flex-end`}
-                      padding={`0 5px 0 0`}
-                    >
-                      {detailData.viewPharmacyPrice}
-                    </Wrapper>
+                    {detailData.viewDeliveryPrice}
                   </Wrapper>
+                </Wrapper>
 
-                  <Wrapper
-                    dr={`row`}
-                    padding={`5px 0`}
-                    borderBottom={`1px solid ${Theme.subTheme5_C}`}
-                  >
-                    <Wrapper width={`calc(100% / 3)`}>배송비</Wrapper>
-                    <Wrapper width={`calc(100% / 3)`}></Wrapper>
-                    <Wrapper
-                      width={`calc(100% / 3)`}
-                      al={`flex-end`}
-                      padding={`0 5px 0 0`}
-                    >
-                      {detailData.viewDeliveryPrice}
-                    </Wrapper>
-                  </Wrapper>
-
-                  <Wrapper
-                    dr={`row`}
-                    ju={`flex-end`}
-                    margin={`20px 0 10px`}
-                    fontSize={`18px`}
-                  >
-                    <Text fontWeight={`600`}>합계 :&nbsp;</Text>
-                    <Text fontWeight={`600`}>{detailData.viewTotalPrice}</Text>
-                  </Wrapper>
-                </>
-              )
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-end`}
+                  margin={`20px 0 10px`}
+                  fontSize={`18px`}
+                >
+                  <Text fontWeight={`600`}>합계 :&nbsp;</Text>
+                  <Text fontWeight={`600`}>{detailData.viewTotalPrice}</Text>
+                </Wrapper>
+              </>
             )}
           </>
         )}

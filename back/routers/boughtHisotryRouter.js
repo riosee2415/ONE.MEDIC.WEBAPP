@@ -120,7 +120,7 @@ router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
   const updateQuery = `
   UPDATE  boughtHistory
      SET  isMonth = ${isMonth},
-          isPay = ${isPay},
+          isPay = ${payInfo === "nobank" ? 0 : isPay},
           payInfo = '${payInfo}',
           totalPrice = ${totalPrice},
           pharmacyPrice = ${pharmacyPrice},
@@ -184,6 +184,7 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
 
   const detailQuery = `
   SELECT  A.id,
+          A.type,
           A.receiveUser,
           A.receiveMobile,
           A.receiveAddress,
@@ -195,28 +196,100 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
           A.deliveryMessage,
           A.pharmacyPrice,
           A.tangjeonPrice,
-          A.deliveryPrice,
-          B.id				wishPaymentId,
-          C.id				wishPreId
+          A.deliveryPrice
     FROM  boughtHistory   A
-    LEFT
-   OUTER
-    JOIN  wishPaymentContainer B
-      ON  B.BoughtHistoryId = A.id
-    LEFT
-   OUTER
-    JOIN  wishPrescriptionItem C
-      ON  C.BoughtHistoryId = A.id
    WHERE  A.id = ${id};
+    `;
+
+  // 약속처방
+  const paymentDetailQuery = `
+    SELECT  id,
+            productname         AS title,
+            medication,
+            receiverName,
+            content
+      FROM  wishPaymentContainer
+     WHERE  BoughtHistoryId = ${id}
+    `;
+
+  const paymentItemDetailQuery = `
+    SELECT  A.id,
+            A.price,
+            A.pack,
+            A.type,
+            A.unit,
+            A.qnt,
+            CONCAT(FORMAT(A.price, 0), '원')    AS viewPrice,
+            A.WishPaymentContainerId
+      FROM  wishPaymentItem           A
+     INNER
+      JOIN  wishPaymentContainer      B
+        ON  B.id = A.WishPaymentContainerId
+     WHERE  B.BoughtHistoryId = ${id}
+    `;
+
+  // 탕전처방
+  const preDetailQuery = `
+    SELECT  id,
+            title,
+            cheob,
+            pack,
+            unit,
+            packPrice,
+            CONCAT(FORMAT(packPrice, 0), '원')    AS viewPackPrice,
+            medication,
+            receiverName,
+            content
+      FROM  wishPrescriptionItem
+     WHERE  BoughtHistoryId = ${id}
+    `;
+
+  const preItemDetailQuery = `
+    SELECT  A.id,
+            A.name,
+            A.price,
+            A.qnt,
+            A.unit,
+            CONCAT(FORMAT(A.price, 0), '원')    AS viewPrice,
+            A.WishPrescriptionItemId
+      FROM  wishMaterialsItem           A
+     INNER
+      JOIN  wishPrescriptionItem      B
+        ON  B.id = A.WishPrescriptionItemId
+     WHERE  B.BoughtHistoryId = ${id}
     `;
 
   try {
     const detailResult = await models.sequelize.query(detailQuery);
 
-    return res.status(200).json(detailResult[0][0]);
+    if (detailResult[0][0].type === 1) {
+      const paymentDetailResult = await models.sequelize.query(
+        paymentDetailQuery
+      );
+      const paymentItemDetailResult = await models.sequelize.query(
+        paymentItemDetailQuery
+      );
+      return res.status(200).json({
+        ...detailResult[0][0],
+        lists: paymentDetailResult[0],
+        items: paymentItemDetailResult[0],
+      });
+    } else if (detailResult[0][0].type === 2) {
+      const preDetailResult = await models.sequelize.query(preDetailQuery);
+      const preItemDetailResult = await models.sequelize.query(
+        preItemDetailQuery
+      );
+      return res.status(200).json({
+        ...detailResult[0][0],
+        lists: preDetailResult[0],
+        items: preItemDetailResult[0],
+      });
+    } else {
+      return res.status(401).send("상세정보를 불러올 수 없습니다.");
+    }
   } catch (e) {
     console.error(e);
-    return res.status(401).send("상세정보를 불러올수 없습니다.");
+    return res.status(401).send("상세정보를 불러올 수 없습니다.");
   }
 });
 
@@ -241,12 +314,14 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
 		        				SELECT  B.productname
 		        				  FROM  wishPaymentContainer B
 		        				 WHERE  A.id = B.BoughtHistoryId
+                     LIMIT  1
 		        			)
 		        	WHEN    type = 2
 		        	THEN	(
 		        				SELECT  B.title
 		        				  FROM  wishPrescriptionItem B
 		        				 WHERE  A.id = B.BoughtHistoryId
+                     LIMIT  1
 		        			)
 		        END											AS title,
 		        isRefuse,
@@ -282,7 +357,7 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
             CASE
                 WHEN	deliveryStatus = 0 AND isPay = 1 THEN "결제 승인"
                 WHEN	deliveryStatus = 0 AND isPay = 0 AND payInfo = "nobank" THEN "입금 대기"
-                WHEN	deliveryStatus = 0 AND isPay = 0 THEN "결제 미승인"
+                WHEN	deliveryStatus = 0 AND isPay = 0 THEN "결제 진행"
                 WHEN	deliveryStatus = 1 THEN "배송 준비중"
                 WHEN	deliveryStatus = 2 THEN "집화 완료"
                 WHEN	deliveryStatus = 3 THEN "배송 중"
@@ -301,12 +376,14 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
                              SELECT  B.productname
                                FROM  wishPaymentContainer B
                               WHERE  A.id = B.BoughtHistoryId
+                              LIMIT  1
                            )
                        WHEN    type = 2
                        THEN	(
                              SELECT  B.title
                                FROM  wishPrescriptionItem B
                               WHERE  A.id = B.BoughtHistoryId
+                              LIMIT  1
                             )
                     END											AS title
               FROM  boughtHistory C
@@ -376,12 +453,14 @@ router.post("/admin/list", isAdminCheck, async (req, res, next) => {
 		        				SELECT  B.productname
 		        				  FROM  wishPaymentContainer B
 		        				 WHERE  A.id = B.BoughtHistoryId
+                     LIMIT  1
 		        			)
 		        	WHEN  A.type = 2
 		        	THEN	(
 		        				SELECT  B.title
 		        				  FROM  wishPrescriptionItem B
 		        				 WHERE  A.id = B.BoughtHistoryId
+                     LIMIT  1
 		        			)
 		        END											AS title,
             CASE 
@@ -390,12 +469,14 @@ router.post("/admin/list", isAdminCheck, async (req, res, next) => {
                   SELECT  B.id
                     FROM  wishPaymentContainer B
                    WHERE  A.id = B.BoughtHistoryId
+                   LIMIT  1
                 )
             WHEN  A.type = 2
             THEN	(
                   SELECT  B.id
                     FROM  wishPrescriptionItem B
                    WHERE  A.id = B.BoughtHistoryId
+                   LIMIT  1
                 )
             END											AS typeId,
 		        A.isRefuse,
@@ -450,7 +531,7 @@ router.post("/admin/list", isAdminCheck, async (req, res, next) => {
       JOIN  users           C
         ON  A.UserId = C.id
      WHERE  1 = 1
-       AND  A.isPay = 1 && A.payInfo != 'nobank'
+       AND  A.payInfo IS NOT NULL
        ${dateCondition}
        ${completedCondition}
        ${typeCondition}

@@ -168,7 +168,7 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 
     const itemData = await models.sequelize.query(itemQuery);
 
-    return res.status(200).json({ ...detailData[0][0], items: itemData[0] });
+    return res.status(200).json({ lists: detailData[0], items: itemData[0] });
   } catch (error) {
     console.error(error);
     return res.status(401).send("상품 정보를 불러올 수 없습니다.");
@@ -564,7 +564,7 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ ...detailData[0][0], materials: materialData[0] });
+      .json({ lists: detailData[0], materials: materialData[0] });
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니 상품 정보를 불러올 수 없습니다.");

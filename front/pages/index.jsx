@@ -232,7 +232,18 @@ const Home = ({}) => {
                                 </Text>
                                 <Text>{data.receiveUser}</Text>
                               </Wrapper>
-                              <TagBtn>{data.viewDeliveryStatus}</TagBtn>
+                              <TagBtn
+                                cursor={
+                                  data.viewDeliveryStatus === "결제 진행" &&
+                                  `pointer`
+                                }
+                                onClick={() =>
+                                  data.viewDeliveryStatus === "결제 진행" &&
+                                  moveLinkHandler(`/payInfo/${data.id}`)
+                                }
+                              >
+                                {data.viewDeliveryStatus}
+                              </TagBtn>
                             </Wrapper>
                             <Wrapper
                               dr={`row`}
@@ -244,9 +255,11 @@ const Home = ({}) => {
                                 width={`calc(100% / 3)`}
                                 cursor={`pointer`}
                                 onClick={() =>
-                                  moveLinkHandler(
-                                    `/deliveryList/${data.id}?type=${data.paymentType}`
-                                  )
+                                  data.isPay
+                                    ? moveLinkHandler(
+                                        `/deliveryList/${data.id}?type=${data.paymentType}`
+                                      )
+                                    : message.info("결제를 진행해주세요.")
                                 }
                               >
                                 배송조회
@@ -257,9 +270,11 @@ const Home = ({}) => {
                                 borderLeft={`1px solid ${Theme.grey2_C}`}
                                 cursor={`pointer`}
                                 onClick={() =>
-                                  moveLinkHandler(
-                                    `/orderList/${data.id}?type=${data.paymentType}`
-                                  )
+                                  data.isPay
+                                    ? moveLinkHandler(
+                                        `/orderList/${data.id}?type=${data.paymentType}`
+                                      )
+                                    : message.info("결제를 진행해주세요.")
                                 }
                               >
                                 주문내역
@@ -268,7 +283,11 @@ const Home = ({}) => {
                               <Wrapper
                                 width={`calc(100% / 3)`}
                                 cursor={`pointer`}
-                                onClick={() => reBoughtHandler(data)}
+                                onClick={() =>
+                                  data.isPay
+                                    ? reBoughtHandler(data)
+                                    : message.info("결제를 진행해주세요.")
+                                }
                               >
                                 재처방
                               </Wrapper>
