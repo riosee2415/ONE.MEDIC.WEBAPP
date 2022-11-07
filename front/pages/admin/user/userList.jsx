@@ -452,6 +452,7 @@ const UserList = ({}) => {
         updatedAt: data.updatedAt.split("T")[0],
         companyName: data.companyName,
         companyNo: data.companyNo,
+        discount: data.discountPrice,
       });
       setIsCompany(data.isCompany);
       setCompanyFile(data.companyFile);
@@ -810,6 +811,9 @@ const UserList = ({}) => {
             <Input readOnly />
           </Form.Item>
           <Form.Item name="mobile" label="전화번호">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="discount" label="할인금액">
             <Input readOnly />
           </Form.Item>
           <Form.Item name="level" label="권한">
