@@ -32,6 +32,10 @@ import {
   BOUGHT_REFUSE_UPDATE_REQUEST,
   BOUGHT_REFUSE_UPDATE_SUCCESS,
   BOUGHT_REFUSE_UPDATE_FAILURE,
+  //
+  BOUGHT_REBUY_UPDATE_REQUEST,
+  BOUGHT_REBUY_UPDATE_SUCCESS,
+  BOUGHT_REBUY_UPDATE_FAILURE,
 } from "../reducers/boughtHistory";
 
 // ******************************************************************************************************************
@@ -258,6 +262,34 @@ function* boughtRefuseUpdate(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function boughtReBuyUpdateAPI(data) {
+  return await axios.post(`/api/bought/reBuy/update`, data);
+}
+
+function* boughtReBuyUpdate(action) {
+  try {
+    const result = yield call(boughtReBuyUpdateAPI, action.data);
+
+    yield put({
+      type: BOUGHT_REBUY_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: BOUGHT_REBUY_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchBoughtDelivery() {
@@ -292,6 +324,10 @@ function* watchBoughtRefuseUpdate() {
   yield takeLatest(BOUGHT_REFUSE_UPDATE_REQUEST, boughtRefuseUpdate);
 }
 
+function* watchBoughtReBuyUpdate() {
+  yield takeLatest(BOUGHT_REBUY_UPDATE_REQUEST, boughtReBuyUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* boughtHistorySaga() {
   yield all([
@@ -303,6 +339,7 @@ export default function* boughtHistorySaga() {
     fork(watchBoughtDeliveryUpdate),
     fork(watchBoughtCompleteUpdate),
     fork(watchBoughtRefuseUpdate),
+    fork(watchBoughtReBuyUpdate),
     //
   ]);
 }
