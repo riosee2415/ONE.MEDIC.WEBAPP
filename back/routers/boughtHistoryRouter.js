@@ -365,6 +365,16 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
                      LIMIT  1
 		        			)
 		        END											AS title,
+		        CASE 
+		        	WHEN	type = 1 
+		        	THEN	(
+		        				SELECT  B.paymentId
+		        				  FROM  wishPaymentContainer B
+		        				 WHERE  A.id = B.BoughtHistoryId
+                     LIMIT  1
+		        			)
+					    ELSE	NULL
+		        END											AS paymentId,
 		        isRefuse,
 		        refuseContent
 		        isCompleted,
@@ -674,6 +684,247 @@ router.post("/isRefuse/update", isAdminCheck, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("");
+  }
+});
+
+router.post("/reBuy/update", isLoggedIn, async (req, res, next) => {
+  const { id, type } = req.body;
+
+  // 약속처방
+  const paymentDetailQuery = `
+    SELECT  id,
+            productname         AS title,
+            medication,
+            receiverName,
+            content,
+            paymentId,
+            WishListId
+      FROM  wishPaymentContainer
+     WHERE  BoughtHistoryId = ${id}
+    `;
+
+  const paymentItemDetailQuery = `
+    SELECT  A.id,
+            A.price,
+            A.pack,
+            A.type,
+            A.unit,
+            A.qnt,
+            A.WishPaymentContainerId
+      FROM  wishPaymentItem           A
+     INNER
+      JOIN  wishPaymentContainer      B
+        ON  B.id = A.WishPaymentContainerId
+     WHERE  B.BoughtHistoryId = ${id}
+    `;
+
+  // 탕전처방
+  const preDetailQuery = `
+    SELECT  id,
+            title,
+            cheob,
+            pack,
+            unit,
+            packPrice,
+            medication,
+            receiverName,
+            content,
+            WishListId
+      FROM  wishPrescriptionItem
+     WHERE  BoughtHistoryId = ${id}
+    `;
+
+  const preItemDetailQuery = `
+    SELECT  A.id,
+            A.name,
+            A.price,
+            A.qnt,
+            A.unit,
+            A.WishPrescriptionItemId,
+            A.materialId
+      FROM  wishMaterialsItem           A
+     INNER
+      JOIN  wishPrescriptionItem      B
+        ON  B.id = A.WishPrescriptionItemId
+     WHERE  B.BoughtHistoryId = ${id}
+    `;
+
+  try {
+    if (type === 1) {
+      // 약속처방
+      const paymentDetailResult = await models.sequelize.query(
+        paymentDetailQuery
+      );
+      const paymentItemDetailResult = await models.sequelize.query(
+        paymentItemDetailQuery
+      );
+
+      for (let i = 0; i < paymentDetailResult[0].length; i++) {
+        const paymentCreateQuery = `
+        INSERT  INTO  wishPaymentContainer
+        (
+          paymentId,
+          productname,
+          medication,
+          receiverName,
+          content,
+          createdAt,
+          updatedAt,
+          WishListId
+        )
+        VALUES
+        (
+          ${paymentDetailResult[0][i].paymentId},
+          "${paymentDetailResult[0][i].title}",
+          ${
+            paymentDetailResult[0][i].medication
+              ? `"${paymentDetailResult[0][i].medication}"`
+              : `NULL`
+          },
+          "${paymentDetailResult[0][i].receiverName}",
+          ${
+            paymentDetailResult[0][i].content
+              ? `"${paymentDetailResult[0][i].content}"`
+              : `NULL`
+          },
+          NOW(),
+          NOW(),
+          ${paymentDetailResult[0][i].WishListId}
+        )
+        `;
+
+        const paymentCreateResult = await models.sequelize.query(
+          paymentCreateQuery
+        );
+
+        const filterPaymentItem = paymentItemDetailResult[0].filter(
+          (data) => data.WishPaymentContainerId === paymentDetailResult[0][i].id
+        );
+
+        for (let v = 0; v < filterPaymentItem.length; v++) {
+          const paymentItemCreateQuery = `
+          INSERT  INTO    wishPaymentItem
+          (
+              price,
+              pack,
+              type,
+              unit,
+              createdAt,
+              updatedAt,
+              qnt,
+              WishPaymentContainerId
+          )
+          VALUES
+          (
+              ${filterPaymentItem[v].price},
+              "${filterPaymentItem[v].pack}",
+              "${filterPaymentItem[v].type}",
+              "${filterPaymentItem[v].unit}",
+              NOW(),
+              NOW(),
+              ${filterPaymentItem[v].qnt},
+              ${paymentCreateResult[0].insertId}
+          )
+          `;
+
+          const paymentItemCreateResult = await models.sequelize.query(
+            paymentItemCreateQuery
+          );
+        }
+      }
+
+      return res.status(200).json({ result: true });
+    } else if (type === 2) {
+      // 탕전처방
+      const preDetailResult = await models.sequelize.query(preDetailQuery);
+      const preItemDetailResult = await models.sequelize.query(
+        preItemDetailQuery
+      );
+
+      for (let i = 0; i < preDetailResult[0].length; i++) {
+        const preCreateQuery = `
+        INSERT  INTO  wishPrescriptionItem
+        (
+          title,
+          cheob,
+          pack,
+          unit,
+          packPrice,
+          medication,
+          receiverName,
+          content,
+          createdAt,
+          updatedAt,
+          WishListId
+        )
+        VALUES
+        (
+          "${preDetailResult[0][i].title}",
+          ${preDetailResult[0][i].cheob},
+          ${preDetailResult[0][i].pack},
+          ${preDetailResult[0][i].unit},
+          ${preDetailResult[0][i].packPrice},
+          ${
+            preDetailResult[0][i].medication
+              ? `"${preDetailResult[0][i].medication}"`
+              : null
+          },
+          "${preDetailResult[0][i].receiverName}",
+          ${
+            preDetailResult[0][i].content
+              ? `"${preDetailResult[0][i].content}"`
+              : null
+          },
+          NOW(),
+          NOW(),
+          ${preDetailResult[0][i].WishListId}
+        )
+        `;
+
+        const preCreateResult = await models.sequelize.query(preCreateQuery);
+
+        const filterPreItem = preItemDetailResult[0].filter(
+          (data) => data.WishPrescriptionItemId === preDetailResult[0][i].id
+        );
+
+        for (let v = 0; v < filterPreItem.length; v++) {
+          const preItemCreateQuery = `
+          INSERT  INTO  wishMaterialsItem
+          (
+            materialId,
+            name,
+            price,
+            qnt,
+            unit,
+            createdAt,
+            updatedAt,
+            WishPrescriptionItemId
+          )
+          VALUES
+          (
+            ${filterPreItem[v].materialId},
+            "${filterPreItem[v].name}",
+            ${filterPreItem[v].price},
+            ${filterPreItem[v].qnt},
+            "${filterPreItem[v].unit}",
+            NOW(),
+            NOW(),
+            ${preCreateResult[0].insertId}
+          )
+          `;
+
+          const preItemCreateResult = await models.sequelize.query(
+            preItemCreateQuery
+          );
+        }
+      }
+      return res.status(200).json({ result: true });
+    } else {
+      return res.status(401).send("상세정보를 불러올 수 없습니다.");
+    }
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("상세정보를 불러올 수 없습니다.");
   }
 });
 

@@ -52,6 +52,11 @@ export const initialState = {
   st_boughtRefuseUpdateLoading: false,
   st_boughtRefuseUpdateDone: false,
   st_boughtRefuseUpdateError: null,
+
+  // 재처방
+  st_boughtReBuyUpdateLoading: false,
+  st_boughtReBuyUpdateDone: false,
+  st_boughtReBuyUpdateError: null,
 };
 
 export const BOUGHT_DELIVERY_REQUEST = "BOUGHT_DELIVERY_REQUEST";
@@ -85,6 +90,10 @@ export const BOUGHT_COMPLETE_UPDATE_FAILURE = "BOUGHT_COMPLETE_UPDATE_FAILURE";
 export const BOUGHT_REFUSE_UPDATE_REQUEST = "BOUGHT_REFUSE_UPDATE_REQUEST";
 export const BOUGHT_REFUSE_UPDATE_SUCCESS = "BOUGHT_REFUSE_UPDATE_SUCCESS";
 export const BOUGHT_REFUSE_UPDATE_FAILURE = "BOUGHT_REFUSE_UPDATE_FAILURE";
+
+export const BOUGHT_REBUY_UPDATE_REQUEST = "BOUGHT_REBUY_UPDATE_REQUEST";
+export const BOUGHT_REBUY_UPDATE_SUCCESS = "BOUGHT_REBUY_UPDATE_SUCCESS";
+export const BOUGHT_REBUY_UPDATE_FAILURE = "BOUGHT_REBUY_UPDATE_FAILURE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -258,6 +267,27 @@ const reducer = (state = initialState, action) =>
         draft.st_boughtRefuseUpdateLoading = false;
         draft.st_boughtRefuseUpdateDone = false;
         draft.st_boughtRefuseUpdateError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_REBUY_UPDATE_REQUEST: {
+        draft.st_boughtReBuyUpdateLoading = true;
+        draft.st_boughtReBuyUpdateDone = false;
+        draft.st_boughtReBuyUpdateError = null;
+        break;
+      }
+      case BOUGHT_REBUY_UPDATE_SUCCESS: {
+        draft.st_boughtReBuyUpdateLoading = false;
+        draft.st_boughtReBuyUpdateDone = true;
+        draft.st_boughtReBuyUpdateError = null;
+        break;
+      }
+      case BOUGHT_REBUY_UPDATE_FAILURE: {
+        draft.st_boughtReBuyUpdateLoading = false;
+        draft.st_boughtReBuyUpdateDone = false;
+        draft.st_boughtReBuyUpdateError = action.error;
         break;
       }
 

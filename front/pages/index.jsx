@@ -25,7 +25,10 @@ import {
   TextInput,
 } from "../components/commonComponents";
 import Theme from "../components/Theme";
-import { BOUGHT_LIST_REQUEST } from "../reducers/boughtHistory";
+import {
+  BOUGHT_LIST_REQUEST,
+  BOUGHT_REBUY_UPDATE_REQUEST,
+} from "../reducers/boughtHistory";
 
 const TagBtn = styled(Wrapper)`
   width: 85px;
@@ -45,7 +48,13 @@ const Home = ({}) => {
 
   const { me } = useSelector((state) => state.user);
 
-  const { boughtList } = useSelector((state) => state.boughtHistory);
+  const {
+    boughtList,
+    //
+    st_boughtReBuyUpdateLoading,
+    st_boughtReBuyUpdateDone,
+    st_boughtReBuyUpdateError,
+  } = useSelector((state) => state.boughtHistory);
 
   ////// HOOKS //////
 
@@ -65,6 +74,7 @@ const Home = ({}) => {
     }
   }, [me]);
 
+  // 기본
   useEffect(() => {
     dispatch({
       type: BOUGHT_LIST_REQUEST,
@@ -75,6 +85,20 @@ const Home = ({}) => {
       },
     });
   }, [productName.value, searchDate]);
+
+  useEffect(() => {
+    if (st_boughtReBuyUpdateDone) {
+      router.push("/cart");
+
+      return message.success("장바구니에 담겼습니다.");
+    }
+  }, [st_boughtReBuyUpdateDone]);
+
+  useEffect(() => {
+    if (st_boughtReBuyUpdateError) {
+      return message.error(st_boughtReBuyUpdateError);
+    }
+  }, [st_boughtReBuyUpdateError]);
 
   ////// TOGGLE //////
   ////// HANDLER //////
@@ -98,17 +122,30 @@ const Home = ({}) => {
     [searchDate]
   );
 
-  const reBoughtHandler = useCallback((data) => {
-    if (data.paymentType === "payment") {
-      sessionStorage.setItem("rePaymentData", JSON.stringify(data));
-      router.push(`/promise/detail/${data.prescriptionId}`);
-      return;
-    } else {
-      sessionStorage.setItem("rePprData", JSON.stringify(data));
-      router.push(`/prescription`);
-      return;
-    }
-  }, []);
+  const reBoughtHandler = useCallback(
+    (data) => {
+      // if (data.type === 1) {
+      //   sessionStorage.setItem("rePaymentData", JSON.stringify(data));
+      //   router.push(`/promise/detail/${data.paymentId}`);
+      //   return;
+      // } else {
+      //   sessionStorage.setItem("rePprData", JSON.stringify(data));
+      //   router.push(`/prescription`);
+      //   return;
+      // }
+      if (st_boughtReBuyUpdateLoading) {
+        return;
+      }
+      dispatch({
+        type: BOUGHT_REBUY_UPDATE_REQUEST,
+        data: {
+          id: data.id,
+          type: data.type,
+        },
+      });
+    },
+    [st_boughtReBuyUpdateLoading]
+  );
 
   ////// DATAVIEW //////
 
