@@ -151,6 +151,22 @@ module.exports = class User extends Model {
           type: DataTypes.DATE,
           allowNull: true,
         },
+
+        isMonthPay: {
+          type: DataTypes.BOOLEAN, // 월말결제 여부
+          allowNull: false,
+          defaultValue: false,
+        },
+        monthPaidAt: {
+          type: DataTypes.DATE,
+          allowNull: true,
+        },
+
+        discountPrice: {
+          type: DataTypes.INTEGER, // 회원별 할인금액
+          allowNull: false,
+          defaultValue: 0,
+        },
       },
       {
         modelName: "User",

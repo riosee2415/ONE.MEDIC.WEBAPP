@@ -32,7 +32,7 @@ const searchRouter = require("./routers/searchRouter");
 const prescriptionPriceRouter = require("./routers/prescriptionPriceRouter");
 const wishRouter = require("./routers/wishRouter");
 const userRequestRouter = require("./routers/userRequestRouter");
-const boughtHistory = require("./routers/boughtHisotryRouter");
+const boughtHistory = require("./routers/boughtHistoryRouter");
 
 // Config Settings
 db.sequelize

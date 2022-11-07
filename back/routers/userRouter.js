@@ -104,7 +104,11 @@ SELECT 	ROW_NUMBER() OVER(ORDER BY createdAt)	AS	num,
    			isStop,
    			isPermission,
    			DATE_FORMAT(stopedAt, "%Y년 %m월 %d일")	AS viewStopedAt,
-   			DATE_FORMAT(permitedAt, "%Y년 %m월 %d일")	AS viewPermitedAt
+   			DATE_FORMAT(permitedAt, "%Y년 %m월 %d일")	AS viewPermitedAt,
+        isMonthPay,
+        monthPaidAt,
+        DATE_FORMAT(monthPaidAt, "%Y년 %m월 %d일")	AS viewMonthPaidAt,
+        discountPrice
   FROM	users
  WHERE  1 = 1
    AND  email LIKE '%${_email}%'
@@ -267,6 +271,46 @@ router.post("/signup", async (req, res, next) => {
   } catch (error) {
     console.error(error);
     next(error);
+  }
+});
+// 회원별 할인 금액 수정 라우터
+router.post("/discount/update", isAdminCheck, async (req, res, next) => {
+  const { id, discountPrice } = req.body;
+
+  const updateQuery = `
+  UPDATE  users
+     SET  discountPrice = ${discountPrice},
+          updatedAt = NOW()
+   WHERE  id = ${id}
+  `;
+
+  try {
+    const updateResult = await models.sequelize.query(updateQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("회원정보를 수정할 수 없습니다.");
+  }
+});
+// 월말결제 토글 라우터
+router.post("/monthPay/toggle", isAdminCheck, async (req, res, next) => {
+  const { id, isMonthPay } = req.body;
+
+  const updateQuery = `
+  UPDATE  users
+     SET  isMonthPay = ${isMonthPay},
+          monthPaidAt = NOW()
+   WHERE  id = ${id}
+  `;
+
+  try {
+    const updateResult = await models.sequelize.query(updateQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("회원정보를 수정할 수 없습니다.");
   }
 });
 
