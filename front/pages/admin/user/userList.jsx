@@ -15,6 +15,8 @@ import {
   LICENSENO_UPDATE_REQUEST,
   USER_ISPERMISSION_REQUEST,
   USER_ISSTOP_REQUEST,
+  USER_MONTHPAY_TOGGLE_REQUEST,
+  USER_DISCOUNT_UPDATE_REQUEST,
 } from "../../../reducers/user";
 import {
   Table,
@@ -107,6 +109,13 @@ const UserList = ({}) => {
     st_userIsStopLoading,
     st_userIsStopDone,
     st_userIsStopError,
+    //
+    st_userMonthPayToggleLoading,
+    st_userMonthPayToggleDone,
+    st_userMonthPayToggleError,
+    //
+    st_userDiscountUpdateDone,
+    st_userDiscountUpdateError,
   } = useSelector((state) => state.user);
 
   const [updateData, setUpdateData] = useState(null);
@@ -119,7 +128,9 @@ const UserList = ({}) => {
   const [isStopType, setIsStopType] = useState(false);
 
   const [licenseModal, setLicenseModal] = useState(false); // 라이선스 모달
-  const [licenseData, setLicenseData] = useState(false); // 라이선스 모달
+  const [licenseData, setLicenseData] = useState(false); // 라이선스 데이터
+
+  const [dModal, setDModal] = useState(false); // 할인금액 모달
 
   const inputName = useInput("");
   const inputEmail = useInput("");
@@ -131,6 +142,7 @@ const UserList = ({}) => {
   const dFormRef = useRef();
 
   const [licenseForm] = Form.useForm();
+  const [discountForm] = Form.useForm();
 
   ////// USEEFFECT //////
   useEffect(() => {
@@ -271,6 +283,57 @@ const UserList = ({}) => {
     }
   }, [st_userIsStopError]);
 
+  // 월말결제
+  useEffect(() => {
+    if (st_userMonthPayToggleDone) {
+      const query = router.query;
+
+      dispatch({
+        type: USERLIST_REQUEST,
+        data: {
+          isStop: query.isStopType ? query.isStopType : 3,
+          name: query.name ? query.name : ``,
+          email: query.email ? query.email : ``,
+        },
+      });
+
+      return message.success("월말결제가 변경되었습니다.");
+    }
+  }, [st_userMonthPayToggleDone]);
+
+  useEffect(() => {
+    if (st_userMonthPayToggleError) {
+      return message.error(st_userMonthPayToggleError);
+    }
+  }, [st_userMonthPayToggleError]);
+
+  // 할인금액
+
+  useEffect(() => {
+    if (st_userDiscountUpdateDone) {
+      const query = router.query;
+
+      dispatch({
+        type: USERLIST_REQUEST,
+        data: {
+          isStop: query.isStopType ? query.isStopType : 3,
+          name: query.name ? query.name : ``,
+          email: query.email ? query.email : ``,
+        },
+      });
+
+      discountModalToggle();
+
+      return message.success("할인금액이 수정되었습니다.");
+    }
+  }, [st_userDiscountUpdateDone]);
+
+  useEffect(() => {
+    if (st_userDiscountUpdateError) {
+      return message.error(st_userDiscountUpdateError);
+    }
+  }, [st_userDiscountUpdateError]);
+
   ////// TOGGLE //////
   const updateModalOpen = useCallback(
     (data) => {
@@ -329,6 +392,21 @@ const UserList = ({}) => {
       setLicenseModal((prev) => !prev);
     },
     [licenseModal, licenseData]
+  );
+
+  const discountModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setUpdateData(data);
+        discountForm.setFieldsValue({
+          discount: data.discountPrice,
+        });
+      } else {
+        setUpdateData(null);
+      }
+      setDModal((prev) => !prev);
+    },
+    [dModal, updateData]
   );
 
   ////// HANDLER //////
@@ -437,6 +515,31 @@ const UserList = ({}) => {
     });
   }, []);
 
+  // 월말결제
+  const isMonthPayChangeHandler = useCallback((id, isMonthPay) => {
+    dispatch({
+      type: USER_MONTHPAY_TOGGLE_REQUEST,
+      data: {
+        id,
+        isMonthPay,
+      },
+    });
+  }, []);
+
+  // 할인금액
+  const discountUpdateHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: USER_DISCOUNT_UPDATE_REQUEST,
+        data: {
+          id: updateData.id,
+          discountPrice: data.discount,
+        },
+      });
+    },
+    [updateData]
+  );
+
   ////// DATAVIEW //////
 
   const columns = [
@@ -486,6 +589,30 @@ const UserList = ({}) => {
           disabled={data.isPermission}
           loading={st_userIsStopLoading || st_userIspermissionLoading}
         />
+      ),
+    },
+    {
+      title: "월말결제",
+      render: (data) => (
+        <Switch
+          checked={data.isMonthPay}
+          onChange={() =>
+            isMonthPayChangeHandler(data.id, data.isMonthPay ? 0 : 1)
+          }
+          loading={st_userMonthPayToggleLoading}
+        />
+      ),
+    },
+    {
+      title: "할인금액",
+      render: (data) => (
+        <Button
+          type="primary"
+          onClick={() => discountModalToggle(data)}
+          size="small"
+        >
+          할인금액
+        </Button>
       ),
     },
     {
@@ -768,6 +895,37 @@ const UserList = ({}) => {
 
           <Wrapper dr={`row`} ju={`flex-end`}>
             <Button onClick={() => licenseNoUpdateModal(null)} size="small">
+              취소
+            </Button>
+            <ModalBtn htmlType="submit" size="small" type="primary">
+              등록
+            </ModalBtn>
+          </Wrapper>
+        </Form>
+      </Modal>
+
+      {/* 할인금액 */}
+      <Modal
+        visible={dModal}
+        footer={null}
+        onCancel={() => discountModalToggle(null)}
+        title="할인금액 수정"
+      >
+        <Form form={discountForm} onFinish={discountUpdateHandler}>
+          <Form.Item
+            label={`할인금액 수정`}
+            name={`discount`}
+            rules={[{ required: true, message: "할인금액를 입력해주세요." }]}
+          >
+            <Input
+              placeholder="할인금액를 입력해주세요."
+              allowClear
+              size="small"
+            />
+          </Form.Item>
+
+          <Wrapper dr={`row`} ju={`flex-end`}>
+            <Button onClick={() => discountModalToggle(null)} size="small">
               취소
             </Button>
             <ModalBtn htmlType="submit" size="small" type="primary">

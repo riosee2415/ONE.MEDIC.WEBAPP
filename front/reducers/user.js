@@ -126,6 +126,14 @@ export const initailState = {
   st_userIsStopLoading: false, // 이용정지
   st_userIsStopDone: false,
   st_userIsStopError: null,
+  //
+  st_userDiscountUpdateLoading: false, // 회원별 할인 금액 수정
+  st_userDiscountUpdateDone: false,
+  st_userDiscountUpdateError: null,
+  //
+  st_userMonthPayToggleLoading: false, // 월말결제 토글
+  st_userMonthPayToggleDone: false,
+  st_userMonthPayToggleError: null,
 };
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
@@ -231,6 +239,14 @@ export const USER_ISPERMISSION_FAILURE = "USER_ISPERMISSION_FAILURE";
 export const USER_ISSTOP_REQUEST = "USER_ISSTOP_REQUEST";
 export const USER_ISSTOP_SUCCESS = "USER_ISSTOP_SUCCESS";
 export const USER_ISSTOP_FAILURE = "USER_ISSTOP_FAILURE";
+
+export const USER_DISCOUNT_UPDATE_REQUEST = "USER_DISCOUNT_UPDATE_REQUEST";
+export const USER_DISCOUNT_UPDATE_SUCCESS = "USER_DISCOUNT_UPDATE_SUCCESS";
+export const USER_DISCOUNT_UPDATE_FAILURE = "USER_DISCOUNT_UPDATE_FAILURE";
+
+export const USER_MONTHPAY_TOGGLE_REQUEST = "USER_MONTHPAY_TOGGLE_REQUEST";
+export const USER_MONTHPAY_TOGGLE_SUCCESS = "USER_MONTHPAY_TOGGLE_SUCCESS";
+export const USER_MONTHPAY_TOGGLE_FAILURE = "USER_MONTHPAY_TOGGLE_FAILURE";
 
 export const UPDATE_MODAL_OPEN_REQUEST = "UPDATE_MODAL_OPEN_REQUEST";
 export const UPDATE_MODAL_CLOSE_REQUEST = "UPDATE_MODAL_CLOSE_REQUEST";
@@ -799,6 +815,48 @@ const reducer = (state = initailState, action) =>
         draft.st_userIsStopLoading = false;
         draft.st_userIsStopDone = false;
         draft.st_userIsStopError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case USER_DISCOUNT_UPDATE_REQUEST: {
+        draft.st_userDiscountUpdateLoading = true;
+        draft.st_userDiscountUpdateDone = false;
+        draft.st_userDiscountUpdateError = null;
+        break;
+      }
+      case USER_DISCOUNT_UPDATE_SUCCESS: {
+        draft.st_userDiscountUpdateLoading = false;
+        draft.st_userDiscountUpdateDone = true;
+        draft.st_userDiscountUpdateError = null;
+        break;
+      }
+      case USER_DISCOUNT_UPDATE_FAILURE: {
+        draft.st_userDiscountUpdateLoading = false;
+        draft.st_userDiscountUpdateDone = false;
+        draft.st_userDiscountUpdateError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case USER_MONTHPAY_TOGGLE_REQUEST: {
+        draft.st_userMonthPayToggleLoading = true;
+        draft.st_userMonthPayToggleDone = false;
+        draft.st_userMonthPayToggleError = null;
+        break;
+      }
+      case USER_MONTHPAY_TOGGLE_SUCCESS: {
+        draft.st_userMonthPayToggleLoading = false;
+        draft.st_userMonthPayToggleDone = true;
+        draft.st_userMonthPayToggleError = null;
+        break;
+      }
+      case USER_MONTHPAY_TOGGLE_FAILURE: {
+        draft.st_userMonthPayToggleLoading = false;
+        draft.st_userMonthPayToggleDone = false;
+        draft.st_userMonthPayToggleError = action.error;
         break;
       }
 

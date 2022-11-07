@@ -4,107 +4,114 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
-  /////////////////////////////
+  //
   LOGIN_ADMIN_REQUEST,
   LOGIN_ADMIN_SUCCESS,
   LOGIN_ADMIN_FAILURE,
-  /////////////////////////////
+  //
   SIGNUP_REQUEST,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
-  /////////////////////////////
+  //
   USERLIST_REQUEST,
   USERLIST_SUCCESS,
   USERLIST_FAILURE,
-  /////////////////////////////
+  //
   USERLIST_UPDATE_REQUEST,
   USERLIST_UPDATE_SUCCESS,
   USERLIST_UPDATE_FAILURE,
-  /////////////////////////////
+  //
   LOAD_MY_INFO_REQUEST,
   LOAD_MY_INFO_SUCCESS,
   LOAD_MY_INFO_FAILURE,
-  /////////////////////////////
+  //
   KAKAO_LOGIN_REQUEST,
   KAKAO_LOGIN_SUCCESS,
   KAKAO_LOGIN_FAILURE,
-  /////////////////////////////
+  //
   COMPANY_LIST_REQUEST,
   COMPANY_LIST_SUCCESS,
   COMPANY_LIST_FAILURE,
-  /////////////////////////////
+  //
   COMPANY_SUBMIT_REQUEST,
   COMPANY_SUBMIT_SUCCESS,
   COMPANY_SUBMIT_FAILURE,
-  /////////////////////////////
+  //
   COMPANY_REFUSAL_REQUEST,
   COMPANY_REFUSAL_SUCCESS,
   COMPANY_REFUSAL_FAILURE,
-  /////////////////////////////
+  //
   COMPANY_APPROVAL_REQUEST,
   COMPANY_APPROVAL_SUCCESS,
   COMPANY_APPROVAL_FAILURE,
-  /////////////////////////////
+  //
   COMPANY_OPERATOR_REQUEST,
   COMPANY_OPERATOR_SUCCESS,
   COMPANY_OPERATOR_FAILURE,
-  /////////////////////////////
+  //
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
-  /////////////////////////////
+  //
   CARD_PATCH_REQUEST,
   CARD_PATCH_SUCCESS,
   CARD_PATCH_FAILURE,
-  /////////////////////////////
+  //
   CARD_GET_REQUEST,
   CARD_GET_SUCCESS,
   CARD_GET_FAILURE,
-  /////////////////////////////
+  //
   CHECKCODE_REQUEST,
   CHECKCODE_SUCCESS,
   CHECKCODE_FAILURE,
-  /////////////////////////////
+  //
   FILE_UPLOAD_REQUEST,
   FILE_UPLOAD_SUCCESS,
   FILE_UPLOAD_FAILURE,
-  /////////////////////////////
+  //
   USER_EXIT_REQUEST,
   USER_EXIT_SUCCESS,
   USER_EXIT_FAILURE,
-  /////////////////////////////
+  //
   USER_BOUGHT_LIST_REQUEST,
   USER_BOUGHT_LIST_SUCCESS,
   USER_BOUGHT_LIST_FAILURE,
-  /////////////////////////////
+  //
   MODIFYPASS_REQUEST,
   MODIFYPASS_SUCCESS,
   MODIFYPASS_FAILURE,
-  /////////////////////////////
+  //
   MODIFYPASS_UPDATE_REQUEST,
   MODIFYPASS_UPDATE_SUCCESS,
   MODIFYPASS_UPDATE_FAILURE,
-  /////////////////////////////
+  //
   FIND_EMAIL_REQUEST,
   FIND_EMAIL_SUCCESS,
   FIND_EMAIL_FAILURE,
-  /////////////////////////////
+  //
   COMPANY_UPLOAD_REQUEST,
   COMPANY_UPLOAD_SUCCESS,
   COMPANY_UPLOAD_FAILURE,
-  /////////////////////////////
+  //
   LICENSENO_UPDATE_REQUEST,
   LICENSENO_UPDATE_SUCCESS,
   LICENSENO_UPDATE_FAILURE,
-  /////////////////////////////
+  //
   USER_ISPERMISSION_REQUEST,
   USER_ISPERMISSION_SUCCESS,
   USER_ISPERMISSION_FAILURE,
-  /////////////////////////////
+  //
   USER_ISSTOP_REQUEST,
   USER_ISSTOP_SUCCESS,
   USER_ISSTOP_FAILURE,
-  /////////////////////////////
+  //
+  USER_DISCOUNT_UPDATE_REQUEST,
+  USER_DISCOUNT_UPDATE_SUCCESS,
+  USER_DISCOUNT_UPDATE_FAILURE,
+  //
+  USER_MONTHPAY_TOGGLE_REQUEST,
+  USER_MONTHPAY_TOGGLE_SUCCESS,
+  USER_MONTHPAY_TOGGLE_FAILURE,
 } from "../reducers/user";
 
 // ******************************************************************************************************************
@@ -831,6 +838,63 @@ function* isStopUpdate(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 // ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function discountUpdateAPI(data) {
+  return await axios.post(`/api/user/discount/update`, data);
+}
+
+function* discountUpdate(action) {
+  try {
+    const result = yield call(discountUpdateAPI, action.data);
+
+    yield put({
+      type: USER_DISCOUNT_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: USER_DISCOUNT_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function monthPayToggleAPI(data) {
+  return await axios.post(`/api/user/monthPay/toggle`, data);
+}
+
+function* monthPayToggle(action) {
+  try {
+    const result = yield call(monthPayToggleAPI, action.data);
+
+    yield put({
+      type: USER_MONTHPAY_TOGGLE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: USER_MONTHPAY_TOGGLE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchLoadMyInfo() {
@@ -937,6 +1001,14 @@ function* watchIsStopUpdate() {
   yield takeLatest(USER_ISSTOP_REQUEST, isStopUpdate);
 }
 
+function* watchDiscountUpdate() {
+  yield takeLatest(USER_DISCOUNT_UPDATE_REQUEST, discountUpdate);
+}
+
+function* watchMonthPayToggle() {
+  yield takeLatest(USER_MONTHPAY_TOGGLE_REQUEST, monthPayToggle);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* userSaga() {
   yield all([
@@ -966,6 +1038,8 @@ export default function* userSaga() {
     fork(watchLicenseNoUpdate),
     fork(watchPermission),
     fork(watchIsStopUpdate),
+    fork(watchDiscountUpdate),
+    fork(watchMonthPayToggle),
     //
   ]);
 }
