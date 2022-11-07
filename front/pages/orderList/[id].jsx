@@ -1,10 +1,6 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import ClientLayout from "../../components/ClientLayout";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
@@ -14,40 +10,26 @@ import {
   WholeWrapper,
   Wrapper,
   RsWrapper,
-  ATag,
-  CommonButton,
-  Image,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
-import Head from "next/head";
 import { useRouter } from "next/router";
-import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
-import { numberWithCommas } from "../../components/commonUtils";
-import { PPR_DETAIL_REQUEST } from "../../reducers/prescriptionPaymentRequest";
 import { message } from "antd";
+import { BOUGHT_DETAIL_REQUEST } from "../../reducers/boughtHistory";
 
 const Index = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
 
   ////// HOOKS //////
 
   const { me } = useSelector((state) => state.user);
-  const { paymentDetail } = useSelector((state) => state.paymentRequest);
-  const { pprDetail } = useSelector(
-    (state) => state.prescriptionPaymentRequest
-  );
+  const { boughtDetail } = useSelector((state) => state.boughtHistory);
 
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [openHistory, setOpenHistory] = useState(false);
-  const [detailData, setDetailData] = useState(null);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -61,29 +43,14 @@ const Index = ({}) => {
 
   useEffect(() => {
     if (router.query) {
-      if (router.query.type === "payment") {
-        dispatch({
-          type: PAYMENT_DETAIL_REQUEST,
-          data: {
-            paymentId: router.query.id,
-          },
-        });
-      } else {
-        dispatch({
-          type: PPR_DETAIL_REQUEST,
-          data: {
-            pprId: router.query.id,
-          },
-        });
-      }
+      dispatch({
+        type: BOUGHT_DETAIL_REQUEST,
+        data: {
+          id: parseInt(router.query.id),
+        },
+      });
     }
   }, [router.query]);
-
-  useEffect(() => {
-    if (paymentDetail || pprDetail) {
-      setDetailData(paymentDetail || pprDetail);
-    }
-  }, [paymentDetail, pprDetail]);
 
   ////// TOGGLE //////
   const historyToggle = useCallback(() => {
@@ -95,48 +62,6 @@ const Index = ({}) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper ju={`flex-start`} position={`relative`} padding={`0`}>
@@ -150,9 +75,17 @@ const Index = ({}) => {
                 al={`flex-start`}
                 ju={`flex-start`}
                 shadow={Theme.shadow_C}
-                padding={`25px 20px`}
+                padding={`20px`}
                 radius={`20px`}
               >
+                <Text
+                  margin={`0 0 20px`}
+                  fontSize={`18px`}
+                  fontWeight={`700`}
+                  color
+                >
+                  보내는 사람
+                </Text>
                 <Wrapper
                   dr={`row`}
                   ju={`flex-start`}
@@ -165,30 +98,13 @@ const Index = ({}) => {
                     color={Theme.grey_C}
                     fontSize={`16px`}
                   >
-                    보내는 사람
+                    이름
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {detailData && detailData.sendUser}
+                    {boughtDetail && boughtDetail.receiveUser}
                   </Text>
                 </Wrapper>
-                <Wrapper
-                  dr={`row`}
-                  ju={`flex-start`}
-                  al={`flex-start`}
-                  margin={`0 0 15px`}
-                >
-                  <Text
-                    width={`80px`}
-                    margin={`0 20px 0 0`}
-                    color={Theme.grey_C}
-                    fontSize={`16px`}
-                  >
-                    받는 사람
-                  </Text>
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    {detailData && detailData.receiveUser}
-                  </Text>
-                </Wrapper>
+
                 <Wrapper
                   dr={`row`}
                   ju={`flex-start`}
@@ -204,9 +120,10 @@ const Index = ({}) => {
                     연락처
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {detailData && detailData.mobile}
+                    {boughtDetail && boughtDetail.receiveMobile}
                   </Text>
                 </Wrapper>
+
                 <Wrapper
                   dr={`row`}
                   ju={`flex-start`}
@@ -219,19 +136,125 @@ const Index = ({}) => {
                     color={Theme.grey_C}
                     fontSize={`16px`}
                   >
-                    받는 주소
+                    주소
                   </Text>
-                  <Text
-                    width={`calc(100% - 100px)`}
-                    fontSize={`18px`}
-                    fontWeight={`700`}
-                  >
-                    {detailData && detailData.receiveAddress}
-                    <Text margin={`10px 0 0`}>
-                      {detailData && detailData.receiveDetailAddress}
-                    </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}>
+                    {boughtDetail && boughtDetail.receiveAddress}
                   </Text>
                 </Wrapper>
+
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-start`}
+                  al={`flex-start`}
+                  margin={`0 0 15px`}
+                >
+                  <Text
+                    width={`80px`}
+                    margin={`0 20px 0 0`}
+                    color={Theme.grey_C}
+                    fontSize={`16px`}
+                  >
+                    상세주소
+                  </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}>
+                    {boughtDetail && boughtDetail.receiveDetailAddress}
+                  </Text>
+                </Wrapper>
+
+                <Text
+                  margin={`20px 0`}
+                  fontSize={`18px`}
+                  fontWeight={`700`}
+                  color
+                >
+                  받는 사람
+                </Text>
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-start`}
+                  al={`flex-start`}
+                  margin={`0 0 15px`}
+                >
+                  <Text
+                    width={`80px`}
+                    margin={`0 20px 0 0`}
+                    color={Theme.grey_C}
+                    fontSize={`16px`}
+                  >
+                    이름
+                  </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}>
+                    {boughtDetail && boughtDetail.sendUser}
+                  </Text>
+                </Wrapper>
+
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-start`}
+                  al={`flex-start`}
+                  margin={`0 0 15px`}
+                >
+                  <Text
+                    width={`80px`}
+                    margin={`0 20px 0 0`}
+                    color={Theme.grey_C}
+                    fontSize={`16px`}
+                  >
+                    연락처
+                  </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}>
+                    {boughtDetail && boughtDetail.sendMobile}
+                  </Text>
+                </Wrapper>
+
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-start`}
+                  al={`flex-start`}
+                  margin={`0 0 15px`}
+                >
+                  <Text
+                    width={`80px`}
+                    margin={`0 20px 0 0`}
+                    color={Theme.grey_C}
+                    fontSize={`16px`}
+                  >
+                    주소
+                  </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}>
+                    {boughtDetail && boughtDetail.sendAddress}
+                  </Text>
+                </Wrapper>
+
+                <Wrapper
+                  dr={`row`}
+                  ju={`flex-start`}
+                  al={`flex-start`}
+                  margin={`0 0 15px`}
+                >
+                  <Text
+                    width={`80px`}
+                    margin={`0 20px 0 0`}
+                    color={Theme.grey_C}
+                    fontSize={`16px`}
+                  >
+                    상세주소
+                  </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}>
+                    {boughtDetail && boughtDetail.sendDetailAddress}
+                  </Text>
+                </Wrapper>
+
+                <Text
+                  margin={`20px 0`}
+                  fontSize={`18px`}
+                  fontWeight={`700`}
+                  color
+                >
+                  금액
+                </Text>
+
                 <Wrapper
                   dr={`row`}
                   ju={`flex-start`}
@@ -247,18 +270,7 @@ const Index = ({}) => {
                     결제방법
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {detailData &&
-                      (detailData.payInfo === "card"
-                        ? "신용카드"
-                        : detailData.payInfo === "phone"
-                        ? "휴대폰 결제"
-                        : detailData.payInfo === "nobank"
-                        ? "무통장압금"
-                        : detailData.payInfo === "simpleCard"
-                        ? "간편 카드 결제"
-                        : detailData.payInfo === "trans"
-                        ? "계좌 간편 결제"
-                        : "신용카드")}
+                    {boughtDetail && boughtDetail.viewPayInfo}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -276,7 +288,7 @@ const Index = ({}) => {
                     결제일시
                   </Text>
                   <Text fontSize={`18px`} fontWeight={`700`}>
-                    {detailData && detailData.orderAt}
+                    {boughtDetail && boughtDetail.viewCreatedAt}
                   </Text>
                 </Wrapper>
                 <Wrapper
@@ -294,31 +306,43 @@ const Index = ({}) => {
                     결제금액
                   </Text>
                   <Wrapper width={`calc(100% - 100px)`} fontSize={`18px`}>
-                    <Wrapper dr={`row`} ju={`space-between`}>
-                      <Text fontWeight={`700`}>신용카드</Text>
-                      {detailData && (
-                        <Text fontWeight={`700`}>
-                          {numberWithCommas(detailData.totalPrice - 5000)}
-                        </Text>
-                      )}
-                    </Wrapper>
-                    <Wrapper dr={`row`} ju={`space-between`}>
+                    <Wrapper
+                      dr={`row`}
+                      ju={`space-between`}
+                      margin={`0 0 10px`}
+                    >
                       <Text fontWeight={`700`}>배송비</Text>
-                      <Text fontWeight={`700`}>5,000</Text>
+                      <Text fontWeight={`700`}>
+                        {boughtDetail && boughtDetail.viewDeliveryPrice}
+                      </Text>
                     </Wrapper>
+
+                    {boughtDetail && boughtDetail.type === 2 && (
+                      <>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 10px`}
+                        >
+                          <Text fontWeight={`700`}>탕전료</Text>
+                          <Text fontWeight={`700`}>
+                            {boughtDetail && boughtDetail.viewTangjeonPrice}
+                          </Text>
+                        </Wrapper>
+                        <Wrapper
+                          dr={`row`}
+                          ju={`space-between`}
+                          margin={`0 0 10px`}
+                        >
+                          <Text fontWeight={`700`}>조제료</Text>
+                          <Text fontWeight={`700`}>
+                            {boughtDetail && boughtDetail.viewPharmacyPrice}
+                          </Text>
+                        </Wrapper>
+                      </>
+                    )}
                   </Wrapper>
                 </Wrapper>
-                {paymentDetail && (
-                  <Wrapper
-                    borderTop={`1px solid ${Theme.grey2_C}`}
-                    fontSize={`18px`}
-                    fontWeight={`700`}
-                    al={`flex-end`}
-                    padding={`15px 0 0`}
-                  >
-                    {numberWithCommas(paymentDetail.totalPrice)}원
-                  </Wrapper>
-                )}
               </Wrapper>
 
               <Wrapper
@@ -329,42 +353,166 @@ const Index = ({}) => {
                 radius={`20px`}
                 margin={`10px 0`}
               >
-                <Wrapper dr={`row`} ju={`space-between`}>
-                  <Text fontSize={`22px`} fontWeight={`700`}>
-                    {paymentDetail && paymentDetail.productName}
-                  </Text>
-                  <Text fontSize={`18px`}>
-                    {paymentDetail && paymentDetail.username}
-                  </Text>
-                </Wrapper>
-
                 {openHistory ? (
-                  router.query && router.query.type === "payment" ? (
+                  boughtDetail &&
+                  (boughtDetail.type === 1 ? (
                     <>
-                      {paymentDetail &&
-                        paymentDetail.PaymentRequest.map((data) => (
-                          <Wrapper
-                            dr={`row`}
-                            ju={`space-between`}
-                            padding={`15px 0`}
-                            borderBottom={`1px solid ${Theme.grey2_C}`}
-                          >
-                            <Wrapper width={`auto`} al={`flex-start`}>
-                              <Text>{data.packVolumn}</Text>
-                              <Text>
-                                {data.typeVolumn}&nbsp;({data.unitVolumn})
+                      {boughtDetail &&
+                        boughtDetail.lists.map((data) => {
+                          return (
+                            <Wrapper margin={`0 0 20px`} al={`flex-start`}>
+                              <Text
+                                margin={`0 0 20px`}
+                                fontSize={`18px`}
+                                fontWeight={`700`}
+                                color
+                              >
+                                요청사항
                               </Text>
+
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  처방명
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.title}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  환자명
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.receiverName}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  복약지도
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.medication}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  요청사항
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.content}
+                                </Text>
+                              </Wrapper>
+
+                              <Wrapper
+                                dr={`row`}
+                                ju={`space-between`}
+                                padding={`10px 0`}
+                                margin={`20px 0 0`}
+                                borderBottom={`1px solid ${Theme.grey2_C}`}
+                                bgColor={Theme.grey2_C}
+                              >
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                >
+                                  재료명
+                                </Text>
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                >
+                                  수량
+                                </Text>
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                >
+                                  가격
+                                </Text>
+                              </Wrapper>
+                              {boughtDetail.items
+                                .filter(
+                                  (value) =>
+                                    value.WishPaymentContainerId === data.id
+                                )
+                                .map((value) => (
+                                  <Wrapper
+                                    dr={`row`}
+                                    ju={`space-between`}
+                                    padding={`10px 0`}
+                                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                                  >
+                                    <Wrapper
+                                      width={`calc(100% / 3)`}
+                                      al={`flex-start`}
+                                    >
+                                      <Text>{value.pack}</Text>
+                                      <Text>
+                                        {value.type}&nbsp;({value.unit})
+                                      </Text>
+                                    </Wrapper>
+
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`center`}
+                                    >
+                                      {value.qnt}개
+                                    </Text>
+
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`end`}
+                                    >
+                                      {value.viewTotalPrice}
+                                    </Text>
+                                  </Wrapper>
+                                ))}
                             </Wrapper>
-                            <Text>{data.viewPayment}</Text>
-                          </Wrapper>
-                        ))}
+                          );
+                        })}
                       <Wrapper
                         fontSize={`18px`}
                         fontWeight={`700`}
                         al={`flex-end`}
                         padding={`15px 0 0`}
                       >
-                        189,000원
+                        합계 : {boughtDetail && boughtDetail.viewTotalPrice}
                       </Wrapper>
                       <Wrapper
                         fontSize={`18px`}
@@ -378,37 +526,178 @@ const Index = ({}) => {
                     </>
                   ) : (
                     <>
-                      {pprDetail &&
-                        pprDetail.materialDatum.map((data) => (
-                          <Wrapper
-                            dr={`row`}
-                            ju={`space-between`}
-                            padding={`15px 0`}
-                            borderBottom={`1px solid ${Theme.grey2_C}`}
-                          >
-                            <Wrapper width={`auto`} al={`flex-start`}>
-                              <Text>{data.name}</Text>
+                      {boughtDetail &&
+                        boughtDetail.lists.map((data) => {
+                          return (
+                            <Wrapper margin={`0 0 20px`} al={`flex-start`}>
+                              <Text
+                                margin={`0 0 20px`}
+                                fontSize={`18px`}
+                                fontWeight={`700`}
+                                color
+                              >
+                                요청사항
+                              </Text>
+
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  처방명
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.title}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  환자명
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.receiverName}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  복약지도
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.medication}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  요청사항
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.content}
+                                </Text>
+                              </Wrapper>
+                              <Wrapper
+                                dr={`row`}
+                                ju={`flex-start`}
+                                margin={`0 0 15px`}
+                              >
+                                <Text
+                                  width={`80px`}
+                                  margin={`0 20px 0 0`}
+                                  color={Theme.grey_C}
+                                  fontSize={`16px`}
+                                >
+                                  팩 가격
+                                </Text>
+                                <Text fontSize={`18px`} fontWeight={`700`}>
+                                  {data.viewPackPrice}
+                                </Text>
+                              </Wrapper>
+
+                              <Wrapper
+                                dr={`row`}
+                                ju={`space-between`}
+                                padding={`10px 0`}
+                                margin={`20px 0 0`}
+                                borderBottom={`1px solid ${Theme.grey2_C}`}
+                                bgColor={Theme.grey2_C}
+                              >
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                >
+                                  재료명
+                                </Text>
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                >
+                                  수량
+                                </Text>
+                                <Text
+                                  width={`calc(100% / 3)`}
+                                  textAlign={`center`}
+                                >
+                                  가격
+                                </Text>
+                              </Wrapper>
+                              {boughtDetail.items
+                                .filter(
+                                  (value) =>
+                                    value.WishPrescriptionItemId === data.id
+                                )
+                                .map((value) => (
+                                  <Wrapper
+                                    dr={`row`}
+                                    ju={`space-between`}
+                                    padding={`10px 0`}
+                                    borderBottom={`1px solid ${Theme.grey2_C}`}
+                                  >
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`center`}
+                                    >
+                                      {value.name}
+                                    </Text>
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`center`}
+                                    >
+                                      {value.qnt}&nbsp;
+                                      {value.unit}
+                                    </Text>
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`end`}
+                                    >
+                                      {value.viewTotalPrice}
+                                    </Text>
+                                  </Wrapper>
+                                ))}
                             </Wrapper>
-                            <Text>
-                              {data.qnt}
-                              {data.unit}
-                            </Text>
-                            <Text>{data.viewBuyPrice}</Text>
-                          </Wrapper>
-                        ))}
+                          );
+                        })}
+
                       <Wrapper
                         fontSize={`18px`}
                         fontWeight={`700`}
                         al={`flex-end`}
                         padding={`15px 0 0`}
                       >
-                        {numberWithCommas(
-                          pprDetail.materialDatum
-                            .map((data) => data.buyPrice * data.qnt)
-                            .reduce((a, b) => a + b)
-                        )}
-                        원
+                        합계 : {boughtDetail && boughtDetail.viewTotalPrice}
                       </Wrapper>
+
                       <Wrapper
                         fontSize={`18px`}
                         fontWeight={`700`}
@@ -419,7 +708,7 @@ const Index = ({}) => {
                         닫기
                       </Wrapper>
                     </>
-                  )
+                  ))
                 ) : (
                   <Wrapper
                     fontSize={`18px`}
@@ -470,10 +759,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     // 구현부 종료

@@ -257,9 +257,10 @@ const Home = ({}) => {
                                 onClick={() =>
                                   data.isPay
                                     ? moveLinkHandler(
-                                        `/deliveryList/${data.id}?type=${data.paymentType}`
+                                        `/deliveryList/${data.id}?type=${data.type}`
                                       )
-                                    : message.info("결제를 진행해주세요.")
+                                    : (router.push(`/payInfo/${data.id}`),
+                                      message.info("결제를 진행해주세요."))
                                 }
                               >
                                 배송조회
@@ -272,9 +273,10 @@ const Home = ({}) => {
                                 onClick={() =>
                                   data.isPay
                                     ? moveLinkHandler(
-                                        `/orderList/${data.id}?type=${data.paymentType}`
+                                        `/orderList/${data.id}?type=${data.type}`
                                       )
-                                    : message.info("결제를 진행해주세요.")
+                                    : (router.push(`/payInfo/${data.id}`),
+                                      message.info("결제를 진행해주세요."))
                                 }
                               >
                                 주문내역
@@ -286,7 +288,8 @@ const Home = ({}) => {
                                 onClick={() =>
                                   data.isPay
                                     ? reBoughtHandler(data)
-                                    : message.info("결제를 진행해주세요.")
+                                    : (router.push(`/payInfo/${data.id}`),
+                                      message.info("결제를 진행해주세요."))
                                 }
                               >
                                 재처방

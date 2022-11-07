@@ -1,10 +1,6 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  KAKAO_LOGIN_REQUEST,
-  LOAD_MY_INFO_REQUEST,
-  LOGIN_REQUEST,
-} from "../../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import ClientLayout from "../../components/ClientLayout";
 import axios from "axios";
 import wrapper from "../../store/configureStore";
@@ -14,32 +10,27 @@ import {
   WholeWrapper,
   Wrapper,
   RsWrapper,
-  ATag,
-  CommonButton,
   Image,
 } from "../../components/commonComponents";
 import useWidth from "../../hooks/useWidth";
 import Theme from "../../components/Theme";
-import styled from "styled-components";
-import { SEO_LIST_REQUEST } from "../../reducers/seo";
-import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { DropboxOutlined } from "@ant-design/icons";
-import { PAYMENT_DETAIL_REQUEST } from "../../reducers/paymentRequest";
-import { PPR_DETAIL_REQUEST } from "../../reducers/prescriptionPaymentRequest";
+
+import { BOUGHT_DETAIL_REQUEST } from "../../reducers/boughtHistory";
+import { message } from "antd";
 
 const Index = ({}) => {
   const width = useWidth();
   ////// GLOBAL STATE //////
-  const { seo_keywords, seo_desc, seo_ogImage, seo_title } = useSelector(
-    (state) => state.seo
-  );
+
+  const { me } = useSelector((state) => state.user);
 
   const { paymentDetail } = useSelector((state) => state.paymentRequest);
   const { pprDetail } = useSelector(
     (state) => state.prescriptionPaymentRequest
   );
+
+  const { boughtDetail } = useSelector((state) => state.boughtHistory);
 
   ////// HOOKS //////
   const router = useRouter();
@@ -52,26 +43,20 @@ const Index = ({}) => {
   ////// USEEFFECT //////
 
   useEffect(() => {
+    if (!me) {
+      router.push("/login");
+      return message.error("로그인 후 이용해주세요.");
+    }
+  }, [me]);
+
+  useEffect(() => {
     if (router.query) {
-      if (router.query.type === "payment") {
-        dispatch({
-          type: PAYMENT_DETAIL_REQUEST,
-          data: {
-            paymentId: router.query.id,
-          },
-        });
-
-        return;
-      } else {
-        dispatch({
-          type: PPR_DETAIL_REQUEST,
-          data: {
-            pprId: router.query.id,
-          },
-        });
-
-        return;
-      }
+      dispatch({
+        type: BOUGHT_DETAIL_REQUEST,
+        data: {
+          id: parseInt(router.query.id),
+        },
+      });
     }
   }, [router.query]);
 
@@ -88,48 +73,6 @@ const Index = ({}) => {
 
   return (
     <>
-      <Head>
-        <title>
-          {seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        </title>
-
-        <meta
-          name="subject"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          name="title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta name="keywords" content={seo_keywords} />
-        <meta
-          name="description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        {/* <!-- OG tag  --> */}
-        <meta
-          property="og:title"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:site_name"
-          content={seo_title.length < 1 ? "ModerlLab" : seo_title[0].content}
-        />
-        <meta
-          property="og:description"
-          content={
-            seo_desc.length < 1 ? "undefined description" : seo_desc[0].content
-          }
-        />
-        <meta property="og:keywords" content={seo_keywords} />
-        <meta
-          property="og:image"
-          content={seo_ogImage.length < 1 ? "" : seo_ogImage[0].content}
-        />
-      </Head>
-
       <ClientLayout>
         <WholeWrapper>
           <RsWrapper ju={`flex-start`} position={`relative`} padding={`0`}>
@@ -188,7 +131,7 @@ const Index = ({}) => {
                       fontWeight={`700`}
                       margin={`0 0 7px`}
                     >
-                      {detailData && detailData.viewDeliveryStatus}
+                      {boughtDetail && boughtDetail.viewDeliveryStatus}
                     </Text>
 
                     {/* RECIVE DATA */}
@@ -207,7 +150,7 @@ const Index = ({}) => {
                         받는 사람
                       </Text>
                       <Text fontSize={`14px`} fontWeight={`700`}>
-                        {detailData && detailData.receiveUser}
+                        {boughtDetail && boughtDetail.receiveUser}
                       </Text>
                     </Wrapper>
 
@@ -226,7 +169,7 @@ const Index = ({}) => {
                         전화번호
                       </Text>
                       <Text fontSize={`14px`} fontWeight={`700`}>
-                        {detailData && detailData.receiveMobile}
+                        {boughtDetail && boughtDetail.receiveMobile}
                       </Text>
                     </Wrapper>
 
@@ -242,11 +185,11 @@ const Index = ({}) => {
 
                       <Wrapper width={`auto`} al={`flex-start`}>
                         <Text fontSize={`14px`} fontWeight={`700`}>
-                          {detailData && detailData.receiveAddress}
+                          {boughtDetail && boughtDetail.receiveAddress}
                         </Text>
 
                         <Text fontSize={`14px`} fontWeight={`700`}>
-                          {detailData && detailData.receiveDetailAddress}
+                          {boughtDetail && boughtDetail.receiveDetailAddress}
                         </Text>
                       </Wrapper>
                     </Wrapper>
@@ -273,7 +216,7 @@ const Index = ({}) => {
                         보내는 사람
                       </Text>
                       <Text fontSize={`14px`} fontWeight={`700`}>
-                        {detailData && detailData.sendUser}
+                        {boughtDetail && boughtDetail.sendUser}
                       </Text>
                     </Wrapper>
 
@@ -292,7 +235,7 @@ const Index = ({}) => {
                         전화번호
                       </Text>
                       <Text fontSize={`14px`} fontWeight={`700`}>
-                        {detailData && detailData.sendMobile}
+                        {boughtDetail && boughtDetail.sendMobile}
                       </Text>
                     </Wrapper>
                     <Wrapper dr={`row`} ju={`flex-start`} al={`flex-start`}>
@@ -306,11 +249,11 @@ const Index = ({}) => {
                       </Text>
                       <Wrapper width={`auto`} al={`flex-start`}>
                         <Text fontSize={`14px`} fontWeight={`700`}>
-                          {detailData && detailData.sendAddress}
+                          {boughtDetail && boughtDetail.sendAddress}
                         </Text>
 
                         <Text fontSize={`14px`} fontWeight={`700`}>
-                          {detailData && detailData.sendDetailAddress}
+                          {boughtDetail && boughtDetail.sendDetailAddress}
                         </Text>
                       </Wrapper>
                     </Wrapper>
@@ -336,8 +279,8 @@ const Index = ({}) => {
                         배송회사
                       </Text>
                       <Text fontSize={`14px`} fontWeight={`700`}>
-                        {detailData && detailData.deliveryCompany
-                          ? detailData.deliveryCompany
+                        {boughtDetail && boughtDetail.deliveryCompany
+                          ? boughtDetail.deliveryCompany
                           : "배송회사가 없습니다."}
                       </Text>
                     </Wrapper>
@@ -356,8 +299,8 @@ const Index = ({}) => {
                         운송장번호
                       </Text>
                       <Text fontSize={`14px`} fontWeight={`700`}>
-                        {detailData && detailData.deliveryNo
-                          ? detailData.deliveryNo
+                        {boughtDetail && boughtDetail.deliveryNo
+                          ? boughtDetail.deliveryNo
                           : "운송장번호가 없습니다."}
                       </Text>
                     </Wrapper>
@@ -403,10 +346,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
-    });
-
-    context.store.dispatch({
-      type: SEO_LIST_REQUEST,
     });
 
     // 구현부 종료

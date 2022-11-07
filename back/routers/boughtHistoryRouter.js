@@ -204,9 +204,38 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
           A.deliveryMessage,
           A.pharmacyPrice,
           A.tangjeonPrice,
-          A.deliveryPrice
+          A.deliveryPrice,
+          A.totalPrice,
+          A.deliveryCompany,
+          A.deliveryNo,
+          CASE
+                WHEN	A.payInfo = 'card' THEN "신용카드"
+                WHEN	A.payInfo = 'phone' THEN "휴대폰 결제"
+                WHEN	A.payInfo = 'nobank' THEN "무통장입금"
+                WHEN	A.payInfo = 'simpleCard' THEN "간편 카드 결제"
+                WHEN	A.payInfo = 'trans' THEN "계좌 간편 결제"
+                ELSE	A.payInfo
+            END	                                                   AS viewPayInfo,
+          CONCAT(FORMAT(A.totalPrice, 0), '원')                     AS viewTotalPrice,
+          CONCAT(FORMAT(A.pharmacyPrice, 0), '원')                  AS viewPharmacyPrice,
+          CONCAT(FORMAT(A.tangjeonPrice, 0), '원')                  AS viewTangjeonPrice,
+          CONCAT(FORMAT(A.deliveryPrice, 0), '원')                  AS viewDeliveryPrice,
+          DATE_FORMAT(A.createdAt, '%Y년 %m월 %d일')		             AS viewCreatedAt,
+          CASE
+                WHEN	A.isRefuse = 1 THEN "거절"
+                WHEN	A.deliveryStatus = 0 AND A.isPay = 1 THEN "결제 승인"
+                WHEN	A.deliveryStatus = 0 AND A.isPay = 0 AND A.payInfo = "nobank" THEN "입금 대기"
+                WHEN	A.deliveryStatus = 0 AND A.isPay = 0 THEN "결제 진행"
+                WHEN	A.deliveryStatus = 1 THEN "배송 준비중"
+                WHEN	A.deliveryStatus = 2 THEN "집화 완료"
+                WHEN	A.deliveryStatus = 3 THEN "배송 중"
+                WHEN	A.deliveryStatus = 4 THEN "지점 도착"
+                WHEN	A.deliveryStatus = 5 THEN "배송 출발"
+                WHEN	A.deliveryStatus = 6 THEN "배송 완료"
+               	ELSE	A.deliveryStatus
+          END	                                                    AS viewDeliveryStatus
     FROM  boughtHistory   A
-   WHERE  A.id = ${id};
+   WHERE  A.id = ${id}
     `;
 
   // 약속처방
