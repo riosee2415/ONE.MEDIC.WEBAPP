@@ -175,27 +175,41 @@ router.get("/history/list/:type", async (req, res, next) => {
   try {
     const condition =
       type === "1"
-        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
+        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 WEEK )`
         : type === "2"
-        ? `WHERE  mh.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
+        ? `AND  A.createdAt > DATE_ADD(NOW(),INTERVAL -1 MONTH )`
         : "";
 
     const selectQuery = `
-    SELECT  mh.id,
-            mh.useQnt,
-            mh.useUnit,
-            mh.materialName,
-            DATE_FORMAT(mh.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS useAt
-      FROM  materialsHistory mh
+    SELECT  A.id,
+        		A.qnt						                                      AS  useQnt,
+        		A.unit						                                    AS  useUnit,
+        		A.name						                                    AS  materialName,
+        		DATE_FORMAT(A.createdAt, "%Y년 %m월 %d일 %H시 %i분") 	   AS useAt
+      FROM  wishMaterialsItem A
+     INNER
+      JOIN  wishPrescriptionItem B
+        ON  A.WishPrescriptionItemId = B.id
+     INNER
+      JOIN  boughtHistory 	C 
+        ON  B.BoughtHistoryId = C.id
+     WHERE  C.isPay = 1
      ${condition};
     `;
 
     const selectGraphQuery = `
-  	SELECT  SUM(mh.useQnt)                                   AS sumQnt,
-            mh.materialName
-  	  FROM  materialsHistory 				                          mh
+    SELECT  A.name									AS  materialName,
+    	    	ROUND(SUM(A.qnt), 2)					AS sumQnt
+      FROM  wishMaterialsItem A
+     INNER
+      JOIN  wishPrescriptionItem B
+        ON  A.WishPrescriptionItemId = B.id
+     INNER
+      JOIN  boughtHistory 	C 
+        ON  B.BoughtHistoryId = C.id
+     WHERE  C.isPay = 1
      ${condition}
-  	 GROUP  BY  mh.materialName;
+     GROUP  BY  A.name
     `;
 
     const result = await models.sequelize.query(selectQuery);

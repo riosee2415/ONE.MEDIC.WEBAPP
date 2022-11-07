@@ -187,13 +187,13 @@ const UserDeliAddress = ({}) => {
           </Wrapper>
 
           <Wrapper width={`50%`} dr={`row`} ju={`flex-end`}>
-            <ModalBtn
+            {/* <ModalBtn
               type={type === 3 ? `primary` : "dashed"}
               size="small"
               onClick={() => typeChangeHandler(3)}
             >
               전체조회
-            </ModalBtn>
+            </ModalBtn> */}
             <ModalBtn type="danger" size="small" onClick={unitModalToggle}>
               주의사항
             </ModalBtn>
