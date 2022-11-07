@@ -749,6 +749,13 @@ router.post("/reBuy/update", isLoggedIn, async (req, res, next) => {
      WHERE  B.BoughtHistoryId = ${id}
     `;
 
+  // 가격
+
+  const prePriceQuery = `
+  SELECT  packPrice
+    FROM  prescriptionPrice
+  `;
+
   try {
     if (type === 1) {
       // 약속처방
@@ -835,6 +842,9 @@ router.post("/reBuy/update", isLoggedIn, async (req, res, next) => {
 
       return res.status(200).json({ result: true });
     } else if (type === 2) {
+      // 가격
+      const prePriceResult = await models.sequelize.query(prePriceQuery);
+
       // 탕전처방
       const preDetailResult = await models.sequelize.query(preDetailQuery);
       const preItemDetailResult = await models.sequelize.query(
@@ -863,7 +873,7 @@ router.post("/reBuy/update", isLoggedIn, async (req, res, next) => {
           ${preDetailResult[0][i].cheob},
           ${preDetailResult[0][i].pack},
           ${preDetailResult[0][i].unit},
-          ${preDetailResult[0][i].packPrice},
+          ${preDetailResult[0][i].pack * prePriceResult[0][0].packPrice},
           ${
             preDetailResult[0][i].medication
               ? `"${preDetailResult[0][i].medication}"`
@@ -920,11 +930,11 @@ router.post("/reBuy/update", isLoggedIn, async (req, res, next) => {
       }
       return res.status(200).json({ result: true });
     } else {
-      return res.status(401).send("상세정보를 불러올 수 없습니다.");
+      return res.status(401).send("장바구니에 담을 수 없습니다.");
     }
   } catch (e) {
     console.error(e);
-    return res.status(401).send("상세정보를 불러올 수 없습니다.");
+    return res.status(401).send("장바구니에 담을 수 없습니다.");
   }
 });
 

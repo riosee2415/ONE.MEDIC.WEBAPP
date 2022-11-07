@@ -50,8 +50,6 @@ const Cart = ({}) => {
 
   const [itemSelect, setItemSelect] = useState([]);
 
-  console.log(itemSelect);
-
   ////// REDUX //////
   ////// USEEFFECT //////
 
@@ -96,8 +94,35 @@ const Cart = ({}) => {
     (data) => {
       let itemSelectArr = itemSelect.map((data) => data);
 
-      if (itemSelectArr.find((value) => value.id === data.id)) {
-        setItemSelect(itemSelectArr.filter((value) => value.id !== data.id));
+      if (
+        itemSelectArr.find(
+          (value) => value.id === data.id && value.type === data.type
+        )
+      ) {
+        console.log("test1");
+        console.log(
+          itemSelectArr.find(
+            (value) => value.id === data.id && value.type === data.type
+          )
+        );
+        console.log(
+          itemSelectArr.filter(
+            (value) => value.id !== data.id && value.type !== data.type
+          )
+        );
+        setItemSelect(
+          itemSelectArr.filter((value) => {
+            if (value.id === data.id) {
+              if (value.type === data.type) {
+                return false;
+              } else {
+                return true;
+              }
+            } else {
+              return true;
+            }
+          })
+        );
         return;
       }
 
