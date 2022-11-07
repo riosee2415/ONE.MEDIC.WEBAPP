@@ -136,37 +136,45 @@ router.post("/create/isPay", isLoggedIn, async (req, res, next) => {
 
     if (type === 2) {
       const selectQuery = `
-      SELECT  B.id
-        FROM  boughtHistory             A
-       INNER
-        JOIN  wishPrescriptionItem      B
-          ON  A.id = B.BoughtHistoryId
-       WHERE  id = ${id}
+      SELECT  id
+        FROM  wishPrescriptionItem
+       WHERE  BoughtHistoryId = ${id}
       `;
       const selectResult = await models.sequelize.query(selectQuery);
 
       if (selectResult[0][0]) {
-        const materialQuery = `
-        SELECT  A.materialId,
-                A.qnt,
-                B.stock       
-          FROM  wishMaterialsItem       A
-         INNER
-          JOIN  materials               B
-            ON  A.materialId = B.id
-         WHERE  wishPrescriptionItemId = ${selectResult[0][0].id}
-        `;
+        for (let v = 0; v < selectResult[0].length; v++) {
+          const materialQuery = `
+          SELECT  A.materialId,
+                  A.qnt,
+                  B.stock,
+                  ROUND(B.stock - A.qnt, 2)       AS  leftStock
+            FROM  wishMaterialsItem       A
+           INNER
+            JOIN  materials               B
+              ON  A.materialId = B.id
+           WHERE  wishPrescriptionItemId = ${selectResult[0][v].id}
+          `;
 
-        const materialResult = await models.sequelize.query(materialQuery);
+          const materialResult = await models.sequelize.query(materialQuery);
 
-        for (let i = 0; i < materialResult[0].length; i++) {
-          const updateQuery = `
-            UPDATE  materials
-               SET  stock = ${
-                 materialResult[0][i].stock - materialResult[0][i].qnt
-               }
-             WHERE  id = ${materialResult[0][i].materialId}
-            `;
+          console.log("1", selectResult[0][v]);
+          for (let i = 0; i < materialResult[0].length; i++) {
+            console.log("2", materialResult[0][i]);
+            console.log(
+              "3",
+              Math.round(
+                materialResult[0][i].stock - materialResult[0][i].qnt * 100
+              ) / 100
+            );
+            const updateQuery = `
+              UPDATE  materials
+                 SET  stock = ${materialResult[0][i].leftStock}
+               WHERE  id = ${materialResult[0][i].materialId}
+              `;
+
+            const updateResult = await models.sequelize.query(updateQuery);
+          }
         }
       }
     }
@@ -220,7 +228,9 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
             A.unit,
             A.qnt,
             CONCAT(FORMAT(A.price, 0), '원')    AS viewPrice,
-            A.WishPaymentContainerId
+            A.WishPaymentContainerId,
+            CONCAT(FORMAT(ROUND(A.price * A.qnt), 0), "원")             AS viewTotalPrice,
+            ROUND(A.price * A.qnt)                   AS totalPrice
       FROM  wishPaymentItem           A
      INNER
       JOIN  wishPaymentContainer      B
@@ -251,7 +261,9 @@ router.post("/detail", isLoggedIn, async (req, res, next) => {
             A.qnt,
             A.unit,
             CONCAT(FORMAT(A.price, 0), '원')    AS viewPrice,
-            A.WishPrescriptionItemId
+            A.WishPrescriptionItemId,
+            CONCAT(FORMAT(ROUND(A.price * A.qnt * 100), 0), "원")             AS viewTotalPrice,
+            ROUND(A.price * A.qnt * 100)                   AS totalPrice
       FROM  wishMaterialsItem           A
      INNER
       JOIN  wishPrescriptionItem      B

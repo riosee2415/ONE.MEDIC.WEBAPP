@@ -347,7 +347,7 @@ const Prescription = ({}) => {
   }, [st_wishPreUpdateError]);
 
   // 재료 추가
-
+  console.log(wishPreDetail);
   useEffect(() => {
     if (st_wishPreItemCreateDone) {
       dispatch({
@@ -470,8 +470,6 @@ const Prescription = ({}) => {
     [selectMaterial]
   );
 
-  console.log(selectMaterial);
-
   // 약재 삭제
   const deleteMaterialHandler = useCallback(() => {
     if (router.query) {
@@ -545,6 +543,7 @@ const Prescription = ({}) => {
     ) {
       return;
     }
+    console.log(qntSelect);
 
     if (router.query) {
       if (router.query.type === "update") {

@@ -47,9 +47,6 @@ const PrescriptionHistory = ({}) => {
   ////// REDUX //////
   ////// USEEFFECT //////
 
-  console.log(wishPaymentDetail);
-  console.log(wishPreDetail);
-
   useEffect(() => {
     if (!me) {
       router.push("/login");
@@ -240,13 +237,7 @@ const PrescriptionHistory = ({}) => {
                                 {wishPreDetail.unit}ml
                               </Text>
                               <Text width={`calc(100% / 2)`} textAlign={`end`}>
-                                {numberWithCommas(
-                                  wishPreDetail.totalPrice -
-                                    wishPreDetail.materials
-                                      .map((data) => data.price)
-                                      .reduce((a, b) => a + b)
-                                )}
-                                원
+                                {wishPreDetail.viewPackPrice}
                               </Text>
                             </Wrapper>
                           </Wrapper>
@@ -290,7 +281,7 @@ const PrescriptionHistory = ({}) => {
                                     width={`calc(100% / 3)`}
                                     textAlign={`end`}
                                   >
-                                    {data.viewPrice}
+                                    {data.viewTotalPrice}
                                   </Text>
                                 </Wrapper>
                               );

@@ -168,7 +168,7 @@ router.post("/payment/container/detail", isLoggedIn, async (req, res, next) => {
 
     const itemData = await models.sequelize.query(itemQuery);
 
-    return res.status(200).json({ lists: detailData[0], items: itemData[0] });
+    return res.status(200).json({ ...detailData[0][0], items: itemData[0] });
   } catch (error) {
     console.error(error);
     return res.status(401).send("상품 정보를 불러올 수 없습니다.");
@@ -541,7 +541,7 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
           price,
           CONCAT(FORMAT(price, 0), "원")             AS viewPrice,
           ROUND(price * qnt * 100)                   AS totalPrice,
-          CONCAT(FORMAT(price * qnt * 100, 0), "원") AS viewTotalPrice,            
+          CONCAT(FORMAT(ROUND(price * qnt * 100), 0), "원") AS viewTotalPrice,            
           qnt,
           unit,
           createdAt,
@@ -564,7 +564,7 @@ router.post("/pre/item/detail", isLoggedIn, async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ lists: detailData[0], materials: materialData[0] });
+      .json({ ...detailData[0][0], materials: materialData[0] });
   } catch (error) {
     console.error(error);
     return res.status(401).send("장바구니 상품 정보를 불러올 수 없습니다.");
@@ -813,7 +813,7 @@ router.post("/pre/material/update", isLoggedIn, async (req, res, next) => {
 });
 
 //item 안에 상품 수량(탕전처방)
-router.post("/payment/material/qnt", isLoggedIn, async (req, res, next) => {
+router.post("/pre/material/qnt", isLoggedIn, async (req, res, next) => {
   const { wishMaterialsItemId, qnt } = req.body;
 
   const qntUpdateQuery = `

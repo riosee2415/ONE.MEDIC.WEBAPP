@@ -35,10 +35,6 @@ import {
 } from "../../../reducers/boughtHistory";
 import Theme from "../../../components/Theme";
 import { CSVLink } from "react-csv";
-import {
-  WISH_PAYMENT_DETAIL_REQUEST,
-  WISH_PRE_DETAIL_REQUEST,
-} from "../../../reducers/wish";
 
 const DownLoadBtn = styled(CSVLink)`
   font-size: 13px;
@@ -75,10 +71,6 @@ const UserDeliAddress = ({}) => {
     st_boughtDeliveryUpdateDone,
     st_boughtDeliveryUpdateError,
   } = useSelector((state) => state.boughtHistory);
-
-  const { wishPaymentDetail, wishPreDetail } = useSelector(
-    (state) => state.wish
-  );
 
   ////// HOOKS //////
   const router = useRouter();
@@ -177,34 +169,12 @@ const UserDeliAddress = ({}) => {
     [deliveryModal, deliveryData]
   );
 
-  // detailData
-  // setDetailData
-  // userDetailModal
-  // setUserDetailModal
-  // orderDetailModal
-  // setOrderDetailModal
-
   // 주문 상세
   const orderDetailModalToggle = useCallback(
     (data) => {
       if (data) {
         setDetailData(data);
 
-        // if (data.type === 1) {
-        //   dispatch({
-        //     type: WISH_PAYMENT_DETAIL_REQUEST,
-        //     data: {
-        //       containerId: data.typeId,
-        //     },
-        //   });
-        // } else {
-        //   dispatch({
-        //     type: WISH_PRE_DETAIL_REQUEST,
-        //     data: {
-        //       wishPrescriptrionId: data.typeId,
-        //     },
-        //   });
-        // }
         dispatch({
           type: BOUGHT_DETAIL_REQUEST,
           data: {

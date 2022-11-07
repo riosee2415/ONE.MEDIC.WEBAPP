@@ -164,30 +164,6 @@ const Index = ({}) => {
     }
   }, [router.query]);
 
-  // useEffect(() => {
-  //   if (boughtDetail) {
-  //     if (boughtDetail.wishPaymentId) {
-  //       dispatch({
-  //         type: WISH_PAYMENT_DETAIL_REQUEST,
-  //         data: {
-  //           containerId: boughtDetail.wishPaymentId,
-  //         },
-  //       });
-  //     } else {
-  //       dispatch({
-  //         type: WISH_PRE_DETAIL_REQUEST,
-  //         data: {
-  //           wishPrescriptrionId: boughtDetail.wishPreId,
-  //         },
-  //       });
-  //     }
-  //   }
-  // }, [boughtDetail]);
-
-  console.log(boughtDetail);
-
-  // console.log(wishPaymentDetail);
-
   useEffect(() => {
     if (boughtDetail) {
       if (boughtDetail.type === 1) {
@@ -198,10 +174,12 @@ const Index = ({}) => {
       } else {
         // 탕전처방
         setProductPayment(
-          boughtDetail.materials
-            .map((data) => data.price)
+          boughtDetail.items
+            .map((data) => data.totalPrice)
             .reduce((a, b) => a + b) +
-            boughtDetail.packPrice +
+            boughtDetail.lists
+              .map((data) => data.packPrice)
+              .reduce((a, b) => a + b) +
             price.pharmacyPrice +
             price.tangjeonPrice
         );
@@ -210,8 +188,6 @@ const Index = ({}) => {
   }, [wishPaymentDetail, wishPreDetail, boughtDetail]);
 
   // 결제
-
-  console.log(st_boughtPayDone);
 
   useEffect(() => {
     if (st_boughtPayDone) {
@@ -290,6 +266,7 @@ const Index = ({}) => {
               type: BOUGHT_PAY_REQUEST,
               data: {
                 id: router.query.id,
+                type: boughtDetail && boughtDetail.type,
                 isMonth: 0,
                 isPay: 1,
                 payInfo: paymentType,
@@ -321,24 +298,14 @@ const Index = ({}) => {
                 ),
                 buyer_email: me.email,
                 buyer_addr: boughtDetail.receiveAddress,
-
-                // buyer_postcode: boughtDetail.wishPaymentId
-                //   ? wishPaymentDetail.receiveAddress.substring(
-                //       wishPaymentDetail.receiveAddress.length - 6,
-                //       wishPaymentDetail.receiveAddress.length - 1
-                //     )
-                //   : wishPreDetail.receiveAddress.substring(
-                //       wishPreDetail.receiveAddress.length - 6,
-                //       wishPreDetail.receiveAddress.length - 1
-                //     ),
               },
               async (rsp) => {
                 if (rsp.success) {
-                  console.log(rsp);
                   dispatch({
                     type: BOUGHT_PAY_REQUEST,
                     data: {
                       id: router.query.id,
+                      type: boughtDetail && boughtDetail.type,
                       isMonth: 0,
                       isPay: 1,
                       payInfo: paymentType,
@@ -352,7 +319,6 @@ const Index = ({}) => {
                     },
                   });
                 } else {
-                  console.log(rsp);
                   return console.log("결제실패");
                 }
               }
@@ -371,6 +337,7 @@ const Index = ({}) => {
     isAgree1,
     wishPaymentDetail,
     wishPreDetail,
+    boughtDetail,
   ]);
 
   ////// DATAVIEW //////
@@ -500,9 +467,10 @@ const Index = ({}) => {
                   </Text>
 
                   <Text fontSize={`16px`} color={Theme.grey_C}>
-                    {boughtDetail && boughtDetail.deliveryMessage
-                      ? boughtDetail.deliveryMessage
-                      : "배송시 요청사항이 없습니다."}
+                    {boughtDetail &&
+                      (boughtDetail.deliveryMessage === "-"
+                        ? "배송시 요청사항이 없습니다."
+                        : boughtDetail.deliveryMessage)}
                   </Text>
                 </Wrapper>
               </Wrapper>
@@ -529,11 +497,7 @@ const Index = ({}) => {
                   ju={`space-between`}
                   margin={`0 0 20px`}
                 >
-                  <Text fontSize={`18px`} fontWeight={`700`}>
-                    {router.query && router.query.type === "payment"
-                      ? paymentDetail && paymentDetail.productName
-                      : pprDetail && pprDetail.name}
-                  </Text>
+                  <Text fontSize={`18px`} fontWeight={`700`}></Text>
 
                   <Text
                     fontSize={`18px`}
@@ -571,44 +535,61 @@ const Index = ({}) => {
                             })}
                           </>
                         )
-                      : wishPreDetail && (
-                          // 탕전처방
-                          <>
-                            {wishPreDetail.materials.map((data) => (
+                      : boughtDetail &&
+                        // 탕전처방
+
+                        boughtDetail.lists.map((data) => {
+                          return (
+                            <Wrapper margin={`0 0 30px`}>
                               <Wrapper
-                                dr={`row`}
-                                ju={`space-between`}
-                                margin={`0 0 20px`}
+                                al={`flex-start`}
+                                padding={`0 0 10px`}
+                                margin={`0 0 10px`}
+                                fontSize={`16px`}
                               >
-                                <Text
-                                  width={`calc(100% / 3)`}
-                                  textAlign={`start`}
-                                  color={Theme.gray_C}
-                                  fontSize={`16px`}
-                                >
-                                  {data.name}
-                                </Text>
-                                <Text
-                                  width={`calc(100% / 3)`}
-                                  textAlign={`center`}
-                                  fontSize={`18px`}
-                                  color={Theme.grey_C}
-                                >
-                                  {data.qnt}
-                                  {data.unit}
-                                </Text>
-                                <Text
-                                  width={`calc(100% / 3)`}
-                                  textAlign={`end`}
-                                  fontSize={`18px`}
-                                  color={Theme.grey_C}
-                                >
-                                  {data.viewTotalPrice}
-                                </Text>
+                                <Text fontWeight={`600`}>{data.title}</Text>
                               </Wrapper>
-                            ))}
-                          </>
-                        ))}
+                              {boughtDetail.items
+                                .filter(
+                                  (value) =>
+                                    value.WishPrescriptionItemId === data.id
+                                )
+                                .map((value) => (
+                                  <Wrapper
+                                    dr={`row`}
+                                    ju={`space-between`}
+                                    margin={`0 0 20px`}
+                                  >
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`start`}
+                                      color={Theme.gray_C}
+                                      fontSize={`16px`}
+                                    >
+                                      {value.name}
+                                    </Text>
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`center`}
+                                      fontSize={`18px`}
+                                      color={Theme.grey_C}
+                                    >
+                                      {value.qnt}
+                                      {value.unit}
+                                    </Text>
+                                    <Text
+                                      width={`calc(100% / 3)`}
+                                      textAlign={`end`}
+                                      fontSize={`18px`}
+                                      color={Theme.grey_C}
+                                    >
+                                      {value.viewTotalPrice}
+                                    </Text>
+                                  </Wrapper>
+                                ))}
+                            </Wrapper>
+                          );
+                        }))}
 
                   {wishPreDetail && (
                     <>

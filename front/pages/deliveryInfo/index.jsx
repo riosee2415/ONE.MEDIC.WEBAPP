@@ -287,7 +287,9 @@ const Index = ({}) => {
           deliveryMessage:
             data.deliveryMessage === "직접입력"
               ? data.deliveryRequest
-              : data.deliveryMessage,
+              : data.deliveryMessage
+              ? data.deliveryMessage
+              : "-",
         },
       });
 
