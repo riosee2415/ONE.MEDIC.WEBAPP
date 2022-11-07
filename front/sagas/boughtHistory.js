@@ -24,6 +24,14 @@ import {
   BOUGHT_DELIVERY_UPDATE_REQUEST,
   BOUGHT_DELIVERY_UPDATE_SUCCESS,
   BOUGHT_DELIVERY_UPDATE_FAILURE,
+  //
+  BOUGHT_COMPLETE_UPDATE_REQUEST,
+  BOUGHT_COMPLETE_UPDATE_SUCCESS,
+  BOUGHT_COMPLETE_UPDATE_FAILURE,
+  //
+  BOUGHT_REFUSE_UPDATE_REQUEST,
+  BOUGHT_REFUSE_UPDATE_SUCCESS,
+  BOUGHT_REFUSE_UPDATE_FAILURE,
 } from "../reducers/boughtHistory";
 
 // ******************************************************************************************************************
@@ -194,6 +202,62 @@ function* boughtDeliveryUpdate(action) {
 // ******************************************************************************************************************
 // ******************************************************************************************************************
 
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function boughtCompleteUpdateAPI(data) {
+  return await axios.post(`/api/bought/complete/update`, data);
+}
+
+function* boughtCompleteUpdate(action) {
+  try {
+    const result = yield call(boughtCompleteUpdateAPI, action.data);
+
+    yield put({
+      type: BOUGHT_COMPLETE_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: BOUGHT_COMPLETE_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
+// ******************************************************************************************************************
+// SAGA AREA ********************************************************************************************************
+// ******************************************************************************************************************
+async function boughtRefuseUpdateAPI(data) {
+  return await axios.post(`/api/bought/isRefuse/update`, data);
+}
+
+function* boughtRefuseUpdate(action) {
+  try {
+    const result = yield call(boughtRefuseUpdateAPI, action.data);
+
+    yield put({
+      type: BOUGHT_REFUSE_UPDATE_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: BOUGHT_REFUSE_UPDATE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+// ******************************************************************************************************************
+
 //////////////////////////////////////////////////////////////
 
 function* watchBoughtDelivery() {
@@ -220,6 +284,14 @@ function* watchBoughtDeliveryUpdate() {
   yield takeLatest(BOUGHT_DELIVERY_UPDATE_REQUEST, boughtDeliveryUpdate);
 }
 
+function* watchBoughtCompleteUpdate() {
+  yield takeLatest(BOUGHT_COMPLETE_UPDATE_REQUEST, boughtCompleteUpdate);
+}
+
+function* watchBoughtRefuseUpdate() {
+  yield takeLatest(BOUGHT_REFUSE_UPDATE_REQUEST, boughtRefuseUpdate);
+}
+
 //////////////////////////////////////////////////////////////
 export default function* boughtHistorySaga() {
   yield all([
@@ -229,6 +301,8 @@ export default function* boughtHistorySaga() {
     fork(watchBoughtList),
     fork(watchBoughtAdminList),
     fork(watchBoughtDeliveryUpdate),
+    fork(watchBoughtCompleteUpdate),
+    fork(watchBoughtRefuseUpdate),
     //
   ]);
 }

@@ -30,8 +30,10 @@ import {
 import { LOAD_MY_INFO_REQUEST } from "../../../reducers/user";
 import {
   BOUGHT_ADMIN_LIST_REQUEST,
+  BOUGHT_COMPLETE_UPDATE_REQUEST,
   BOUGHT_DELIVERY_UPDATE_REQUEST,
   BOUGHT_DETAIL_REQUEST,
+  BOUGHT_REFUSE_UPDATE_REQUEST,
 } from "../../../reducers/boughtHistory";
 import Theme from "../../../components/Theme";
 import { CSVLink } from "react-csv";
@@ -70,6 +72,14 @@ const UserDeliAddress = ({}) => {
     st_boughtDeliveryUpdateLoading,
     st_boughtDeliveryUpdateDone,
     st_boughtDeliveryUpdateError,
+    //
+    st_boughtCompleteUpdateLoading,
+    st_boughtCompleteUpdateDone,
+    st_boughtCompleteUpdateError,
+    //
+    st_boughtRefuseUpdateLoading,
+    st_boughtRefuseUpdateDone,
+    st_boughtRefuseUpdateError,
   } = useSelector((state) => state.boughtHistory);
 
   ////// HOOKS //////
@@ -94,6 +104,9 @@ const UserDeliAddress = ({}) => {
 
   const [detailData, setDetailData] = useState(null);
   const [orderDetailModal, setOrderDetailModal] = useState(false);
+
+  const [refuseForm] = Form.useForm();
+  const [refuseModal, setRefuseModal] = useState(false);
 
   ////// USEEFFECT //////
 
@@ -147,6 +160,51 @@ const UserDeliAddress = ({}) => {
     }
   }, [st_boughtDeliveryUpdateError]);
 
+  // 처리완료
+  useEffect(() => {
+    if (st_boughtCompleteUpdateDone) {
+      dispatch({
+        type: BOUGHT_ADMIN_LIST_REQUEST,
+        data: {
+          isComplete: isComplete,
+          date: searchTab,
+          type: searchType,
+        },
+      });
+
+      return message.success("처리완료되었습니다.");
+    }
+  }, [st_boughtCompleteUpdateDone]);
+
+  useEffect(() => {
+    if (st_boughtCompleteUpdateError) {
+      return message.error(st_boughtCompleteUpdateError);
+    }
+  }, [st_boughtCompleteUpdateError]);
+
+  // 거절
+  useEffect(() => {
+    if (st_boughtRefuseUpdateDone) {
+      dispatch({
+        type: BOUGHT_ADMIN_LIST_REQUEST,
+        data: {
+          isComplete: isComplete,
+          date: searchTab,
+          type: searchType,
+        },
+      });
+
+      refuseModalToggle(null);
+      return message.success("거절되었습니다.");
+    }
+  }, [st_boughtRefuseUpdateDone]);
+
+  useEffect(() => {
+    if (st_boughtRefuseUpdateError) {
+      return message.error(st_boughtRefuseUpdateError);
+    }
+  }, [st_boughtRefuseUpdateError]);
+
   ////// TOGGLE //////
 
   // 주의사항
@@ -188,6 +246,22 @@ const UserDeliAddress = ({}) => {
       setOrderDetailModal((prev) => !prev);
     },
     [detailData, orderDetailModal]
+  );
+
+  // 거절
+  const refuseModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setDetailData(data);
+      } else {
+        setDetailData(null);
+      }
+
+      refuseForm.resetFields();
+
+      setRefuseModal((prev) => !prev);
+    },
+    [detailData, refuseModal]
   );
 
   ////// HANDLER //////
@@ -257,6 +331,30 @@ const UserDeliAddress = ({}) => {
       });
     },
     [deliveryData]
+  );
+
+  // 처리 완료
+  const completeHandler = useCallback((data) => {
+    dispatch({
+      type: BOUGHT_COMPLETE_UPDATE_REQUEST,
+      data: {
+        id: data.id,
+      },
+    });
+  }, []);
+
+  // 거절
+  const refuseHandler = useCallback(
+    (data) => {
+      dispatch({
+        type: BOUGHT_REFUSE_UPDATE_REQUEST,
+        data: {
+          id: detailData.id,
+          content: data.content,
+        },
+      });
+    },
+    [detailData]
   );
 
   ////// DATAVIEW //////
@@ -345,12 +443,16 @@ const UserDeliAddress = ({}) => {
       title: "처리완료",
       render: (data) => (
         <Popconfirm
-          title="처리하시겠습니까?"
-          //   onConfirm={() => onComplete(data.id)}
+          title="처리완료하시겠습니까?"
+          onConfirm={() => completeHandler(data)}
           okText="처리완료"
           cancelText="취소"
         >
-          <Button type="primary" size="small">
+          <Button
+            type="primary"
+            size="small"
+            loading={st_boughtCompleteUpdateLoading}
+          >
             처리완료
           </Button>
         </Popconfirm>
@@ -377,11 +479,15 @@ const UserDeliAddress = ({}) => {
       key: 11,
       align: "center",
       width: "7%",
-      title: "거절",
+      title: "거절하기",
       render: (data) =>
         data.type === 2 ? (
-          <Button type="danger" size="small">
-            거절
+          <Button
+            type="danger"
+            size="small"
+            onClick={() => refuseModalToggle(data)}
+          >
+            거절하기
           </Button>
         ) : (
           "거절불가"
@@ -575,9 +681,6 @@ const UserDeliAddress = ({}) => {
           </GuideLi>
         </GuideUl>
       </Modal>
-
-      {/* wishPaymentDetail */}
-      {/* wishPreDetail */}
 
       {/* DETAIL MODAL */}
       <Modal
@@ -1309,6 +1412,41 @@ const UserDeliAddress = ({}) => {
               loading={st_boughtDeliveryUpdateLoading}
             >
               등록
+            </ModalBtn>
+          </Wrapper>
+        </Form>
+      </Modal>
+
+      {/* REFUSE MODAL */}
+      <Modal
+        title={`거절하기`}
+        visible={refuseModal}
+        footer={null}
+        onCancel={() => refuseModalToggle(null)}
+      >
+        <GuideLi isImpo>
+          한번 거절하면 수정또는 삭제가 안됨므로 신중한 작업을 필요로 합니다.
+        </GuideLi>
+        <Form form={refuseForm} onFinish={refuseHandler}>
+          <Form.Item
+            label={`사유`}
+            name={`content`}
+            rules={[{ required: true, message: "사유를 입력해주세요." }]}
+          >
+            <Input.TextArea placeholder="사유를 입력해주세요." />
+          </Form.Item>
+
+          <Wrapper dr={`row`} ju={`flex-end`}>
+            <ModalBtn size="small" onClick={() => refuseModalToggle(null)}>
+              취소
+            </ModalBtn>
+            <ModalBtn
+              size="small"
+              type="primary"
+              htmlType="submit"
+              loading={st_boughtRefuseUpdateLoading}
+            >
+              거절
             </ModalBtn>
           </Wrapper>
         </Form>

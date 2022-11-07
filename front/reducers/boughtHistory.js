@@ -42,6 +42,16 @@ export const initialState = {
   st_boughtDeliveryUpdateLoading: false,
   st_boughtDeliveryUpdateDone: false,
   st_boughtDeliveryUpdateError: null,
+
+  // 처리완료
+  st_boughtCompleteUpdateLoading: false,
+  st_boughtCompleteUpdateDone: false,
+  st_boughtCompleteUpdateError: null,
+
+  // 거절하기
+  st_boughtRefuseUpdateLoading: false,
+  st_boughtRefuseUpdateDone: false,
+  st_boughtRefuseUpdateError: null,
 };
 
 export const BOUGHT_DELIVERY_REQUEST = "BOUGHT_DELIVERY_REQUEST";
@@ -67,6 +77,14 @@ export const BOUGHT_ADMIN_LIST_FAILURE = "BOUGHT_ADMIN_LIST_FAILURE";
 export const BOUGHT_DELIVERY_UPDATE_REQUEST = "BOUGHT_DELIVERY_UPDATE_REQUEST";
 export const BOUGHT_DELIVERY_UPDATE_SUCCESS = "BOUGHT_DELIVERY_UPDATE_SUCCESS";
 export const BOUGHT_DELIVERY_UPDATE_FAILURE = "BOUGHT_DELIVERY_UPDATE_FAILURE";
+
+export const BOUGHT_COMPLETE_UPDATE_REQUEST = "BOUGHT_COMPLETE_UPDATE_REQUEST";
+export const BOUGHT_COMPLETE_UPDATE_SUCCESS = "BOUGHT_COMPLETE_UPDATE_SUCCESS";
+export const BOUGHT_COMPLETE_UPDATE_FAILURE = "BOUGHT_COMPLETE_UPDATE_FAILURE";
+
+export const BOUGHT_REFUSE_UPDATE_REQUEST = "BOUGHT_REFUSE_UPDATE_REQUEST";
+export const BOUGHT_REFUSE_UPDATE_SUCCESS = "BOUGHT_REFUSE_UPDATE_SUCCESS";
+export const BOUGHT_REFUSE_UPDATE_FAILURE = "BOUGHT_REFUSE_UPDATE_FAILURE";
 
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
@@ -198,6 +216,48 @@ const reducer = (state = initialState, action) =>
         draft.st_boughtDeliveryUpdateLoading = false;
         draft.st_boughtDeliveryUpdateDone = false;
         draft.st_boughtDeliveryUpdateError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_COMPLETE_UPDATE_REQUEST: {
+        draft.st_boughtCompleteUpdateLoading = true;
+        draft.st_boughtCompleteUpdateDone = false;
+        draft.st_boughtCompleteUpdateError = null;
+        break;
+      }
+      case BOUGHT_COMPLETE_UPDATE_SUCCESS: {
+        draft.st_boughtCompleteUpdateLoading = false;
+        draft.st_boughtCompleteUpdateDone = true;
+        draft.st_boughtCompleteUpdateError = null;
+        break;
+      }
+      case BOUGHT_COMPLETE_UPDATE_FAILURE: {
+        draft.st_boughtCompleteUpdateLoading = false;
+        draft.st_boughtCompleteUpdateDone = false;
+        draft.st_boughtCompleteUpdateError = action.error;
+        break;
+      }
+
+      //////////////////////////////////////////////
+
+      case BOUGHT_REFUSE_UPDATE_REQUEST: {
+        draft.st_boughtRefuseUpdateLoading = true;
+        draft.st_boughtRefuseUpdateDone = false;
+        draft.st_boughtRefuseUpdateError = null;
+        break;
+      }
+      case BOUGHT_REFUSE_UPDATE_SUCCESS: {
+        draft.st_boughtRefuseUpdateLoading = false;
+        draft.st_boughtRefuseUpdateDone = true;
+        draft.st_boughtRefuseUpdateError = null;
+        break;
+      }
+      case BOUGHT_REFUSE_UPDATE_FAILURE: {
+        draft.st_boughtRefuseUpdateLoading = false;
+        draft.st_boughtRefuseUpdateDone = false;
+        draft.st_boughtRefuseUpdateError = action.error;
         break;
       }
 

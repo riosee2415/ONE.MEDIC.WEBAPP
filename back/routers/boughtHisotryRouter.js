@@ -367,6 +367,7 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
                 ELSE	payInfo
             END	                                                    AS viewPayInfo,
             CASE
+                WHEN	isRefuse = 1 THEN "거절"
                 WHEN	deliveryStatus = 0 AND isPay = 1 THEN "결제 승인"
                 WHEN	deliveryStatus = 0 AND isPay = 0 AND payInfo = "nobank" THEN "입금 대기"
                 WHEN	deliveryStatus = 0 AND isPay = 0 THEN "결제 진행"
@@ -437,9 +438,11 @@ router.post("/admin/list", isAdminCheck, async (req, res, next) => {
 
   const completedCondition =
     isComplete === 1
-      ? `AND  A.isCompleted = false`
+      ? `AND  A.isCompleted = false
+      AND  A.isRefuse = false`
       : isComplete === 2
-      ? `AND  A.isCompleted = true`
+      ? `AND  A.isCompleted = true
+      AND  A.isRefuse = false`
       : isComplete === 3
       ? `AND  A.isRefuse = true`
       : "";
@@ -526,6 +529,8 @@ router.post("/admin/list", isAdminCheck, async (req, res, next) => {
                 ELSE	A.payInfo
             END	                                                    AS viewPayInfo,
             CASE
+                WHEN	A.isRefuse = 1 THEN "거절완료"
+                WHEN	A.isCompleted = 1 THEN "처리완료"
                 WHEN	A.deliveryStatus = 0 AND A.isPay = 1 THEN "결제 승인"
                 WHEN	A.deliveryStatus = 0 AND A.isPay = 0 AND A.payInfo = "nobank" THEN "입금 대기"
                 WHEN	A.deliveryStatus = 0 AND A.isPay = 0 THEN "결제 미승인"
@@ -600,6 +605,46 @@ router.post("/delivery/update", isAdminCheck, async (req, res, next) => {
   } catch (e) {
     console.error(e);
     return res.status(401).send("배송정보를 수정할 수 없습니다.");
+  }
+});
+
+router.post("/complete/update", isAdminCheck, async (req, res, next) => {
+  const { id } = req.body;
+
+  const completeQuery = `
+  UPDATE  boughtHistory
+     SET  isCompleted = true,
+          completedAt = NOW()
+   WHERE  id = ${id}
+  `;
+
+  try {
+    const completeResult = await models.sequelize.query(completeQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("");
+  }
+});
+
+router.post("/isRefuse/update", isAdminCheck, async (req, res, next) => {
+  const { id, content } = req.body;
+
+  const refuseQuery = `
+  UPDATE  boughtHistory
+     SET  isRefuse = true,
+          refuseContent = '${content}'
+   WHERE  id = ${id}
+  `;
+
+  try {
+    const refuseResult = await models.sequelize.query(refuseQuery);
+
+    return res.status(200).json({ result: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(401).send("");
   }
 });
 
