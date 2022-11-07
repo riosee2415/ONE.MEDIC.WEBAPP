@@ -376,7 +376,7 @@ router.post("/list", isLoggedIn, async (req, res, next) => {
 					    ELSE	NULL
 		        END											AS paymentId,
 		        isRefuse,
-		        refuseContent
+		        refuseContent,
 		        isCompleted,
 		        isNobank,
 		        isMonth,

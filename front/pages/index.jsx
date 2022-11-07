@@ -6,8 +6,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { END } from "redux-saga";
 
-import { DatePicker, Empty, message } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { DatePicker, Empty, message, Modal } from "antd";
+import { SearchOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 import wrapper from "../store/configureStore";
@@ -23,6 +23,7 @@ import {
   Wrapper,
   RsWrapper,
   TextInput,
+  TextArea,
 } from "../components/commonComponents";
 import Theme from "../components/Theme";
 import {
@@ -38,6 +39,18 @@ const TagBtn = styled(Wrapper)`
   background: ${(props) => props.theme.lightGrey2_C};
   color: ${(props) => props.theme.grey_C};
   border: 1px solid ${(props) => props.theme.lightGrey2_C};
+`;
+
+const RefuseModal = styled(Modal)`
+  & .ant-modal-content {
+    border-radius: 20px;
+  }
+
+  & .ant-modal-body {
+    border-radius: 20px;
+    padding: 15px;
+    align-items: flex-start;
+  }
 `;
 
 const Home = ({}) => {
@@ -63,6 +76,9 @@ const Home = ({}) => {
   const productName = useInput("");
 
   const [searchDate, setSearchDate] = useState(["", ""]);
+
+  const [refuseData, setRefuseData] = useState(null);
+  const [refuseModal, setRefuseModal] = useState(false);
 
   ////// REDUX //////
   ////// USEEFFECT //////
@@ -101,6 +117,20 @@ const Home = ({}) => {
   }, [st_boughtReBuyUpdateError]);
 
   ////// TOGGLE //////
+
+  // 거절 모달
+  const refuseModalToggle = useCallback(
+    (data) => {
+      if (data) {
+        setRefuseData(data);
+      } else {
+        setRefuseData(null);
+      }
+
+      setRefuseModal((prev) => !prev);
+    },
+    [refuseData, refuseModal]
+  );
   ////// HANDLER //////
 
   const moveLinkHandler = useCallback((link) => {
@@ -253,7 +283,7 @@ const Home = ({}) => {
                             margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
                           >
                             <Text fontSize={`14px`} color={Theme.grey_C}>
-                              {data.orderAt}
+                              {data.viewCreatedAt}
                             </Text>
                             <Wrapper
                               dr={`row`}
@@ -270,13 +300,25 @@ const Home = ({}) => {
                                 <Text>{data.receiveUser}</Text>
                               </Wrapper>
                               <TagBtn
+                                color={
+                                  data.viewDeliveryStatus === "거절"
+                                    ? `${Theme.red_C} !important`
+                                    : (data.viewDeliveryStatus ===
+                                        "입금 대기" ||
+                                        data.viewDeliveryStatus ===
+                                          "결제 진행") &&
+                                      `${Theme.subTheme2_C} !important`
+                                }
                                 cursor={
-                                  data.viewDeliveryStatus === "결제 진행" &&
+                                  (data.viewDeliveryStatus === "결제 진행" ||
+                                    data.viewDeliveryStatus === "거절") &&
                                   `pointer`
                                 }
                                 onClick={() =>
-                                  data.viewDeliveryStatus === "결제 진행" &&
-                                  moveLinkHandler(`/payInfo/${data.id}`)
+                                  data.viewDeliveryStatus === "거절"
+                                    ? refuseModalToggle(data)
+                                    : data.viewDeliveryStatus === "결제 진행" &&
+                                      moveLinkHandler(`/payInfo/${data.id}`)
                                 }
                               >
                                 {data.viewDeliveryStatus}
@@ -340,6 +382,43 @@ const Home = ({}) => {
               </>
             )}
           </RsWrapper>
+
+          <RefuseModal
+            // title={`거절 사유`}
+            visible={refuseModal}
+            onCancel={refuseModalToggle}
+            footer={null}
+          >
+            {/* <Wrapper
+              radius={`20px`}
+              shadow={`5px 5px 15px ${Theme.red_C}`}
+              padding={`15px`}
+              al={`flex-start`}
+              margin={width < 700 ? `0 0 16px` : `0 8px 16px`}
+            > */}
+            <Wrapper dr={`row`} ju={`space-between`} margin={`15px 0`}>
+              <Wrapper al={`flex-start`}>
+                <Text
+                  width={`100%`}
+                  fontSize={`18px`}
+                  fontWeight={`bold`}
+                  borderBottom={`1px solid ${Theme.grey2_C}`}
+                  padding={`0 0 10px`}
+                >
+                  거절사유
+                  <CloseCircleOutlined
+                    style={{ color: Theme.red_C, margin: `0 0 0 5px` }}
+                  />
+                </Text>
+                {refuseData && (
+                  <Text margin={`10px 0 0`} color={Theme.grey_C}>
+                    {refuseData.refuseContent}
+                  </Text>
+                )}
+              </Wrapper>
+            </Wrapper>
+            {/* </Wrapper> */}
+          </RefuseModal>
         </WholeWrapper>
       </ClientLayout>
     </>
