@@ -31,6 +31,7 @@ const wishMaterialsItem = require("./wishMaterialsItem");
 const wishList = require("./wishList");
 const userRequest = require("./userRequest");
 const boughtHistory = require("./boughtHistory");
+const userDeliveryRequest = require("./userDeliveryRequest");
 
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -75,6 +76,7 @@ db.WishPrescriptionItem = wishPrescriptionItem;
 db.WishMaterialsItem = wishMaterialsItem;
 db.WishList = wishList;
 db.UserRequest = userRequest;
+db.UserDeliveryRequest = userDeliveryRequest;
 
 Object.keys(db).forEach((modelName) => {
   db[modelName].init(sequelize);

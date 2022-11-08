@@ -15,7 +15,7 @@ import useWidth from "../../hooks/useWidth";
 import {
   REQUEST_CREATE_REQUEST,
   REQUEST_DELETE_REQUEST,
-  REQUEST_LIST_REQUEST,
+  REQUEST_LIST_deliveryREQUEST,
   REQUEST_UPDATE_REQUEST,
 } from "../../reducers/userRequest";
 import Theme from "../../components/Theme";
@@ -24,6 +24,12 @@ import { END } from "redux-saga";
 import axios from "axios";
 import { LOAD_MY_INFO_REQUEST } from "../../reducers/user";
 import wrapper from "../../store/configureStore";
+import {
+  DELIVERY_REQUEST_CREATE_REQUEST,
+  DELIVERY_REQUEST_DELETE_REQUEST,
+  DELIVERY_REQUEST_LIST_REQUEST,
+  DELIVERY_REQUEST_UPDATE_REQUEST,
+} from "../../reducers/userDeliveryRequest";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -51,23 +57,23 @@ const Request = () => {
   const { me } = useSelector((state) => state.user);
 
   const {
-    requestList,
-    requestLastPage,
+    deliveryRequestList,
+    deliveryRequestLastPage,
     //
-    st_requestListError,
+    st_deliveryRequestListError,
     //
-    st_requestCreateLoading,
-    st_requestCreateDone,
-    st_requestCreateError,
+    st_deliveryRequestCreateLoading,
+    st_deliveryRequestCreateDone,
+    st_deliveryRequestCreateError,
     //
-    st_requestUpdateLoading,
-    st_requestUpdateDone,
-    st_requestUpdateError,
+    st_deliveryRequestUpdateLoading,
+    st_deliveryRequestUpdateDone,
+    st_deliveryRequestUpdateError,
     //
-    st_requestDeleteLoading,
-    st_requestDeleteDone,
-    st_requestDeleteError,
-  } = useSelector((state) => state.userRequest);
+    st_deliveryRequestDeleteLoading,
+    st_deliveryRequestDeleteDone,
+    st_deliveryRequestDeleteError,
+  } = useSelector((state) => state.userDeliveryRequest);
 
   ////// HOOKS //////
 
@@ -100,7 +106,7 @@ const Request = () => {
   useEffect(() => {
     if (me) {
       dispatch({
-        type: REQUEST_LIST_REQUEST,
+        type: DELIVERY_REQUEST_LIST_REQUEST,
         data: {
           page: currentPage,
         },
@@ -109,19 +115,17 @@ const Request = () => {
   }, [currentPage]);
 
   // 요청사항 리스트
-
   useEffect(() => {
-    if (st_requestListError) {
-      return message.error(st_requestListError);
+    if (st_deliveryRequestListError) {
+      return message.error(st_deliveryRequestListError);
     }
-  }, [st_requestListError]);
+  }, [st_deliveryRequestListError]);
 
   // 요청사항 생성
-
   useEffect(() => {
-    if (st_requestCreateDone) {
+    if (st_deliveryRequestCreateDone) {
       dispatch({
-        type: REQUEST_LIST_REQUEST,
+        type: DELIVERY_REQUEST_LIST_REQUEST,
         data: {
           page: currentPage,
         },
@@ -131,20 +135,20 @@ const Request = () => {
 
       return message.success("요청사항이 생성되었습니다.");
     }
-  }, [st_requestCreateDone]);
+  }, [st_deliveryRequestCreateDone]);
 
   useEffect(() => {
-    if (st_requestCreateError) {
-      return message.error(st_requestCreateError);
+    if (st_deliveryRequestCreateError) {
+      return message.error(st_deliveryRequestCreateError);
     }
-  }, [st_requestCreateError]);
+  }, [st_deliveryRequestCreateError]);
 
   // 요청사항 수정
 
   useEffect(() => {
-    if (st_requestUpdateDone) {
+    if (st_deliveryRequestUpdateDone) {
       dispatch({
-        type: REQUEST_LIST_REQUEST,
+        type: DELIVERY_REQUEST_LIST_REQUEST,
         data: {
           page: currentPage,
         },
@@ -154,20 +158,20 @@ const Request = () => {
 
       return message.success("요청사항이 수정되었습니다.");
     }
-  }, [st_requestUpdateDone]);
+  }, [st_deliveryRequestUpdateDone]);
 
   useEffect(() => {
-    if (st_requestUpdateError) {
-      return message.error(st_requestUpdateError);
+    if (st_deliveryRequestUpdateError) {
+      return message.error(st_deliveryRequestUpdateError);
     }
-  }, [st_requestUpdateError]);
+  }, [st_deliveryRequestUpdateError]);
 
   // 요청사항 삭제
 
   useEffect(() => {
-    if (st_requestDeleteDone) {
+    if (st_deliveryRequestDeleteDone) {
       dispatch({
-        type: REQUEST_LIST_REQUEST,
+        type: DELIVERY_REQUEST_LIST_REQUEST,
         data: {
           page: currentPage,
         },
@@ -177,13 +181,13 @@ const Request = () => {
 
       return message.success("요청사항이 삭제되었습니다.");
     }
-  }, [st_requestDeleteDone]);
+  }, [st_deliveryRequestDeleteDone]);
 
   useEffect(() => {
-    if (st_requestDeleteError) {
-      return message.error(st_requestDeleteError);
+    if (st_deliveryRequestDeleteError) {
+      return message.error(st_deliveryRequestDeleteError);
     }
-  }, [st_requestDeleteError]);
+  }, [st_deliveryRequestDeleteError]);
 
   ////// TOGGLE //////
   const cuModalToggle = useCallback(
@@ -226,46 +230,46 @@ const Request = () => {
   // 요청사항 추가
   const requestCreateHandler = useCallback(
     (data) => {
-      if (st_requestCreateLoading) {
+      if (st_deliveryRequestCreateLoading) {
         return message.info("추가중입니다.");
       }
 
       dispatch({
-        type: REQUEST_CREATE_REQUEST,
+        type: DELIVERY_REQUEST_CREATE_REQUEST,
         data: data,
       });
     },
-    [st_requestCreateLoading]
+    [st_deliveryRequestCreateLoading]
   );
 
   // 요청사항 수정
   const requestUpdateHandler = useCallback(
     (data) => {
-      if (st_requestUpdateLoading) {
+      if (st_deliveryRequestUpdateLoading) {
         return message.info("수정중입니다.");
       }
 
       dispatch({
-        type: REQUEST_UPDATE_REQUEST,
+        type: DELIVERY_REQUEST_UPDATE_REQUEST,
         data: { id: modalData.id, ...data },
       });
     },
-    [modalData, st_requestUpdateLoading]
+    [modalData, st_deliveryRequestUpdateLoading]
   );
 
   // 요청사항 삭제
   const requestDeleteHandler = useCallback(() => {
-    if (st_requestDeleteLoading) {
+    if (st_deliveryRequestDeleteLoading) {
       return message.info("삭제중입니다.");
     }
 
     dispatch({
-      type: REQUEST_DELETE_REQUEST,
+      type: DELIVERY_REQUEST_DELETE_REQUEST,
       data: {
         id: modalData.id,
       },
     });
-  }, [modalData, st_requestDeleteLoading]);
+  }, [modalData, st_deliveryRequestDeleteLoading]);
 
   // 페이지 네이션 - 페이지 교체
   const pageChangeHandler = useCallback(
@@ -312,13 +316,14 @@ const Request = () => {
               ju={`flex-start`}
               al={`flex-start`}
             >
-              {requestList &&
-                (requestList.length === 0 ? (
+              {console.log(deliveryRequestList)}
+              {deliveryRequestList &&
+                (deliveryRequestList.length === 0 ? (
                   <Wrapper>
                     <Empty description={`요청사항이 없습니다.`} />
                   </Wrapper>
                 ) : (
-                  requestList.map((data) => {
+                  deliveryRequestList.map((data) => {
                     return (
                       <Wrapper
                         key={data.id}
@@ -341,37 +346,6 @@ const Request = () => {
                         >
                           <Wrapper dr={`row`} ju={`flex-start`}>
                             <Wrapper al={`flex-start`}>
-                              <Wrapper
-                                dr={`row`}
-                                ju={`space-between`}
-                                margin={`0 0 15px`}
-                              >
-                                <Text
-                                  width={`50%`}
-                                  isEllipsis
-                                  fontSize={`18px`}
-                                  fontWeight={`bold`}
-                                >
-                                  {data.title}
-                                </Text>
-
-                                <Text
-                                  width={`50%`}
-                                  isEllipsis
-                                  textAlign={`end`}
-                                >
-                                  {data.receiverName}
-                                </Text>
-                              </Wrapper>
-
-                              <Text
-                                width={`100%`}
-                                margin={`0 0 5px`}
-                                isEllipsis
-                              >
-                                {data.medication}
-                              </Text>
-
                               <Text width={`100%`} isEllipsis>
                                 {data.content}
                               </Text>
@@ -409,7 +383,7 @@ const Request = () => {
           <Wrapper margin={`20px 0`}>
             <Pagination
               current={parseInt(currentPage)}
-              total={requestLastPage * 9}
+              total={deliveryRequestLastPage * 9}
               pageSize={9}
               onChange={(page) => pageChangeHandler(page)}
             />
@@ -432,42 +406,14 @@ const Request = () => {
               form={cuForm}
               onFinish={modalData ? requestUpdateHandler : requestCreateHandler}
             >
-              <Text>처방명</Text>
-              <Form.Item
-                name="title"
-                rules={[{ required: true, message: "처방명을 입력해주세요." }]}
-              >
-                <Input placeholder="처방명을 입력해주세요." />
-              </Form.Item>
-
-              <Text>환자이름</Text>
-              <Form.Item
-                name="receiverName"
-                rules={[
-                  { required: true, message: "환자이름을 입력해주세요." },
-                ]}
-              >
-                <Input placeholder="환자이름을 입력해주세요." />
-              </Form.Item>
-
-              <Text>복약지도</Text>
-              <Form.Item
-                name="medication"
-                rules={[
-                  { required: true, message: "복약지도를 입력해주세요." },
-                ]}
-              >
-                <Input.TextArea placeholder="복약지도을 입력해주세요." />
-              </Form.Item>
-
-              <Text>추가 요청사항</Text>
+              <Text>요청사항</Text>
               <Form.Item
                 name="content"
                 rules={[
-                  { required: true, message: "추가 요청사항을 입력해주세요." },
+                  { required: true, message: "요청사항을 입력해주세요." },
                 ]}
               >
-                <Input.TextArea placeholder="추가 요청사항을 입력해주세요." />
+                <Input.TextArea placeholder="요청사항을 입력해주세요." />
               </Form.Item>
 
               <Wrapper

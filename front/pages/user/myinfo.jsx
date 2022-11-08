@@ -21,6 +21,7 @@ import Theme from "../../components/Theme";
 import styled from "styled-components";
 import { message, notification, Popconfirm } from "antd";
 import { useRouter } from "next/router";
+import useWidth from "../../hooks/useWidth";
 import { ADDRESS_LIST_REQUEST } from "../../reducers/address";
 import { REQUEST_LIST_REQUEST } from "../../reducers/userRequest";
 
@@ -34,6 +35,8 @@ const MyinfoBtn = styled(CommonButton)`
 
 const Question = () => {
   const dispatch = useDispatch();
+
+  const width = useWidth();
 
   const router = useRouter();
   ////// GLOBAL STATE //////
@@ -118,7 +121,10 @@ const Question = () => {
             margin={`16px 0`}
           >
             <Wrapper al={`flex-start`}>
-              <Text fontSize={`22px`} padding={`0 0 23px`}>
+              <Text
+                fontSize={width < 700 ? `18px` : `22px`}
+                padding={`0 0 23px`}
+              >
                 회원정보
               </Text>
             </Wrapper>
@@ -150,7 +156,7 @@ const Question = () => {
               margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
-                <Text fontSize={`22px`} padding={`0 0 23px`}>
+                <Text fontSize={width < 700 ? `18px` :`22px`} padding={`0 0 23px`}>
                   탕전정보
                 </Text>
                 <MyinfoBtn>설정</MyinfoBtn>
@@ -194,7 +200,7 @@ const Question = () => {
               margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
-                <Text fontSize={`22px`} padding={`0 0 23px`}>
+                <Text fontSize={width < 700 ? `18px` :`22px`} padding={`0 0 23px`}>
                   결제정보
                 </Text>
 
@@ -242,7 +248,10 @@ const Question = () => {
             margin={`0 0 16px`}
           >
             <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
-              <Text fontSize={`22px`} padding={`0 0 23px`}>
+              <Text
+                fontSize={width < 700 ? `18px` : `22px`}
+                padding={`0 0 23px`}
+              >
                 나의 주소록
               </Text>
               <MyinfoBtn
@@ -301,10 +310,34 @@ const Question = () => {
             margin={`0 0 16px`}
           >
             <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
-              <Text fontSize={`22px`}>나의 요청사항</Text>
+              <Text fontSize={width < 700 ? `18px` : `22px`}>
+                나의 요청사항
+              </Text>
               <MyinfoBtn
                 onClick={() => {
                   moveLinkHandler(`/request`);
+                }}
+              >
+                확인하기
+              </MyinfoBtn>
+            </Wrapper>
+          </Wrapper>
+
+          {/* 나의 요청사항 */}
+          <Wrapper
+            radius={`20px`}
+            shadow={Theme.shadow_C}
+            padding={`22px 27px`}
+            al={`flex-start`}
+            margin={`0 0 16px`}
+          >
+            <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
+              <Text fontSize={width < 700 ? `18px` : `22px`}>
+                나의 배송시 요청사항
+              </Text>
+              <MyinfoBtn
+                onClick={() => {
+                  moveLinkHandler(`/deliveryRequest`);
                 }}
               >
                 확인하기
@@ -321,7 +354,7 @@ const Question = () => {
             margin={`0 0 16px`}
           >
             <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
-              <Text fontSize={`22px`}>회원탈퇴</Text>
+              <Text fontSize={width < 700 ? `18px` : `22px`}>회원탈퇴</Text>
               <Popconfirm
                 placement="topRight"
                 title="정말 탈퇴하시겠습니까?"
@@ -341,7 +374,7 @@ const Question = () => {
               margin={`0 0 16px`}
             >
               <Wrapper al={`flex-start`} ju={`space-between`} dr={`row`}>
-                <Text fontSize={`22px`} padding={`0 0 23px`}>
+                <Text fontSize={width < 700 ? `18px` :`22px`} padding={`0 0 23px`}>
                   쿠폰 관리
                 </Text>
                 <MyinfoBtn>설정</MyinfoBtn>

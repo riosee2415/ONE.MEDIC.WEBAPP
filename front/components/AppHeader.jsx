@@ -364,6 +364,11 @@ const AppHeader = ({ children, width }) => {
     },
 
     {
+      router: "/deliveryRequest",
+      title: "나의 배송시 요청사항",
+    },
+
+    {
       router: "/prescription-history/[id]",
       title: "내역확인",
     },

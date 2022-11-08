@@ -33,6 +33,7 @@ const prescriptionPriceRouter = require("./routers/prescriptionPriceRouter");
 const wishRouter = require("./routers/wishRouter");
 const userRequestRouter = require("./routers/userRequestRouter");
 const boughtHistory = require("./routers/boughtHistoryRouter");
+const userDeliveryRequestRouter = require("./routers/userDeliveryRequestRouter");
 
 // Config Settings
 db.sequelize
@@ -120,6 +121,7 @@ app.use("/api/price", prescriptionPriceRouter);
 app.use("/api/wish", wishRouter);
 app.use("/api/userRequest", userRequestRouter);
 app.use("/api/bought", boughtHistory);
+app.use("/api/deliveryReq", userDeliveryRequestRouter);
 
 // second minute hour day-of-month month day-of-week
 const task = cron.schedule(

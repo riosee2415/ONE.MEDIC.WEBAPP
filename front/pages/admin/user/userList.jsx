@@ -130,7 +130,7 @@ const UserList = ({}) => {
   const [licenseModal, setLicenseModal] = useState(false); // 라이선스 모달
   const [licenseData, setLicenseData] = useState(false); // 라이선스 데이터
 
-  const [dModal, setDModal] = useState(false); // 할인금액 모달
+  const [dModal, setDModal] = useState(false); // 할인율 모달
 
   const inputName = useInput("");
   const inputEmail = useInput("");
@@ -307,7 +307,7 @@ const UserList = ({}) => {
     }
   }, [st_userMonthPayToggleError]);
 
-  // 할인금액
+  // 할인율
 
   useEffect(() => {
     if (st_userDiscountUpdateDone) {
@@ -324,7 +324,7 @@ const UserList = ({}) => {
 
       discountModalToggle();
 
-      return message.success("할인금액이 수정되었습니다.");
+      return message.success("할인율이 수정되었습니다.");
     }
   }, [st_userDiscountUpdateDone]);
 
@@ -527,7 +527,7 @@ const UserList = ({}) => {
     });
   }, []);
 
-  // 할인금액
+  // 할인율
   const discountUpdateHandler = useCallback(
     (data) => {
       dispatch({
@@ -605,14 +605,14 @@ const UserList = ({}) => {
       ),
     },
     {
-      title: "할인금액",
+      title: "할인율",
       render: (data) => (
         <Button
           type="primary"
           onClick={() => discountModalToggle(data)}
           size="small"
         >
-          할인금액
+          할인율
         </Button>
       ),
     },
@@ -772,6 +772,9 @@ const UserList = ({}) => {
             사용자의 정보의 경우 개인정보로 인해 관리자가 직접 수정이
             불가능합니다.
           </GuideLi>
+          <GuideLi isImpo>
+            할인율의 단위는 %입니다. 다른 단위로 수정은 할수 없습니다.
+          </GuideLi>
           <GuideLi>현재 가입된 사용자의 정보를 확인할 수 있습니다.</GuideLi>
           <GuideLi>
             기능사용 문의 및 추가기능개발은 (주)4LEAF SOFTWARE 1600-4198로
@@ -813,7 +816,7 @@ const UserList = ({}) => {
           <Form.Item name="mobile" label="전화번호">
             <Input readOnly />
           </Form.Item>
-          <Form.Item name="discount" label="할인금액">
+          <Form.Item name="discount" label="할인율">
             <Input readOnly />
           </Form.Item>
           <Form.Item name="level" label="권한">
@@ -908,21 +911,27 @@ const UserList = ({}) => {
         </Form>
       </Modal>
 
-      {/* 할인금액 */}
+      {/* 할인율 */}
       <Modal
         visible={dModal}
         footer={null}
         onCancel={() => discountModalToggle(null)}
-        title="할인금액 수정"
+        title="할인율 수정"
       >
+        <GuideLi isImpo>
+          할인율의 단위는 %입니다. 다른 단위로 수정은 할수 없습니다.
+        </GuideLi>
         <Form form={discountForm} onFinish={discountUpdateHandler}>
           <Form.Item
-            label={`할인금액 수정`}
+            label={`할인율 수정`}
             name={`discount`}
-            rules={[{ required: true, message: "할인금액를 입력해주세요." }]}
+            rules={[{ required: true, message: "할인율를 입력해주세요." }]}
           >
             <Input
-              placeholder="할인금액를 입력해주세요."
+              type="number"
+              min={0}
+              max={100}
+              placeholder="할인율를 입력해주세요."
               allowClear
               size="small"
             />

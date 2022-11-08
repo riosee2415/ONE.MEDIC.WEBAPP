@@ -43,6 +43,7 @@ import {
   PPR_DETAIL_REQUEST,
 } from "../../reducers/prescriptionPaymentRequest";
 import { BOUGHT_DELIVERY_REQUEST } from "../../reducers/boughtHistory";
+import { DELIVERY_REQUEST_ALL_LIST_REQUEST } from "../../reducers/userDeliveryRequest";
 
 const CustomModal = styled(Modal)`
   & .ant-modal-content {
@@ -119,6 +120,10 @@ const Index = ({}) => {
     st_boughtDeliveryDone,
     st_boughtDeliveryError,
   } = useSelector((state) => state.boughtHistory);
+
+  const { deliveryRequestAllList } = useSelector(
+    (state) => state.userDeliveryRequest
+  );
 
   ////// HOOKS //////
   const router = useRouter();
@@ -354,6 +359,16 @@ const Index = ({}) => {
   );
 
   ////// DATAVIEW //////
+
+  const deliveryMessageArr = [
+    "배송 전에 미리 연락주세요.",
+    "부재시 경비실에 맡겨주세요.",
+    "부재시 문앞에 놓아주세요.",
+    "부재시 택배함에 넣어주세요.",
+    "부재시 전화 주시거나 문자 남겨 주세요.",
+    "파손의 위험이 있으니 주의해주세요.",
+    "직접입력",
+  ];
 
   return (
     <>
@@ -783,9 +798,24 @@ const Index = ({}) => {
                         <Select.Option value={`default`}>
                           배송 메세지를 선택해주세요.
                         </Select.Option>
-                        <Select.Option value="직접입력">직접입력</Select.Option>
-                        <Select.Option value="테스트1">테스트1</Select.Option>
-                        <Select.Option value="테스트2">테스트2</Select.Option>
+
+                        {/* 기본 배송메세지 */}
+                        {deliveryMessageArr &&
+                          deliveryMessageArr.map((data) => {
+                            return (
+                              <Select.Option value={data}>{data}</Select.Option>
+                            );
+                          })}
+
+                        {/* 회원이 넣은 배송 메세지 */}
+                        {deliveryRequestAllList &&
+                          deliveryRequestAllList.map((data) => {
+                            return (
+                              <Select.Option value={data.content}>
+                                {data.content}
+                              </Select.Option>
+                            );
+                          })}
                       </CustomSelect>
                     </Form.Item>
 
@@ -1108,6 +1138,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     context.store.dispatch({
       type: LOAD_MY_INFO_REQUEST,
+    });
+
+    context.store.dispatch({
+      type: DELIVERY_REQUEST_ALL_LIST_REQUEST,
     });
 
     // 구현부 종료

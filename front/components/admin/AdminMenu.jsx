@@ -119,7 +119,7 @@ const AdminMenu = () => {
           <Menu.Item key="/admin/user/userList">
             <MenuName>회원 리스트</MenuName>
           </Menu.Item>
-          <Menu.Item key="/admin/user/companyList">
+          {/* <Menu.Item key="/admin/user/companyList">
             <MenuName>한의원 등록 관리</MenuName>
           </Menu.Item>
           <Menu.Item key="/admin/user/discountList">
@@ -127,7 +127,7 @@ const AdminMenu = () => {
           </Menu.Item>
           <Menu.Item key="/admin/user/companyUserList">
             <MenuName>한의원 회원 리스트</MenuName>
-          </Menu.Item>
+          </Menu.Item> */}
         </SubMenu>
         <SubMenu
           key="sub6"
