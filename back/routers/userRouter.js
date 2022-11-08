@@ -731,6 +731,7 @@ router.get(
           companyName,
           companyNo,
           companyFile,
+          isCompany: true,
         },
         {
           where: {

@@ -135,7 +135,7 @@ const Question = () => {
                 {me && me.email}
               </Text>
             </Wrapper>
-            <Wrapper dr={`row`} padding={`18px 0`}>
+            <Wrapper dr={`row`} margin={`18px 0`}>
               <Text width={`25%`}>연락처</Text>
               <Text width={`75%`} fontWeight={`bold`}>
                 {me && me.mobile}
@@ -147,6 +147,22 @@ const Question = () => {
                 {me && me.licenseNo}
               </Text>
             </Wrapper>
+            {me && me.isCompany && (
+              <>
+                <Wrapper dr={`row`} margin={`18px 0`}>
+                  <Text width={`25%`}>한의원이름</Text>
+                  <Text width={`75%`} fontWeight={`bold`}>
+                    {me && me.companyName}
+                  </Text>
+                </Wrapper>
+                <Wrapper dr={`row`}>
+                  <Text width={`25%`}>사업자번호</Text>
+                  <Text width={`75%`} fontWeight={`bold`}>
+                    {me && me.companyNo}
+                  </Text>
+                </Wrapper>
+              </>
+            )}
           </Wrapper>
           {/* <Wrapper
               radius={`20px`}

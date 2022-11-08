@@ -159,7 +159,7 @@ const Question = () => {
 
   useEffect(() => {
     if (st_companyCreateDone) {
-      message.success("신청되었습니다.");
+      message.success("등록되었습니다.");
       return router.push("/");
     }
   }, [st_companyCreateDone]);
@@ -293,15 +293,15 @@ const Question = () => {
                   한의원 명
                 </Text>
                 <TitleInput
-                  placeholder="신청할 한의원 명을 적어주세요."
+                  placeholder="등록할 한의원 명을 적어주세요."
                   {...titleInput}
                 />
                 <Text color={Theme.grey_C} fontWeight={`bold`}>
                   사업자번호
                 </Text>
                 <TitleInput
-                  pattern=""
-                  placeholder="신청할 사업자번호를 `-`를 제외하고 적어주세요."
+                  type="number"
+                  placeholder="등록할 사업자번호를 `-`를 제외하고 적어주세요."
                   {...companyNoInput}
                 />
 
@@ -326,7 +326,7 @@ const Question = () => {
                   <QuestionBtn onClick={onCancel} kindOf={`white`}>
                     취소
                   </QuestionBtn>
-                  <QuestionBtn onClick={onSubmit}>신청</QuestionBtn>
+                  <QuestionBtn onClick={onSubmit}>등록</QuestionBtn>
                 </Wrapper>
               </Wrapper>
             </Wrapper>

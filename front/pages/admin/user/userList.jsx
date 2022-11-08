@@ -384,6 +384,9 @@ const UserList = ({}) => {
   const licenseNoUpdateModal = useCallback(
     (data) => {
       if (data) {
+        licenseForm.setFieldsValue({
+          licenseNo: data.licenseNo,
+        });
         setLicenseData(data);
       } else {
         setLicenseData(null);
@@ -453,6 +456,7 @@ const UserList = ({}) => {
         companyName: data.companyName,
         companyNo: data.companyNo,
         discount: data.discountPrice,
+        licenseNo: data.licenseNo ? licenseNo : "등록된 면허번호가 없습니다.",
       });
       setIsCompany(data.isCompany);
       setCompanyFile(data.companyFile);
@@ -814,6 +818,9 @@ const UserList = ({}) => {
             <Input readOnly />
           </Form.Item>
           <Form.Item name="mobile" label="전화번호">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="licenseNo" label="면허번호">
             <Input readOnly />
           </Form.Item>
           <Form.Item name="discount" label="할인율">
